@@ -1,0 +1,32 @@
+export const profileInfoSchema = {
+  schema: {
+    body: {
+      type: "object",
+      required: [],
+      properties: {
+        full_name: { type: "string" },
+        first_name: { type: "string" },
+        last_name: { type: "string" },
+        info: { type: "string" },
+        place: { type: "string" },
+        current_position_type: { type: "string" },
+        current_position_value1: { type: "string" },
+        current_position_value2: { type: "string" },
+        current_position_value2: { type: "string" },
+        dob: { type: "string" },
+        appearance_url: { type: "string" },
+        website_info: { type: "array" },
+        avatar_main_url: { type: "string" },
+        avatar_small_url: { type: "string" },
+        avatar_bg_color: { type: "string" },
+        dob_visible_status: { type: "boolean" },
+        avatar_main_url: { type: "string" },
+        avatar_small_url: { type: "string" },
+        avatar_bg_color: { type: "string" },
+        avatar_glb_id: { type: "string" },
+        avatar_type: { type: "string" },
+        avatar_view_type: { type: "string" },
+      },
+    },
+  },
+};

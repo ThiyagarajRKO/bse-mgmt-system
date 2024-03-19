@@ -1,0 +1,194 @@
+body {
+  background-color: #dedede;
+}
+
+#request_cred {
+  font-size: 12px;
+}
+
+.Vlogo {
+  width: 30px;
+  height: 30px;
+}
+
+.Vheading {
+  color: white;
+  align-content: center;
+  display: inline;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.panel2 {
+  display: flex;
+  /* padding: 20px; */
+  margin-top: 10%;
+
+  background-color: white;
+
+  border-radius: 5px;
+}
+
+.logout {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#submit {
+  width: 45%;
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+#result{
+  width: 45%;
+  font-weight: normal;
+  font-size: 12px;
+  background-color: white;
+  height: 30px;
+  border: 1px solid #771daa;
+  border-radius: 3px;
+
+}
+#download{
+  /* width: 45%; */
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+
+
+
+#reset {
+  width: 45%;
+  font-weight: normal;
+  font-size: 12px;
+  background-color: white;
+  height: 30px;
+  border: 1px solid #771daa;
+  border-radius: 3px;
+}
+
+.headL {
+  font-weight: bold;
+  font-size: 14px;
+  color: black;
+}
+
+.usernameL {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.passwordL {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.adminR {
+  font-size: 10px;
+}
+
+/* Request Login */
+
+#sent {
+  width: 45%;
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+
+/* Citizen login */
+.panel3 {
+  display: flex;
+
+  /* padding: 10px; */
+  margin-top: 7%;
+  background-color: white;
+}
+
+/* New Citizen*/
+.panel4 {
+  display: flex;
+
+  /* padding: 10px; */
+  margin-top: 7%;
+
+  background-color: white;
+}
+
+#send {
+  width: 35%;
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+#verify {
+  width: 35%;
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+#alert {
+  color: red;
+  font-size: smaller;
+  text-align: center;
+}
+
+#search {
+  width: 35%;
+  font-weight: bold;
+  font-size: 12px;
+  height: 30px;
+  background-color: #771daa;
+  color: white;
+  border: 0px solid;
+  border-radius: 3px;
+}
+
+.panelA {
+  display: flex;
+  /* padding: 20px; */
+  margin-top: 10%;
+  background-color: white;
+  width: 60%;
+  border-radius: 5px;
+}
+
+.panelAdminMain {
+  display: flex;
+  /* padding: 20px; */
+  margin-top: 5%;
+  background-color: white;
+  width: 80%;
+  border-radius: 5px;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-bottom: 2%;
+}

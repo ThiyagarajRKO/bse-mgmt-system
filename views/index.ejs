@@ -1,0 +1,197 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <!-- title logo -->
+  <link rel="icon" href="Images/voter.png" type="image/icon type" />
+  <link
+    rel="stylesheet"
+    href="Plugins/bootstrap-4.3.1-dist/css/bootstrap.min.css"
+  />
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="Plugins/DataTables/datatables.min.css"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="Plugins/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
+  <script src="Plugins/jquery/jquery-3.5.1.min.js"></script>
+
+  <!-- notification jquery -->
+  <link rel="stylesheet" href="Plugins/Toastr/toastr.min.css" />
+  <script src="Plugins/Toastr/toastr.min.js"></script>
+
+  <!-- <script src="Plugins/Auto-hiding-Notification-jQuery-notice/notify.min.js"></script> -->
+  <script src="Plugins/DataTables/datatables.min.js"></script>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eVoting</title>
+    <style type="text/css"></style>
+  </head>
+
+  <body>
+    <div
+      class="navbar navbar-expand-lg navbar-dark"
+      style="background-color: #771daa"
+    >
+      <div
+        class="col-md-12"
+        style="
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+        "
+      >
+        <div>
+          <img class="Vlogo" src="Images/voter.png" alt="Logo" />
+        </div>
+        <div>
+          <h6 class="Vheading">E-Voting Management System</h6>
+        </div>
+        <div>
+          <h6 class="logout"></h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="display: flex; justify-content: center">
+      <div class="col-xl-5 col-md-12 col-sm-12 p-4 panel2">
+        <div id="login-box" class="col-md-12">
+          <h3 class="text-center headL my-2">LOGIN</h3>
+          <hr />
+          <div class="form-group" style="margin-top: 30px">
+            <label for="username" class="usernameL">Voter ID</label><br />
+            <input
+              type="text"
+              placeholder="eg. WRM84545454"
+              name="username"
+              id="username"
+              class="form-control"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password" class="passwordL">Date Of Birth</label><br />
+            <input
+              type="date"
+              placeholder="eg. 2020-01-01"
+              name="password"
+              id="password"
+              class="form-control"
+            />
+          </div>
+          <div
+            class="radio"
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 20px;
+            "
+          >
+            <label class="radio-inline"
+              ><input type="radio" id="usertypeadmin" name="optradio" />
+              Admin</label
+            >
+            <label class="radio-inline"
+              ><input type="radio" id="usertypecitizen" name="optradio" />
+              Citizen</label
+            >
+          </div>
+
+          <div class="form-group">
+            <div
+              style="
+                margin-top: 10px;
+                margin-bottom: 30px;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <input
+                class="btn-outline-custom"
+                id="submit"
+                type="submit"
+                name="submit"
+                value="Submit"
+              />
+              <input
+                class="btn-outline-custom"
+                id="result"
+                type="button"
+                name="Reset"
+                value="Reset"
+              />
+            </div>
+
+            <hr />
+            <div id="register_link" class="text-center mb-0">
+              <span id="request_cred"
+                >If you have trouble in login
+                <a href="/requestCred" class="text-info">Click here</a></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!-- App.js -->
+  <script src="custom/App.js"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      sessionStorage.clear();
+      toastr.options = {
+        closeButton: false,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "5000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      };
+
+      $("#submit").on("click", function () {
+        if ($("#username").val() != "" && $("#password").val() != "") {
+          if ($("#usertypeadmin").is(":Checked") == true) {
+            App.login(
+              $("#username").val().trim(),
+              $("#password").val().trim(),
+              "Admin"
+            );
+          } else {
+            App.login(
+              $("#username").val().trim(),
+              $("#password").val().trim(),
+              "Citizen"
+            );
+          }
+        } else {
+          toastr["warning"]("Voter ID and Date of birth Should NOT be empty");
+        }
+      });
+
+      $("#register_link").click(function () {
+        window.location.href = "requestCred";
+      });
+
+      $("#result").click(function () {
+        $("#username").val("")
+        $("#password").val("")
+      });
+    });
+  </script>
+</html>
+<!-- 
+git add .
+git commit -m 'check push hello'
+git push origin master -->
