@@ -10,6 +10,7 @@ export const signUpSchema = {
         phone: { type: "string" },
         countryCode: { type: "string" },
         email: { type: "string" },
+        username: { type: "string" },
         password: { type: "string" },
         dob: { type: "string" },
         role_id: { type: "string" },

@@ -194,6 +194,7 @@ export const GetAll = ({ userType = "User" }) => {
 };
 
 export const GetUserAndProfileByIdentifier = async ({
+  username,
   email,
   phone,
   role_id,
@@ -211,15 +212,18 @@ export const GetUserAndProfileByIdentifier = async ({
         is_active: true,
       };
 
-      if (email && phone) {
+      if (email && phone && username) {
         where[Op.or] = {
           email: email?.trim()?.toLowerCase(),
           phone,
+          username: username.trim(),
         };
       } else if (email) {
         where["email"] = email?.trim()?.toLowerCase();
       } else if (phone) {
         where["phone"] = phone;
+      } else if (phone) {
+        where["username"] = username?.trim();
       }
 
       const user_data = await models.Users.findOne({

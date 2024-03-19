@@ -23,7 +23,7 @@ fastify.register(AutoLoad, {
 });
 
 fastify.get("/", (req, res) => {
-  res.code(200).send({ message: "Server is running..." });
+  res.view("index.js", {});
 });
 
 //Configuring the routes

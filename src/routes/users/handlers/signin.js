@@ -6,6 +6,7 @@ export const SignIn = ({ identity, password, role_id }, session, fastify) => {
     try {
       // Creating User
       let user_data = await Users.GetUserAndProfileByIdentifier({
+        username: identity,
         email: identity,
         phone: identity,
         role_id,
@@ -28,11 +29,13 @@ export const SignIn = ({ identity, password, role_id }, session, fastify) => {
       // Here is we add token into the Cookie
       session.pid = user_data?.UserProfile?.id;
       session.role_id = user_data?.UserProfile?.role_id;
+      session.username = user_data?.username;
 
       resolve({
         data: {
           user_id: user_data?.UserProfile?.id,
           full_name: user_data?.UserProfile?.full_name,
+          username: user_data?.username,
         },
       });
     } catch (err) {

@@ -4,6 +4,7 @@ export const SignUp = (params) => {
   return new Promise(async (resolve, reject) => {
     try {
       let {
+        username,
         full_name,
         first_name,
         last_name,

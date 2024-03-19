@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      username: {
+        type: DataTypes.STRING,
+      },
       email: {
         type: DataTypes.STRING,
       },
