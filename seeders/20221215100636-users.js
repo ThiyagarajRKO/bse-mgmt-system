@@ -11,7 +11,7 @@ module.exports = {
           phone: "6379248545",
           country_code: "+91",
           password:
-            "$2a$10$CmZqc5z.BxkX7svyP51wZubqLMoRCPPhiC5LRuEozGfJwPPGtY/Ym",
+            "$2a$10$qTJM6LkwTm1pxJSfa6FaS.Q.Z1rQLLrNaLhZK219c8VHa5DIHh8mC",
           is_active: true,
           user_status: "1",
         },

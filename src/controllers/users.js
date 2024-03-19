@@ -193,93 +193,10 @@ export const GetAll = ({ userType = "User" }) => {
   });
 };
 
-export const GetStatus = ({ id, userType = "User" }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 400,
-          message: "User ID field must not be empty!",
-        });
-      }
-
-      let role_id = "e7daa45c-627d-455a-ac57-ec32aa57d009";
-
-      if (userType == "Admin") {
-        role_id = "c4be6a50-1bda-4237-bbf5-b607c37cd9b0";
-      } else if (userType == "Character") {
-        role_id = "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee";
-      }
-
-      const user = await models.Users.findOne({
-        attributes: ["is_email_verified", "is_mobile_verified"],
-        include: [
-          {
-            attributes: [],
-            model: models.UserProfiles,
-            where: {
-              is_active: true,
-              role_id,
-              is_banned: false,
-            },
-          },
-        ],
-        where: { id, is_active: true },
-        raw: true,
-      });
-      resolve(user);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const GetForgotPasswordStatus = ({ id, userType = "User" }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 400,
-          message: "User ID field must not be empty!",
-        });
-      }
-
-      let role_id = "e7daa45c-627d-455a-ac57-ec32aa57d009";
-
-      if (userType == "Admin") {
-        role_id = "c4be6a50-1bda-4237-bbf5-b607c37cd9b0";
-      } else if (userType == "Character") {
-        role_id = "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee";
-      }
-
-      const user = await models.Users.findOne({
-        attributes: ["id", "is_password_forgot"],
-        include: [
-          {
-            attributes: [],
-            model: models.UserProfiles,
-            where: {
-              is_active: true,
-              role_id,
-              is_banned: false,
-            },
-          },
-        ],
-        where: { id, is_active: true },
-        raw: true,
-      });
-      resolve(user);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
 export const GetUserAndProfileByIdentifier = async ({
-  user_id,
   email,
   phone,
-  userType = "User",
+  role_id,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -303,20 +220,6 @@ export const GetUserAndProfileByIdentifier = async ({
         where["email"] = email?.trim()?.toLowerCase();
       } else if (phone) {
         where["phone"] = phone;
-      }
-
-      if (user_id) {
-        where["id"] = {
-          [Op.ne]: user_id,
-        };
-      }
-
-      let role_id = "e7daa45c-627d-455a-ac57-ec32aa57d009";
-
-      if (userType == "Admin") {
-        role_id = "c4be6a50-1bda-4237-bbf5-b607c37cd9b0";
-      } else if (userType == "Character") {
-        role_id = "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee";
       }
 
       const user_data = await models.Users.findOne({

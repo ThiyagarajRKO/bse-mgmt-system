@@ -18,14 +18,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-
-      // One to Many
-      UserProfiles.hasMany(models.DeviceTokens, {
-        foreignKey: "created_by",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
     }
   }
   UserProfiles.init(
