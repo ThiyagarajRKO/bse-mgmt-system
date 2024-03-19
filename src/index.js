@@ -23,7 +23,7 @@ fastify.register(AutoLoad, {
 });
 
 fastify.get("/", (req, res) => {
-  res.view("index.js", {});
+  res.view("index.ejs", {});
 });
 
 //Configuring the routes
@@ -56,4 +56,10 @@ fastify.addHook("onSend", function (request, reply, payload, done) {
   } catch (err) {
     // console.error(new Date().toISOString() + " : " + err?.message || err);
   }
+});
+
+// View Handlers
+fastify.get("/AdminMain", function (req, res) {
+  // console.log('inside get');
+  res.view("AdminMain.ejs");
 });

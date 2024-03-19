@@ -14,6 +14,7 @@ export const SignIn = ({ identity, password, role_id }, session, fastify) => {
 
       if (!user_data) {
         return reject({
+          statusCode: 403,
           message: "User doesn't exists!",
         });
       }
@@ -22,6 +23,7 @@ export const SignIn = ({ identity, password, role_id }, session, fastify) => {
       const valid = bcrypt.compareSync(password, user_data?.password);
       if (!valid) {
         return reject({
+          statusCode: 403,
           message: "Invalid credential",
         });
       }

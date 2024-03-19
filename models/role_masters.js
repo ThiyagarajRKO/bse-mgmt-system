@@ -2,7 +2,7 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class RoleMaster extends Model {
-    static associate(models) { }
+    static associate(models) {}
   }
   RoleMaster.init(
     {
@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "RoleMaster",
+      tableName: "role_master",
       underscored: true,
       createdAt: false,
       updatedAt: false,

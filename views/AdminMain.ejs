@@ -1,0 +1,213 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+
+  <!-- Bootstrap  -->
+  <link
+    href="/public/plugins/bootstrap/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js"></script>
+
+  <!-- DataTable -->
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="/public/plugins/DataTables/datatables.min.css"
+  />
+
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+  <script src="/public/plugins/Toastr/toastr.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- SideBar -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/offcanvas/css/hc-offcanvas-nav.css"
+  />
+  <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE</title>
+
+    <style type="text/css">
+      @font-face {
+        font-family: "CassandraPersonalUse";
+        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
+          format("truetype");
+        /* Replace with your font file path */
+        /* font-display: swap; */
+      }
+
+      @font-face {
+        font-family: "CerebriSansPro-Regular";
+        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
+          format("truetype");
+        /* Replace with your font file path */
+        /* font-display: swap; */
+      }
+      fieldset {
+        /* font-weight: bold; */
+        font-family: "CerebriSansPro-Regular";
+        color: white;
+      }
+
+      .hr2 {
+        width: 100%;
+        border-top: 1px solid #dedede;
+        margin-bottom: 5px;
+        height: 0px;
+      }
+
+      .btn:hover {
+        color: white;
+        font-weight: bold;
+        background-color: #9f1bb1;
+        cursor: pointer;
+      }
+
+      .btn {
+        border: 1px solid;
+        padding-top: 20px;
+        color: rgb(44, 42, 42);
+        /* rgb(187, 75, 187) */
+      }
+
+      .btn-even:hover {
+        color: white;
+        font-weight: bold;
+        background-color: #9f1bb1;
+        cursor: pointer;
+      }
+
+      .btn-even {
+        border: 1px solid;
+        padding-top: 20px;
+        background-color: #5d2eaa;
+        color: white;
+        /* rgb(187, 75, 187) */
+      }
+
+      input {
+        background-color: blueviolet;
+        color: white;
+        font-weight: bold;
+        font-family: "CerebriSansPro-Regular";
+      }
+
+      .hc-nav-trigger {
+        margin-top: -6px;
+      }
+
+      /* .d-flex {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+
+      .d-flex-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      } */
+
+      /* span {
+        font-size: 15px;
+      } */
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="navbar navbar-expand-lg navbar-dark"
+      style="background-color: #771daa"
+    >
+      <div class="col-md-12 py-2 d-flex justify-content-around">
+        <div>
+          <div id="navbar-toggler" style="display: none; margin-top: -20px">
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About Us</a></li>
+              <li>
+                <a href="#">Services</a>
+                <ul>
+                  <li><a href="#">Search Engine Optimization</a></li>
+                  <li>
+                    <a href="#">Web development</a>
+                    <ul>
+                      <li><a href="#">Web design</a></li>
+                      <li><a href="#">Web content coding</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <h6 class="Vheading">Britto SeaFoods Exports</h6>
+
+        <span class="logout">Logout</span>
+      </div>
+    </div>
+
+    <div class="container" style="display: flex; justify-content: center"></div>
+  </body>
+
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      let $nav = $("#navbar-toggler").hcOffcanvasNav({
+        levelTitles: true,
+        closeOnClick: false,
+        disableAt: false,
+      });
+      let Nav = $nav.data("hcOffcanvasNav");
+
+      //   $("#main-nav").hcOffcanvasNav({
+      //     disableAt: 1024,
+      //     customToggle: $(".toggle"),
+      //     navTitle: "All Categories",
+      //     levelTitles: true,
+      //     levelTitleAsBack: true,
+      //   });
+
+      toastr.options = {
+        closeButton: false,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "5000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      };
+    });
+  </script>
+</html>
+<!-- 
+git add .
+git commit -m 'check push hello'
+git push origin master -->

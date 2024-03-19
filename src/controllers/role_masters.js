@@ -26,7 +26,7 @@ export const Get = ({ id }) => {
 export const GetAll = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await models.Users.findAll({
+      const user = await models.RoleMaster.findAll({
         attributes: ["id", "role_name"],
         where: { is_active: true },
       });
