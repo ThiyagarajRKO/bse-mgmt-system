@@ -29,9 +29,6 @@
   <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
   <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/public/css/style.css" />
-
   <!-- SideBar -->
   <link
     rel="stylesheet"
@@ -43,6 +40,9 @@
   /> -->
   <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css" />
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -53,119 +53,52 @@
         font-family: "CassandraPersonalUse";
         src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
           format("truetype");
-        /* Replace with your font file path */
-        /* font-display: swap; */
       }
 
       @font-face {
         font-family: "CerebriSansPro-Regular";
         src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
           format("truetype");
-        /* Replace with your font file path */
-        /* font-display: swap; */
-      }
-      fieldset {
-        /* font-weight: bold; */
-        font-family: "CerebriSansPro-Regular";
-        color: white;
-      }
-
-      .hr2 {
-        width: 100%;
-        border-top: 1px solid #dedede;
-        margin-bottom: 5px;
-        height: 0px;
-      }
-
-      .btn:hover {
-        color: white;
-        font-weight: bold;
-        background-color: #9f1bb1;
-        cursor: pointer;
-      }
-
-      .btn {
-        border: 1px solid;
-        padding-top: 20px;
-        color: rgb(44, 42, 42);
-        /* rgb(187, 75, 187) */
-      }
-
-      .btn-even:hover {
-        color: white;
-        font-weight: bold;
-        background-color: #9f1bb1;
-        cursor: pointer;
-      }
-
-      .btn-even {
-        border: 1px solid;
-        padding-top: 20px;
-        background-color: #5d2eaa;
-        color: white;
-        /* rgb(187, 75, 187) */
-      }
-
-      input {
-        background-color: blueviolet;
-        color: white;
-        font-weight: bold;
-        font-family: "CerebriSansPro-Regular";
       }
 
       .hc-nav-trigger {
-        margin-top: -6px;
+        margin-top: -12px;
       }
-
-      /* .d-flex {
-        display: flex;
-        justify-content: space-between;
-        margin-left: 20px;
-        margin-right: 20px;
-      }
-
-      .d-flex-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      } */
-
-      /* span {
-        font-size: 15px;
-      } */
     </style>
   </head>
 
   <body>
-    <div
-      class="navbar navbar-expand-lg navbar-dark"
-      style="background-color: #771daa"
-    >
-      <div class="col-md-12 py-2 d-flex justify-content-around">
-        <div>
+    <div class="" style="background-color: #771daa">
+      <div class="row py-2">
+        <div class="col col-md-5 col-lg-5 ps-4">
           <div id="navbar-toggler">
             <ul>
-              <li><a href="#">Home</a></li>
-              <li><a href="#">About Us</a></li>
+              <li><a href="#">Dashboard</a></li>
+              <li><a href="#">Precurement</a></li>
               <li>
-                <a href="#">Services</a>
+                <a href="#">Production</a>
                 <ul>
-                  <li><a href="#">Search Engine Optimization</a></li>
-                  <li>
-                    <a href="#">Web development</a>
-                    <ul>
-                      <li><a href="#">Web design</a></li>
-                      <li><a href="#">Web content coding</a></li>
-                    </ul>
-                  </li>
+                  <li><a href="#">Dispatch</a></li>
+                  <li><a href="#">Peeling Center</a></li>
+                  <li><a href="#">Dispatch</a></li>
+                  <li><a href="#">Production Factory</a></li>
                 </ul>
               </li>
-              <li><a href="#">Contact</a></li>
+              <li><a href="#">Sales</a></li>
+              <li><a href="#">Accounting</a></li>
+              <li><a href="#">Reports</a></li>
             </ul>
           </div>
         </div>
 
-        <h6 class="Vheading">Britto SeaFoods Exports</h6>
+        <div class="col">
+          <h6
+            class="Vheading text-white align-middle fw-bold fs-5"
+            style="font-family: 'CerebriSansPro-Regular'"
+          >
+            Britto Seafoods Exports
+          </h6>
+        </div>
 
         <!-- <span class="logout">Logout</span> -->
       </div>

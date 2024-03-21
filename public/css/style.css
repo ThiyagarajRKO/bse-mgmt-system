@@ -12,13 +12,10 @@ body {
 }
 
 .Vheading {
-  color: white;
-  align-content: center;
+  font-family: "CerebriSansPro-Regular";
   display: inline;
   margin-top: auto;
   margin-bottom: auto;
-  font-size: 16px;
-  font-weight: bold;
 }
 
 .panel2 {
@@ -50,7 +47,7 @@ body {
   border: 0px solid;
   border-radius: 3px;
 }
-#result{
+#result {
   width: 45%;
   font-weight: normal;
   font-size: 12px;
@@ -58,9 +55,8 @@ body {
   height: 30px;
   border: 1px solid #771daa;
   border-radius: 3px;
-
 }
-#download{
+#download {
   /* width: 45%; */
   font-weight: bold;
   font-size: 12px;
@@ -70,8 +66,6 @@ body {
   border: 0px solid;
   border-radius: 3px;
 }
-
-
 
 #reset {
   width: 45%;
