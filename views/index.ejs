@@ -142,13 +142,13 @@
       const identity  = $("#username").val()
       const password = $("#password").val()
       const role_id =  $("#roles").val()
-      const role_name = $("#roles").select2("data")[0].text
-
-
-      if (identity == "" || password == "" || role_id == "") {
+      
+      if (!identity || !password || !role_id) {
         toastr["warning"]("Fill all the required fields");
         return
       }
+
+      const role_name = $("#roles").select2("data")[0].text
 
       let input_params = {
         identity,
