@@ -22,10 +22,6 @@ fastify.register(AutoLoad, {
   dir: path.join(process.cwd(), "/src/plugins"),
 });
 
-fastify.get("/", (req, res) => {
-  res.view("index.ejs", {});
-});
-
 //Configuring the routes
 fastify.register(PublicRouters, { prefix: "/api/v1" });
 fastify.register(PrivateRouters, { prefix: "/api/v1" });
@@ -59,6 +55,10 @@ fastify.addHook("onSend", function (request, reply, payload, done) {
 });
 
 // View Handlers
+fastify.get("/", (req, res) => {
+  res.view("index.ejs");
+});
+
 fastify.get("/AdminMain", function (req, res) {
   res.view("AdminMain.ejs");
 });

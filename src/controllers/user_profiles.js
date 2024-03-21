@@ -98,22 +98,14 @@ export const DeleteByUser = async ({ profile_id }) => {
   });
 };
 
-export const Get = ({ id, username, userType = "User" }) => {
+export const Get = ({ id, username, role_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !username) {
+      if (!id && !username && !role_id) {
         return reject({
           statusCode: 400,
           message: "Profile ID/username field must not be empty!",
         });
-      }
-
-      let role_id = "e7daa45c-627d-455a-ac57-ec32aa57d009";
-
-      if (userType == "Admin") {
-        role_id = "c4be6a50-1bda-4237-bbf5-b607c37cd9b0";
-      } else if (userType == "Character") {
-        role_id = "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee";
       }
 
       let where = {

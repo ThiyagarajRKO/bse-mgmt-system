@@ -5,8 +5,10 @@
   <!-- title logo -->
   <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
 
   <!-- Bootstrap  -->
   <link
@@ -29,6 +31,9 @@
   <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
   <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+
   <!-- SideBar -->
   <link
     rel="stylesheet"
@@ -42,6 +47,9 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js"></script>
 
   <head>
     <meta charset="UTF-8" />
@@ -68,11 +76,12 @@
   </head>
 
   <body>
-    <div class="" style="background-color: #771daa">
+    <div class="container">
       <div class="row py-2">
-        <div class="col col-md-5 col-lg-5 ps-4">
-          <div id="navbar-toggler">
-            <ul>
+        <div class="col col-md-1 col-lg-1 ps-4">
+          <i class="fa-solid fa-bars"></i>
+          <!-- <div id="navbar-toggler" style="display: none">
+            <ul style="display: none">
               <li><a href="#">Dashboard</a></li>
               <li><a href="#">Precurement</a></li>
               <li>
@@ -88,19 +97,21 @@
               <li><a href="#">Accounting</a></li>
               <li><a href="#">Reports</a></li>
             </ul>
-          </div>
+          </div> -->
         </div>
 
-        <div class="col">
+        <div class="col d-flex justify-content-center">
           <h6
-            class="Vheading text-white align-middle fw-bold fs-5"
+            class="Vheading align-middle fw-bold fs-6"
             style="font-family: 'CerebriSansPro-Regular'"
           >
             Britto Seafoods Exports
           </h6>
         </div>
 
-        <!-- <span class="logout">Logout</span> -->
+        <div class="col-md-1 col-lg-1" id="logout">
+          <i class="fas fa-power-off"></i>
+        </div>
       </div>
     </div>
 
@@ -109,6 +120,8 @@
 
   <script type="text/javascript">
     jQuery(document).ready(function ($) {
+      App.checkAccess();
+
       let $nav = $("#navbar-toggler").hcOffcanvasNav({
         disableAt: false,
         levelOpen: "expand",
@@ -122,6 +135,8 @@
       //     levelTitles: true,
       //     levelTitleAsBack: true,
       //   });
+
+      $("#logout").on("click", App.logout);
 
       toastr.options = {
         closeButton: false,
@@ -143,7 +158,3 @@
     });
   </script>
 </html>
-<!-- 
-git add .
-git commit -m 'check push hello'
-git push origin master -->

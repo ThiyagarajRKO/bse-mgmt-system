@@ -70,6 +70,26 @@ export const usersRoutes = (fastify, opts, done) => {
     }
   );
 
+  fastify.get(
+    "/ping",
+    {
+      preHandler: [ValidateUser],
+    },
+    async (req, reply) => {
+      try {
+        reply.code(200).send({
+          success: true,
+          message: "pong",
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
   done();
 };
 
