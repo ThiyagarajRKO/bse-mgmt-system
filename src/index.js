@@ -60,5 +60,5 @@ fastify.get("/", (req, res) => {
 });
 
 fastify.get("/AdminMain", function (req, res) {
-  res.view("AdminMain.ejs");
+  res.view("AdminMain.ejs", { full_name: req?.session?.full_name });
 });

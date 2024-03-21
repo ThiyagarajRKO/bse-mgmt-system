@@ -69,16 +69,77 @@
           format("truetype");
       }
 
-      .hc-nav-trigger {
-        margin-top: -12px;
+      body {
+        font-family: "CerebriSansPro-Regular";
       }
     </style>
   </head>
 
   <body>
-    <div class="container">
-      <div class="row py-2">
-        <div class="col col-md-1 col-lg-1 ps-4">
+    <div class="container-fluid">
+      <div class="row vh-100">
+        <div class="col-md-2 col-lg-2 pt-1">
+          <div class="row d-flex justify-content-center flex-column">
+            <div class="d-flex justify-content-center">
+              <img
+                src="/public/images/bse.png"
+                style="width: 50px"
+                alt=""
+                srcset=""
+              />
+            </div>
+            <span class="fw-bold text-center"> Britto Seafoods Exports </span>
+          </div>
+
+          <br />
+          <br />
+
+          <!-- Side Menus -->
+          <div class="ps-2 d-flex flex-column justify-content-center">
+            <!-- Dashboard Menu -->
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Dashboard</span>
+            </div>
+
+            <!-- Procurement Menu -->
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Procurement</span>
+            </div>
+
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Production</span>
+            </div>
+
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Sales</span>
+            </div>
+
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Accounting</span>
+            </div>
+
+            <div class="my-auto mt-1">
+              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
+              <span>Report</span>
+            </div>
+          </div>
+          <!-- Side Menus End -->
+        </div>
+        <div class="col-md-10 col-lg-10 fw-bold pt-3 mt-1">
+          <div class="row pe-2">
+            <div class="col-md-6 col-lg-6">Hello, <%=full_name%>!</div>
+            <div class="col-md-6 col-lg-6 d-flex justify-content-end">
+              <i class="fas fa-power-off"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 my-auto">
           <i class="fa-solid fa-bars"></i>
           <!-- <div id="navbar-toggler" style="display: none">
             <ul style="display: none">
@@ -97,21 +158,24 @@
               <li><a href="#">Accounting</a></li>
               <li><a href="#">Reports</a></li>
             </ul>
-          </div> -->
+          </div> 
         </div>
 
-        <div class="col d-flex justify-content-center">
-          <h6
+        <div class="col d-flex justify-content-start my-auto">
+          <span
             class="Vheading align-middle fw-bold fs-6"
             style="font-family: 'CerebriSansPro-Regular'"
           >
             Britto Seafoods Exports
-          </h6>
+          </span>
         </div>
 
-        <div class="col-md-1 col-lg-1" id="logout">
+        <div
+          class="col-xs-1 col-sm-1 col-md-1 col-lg-1 d-flex justify-content-end my-auto"
+          id="logout"
+        >
           <i class="fas fa-power-off"></i>
-        </div>
+        </div> -->
       </div>
     </div>
 
