@@ -60,6 +60,5 @@ fastify.addHook("onSend", function (request, reply, payload, done) {
 
 // View Handlers
 fastify.get("/AdminMain", function (req, res) {
-  // console.log('inside get');
   res.view("AdminMain.ejs");
 });
