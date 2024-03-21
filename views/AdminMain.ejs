@@ -37,6 +37,10 @@
     rel="stylesheet"
     href="/public/plugins/offcanvas/css/hc-offcanvas-nav.css"
   />
+  <!-- <link
+    rel="stylesheet"
+    href="/public/plugins/offcanvas/css/to/hc-offcanvas-nav.carbon.css"
+  /> -->
   <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
   <head>
@@ -111,7 +115,6 @@
 
       .hc-nav-trigger {
         margin-top: -6px;
-        color: white;
       }
 
       /* .d-flex {
@@ -140,7 +143,7 @@
     >
       <div class="col-md-12 py-2 d-flex justify-content-around">
         <div>
-          <div id="navbar-toggler" style="display: none; margin-top: -20px">
+          <div id="navbar-toggler">
             <ul>
               <li><a href="#">Home</a></li>
               <li><a href="#">About Us</a></li>
@@ -164,7 +167,7 @@
 
         <h6 class="Vheading">Britto SeaFoods Exports</h6>
 
-        <span class="logout">Logout</span>
+        <!-- <span class="logout">Logout</span> -->
       </div>
     </div>
 
@@ -174,9 +177,8 @@
   <script type="text/javascript">
     jQuery(document).ready(function ($) {
       let $nav = $("#navbar-toggler").hcOffcanvasNav({
-        levelTitles: true,
-        closeOnClick: false,
         disableAt: false,
+        levelOpen: "expand",
       });
       let Nav = $nav.data("hcOffcanvasNav");
 
