@@ -72,60 +72,117 @@
       body {
         font-family: "CerebriSansPro-Regular";
       }
+
+      .sidemenu {
+        border-radius: 0px 15px 15px 0px;
+      }
+
+      .sidemenu:hover {
+        background-color: rgb(255, 207, 167);
+        color: black;
+        cursor: pointer;
+      }
+
+      .active-sidemenu {
+        background-color: rgb(18, 18, 18);
+        color: white;
+        cursor: pointer;
+      }
+
+      #logout {
+        cursor: pointer;
+      }
+
     </style>
   </head>
 
   <body>
     <div class="container-fluid">
       <div class="row vh-100">
-        <div class="col-md-2 col-lg-2 pt-1">
+        <div class="col-md-2 col-lg-2 pt-1 px-0">
           <div class="row d-flex justify-content-center flex-column">
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center mt-3">
               <img
-                src="/public/images/bse.png"
-                style="width: 50px"
+                src="/public/images/logo.png"
+                style="width: 150px"
                 alt=""
                 srcset=""
               />
             </div>
-            <span class="fw-bold text-center"> Britto Seafoods Exports </span>
+            <!-- <span class="fw-bold text-center">Britto Seafoods Exports</span> -->
           </div>
 
           <br />
           <br />
 
           <!-- Side Menus -->
-          <div class="ps-2 d-flex flex-column justify-content-center">
+          <div class="d-flex flex-column mt-4">
             <!-- Dashboard Menu -->
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Dashboard</span>
+            <div class="sidemenu mt-4 py-3 px-4 d-flex justify-content-center active-sidemenu">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-grip"></i>
+              </div>
+              <div class="col">
+                <span>Dashboard</span>
+              </div>
             </div>
 
             <!-- Procurement Menu -->
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Procurement</span>
+            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-cart-flatbed-suitcase"></i>
+              </div>
+              <div class="col">
+                <span>Procurement</span>
+              </div>
             </div>
 
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Production</span>
+            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-gears"></i>
+              </div>
+              <div class="col">
+                <span>Production</span>
+              </div>
             </div>
 
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Sales</span>
+            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-business-time"></i></i>
+              </div>
+              <div class="col">
+                <span>Sales</span>
+              </div>
             </div>
 
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Accounting</span>
+            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <div class="col">
+                <span>Accounting</span>
+              </div>
             </div>
 
-            <div class="my-auto mt-1">
-              <i class="fa-solid fa-grip"></i>&nbsp;&nbsp;
-              <span>Report</span>
+            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div
+                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
+              >
+                <i class="fa-solid fa-clipboard"></i>
+              </div>
+              <div class="col">
+                <span>Report</span>
+              </div>
             </div>
           </div>
           <!-- Side Menus End -->
@@ -134,7 +191,7 @@
           <div class="row pe-2">
             <div class="col-md-6 col-lg-6">Hello, <%=full_name%>!</div>
             <div class="col-md-6 col-lg-6 d-flex justify-content-end">
-              <i class="fas fa-power-off"></i>
+              <i class="fas fa-power-off" id="logout"></i>
             </div>
           </div>
         </div>
