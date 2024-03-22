@@ -32,6 +32,11 @@
   /> -->
 <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
+
+<!-- Floating Menu -->
+<link rel="stylesheet" href="/public/plugins/floating-menu/css/floating-menu.min.css">
+<script src="/public/plugins/floating-menu/js/floating-menu.min.js"></script>
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
 
@@ -75,6 +80,10 @@
       cursor: pointer;
     }
 
+    .sidemenu.active:hover {
+      cursor: auto;
+    }
+
     .side-footer-bar {
       cursor: pointer;
     }
@@ -82,10 +91,36 @@
     #logout {
       cursor: pointer;
     }
+
+    #loading-bar {
+      display: none;
+      height: 4px;
+      width: 0%;
+      background-color: #007bff;
+      /* Loading bar color */
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      transition: width 0.3s;
+    }
+
+    .dropdown:hover>.dropdown-menu {
+      display: block;
+    }
+
+    .dropdown>.dropdown-toggle:active {
+      /*Without this, clicking will make it sticky*/
+      pointer-events: none;
+    }
   </style>
+
 </head>
 
 <body>
+  <!-- Loading bar -->
+  <div id="loading-bar"></div>
+
   <div class="container-fluid">
     <div class="row vh-100">
       <!-- Sidemenu Container -->
@@ -131,12 +166,22 @@
               </div>
 
               <!-- Production Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+              <div id="productionMenu" class="sidemenu btn-group py-3 px-4 d-flex justify-content-center"
+                data-fm-floatTo='right'>
+
                 <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
                   <i class="fa-solid fa-gears"></i>
                 </div>
                 <div class="col fw-bold">
                   <span>Production</span>
+                </div>
+
+                <div id="tooltip" role="tooltip">
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
                 </div>
               </div>
 
@@ -223,11 +268,10 @@
         </div>
 
         <!-- ------------------------------------------------------------------------- -->
-        <!-- ----------------------------- Main Contents ------------------------------ -->
+        <!-- ----------------------------- IFrame Contents --------------------------- -->
         <!-- ------------------------------------------------------------------------- -->
 
-        <!-- Master Data -->
-        <div class="overflow-auto embed-responsive embed-responsive-4by3">
+        <div id="iframe-container" class="overflow-auto embed-responsive embed-responsive-4by3">
           <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src=""
             frameborder="0"></iframe>
         </div>
@@ -275,6 +319,24 @@
       hideMethod: "fadeOut",
     };
 
+    $.floatingMenu({
+      selector: '#productionMenu',
+      items: [
+        {
+          icon: '',// icon classes
+          title: '<a href="https://www.jqueryscript.net/tags.php?/Facebook/">Facebook</a>',
+          action: 'http://www.facebook.com/jqueryscript'
+        },
+        {
+          title: 'Insert',
+          action: function (event) {
+            alert('insert');
+          }
+        },
+      ]
+    });
+
+
     $("#notification").hover(function () {
       $(this).addClass("fa-shake")
     }, function () {
@@ -313,7 +375,9 @@
 
       $(this).addClass("active");
 
-      document.getElementById("iframe-main-content").src = "";
+      loadIframe("")
+
+      // document.getElementById("iframe-main-content").src = "";
     })
 
     // Master data navigation
@@ -323,9 +387,37 @@
 
       $(this).addClass("active");
 
+      loadIframe("/MasterData")
 
-      document.getElementById("iframe-main-content").src = "/MasterData";
+      // document.getElementById("iframe-main-content").src = "/MasterData";
     })
+
+    function loadIframe(src) {
+      var iframe = document.getElementById('iframe-main-content');
+      var loadingBar = document.getElementById('loading-bar');
+
+      // Show loading bar
+      loadingBar.style.display = 'block';
+      loadingBar.style.width = '0%'; // Reset width
+
+      // Show iframe container
+      document.getElementById('iframe-container').style.display = 'block';
+
+      // Update iframe src
+      iframe.src = src;
+
+      // Listen for iframe load event
+      iframe.onload = function () {
+        // Hide loading bar when iframe is loaded
+        loadingBar.style.display = 'none';
+      };
+
+      // Update loading bar width as iframe loads
+      iframe.addEventListener('progress', function (event) {
+        var percentComplete = (event.loaded / event.total) * 100;
+        loadingBar.style.width = percentComplete + '%';
+      });
+    }
 
 
   });
