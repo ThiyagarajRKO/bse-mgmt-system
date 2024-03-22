@@ -266,6 +266,12 @@
       $(this).removeClass('fa-beat');
     })
 
+    $(".sidemenu:not(.active)").hover(function () {
+      $(this).find('i').addClass("fa-bounce")
+    }, function () {
+      $(this).find('i').removeClass('fa-bounce');
+    })
+
   });
 </script>
 
