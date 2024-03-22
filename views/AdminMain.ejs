@@ -2,280 +2,271 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <!-- title logo -->
-  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+<!-- title logo -->
+<link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Bootstrap  -->
-  <link
-    href="/public/plugins/bootstrap/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- Bootstrap  -->
+<link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
-  <!-- jQuery -->
-  <script src="/public/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery -->
+<script src="/public/plugins/jquery/jquery.min.js"></script>
 
-  <!-- DataTable -->
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="/public/plugins/DataTables/datatables.min.css"
-  />
+<!-- DataTable -->
+<link rel="stylesheet" type="text/css" href="/public/plugins/DataTables/datatables.min.css" />
 
-  <!-- Toast -->
-  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
-  <script src="/public/plugins/Toastr/toastr.min.js"></script>
+<!-- Toast -->
+<link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+<script src="/public/plugins/Toastr/toastr.min.js"></script>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
 
-  <!-- SideBar -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/offcanvas/css/hc-offcanvas-nav.css"
-  />
-  <!-- <link
+<!-- SideBar -->
+<link rel="stylesheet" href="/public/plugins/offcanvas/css/hc-offcanvas-nav.css" />
+<!-- <link
     rel="stylesheet"
     href="/public/plugins/offcanvas/css/to/hc-offcanvas-nav.carbon.css"
   /> -->
-  <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
+<script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/public/css/style.css" />
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/public/css/style.css" />
 
-  <!-- Custom Script -->
-  <script src="/public/custom/App.js"></script>
+<!-- Custom Script -->
+<script src="/public/custom/App.js"></script>
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BSE</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSE</title>
 
-    <style type="text/css">
-      @font-face {
-        font-family: "CassandraPersonalUse";
-        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <style type="text/css">
+    @font-face {
+      font-family: "CassandraPersonalUse";
+      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
+    }
 
-      @font-face {
-        font-family: "CerebriSansPro-Regular";
-        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
-          format("truetype");
-      }
+    @font-face {
+      font-family: "CerebriSansPro-Regular";
+      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
+    }
 
-      body {
-        font-family: "CerebriSansPro-Regular";
-      }
+    body {
+      font-family: "CerebriSansPro-Regular";
+      overflow: hidden;
+    }
 
-      .sidemenu {
-        border-radius: 0px 15px 15px 0px;
-      }
+    .sidemenu {
+      border-radius: 0px 15px 15px 0px;
+    }
 
-      .sidemenu:hover {
-        background-color: rgb(255, 207, 167);
-        color: black;
-        cursor: pointer;
-      }
+    .sidemenu:hover {
+      background-color: rgb(255, 207, 167);
+      color: black;
+      cursor: pointer;
+    }
 
-      .active-sidemenu {
-        background-color: rgb(18, 18, 18);
-        color: white;
-        cursor: pointer;
-      }
+    .sidemenu.active {
+      background-color: rgb(18, 18, 18);
+      color: white;
+      cursor: pointer;
+    }
 
-      #logout {
-        cursor: pointer;
-      }
+    .side-footer-bar {
+      cursor: pointer;
+    }
 
-    </style>
-  </head>
+    #logout {
+      cursor: pointer;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="container-fluid">
-      <div class="row vh-100">
-        <div class="col-md-2 col-lg-2 pt-1 px-0">
-          <div class="row d-flex justify-content-center flex-column">
-            <div class="d-flex justify-content-center mt-3">
-              <img
-                src="/public/images/logo.png"
-                style="width: 150px"
-                alt=""
-                srcset=""
-              />
+<body>
+  <div class="container-fluid">
+    <div class="row vh-100">
+      <!-- Sidemenu Container -->
+      <div class="col-md-2 col-lg-2 pt-1 px-0">
+        <div class="row vh-100 d-flex flex-column justify-content-between">
+
+          <div class="col">
+            <!-- Sidemenu Logo -->
+
+            <div class="d-flex justify-content-start mt-3 ps-4 ms-3 pb-4 mb-4">
+              <img src="/public/images/logo.png" style="width: 230px" alt="" srcset="" />
             </div>
-            <!-- <span class="fw-bold text-center">Britto Seafoods Exports</span> -->
+
+            <!-- Sidemenu Logo Ends -->
+
+            <!-- Side Menus -->
+            <div class="d-flex flex-column pe-4 mt-4 pt-4">
+              <!-- Dashboard Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center active">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-grip"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Dashboard</span>
+                </div>
+              </div>
+
+              <!-- Procurement Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-cart-flatbed-suitcase"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Procurement</span>
+                </div>
+              </div>
+
+              <!-- Production Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-gears"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Production</span>
+                </div>
+              </div>
+
+              <!-- Sales Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-business-time"></i></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Sales</span>
+                </div>
+              </div>
+
+              <!-- Accounting Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Accounting</span>
+                </div>
+              </div>
+
+              <!-- Report Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-clipboard"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Report</span>
+                </div>
+              </div>
+
+              <!-- Audit Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-regular fa-newspaper"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Audit Logs</span>
+                </div>
+              </div>
+
+            </div>
+            <!-- Side Menus End -->
           </div>
 
-          <br />
-          <br />
 
-          <!-- Side Menus -->
-          <div class="d-flex flex-column mt-4">
-            <!-- Dashboard Menu -->
-            <div class="sidemenu mt-4 py-3 px-4 d-flex justify-content-center active-sidemenu">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-grip"></i>
-              </div>
-              <div class="col">
-                <span>Dashboard</span>
-              </div>
+          <!-- Side Menu Footer -->
+          <div class="row d-flex justify-content-center pb-4 px-4 fs-5">
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+              <i id="notification" class="fa-solid fa-bell"></i>
             </div>
-
-            <!-- Procurement Menu -->
-            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-cart-flatbed-suitcase"></i>
-              </div>
-              <div class="col">
-                <span>Procurement</span>
-              </div>
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+              <i id="settings" class="fa-solid fa-gear"></i>
             </div>
-
-            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-gears"></i>
-              </div>
-              <div class="col">
-                <span>Production</span>
-              </div>
-            </div>
-
-            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-business-time"></i></i>
-              </div>
-              <div class="col">
-                <span>Sales</span>
-              </div>
-            </div>
-
-            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-hand-holding-dollar"></i>
-              </div>
-              <div class="col">
-                <span>Accounting</span>
-              </div>
-            </div>
-
-            <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-              <div
-                class="col-md-3 col-lg-3 d-flex justify-content-center my-auto"
-              >
-                <i class="fa-solid fa-clipboard"></i>
-              </div>
-              <div class="col">
-                <span>Report</span>
-              </div>
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+              <i id="empty" class="fa-solid fa-clipboard"></i>
             </div>
           </div>
-          <!-- Side Menus End -->
+          <!-- Side Menu Footer Ends -->
+
         </div>
-        <div class="col-md-10 col-lg-10 fw-bold pt-3 mt-1">
-          <div class="row pe-2">
-            <div class="col-md-6 col-lg-6">Hello, <%=full_name%>!</div>
-            <div class="col-md-6 col-lg-6 d-flex justify-content-end">
-              <i class="fas fa-power-off" id="logout"></i>
-            </div>
+      </div>
+
+
+      <div class="col-md-10 col-lg-10 fw-bold pt-3 mt-1">
+        <div class="row pe-2">
+          <div class="col-md-6 col-lg-6">Hello, <%=full_name%>!</div>
+          <div class="col-md-6 col-lg-6 d-flex justify-content-end">
+            <i class="fas fa-power-off fs-5" id="logout"></i>
           </div>
         </div>
-
-        <!-- <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 my-auto">
-          <i class="fa-solid fa-bars"></i>
-          <!-- <div id="navbar-toggler" style="display: none">
-            <ul style="display: none">
-              <li><a href="#">Dashboard</a></li>
-              <li><a href="#">Precurement</a></li>
-              <li>
-                <a href="#">Production</a>
-                <ul>
-                  <li><a href="#">Dispatch</a></li>
-                  <li><a href="#">Peeling Center</a></li>
-                  <li><a href="#">Dispatch</a></li>
-                  <li><a href="#">Production Factory</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Sales</a></li>
-              <li><a href="#">Accounting</a></li>
-              <li><a href="#">Reports</a></li>
-            </ul>
-          </div> 
-        </div>
-
-        <div class="col d-flex justify-content-start my-auto">
-          <span
-            class="Vheading align-middle fw-bold fs-6"
-            style="font-family: 'CerebriSansPro-Regular'"
-          >
-            Britto Seafoods Exports
-          </span>
-        </div>
-
-        <div
-          class="col-xs-1 col-sm-1 col-md-1 col-lg-1 d-flex justify-content-end my-auto"
-          id="logout"
-        >
-          <i class="fas fa-power-off"></i>
-        </div> -->
       </div>
     </div>
+  </div>
 
-    <div class="container" style="display: flex; justify-content: center"></div>
-  </body>
+  <div class="container" style="display: flex; justify-content: center"></div>
+</body>
 
-  <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-      App.checkAccess();
+<script type="text/javascript">
+  jQuery(document).ready(function ($) {
+    App.checkAccess();
 
-      let $nav = $("#navbar-toggler").hcOffcanvasNav({
-        disableAt: false,
-        levelOpen: "expand",
-      });
-      let Nav = $nav.data("hcOffcanvasNav");
-
-      //   $("#main-nav").hcOffcanvasNav({
-      //     disableAt: 1024,
-      //     customToggle: $(".toggle"),
-      //     navTitle: "All Categories",
-      //     levelTitles: true,
-      //     levelTitleAsBack: true,
-      //   });
-
-      $("#logout").on("click", App.logout);
-
-      toastr.options = {
-        closeButton: false,
-        debug: false,
-        newestOnTop: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "5000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut",
-      };
+    let $nav = $("#navbar-toggler").hcOffcanvasNav({
+      disableAt: false,
+      levelOpen: "expand",
     });
-  </script>
+    let Nav = $nav.data("hcOffcanvasNav");
+
+    //   $("#main-nav").hcOffcanvasNav({
+    //     disableAt: 1024,
+    //     customToggle: $(".toggle"),
+    //     navTitle: "All Categories",
+    //     levelTitles: true,
+    //     levelTitleAsBack: true,
+    //   });
+
+    $("#logout").on("click", App.logout);
+
+    toastr.options = {
+      closeButton: false,
+      debug: false,
+      newestOnTop: true,
+      progressBar: true,
+      positionClass: "toast-top-right",
+      preventDuplicates: false,
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "5000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut",
+    };
+
+    $("#notification").hover(function () {
+      $(this).addClass("fa-shake")
+    }, function () {
+      $(this).removeClass('fa-shake');
+    })
+
+    $("#settings").hover(function () {
+      $(this).addClass("fa-spin")
+    }, function () {
+      $(this).removeClass('fa-spin');
+    })
+
+    $("#logout").hover(function () {
+      $(this).addClass("fa-beat")
+    }, function () {
+      $(this).removeClass('fa-beat');
+    })
+
+  });
+</script>
+
 </html>
