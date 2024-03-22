@@ -31,6 +31,7 @@ export const SignIn = ({ identity, password, role_id }, session, fastify) => {
       // Here is we add token into the Cookie
       session.pid = user_data?.UserProfile?.id;
       session.role_id = user_data?.UserProfile?.role_id;
+      session.role_name = user_data?.UserProfile?.RoleMaster?.role_name;
       session.username = user_data?.username;
       session.full_name = user_data?.UserProfile?.full_name;
 

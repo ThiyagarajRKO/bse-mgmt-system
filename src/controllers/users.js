@@ -230,6 +230,14 @@ export const GetUserAndProfileByIdentifier = async ({
         include: [
           {
             model: models.UserProfiles,
+            include: [
+              {
+                model: models.RoleMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
             where: {
               is_active: true,
               role_id,

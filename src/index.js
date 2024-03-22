@@ -60,7 +60,10 @@ fastify.get("/", (req, res) => {
 });
 
 fastify.get("/AdminMain", function (req, res) {
-  res.view("AdminMain.ejs", { full_name: req?.session?.full_name });
+  res.view("AdminMain.ejs", {
+    full_name: req?.session?.full_name,
+    role_name: req?.session?.role_name,
+  });
 });
 
 fastify.get("/MasterData", function (req, res) {
