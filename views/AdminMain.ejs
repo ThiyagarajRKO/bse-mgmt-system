@@ -89,14 +89,17 @@
   <div class="container-fluid">
     <div class="row vh-100 pe-4">
       <!-- Sidemenu Container -->
-      <div class="col-md-2 col-lg-2 px-0 position-relative">
+      <div class="col-md-4 col-lg-3 px-0 position-relative">
         <div class="row vh-100 d-flex flex-column justify-content-between">
 
 
           <!-- Sidemenu Logo -->
 
           <div class="d-flex justify-content-center mt-4 pt-3 mb-4 pb-1">
-            <img src="/public/images/logo.png" style="width: 230px" alt="" srcset="" /><br>
+            <div class="col-md-2 col-lg-2"></div>
+            <div class="col-md-10 col-lg-10">
+            <img src="/public/images/logo.png" style="width: 200px" alt="" srcset="" /><br>
+            </div>
           </div>
 
 
@@ -113,6 +116,16 @@
                 </div>
                 <div class="col fw-bold">
                   <span>Dashboard</span>
+                </div>
+              </div>
+
+               <!-- Master Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-database"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Master Data</span>
                 </div>
               </div>
 
@@ -182,14 +195,14 @@
 
 
           <!-- Side Menu Footer -->
-          <div class="row d-flex justify-content-center px-4 pt-3 fs-5 position-absolute bottom-0 py-4 pb-4 bg-white">
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+          <div class="row d-flex justify-content-center pt-3 fs-5 position-absolute bottom-0 py-4 pb-4 bg-white">
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-center">
               <i id="notification" class="fa-solid fa-bell"></i>
             </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-center">
               <i id="settings" class="fa-solid fa-gear"></i>
             </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-center">
               <i id="map" class="fa-solid fa-map-location-dot"></i>
             </div>
           </div>
@@ -199,8 +212,8 @@
       </div>
 
 
-      <div class="col-md-10 col-lg-10 fw-bold pt-4 mt-3">
-        <div class="row ms-4 ps-4 pe-2">
+      <div class="col-md-8 col-lg-9 fw-bold pt-4 mt-3">
+        <div class="row ms-2 ps-4 pe-2">
           <div class="col-md-6 col-lg-6 fs-4">Hello, <%=full_name%>!</div>
           <div class="col-md-6 col-lg-6 d-flex justify-content-end">
             <i class="fas fa-power-off fs-5" id="logout"></i>
