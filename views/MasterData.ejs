@@ -15,7 +15,12 @@
 <script src="/public/plugins/jquery/jquery.min.js"></script>
 
 <!-- DataTable -->
-<link rel="stylesheet" type="text/css" href="/public/plugins/DataTables/datatables.min.css" />
+<link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css">
+<script src="/public/plugins/dataTables/datatables.min.js"></script>
+<script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
+<!-- Responsive Datatable -->
+<link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css">
+<script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
 
 <!-- Toast -->
 <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
@@ -23,14 +28,6 @@
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
-
-<!-- SideBar -->
-<link rel="stylesheet" href="/public/plugins/offcanvas/css/hc-offcanvas-nav.css" />
-<!-- <link
-    rel="stylesheet"
-    href="/public/plugins/offcanvas/css/to/hc-offcanvas-nav.carbon.css"
-  /> -->
-<script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
@@ -59,7 +56,7 @@
       background-color: #f7f9fd;
     }
 
-    .topMenu {
+    .topMenu-item {
       display: block;
       color: rgb(44 44 44);
       text-align: center;
@@ -67,7 +64,7 @@
       text-decoration: none;
       border-right: 0px solid #1F2D3E;
       padding-bottom: 3px !important;
-      width: 25vh !important;
+      /* width: 25vh !important; */
       cursor: pointer;
     }
 
@@ -75,7 +72,7 @@
       border-right: 0px solid #414a57;
     }
 
-    .topMenu:hover {
+    .topMenu-item:hover {
       /* border-bottom: 1px solid #1F2D3E; */
       color: #EA5453;
       /* font-weight: bold; */
@@ -94,68 +91,183 @@
 </head>
 
 <body>
-  <div class="d-flex justify-content-center">
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
-      <div class=" fs-3">
-        <i class="fa-solid fa-warehouse"></i>
-      </div>
-      <div class="pt-2">
-        <span>Units</span>
+  <div class="container-fluid p-0">
+    <div class="topMenu-container row d-flex justify-content-center">
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        <div class="fs-6">
+          <i class="fa-solid fa-warehouse"></i>
+        </div>
+        <div class="pt-2">
+          <span>Units</span>
+        </div>
       </div>
 
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        <div class="fs-6">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="pt-2">
+          <span>Vendors</span>
+        </div>
+      </div>
+
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        <div class="fs-6">
+          <i class="fa-solid fa-boxes-packing"></i>
+        </div>
+        <div class="pt-2">
+          <span>Packages</span>
+        </div>
+      </div>
+
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        <div class="fs-6">
+          <i class="fa-solid fa-shrimp"></i>
+        </div>
+        <div class="pt-2">
+          <span>Products</span>
+        </div>
+      </div>
+
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        <div class="fs-6">
+          <i class="fa-solid fa-truck"></i>
+        </div>
+        <div class="pt-2">
+          <span>Vehicles</span>
+        </div>
+      </div>
+
+      <div
+        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center">
+        <div class="fs-6">
+          <i class="fa-regular fa-id-card"></i>
+        </div>
+        <div class="pt-2">
+          <span>Drivers</span>
+        </div>
+      </div>
 
     </div>
 
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
-      <div class=" fs-3">
-        <i class="fa-solid fa-users"></i>
-      </div>
-      <div class="pt-2">
-        <span>Vendors</span>
-      </div>
+
+    <div class="d-flex justify-content-center mt-4 pt-4">
+      <table id="vendorTable" class="diaply nowrap w-100">
+        <thead>
+          <tr>
+            <th>Supplier ID</th>
+            <th>Supplier Name</th>
+            <th>Supplier Short Code</th>
+            <th>Address</th>
+            <th>Representative</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Location</th>
+            <th>Location Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+          <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>Row 2 Data 2</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
-      <div class=" fs-3">
-        <i class="fa-solid fa-boxes-packing"></i>
-      </div>
-      <div class="pt-2">
-        <span>Packages</span>
-      </div>
-    </div>
-
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
-      <div class=" fs-3">
-        <i class="fa-solid fa-shrimp"></i>
-      </div>
-      <div class="pt-2">
-        <span>Products</span>
-      </div>
-    </div>
-
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
-      <div class=" fs-3">
-        <i class="fa-solid fa-truck"></i>
-      </div>
-      <div class="pt-2">
-        <span>Vehicles</span>
-      </div>
-    </div>
-
-    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center">
-      <div class=" fs-3">
-        <i class="fa-regular fa-id-card"></i>
-      </div>
-      <div class="pt-2">
-        <span>Drivers</span>
-      </div>
-    </div>
 
   </div>
 </body>
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
+
+    $("#vendorTable").DataTable({
+      destroy: true,
+      responsive: false,
+      scroller: true,
+      processing: true,
+      scrollX: true,
+      ordering: false,
+    })
 
     toastr.options = {
       closeButton: false,
