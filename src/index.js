@@ -62,3 +62,7 @@ fastify.get("/", (req, res) => {
 fastify.get("/AdminMain", function (req, res) {
   res.view("AdminMain.ejs", { full_name: req?.session?.full_name });
 });
+
+fastify.get("/MasterData", function (req, res) {
+  res.view("MasterData.ejs");
+});

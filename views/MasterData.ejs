@@ -215,7 +215,7 @@
       <div class="col-md-8 col-lg-9 fw-bold pt-4 mt-3">
         <!-- Body Navbar -->
         <div class="row ms-2 ps-4 pe-4 pb-4">
-          <div class="col-md-6 col-lg-6 fs-4">Hello, <%=full_name%>!</div>
+          <div class="col-md-6 col-lg-6 fs-4">Hello</div>
           <div class="col-md-6 col-lg-6 d-flex justify-content-end">
             <i class="fas fa-power-off fs-5" id="logout"></i>
           </div>
@@ -240,7 +240,7 @@
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
-    App.checkAccess();
+
 
     let $nav = $("#navbar-toggler").hcOffcanvasNav({
       disableAt: false,
@@ -248,13 +248,7 @@
     });
     let Nav = $nav.data("hcOffcanvasNav");
 
-    //   $("#main-nav").hcOffcanvasNav({
-    //     disableAt: 1024,
-    //     customToggle: $(".toggle"),
-    //     navTitle: "All Categories",
-    //     levelTitles: true,
-    //     levelTitleAsBack: true,
-    //   });
+
 
     $("#logout").on("click", App.logout);
 
@@ -275,40 +269,6 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut",
     };
-
-    $("#notification").hover(function () {
-      $(this).addClass("fa-shake")
-    }, function () {
-      $(this).removeClass('fa-shake');
-    })
-
-    $("#settings").hover(function () {
-      $(this).addClass("fa-spin")
-    }, function () {
-      $(this).removeClass('fa-spin');
-    })
-
-    $("#logout").hover(function () {
-      $(this).addClass("fa-beat")
-    }, function () {
-      $(this).removeClass('fa-beat');
-    })
-
-    $(".sidemenu:not(.active)").hover(function () {
-      $(this).find('i').addClass("fa-bounce")
-    }, function () {
-      $(this).find('i').removeClass('fa-bounce');
-    })
-
-    $("#map").hover(function () {
-      $(this).addClass("fa-beat-fade")
-    }, function () {
-      $(this).removeClass('fa-beat-fade');
-    })
-
-    $("#masterData").on('click', function () {
-      document.getElementById("iframe-main-content").src = "/MasterData";
-    })
 
 
   });
