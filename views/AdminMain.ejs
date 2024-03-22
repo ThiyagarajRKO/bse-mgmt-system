@@ -89,7 +89,7 @@
   <div class="container-fluid">
     <div class="row vh-100">
       <!-- Sidemenu Container -->
-      <div class="col-md-4 col-lg-3 px-0 mt-4">
+      <div class="col-md-4 col-lg-3 px-0 mt-2">
         <div class="row vh-100 d-flex flex-column justify-content-between">
 
 
@@ -110,7 +110,7 @@
             <!-- Side Menus -->
             <div class="d-flex flex-column">
               <!-- Dashboard Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center active">
+              <div id="dashboard" class="sidemenu py-3 px-4 d-flex justify-content-center active">
                 <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
                   <i class="fa-solid fa-grip"></i>
                 </div>
@@ -119,15 +119,6 @@
                 </div>
               </div>
 
-              <!-- Master Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center" id="masterData">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-database"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Master Data</span>
-                </div>
-              </div>
 
               <!-- Procurement Menu -->
               <div class="sidemenu py-3 px-4 d-flex justify-content-center">
@@ -179,6 +170,16 @@
                 </div>
               </div>
 
+              <!-- Master Menu -->
+              <div class="sidemenu py-3 px-4 d-flex justify-content-center" id="masterData">
+                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
+                  <i class="fa-solid fa-database"></i>
+                </div>
+                <div class="col fw-bold">
+                  <span>Master Data</span>
+                </div>
+              </div>
+
               <!-- Audit Menu -->
               <div class="sidemenu py-3 px-4 d-flex justify-content-center">
                 <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
@@ -212,9 +213,9 @@
       </div>
 
 
-      <div class="col-md-8 col-lg-9 fw-bold pt-4 mt-3">
+      <div class="col-md-8 col-lg-9 fw-bold pt-2 mt-3 px-4">
         <!-- Body Navbar -->
-        <div class="row ms-2 ps-4 pe-4 pb-4">
+        <div class="row pb-3">
           <div class="col-md-6 col-lg-6 fs-4">Hello, <%=full_name%>!</div>
           <div class="col-md-6 col-lg-6 d-flex justify-content-end">
             <i class="fas fa-power-off fs-5" id="logout"></i>
@@ -226,16 +227,14 @@
         <!-- ------------------------------------------------------------------------- -->
 
         <!-- Master Data -->
-        <div class="mb-2 overflow-auto embed-responsive embed-responsive-4by3">
-          <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src="/"
+        <div class="overflow-auto embed-responsive embed-responsive-4by3">
+          <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src=""
             frameborder="0"></iframe>
         </div>
 
       </div>
     </div>
   </div>
-
-  <div class="container" style="display: flex; justify-content: center"></div>
 </body>
 
 <script type="text/javascript">
@@ -306,7 +305,25 @@
       $(this).removeClass('fa-beat-fade');
     })
 
+
+    // Dashboard navigation
+    $("#dashboard").on('click', function () {
+
+      $('.sidemenu').removeClass("active")
+
+      $(this).addClass("active");
+
+      document.getElementById("iframe-main-content").src = "";
+    })
+
+    // Master data navigation
     $("#masterData").on('click', function () {
+
+      $('.sidemenu').removeClass("active")
+
+      $(this).addClass("active");
+
+
       document.getElementById("iframe-main-content").src = "/MasterData";
     })
 

@@ -56,201 +56,58 @@
 
     body {
       font-family: "CerebriSansPro-Regular";
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
       overflow: hidden;
+      border-radius: 5px;
+      border: 1px solid black;
     }
 
-    .sidemenu {
-      border-radius: 0px 15px 15px 0px;
+    li {
+      float: left;
     }
 
-    .sidemenu:hover {
-      background-color: rgb(255, 207, 167);
-      color: black;
-      cursor: pointer;
+    li a {
+      display: block;
+      color: rgb(0, 0, 0);
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      border-right: 1px solid black;
     }
 
-    .sidemenu.active {
-      background-color: rgb(18, 18, 18);
-      color: white;
-      cursor: pointer;
+    #lastMenu {
+      border-right: 0px solid black;
     }
 
-    .side-footer-bar {
-      cursor: pointer;
-    }
-
-    #logout {
-      cursor: pointer;
+    li a:hover {
+      background-color: #111;
+      color: orange;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="row vh-100">
-      <!-- Sidemenu Container -->
-      <div class="col-md-4 col-lg-3 px-0 mt-4">
-        <div class="row vh-100 d-flex flex-column justify-content-between">
-
-
-          <!-- Sidemenu Logo -->
-
-          <div class="d-flex justify-content-around mb-4 pb-1 my-4">
-
-            <img src="/public/images/logo.png" style="width: 230px" alt="" srcset="" /><br>
-
-          </div>
-
-          <br>
-
-          <!-- Sidemenu Logo Ends -->
-
-
-          <div class="col overflow-auto">
-            <!-- Side Menus -->
-            <div class="d-flex flex-column">
-              <!-- Dashboard Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center active">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-grip"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Dashboard</span>
-                </div>
-              </div>
-
-              <!-- Master Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center" id="masterData">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-database"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Master Data</span>
-                </div>
-              </div>
-
-              <!-- Procurement Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-cart-flatbed-suitcase"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Procurement</span>
-                </div>
-              </div>
-
-              <!-- Production Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-gears"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Production</span>
-                </div>
-              </div>
-
-              <!-- Sales Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-business-time"></i></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Sales</span>
-                </div>
-              </div>
-
-              <!-- Accounting Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-hand-holding-dollar"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Accounting</span>
-                </div>
-              </div>
-
-              <!-- Report Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-clipboard"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Report</span>
-                </div>
-              </div>
-
-              <!-- Audit Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-regular fa-newspaper"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Audit Logs</span>
-                </div>
-              </div>
-
-            </div>
-            <!-- Side Menus End -->
-          </div>
-
-
-          <!-- Side Menu Footer -->
-          <div class="row d-flex justify-content-between fs-6 py-2 mb-4 bg-white">
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-end py-3">
-              <i id="notification" class="fa-solid fa-bell"></i>
-            </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-center py-3">
-              <i id="settings" class="fa-solid fa-gear"></i>
-            </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-start py-3">
-              <i id="map" class="fa-solid fa-map-location-dot"></i>
-            </div>
-          </div>
-          <!-- Side Menu Footer Ends -->
-
-        </div>
-      </div>
-
-
-      <div class="col-md-8 col-lg-9 fw-bold pt-4 mt-3">
-        <!-- Body Navbar -->
-        <div class="row ms-2 ps-4 pe-4 pb-4">
-          <div class="col-md-6 col-lg-6 fs-4">Hello</div>
-          <div class="col-md-6 col-lg-6 d-flex justify-content-end">
-            <i class="fas fa-power-off fs-5" id="logout"></i>
-          </div>
-        </div>
-
-        <!-- ------------------------------------------------------------------------- -->
-        <!-- ----------------------------- Main Contents ------------------------------ -->
-        <!-- ------------------------------------------------------------------------- -->
-
-        <!-- Master Data -->
-        <div class="mb-2 overflow-auto embed-responsive embed-responsive-4by3">
-          <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src="/"
-            frameborder="0"></iframe>
-        </div>
-
-      </div>
-    </div>
+  <div class="d-flex justify-content-center">
+    <ul>
+      <li><a href="#home">Factories</a></li>
+      <li><a href="#news">Suppliers</a></li>
+      <li><a href="#contact">Species</a></li>
+      <li><a href="#about">Species Categories</a></li>
+      <li><a href="#contact">Vehicles</a></li>
+      <li><a id="lastMenu" href="#about">Drivers</a></li>
+    </ul>
   </div>
-
-  <div class="container" style="display: flex; justify-content: center"></div>
 </body>
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
-
-
-    let $nav = $("#navbar-toggler").hcOffcanvasNav({
-      disableAt: false,
-      levelOpen: "expand",
-    });
-    let Nav = $nav.data("hcOffcanvasNav");
-
-
-
-    $("#logout").on("click", App.logout);
 
     toastr.options = {
       closeButton: false,
