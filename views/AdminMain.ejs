@@ -113,7 +113,7 @@
       <div class="sidebar-body">
         <nav class="nav-sidebar">
           <li class="nav-item active">
-            <a href="" class="nav-link"><i data-feather="package"></i><span>Dashboard</span></a>
+            <a id="dashboard" href="" class="nav-link"><i data-feather="package"></i><span>Dashboard</span></a>
           </li>
           <li class="nav-item">
             <a href="" class="nav-link"><i data-feather="shopping-cart"></i><span>Procurement</span></a>
@@ -235,6 +235,11 @@
 
       // document.getElementById("iframe-main-content").src = "";
     });
+
+    // Dashboard navigation
+    $("#dashboard").on('click', function () {
+      loadIframe("")
+    })
 
     // Master data navigation
     $("#masterData").on("click", function () {
