@@ -86,6 +86,10 @@
       z-index: 9999;
       transition: width 0.3s;
     }
+
+    .headingSpan {
+      color: #EA5453;
+    }
   </style>
 </head>
 
@@ -171,7 +175,8 @@
             <a id="mobileMenu" href="#" class="content-menu d-lg-none"><i data-feather="menu"></i></a>
           </div>
 
-          <div class="col-md-4 col-lg-4 fs-4 d-flex justify-content-center">Britto &nbsp; <b>Seafoods</b> &nbsp;Exports
+          <div class="col-md-4 col-lg-4 fs-4 d-flex justify-content-center">Britto &nbsp; <span
+              class="headingSpan fw-bold">Seafoods</span> &nbsp;Exports
           </div>
           <div class="col-md-4 col-lg-4 d-flex justify-content-end">
             <div class="row d-flex justify-content-center">
@@ -235,6 +240,18 @@
     $("#masterData").on("click", function () {
       loadIframe("/MasterData");
     });
+
+    $("#settings").hover(function () {
+      $(this).addClass("fa-spin")
+    }, function () {
+      $(this).removeClass('fa-spin');
+    })
+
+    $("#logout").hover(function () {
+      $(this).addClass("fa-beat")
+    }, function () {
+      $(this).removeClass('fa-beat');
+    })
 
     function loadIframe(src) {
       var iframe = document.getElementById("iframe-main-content");
