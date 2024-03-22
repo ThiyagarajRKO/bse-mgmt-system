@@ -59,52 +59,108 @@
       background-color: #f7f9fd;
     }
 
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      background-color: #f7f9fd;
-      overflow: hidden;
-      border-radius: 5px;
-      border: 1px solid black;
-    }
-
-    li {
-      float: left;
-    }
-
-    li a {
+    .topMenu {
       display: block;
-      color: rgb(0, 0, 0);
+      color: rgb(44 44 44);
       text-align: center;
-      padding: 14px 16px;
+      padding: 0px;
       text-decoration: none;
-      border-right: 1px solid #1F2D3E;
+      border-right: 0px solid #1F2D3E;
+      padding-bottom: 3px !important;
+      width: 25vh !important;
+      cursor: pointer;
     }
 
     #lastMenu {
-      border-right: 0px solid #1F2D3E;
+      border-right: 0px solid #414a57;
     }
 
-    li a:hover {
-      background-color: #1F2D3E;
+    .topMenu:hover {
+      /* border-bottom: 1px solid #1F2D3E; */
       color: #EA5453;
-      font-weight: bold;
+      /* font-weight: bold; */
+    }
+
+    .menuActiveStatus {
+      color: #f7f9fd;
+      display: block !important;
+    }
+
+    .menuActiveStatus.active {
+      color: #EA5453;
+      display: block !important;
     }
   </style>
 </head>
 
 <body>
   <div class="d-flex justify-content-center">
-    <ul>
-      <li title="tooltip goes here" data-bs-toggle="tooltip"><a href="#home">Factories</a></li>
-      <li><a href="#news">Suppliers</a></li>
-      <li><a href="#contact">Species</a></li>
-      <li><a href="#about">Species Categories</a></li>
-      <li><a href="#about">Species Grade</a></li>
-      <li><a href="#contact">Vehicles</a></li>
-      <li><a id="lastMenu" href="#about">Drivers</a></li>
-    </ul>
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class=" fs-3">
+        <i class="fa-solid fa-industry"></i>
+      </div>
+      <div class="pt-2">
+        <span>Factories</span>
+      </div>
+
+
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class=" fs-3">
+        <i class="fa-solid fa-truck-field"></i>
+      </div>
+      <div class="pt-2">
+        <span>Suppliers</span>
+      </div>
+
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class=" fs-3">
+        <i class="fa-solid fa-spider"></i>
+      </div>
+      <div class="pt-2">
+        <span>Species</span>
+      </div>
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class=" fs-3">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <div class="pt-2">
+        <span>Species Categories</span>
+      </div>
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="fs-3">
+        <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+      </div>
+      <div class="pt-2">
+        <span>Species Grade</span>
+      </div>
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class=" fs-3">
+        <i class="fa-solid fa-truck"></i>
+      </div>
+      <div class="pt-2">
+        <span>Vehicles</span>
+      </div>
+    </div>
+
+    <div class="topMenu col-md-2 col-lg-2 d-flex flex-column justify-content-center align-items-center">
+      <div class=" fs-3">
+        <i class="fa-regular fa-id-card"></i>
+      </div>
+      <div class="pt-2">
+        <span>Drivers</span>
+      </div>
+    </div>
+
   </div>
 </body>
 
