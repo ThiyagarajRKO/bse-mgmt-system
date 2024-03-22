@@ -32,10 +32,15 @@
   /> -->
 <script src="/public/plugins/offcanvas/js/hc-offcanvas-nav.js"></script>
 
-
-<!-- Floating Menu -->
-<link rel="stylesheet" href="/public/plugins/floating-menu/css/floating-menu.min.css">
-<script src="/public/plugins/floating-menu/js/floating-menu.min.js"></script>
+<!-- Remix Icons -->
+<link href="/public/plugins/remixicon/fonts/remixicon.css" rel="stylesheet" />
+<!-- Template CSS -->
+<link rel="stylesheet" href="/public/plugins/dashnav/dashnav.min.css" />
+<script src="/public/plugins/dashnav/dashnav.min.js"></script>
+<!-- Feather Icons -->
+<script src="/public/plugins/feathericons/feather.min.js"></script>
+<!-- perfect-scrollbar plugin -->
+<script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
@@ -64,30 +69,6 @@
       overflow: hidden;
     }
 
-    .sidemenu {
-      border-radius: 0px 15px 15px 0px;
-    }
-
-    .sidemenu:hover {
-      background-color: rgb(255, 207, 167);
-      color: black;
-      cursor: pointer;
-    }
-
-    .sidemenu.active {
-      background-color: rgb(18, 18, 18);
-      color: white;
-      cursor: pointer;
-    }
-
-    .sidemenu.active:hover {
-      cursor: auto;
-    }
-
-    .side-footer-bar {
-      cursor: pointer;
-    }
-
     #logout {
       cursor: pointer;
     }
@@ -104,179 +85,103 @@
       z-index: 9999;
       transition: width 0.3s;
     }
-
-    .dropdown:hover>.dropdown-menu {
-      display: block;
-    }
-
-    .dropdown>.dropdown-toggle:active {
-      /*Without this, clicking will make it sticky*/
-      pointer-events: none;
-    }
   </style>
-
 </head>
 
 <body>
-  <!-- Loading bar -->
   <div id="loading-bar"></div>
-
   <div class="container-fluid">
-    <div class="row vh-100">
-      <!-- Sidemenu Container -->
-      <div class="col-md-4 col-lg-3 px-0 mt-2">
-        <div class="row vh-100 d-flex flex-column justify-content-between">
-
-
-          <!-- Sidemenu Logo -->
-
-          <div class="d-flex justify-content-around mb-4 pb-1 my-4">
-
-            <img src="/public/images/logo.png" style="width: 230px" alt="" srcset="" /><br>
-
-          </div>
-
-          <br>
-
-          <!-- Sidemenu Logo Ends -->
-
-
-          <div class="col overflow-auto">
-            <!-- Side Menus -->
-            <div class="d-flex flex-column">
-              <!-- Dashboard Menu -->
-              <div id="dashboard" class="sidemenu py-3 px-4 d-flex justify-content-center active">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-grip"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Dashboard</span>
-                </div>
-              </div>
-
-
-              <!-- Procurement Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-cart-flatbed-suitcase"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Procurement</span>
-                </div>
-              </div>
-
-              <!-- Production Menu -->
-              <div id="productionMenu" class="sidemenu btn-group py-3 px-4 d-flex justify-content-center"
-                data-fm-floatTo='right'>
-
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-gears"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Production</span>
-                </div>
-
-                <div id="tooltip" role="tooltip">
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- Sales Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-business-time"></i></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Sales</span>
-                </div>
-              </div>
-
-              <!-- Accounting Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-hand-holding-dollar"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Accounting</span>
-                </div>
-              </div>
-
-              <!-- Report Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-clipboard"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Report</span>
-                </div>
-              </div>
-
-              <!-- Master Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center" id="masterData">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-solid fa-database"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Master Data</span>
-                </div>
-              </div>
-
-              <!-- Audit Menu -->
-              <div class="sidemenu py-3 px-4 d-flex justify-content-center">
-                <div class="col-xs-1 col-sm-1 col-md-3 col-lg-3 d-flex justify-content-center my-auto">
-                  <i class="fa-regular fa-newspaper"></i>
-                </div>
-                <div class="col fw-bold">
-                  <span>Audit Logs</span>
-                </div>
-              </div>
-
-            </div>
-            <!-- Side Menus End -->
-          </div>
-
-
-          <!-- Side Menu Footer -->
-          <div class="row d-flex justify-content-between fs-6 py-2 mb-4 bg-white">
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-end py-3">
-              <i id="notification" class="fa-solid fa-bell"></i>
-            </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-center py-3">
-              <i id="settings" class="fa-solid fa-gear"></i>
-            </div>
-            <div class="side-footer-bar col-xs-3 col-sm-3 col-md-3 col-lg-3 d-flex justify-content-start py-3">
-              <i id="map" class="fa-solid fa-map-location-dot"></i>
-            </div>
-          </div>
-          <!-- Side Menu Footer Ends -->
-
-        </div>
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo"><span></span></a>
+        <a href="#" class="sidebar-logo-text">Britto<span>SFE</span></a>
       </div>
+      <!-- sidebar-header -->
+      <div class="sidebar-search">
+        <div class="search-body">
+          <i data-feather="search"></i>
+          <input type="text" class="form-control" placeholder="Search..." />
+        </div>
+        <!-- search-body -->
+      </div>
+      <!-- sidebar-search -->
+      <div class="sidebar-body">
+        <nav class="nav-sidebar">
+          <li class="nav-item active">
+            <a href="" class="nav-link"><i data-feather="package"></i><span>Dashboard</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="" class="nav-link"><i data-feather="shopping-cart"></i><span>Procurement</span></a>
+          </li>
+          <li class="nav-item show">
+            <a href="" class="nav-link with-sub"><i data-feather="arrow-up-circle"></i><span>Production</span></a>
 
+            <nav class="nav-sub">
+              <a href="" class="sub-link"><span>Dispatch</span></a>
+              <a href="" class="sub-link"><span>Preprocessing</span></a>
+              <a href="" class="sub-link"><span>Dispatch</span></a>
+              <a href="" class="sub-link"><span>Production</span></a>
+            </nav>
+          </li>
 
-      <div class="col-md-8 col-lg-9 fw-bold pt-2 mt-3 px-4">
-        <!-- Body Navbar -->
-        <div class="row pb-3">
-          <div class="col-md-6 col-lg-6 fs-4">Hello, <%=full_name%>!</div>
-          <div class="col-md-6 col-lg-6 d-flex justify-content-end">
+          <li class="nav-item">
+            <a href="" class="nav-link"><i data-feather="shopping-bag"></i><span>Sales</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="" class="nav-link"><i data-feather="briefcase"></i><span>Accounting</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="" class="nav-link"><i data-feather="file-text"></i><span>Report</span></a>
+          </li>
+          <li class="nav-item">
+            <a id="masterData" href="" class="nav-link"><i data-feather="calendar"></i><span>Master Data</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="" class="nav-link"><i data-feather="monitor"></i><span>Audit Logs</span></a>
+          </li>
+        </nav>
+
+      </div>
+      <!-- sidebar-body -->
+      <div class="sidebar-footer">
+        <a href="" class="avatar online"><span class="avatar-initial">b</span></a>
+        <div class="avatar-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h6>
+              <%=full_name%>
+            </h6>
+            <a href="" class="footer-menu"><i class="ri-settings-4-line"></i></a>
+          </div>
+          <span>
+            <%=full_name%>
+          </span>
+        </div>
+        <!-- avatar-body -->
+      </div>
+      <!-- sidebar-footer -->
+    </div>
+
+    <div class="content">
+      <div class="content-header">
+        <div class="row">
+          <div class="col-md-4 col-lg-4 fs-5">
+            <a id="contentMenu" href="#" class="content-menu d-none
+        d-lg-flex"><i data-feather="menu"></i></a>
+            <a id="mobileMenu" href="#" class="content-menu d-lg-none"><i data-feather="menu"></i></a>
+          </div>
+
+          <div class="col-md-4 col-lg-4 fs-4 d-flex justify-content-center">Britto &nbsp; <b>Seafoods</b> &nbsp;Exports
+          </div>
+          <div class="col-md-4 col-lg-4 d-flex justify-content-end">
             <i class="fas fa-power-off fs-5" id="logout"></i>
           </div>
         </div>
-
-        <!-- ------------------------------------------------------------------------- -->
-        <!-- ----------------------------- IFrame Contents --------------------------- -->
-        <!-- ------------------------------------------------------------------------- -->
-
-        <div id="iframe-container" class="overflow-auto embed-responsive embed-responsive-4by3">
-          <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src=""
-            frameborder="0"></iframe>
-        </div>
-
       </div>
+      <div class="content-body" id="iframe-container">
+        <iframe id="iframe-main-content" class="frame vh-100 w-100 embed-responsive-item" src=""
+          frameborder="0"></iframe>
+      </div>
+      <!-- content-body -->
     </div>
   </div>
 </body>
@@ -285,19 +190,6 @@
   jQuery(document).ready(function ($) {
     App.checkAccess();
 
-    let $nav = $("#navbar-toggler").hcOffcanvasNav({
-      disableAt: false,
-      levelOpen: "expand",
-    });
-    let Nav = $nav.data("hcOffcanvasNav");
-
-    //   $("#main-nav").hcOffcanvasNav({
-    //     disableAt: 1024,
-    //     customToggle: $(".toggle"),
-    //     navTitle: "All Categories",
-    //     levelTitles: true,
-    //     levelTitleAsBack: true,
-    //   });
 
     $("#logout").on("click", App.logout);
 
@@ -319,89 +211,33 @@
       hideMethod: "fadeOut",
     };
 
-    $.floatingMenu({
-      selector: '#productionMenu',
-      items: [
-        {
-          icon: '',// icon classes
-          title: '<a href="https://www.jqueryscript.net/tags.php?/Facebook/">Facebook</a>',
-          action: 'http://www.facebook.com/jqueryscript'
-        },
-        {
-          title: 'Insert',
-          action: function (event) {
-            alert('insert');
-          }
-        },
-      ]
-    });
-
-
-    $("#notification").hover(function () {
-      $(this).addClass("fa-shake")
-    }, function () {
-      $(this).removeClass('fa-shake');
-    })
-
-    $("#settings").hover(function () {
-      $(this).addClass("fa-spin")
-    }, function () {
-      $(this).removeClass('fa-spin');
-    })
-
-    $("#logout").hover(function () {
-      $(this).addClass("fa-beat")
-    }, function () {
-      $(this).removeClass('fa-beat');
-    })
-
-    $(".sidemenu:not(.active)").hover(function () {
-      $(this).find('i').addClass("fa-bounce")
-    }, function () {
-      $(this).find('i').removeClass('fa-bounce');
-    })
-
-    $("#map").hover(function () {
-      $(this).addClass("fa-beat-fade")
-    }, function () {
-      $(this).removeClass('fa-beat-fade');
-    })
-
 
     // Dashboard navigation
-    $("#dashboard").on('click', function () {
-
-      $('.sidemenu').removeClass("active")
+    $("#dashboard").on("click", function () {
+      $(".sidemenu").removeClass("active");
 
       $(this).addClass("active");
 
-      loadIframe("")
+      loadIframe("");
 
       // document.getElementById("iframe-main-content").src = "";
-    })
+    });
 
     // Master data navigation
-    $("#masterData").on('click', function () {
-
-      $('.sidemenu').removeClass("active")
-
-      $(this).addClass("active");
-
-      loadIframe("/MasterData")
-
-      // document.getElementById("iframe-main-content").src = "/MasterData";
-    })
+    $("#masterData").on("click", function () {
+      loadIframe("/MasterData");
+    });
 
     function loadIframe(src) {
-      var iframe = document.getElementById('iframe-main-content');
-      var loadingBar = document.getElementById('loading-bar');
+      var iframe = document.getElementById("iframe-main-content");
+      var loadingBar = document.getElementById("loading-bar");
 
       // Show loading bar
-      loadingBar.style.display = 'block';
-      loadingBar.style.width = '0%'; // Reset width
+      loadingBar.style.display = "block";
+      loadingBar.style.width = "0%"; // Reset width
 
       // Show iframe container
-      document.getElementById('iframe-container').style.display = 'block';
+      document.getElementById("iframe-container").style.display = "block";
 
       // Update iframe src
       iframe.src = src;
@@ -409,17 +245,15 @@
       // Listen for iframe load event
       iframe.onload = function () {
         // Hide loading bar when iframe is loaded
-        loadingBar.style.display = 'none';
+        loadingBar.style.display = "none";
       };
 
       // Update loading bar width as iframe loads
-      iframe.addEventListener('progress', function (event) {
+      iframe.addEventListener("progress", function (event) {
         var percentComplete = (event.loaded / event.total) * 100;
-        loadingBar.style.width = percentComplete + '%';
+        loadingBar.style.width = percentComplete + "%";
       });
     }
-
-
   });
 </script>
 
