@@ -88,6 +88,7 @@ export const GetAll = ({ location_name }) => {
 
       const vendors = await models.LocationMaster.findAndCountAll({
         where,
+        order: [["created_at", "desc"]],
       });
 
       resolve(vendors);

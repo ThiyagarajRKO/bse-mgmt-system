@@ -110,6 +110,7 @@ export const GetAll = ({ vendor_name, location_name }) => {
           },
         ],
         where,
+        order: [["created_at", "desc"]],
       });
 
       resolve(vendors);

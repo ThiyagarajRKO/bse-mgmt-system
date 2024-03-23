@@ -385,13 +385,13 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Vendor Name</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Location</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Representative</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Phone</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Email</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Address</span><input class="form-control shadow-none" type="text"></th>
-                <th class="fw-bold"><span>Created At</span><input class="form-control shadow-none" type="text"></th>
+                <th class="fw-bold"><span>Vendor Name</span></th>
+                <th class="fw-bold"><span>Location</span></th>
+                <th class="fw-bold"><span>Representative</span></th>
+                <th class="fw-bold"><span>Phone</span></th>
+                <th class="fw-bold"><span>Email</span></th>
+                <th class="fw-bold"><span>Address</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -514,6 +514,25 @@
             className: "text-left",
             render: function (data, type, row) {
               return '<i class="fa fa-trash del delLocation" location_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to delete this location"></i>'
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
             },
           },
         ],
@@ -681,6 +700,25 @@
             className: "text-left",
             render: function (data, type, row) {
               return '<i class="fa fa-trash del delVendor" vendor_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to delete this row"></i>'
+            },
+          },
+          {
+            targets: [8],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
             },
           },
         ],
