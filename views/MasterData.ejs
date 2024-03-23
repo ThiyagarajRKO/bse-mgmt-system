@@ -155,9 +155,14 @@
 
     </div>
 
+    <div class="">
 
+    </div>
+
+
+    <!-- Table Content -->
     <div class="d-flex justify-content-center mt-4 pt-4">
-      <table id="vendorTable" class="diaply nowrap w-100">
+      <table id="vendorTable" class="display table table-hover nowrap">
         <thead>
           <tr>
             <th>Supplier ID</th>
@@ -170,86 +175,19 @@
             <th>Location</th>
             <th>Location Code</th>
           </tr>
+          <tr>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+            <th><input class="form-control" type="text"></th>
+          </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-          <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>Row 2 Data 2</td>
-          </tr>
-        </tbody>
+
       </table>
     </div>
 
@@ -261,6 +199,7 @@
   jQuery(document).ready(function ($) {
 
     $("#vendorTable").DataTable({
+      searching: false,
       destroy: true,
       responsive: false,
       scroller: true,

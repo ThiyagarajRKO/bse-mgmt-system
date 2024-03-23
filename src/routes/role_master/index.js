@@ -1,6 +1,6 @@
 import { GetAll } from "./handlers/get_all";
 
-export const rolesRoute = (fastify, opts, done) => {
+export const roleMasterRoute = (fastify, opts, done) => {
   fastify.get("/get/all", async (req, reply) => {
     try {
       let result = await GetAll(
@@ -24,4 +24,4 @@ export const rolesRoute = (fastify, opts, done) => {
   done();
 };
 
-export default rolesRoute;
+export default roleMasterRoute;

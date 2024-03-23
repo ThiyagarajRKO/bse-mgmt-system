@@ -2,7 +2,9 @@
 
 import usersRoute from "./users";
 import profileRoutes from "./profile";
-import rolesRoute from "./roles";
+import roleMasterRoute from "./role_master";
+import locationMasterRoute from "./location_master";
+import vendorMasterRoute from "./vendor_master";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -11,7 +13,7 @@ import { ValidateUser } from "../middlewares/authentication";
 export const PublicRouters = (fastify, opts, done) => {
   fastify.register(usersRoute, { prefix: "/auth" });
 
-  fastify.register(rolesRoute, { prefix: "/roles" });
+  fastify.register(roleMasterRoute, { prefix: "/roles" });
 
   done();
 };
@@ -22,5 +24,10 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.addHook("onRequest", ValidateUser);
 
   fastify.register(profileRoutes, { prefix: "/profile" });
+
+  fastify.register(locationMasterRoute, { prefix: "/master/location" });
+
+  fastify.register(vendorMasterRoute, { prefix: "/master/vendor" });
+
   done();
 };
