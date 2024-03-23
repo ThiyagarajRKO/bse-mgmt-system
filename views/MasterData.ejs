@@ -18,6 +18,10 @@
 <!-- jQuery -->
 <script src="/public/plugins/jquery/jquery.min.js"></script>
 
+<!-- Select2 -->
+<link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+<script src="/public/plugins/select2/js/select2.min.js"></script>
+
 <!-- DataTable -->
 <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css">
 <script src="/public/plugins/dataTables/datatables.min.js"></script>
@@ -25,9 +29,6 @@
 <!-- Responsive Datatable -->
 <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css">
 <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
-<!-- Datatable Buttons -->
-<link rel="stylesheet" href="/public/plugins/dataTables/datatables.buttons.min.css">
-<script src="/public/plugins/dataTables/datatables.buttons.min.js"></script>
 
 <!-- Toast -->
 <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
@@ -116,7 +117,7 @@
       width: 500px;
       height: 100%;
       background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
       transition: right 0.3s ease;
       /* Transition for smooth sliding */
     }
@@ -138,12 +139,16 @@
       background-color: #EA5455 !important;
       border-color: #EA5455 !important;
     }
+
+    .select2-dropdown {
+      z-index: 10000 !important;
+    }
   </style>
 </head>
 
 <body>
   <div class="">
-    <div class="topMenu-container row d-flex justify-content-center">
+    <div class="topMenu-container d-flex justify-content-center">
       <div
         class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
@@ -218,13 +223,65 @@
 
     <!-- Supplier Container -->
     <div class="menu-container vendorContainer d-none">
-      <div id="vendorSlideInPanel" class="vendorPanel">
-        <div class="p-3">
-          <h2>Panel Content</h2>
-          <p>This is some content inside the slide-in panel.</p>
-          <button id="closePanelBtn" class="btn btn-secondary">Close Panel</button>
+
+      <!-- Slide-in Panel -->
+      <div id="vendorSlideInPanel" class="vendorPanel shadow-lg px-4">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4">
+              <span class="fw-bold fs-5">Add Vendor Data</span>
+              <hr />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="vendor-name">Vendor Name</label>
+              <input id="vendor_name" class="form-control" type="text" placeholder="eg. Jone" name="vendor-name"
+                required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="vendor-location">Location</label>
+              <select class="form-control" id="locations" name="location">
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Representative">Representative</label>
+              <input id="representative" class="form-control" placeholder="eg. AJs" type="text" name="Representative">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="phoneno">Phone No</label>
+              <input id="phone" class="form-control" type="tel" pattern="[6789][0-9]{9}" placeholder="eg. 9876543210"
+                name="phoneno" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="email">Email</label>
+              <input id="email" class="form-control" type="text"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address"
+                placeholder="eg. xyz@gmail.com" name="email">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="address">Address</label>
+              <textarea id="address" class="form-control" placeholder="eg. xyz" type="text" name="address"
+                rows="4"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+              <div id="submitVendor" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="closePanelBtn" class="col-lg-5 btn btn-outline-danger">Close</div>
+            </div>
+
+          </div>
         </div>
+
       </div>
+
       <!-- Table Content -->
       <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
         <div class="border p-4">
@@ -266,11 +323,15 @@
     // Open panel
     $('#openVendorPanelBtn').click(function () {
       $('#vendorSlideInPanel').css('right', '0');
+      // Load locations
+      loadLocations()
     });
 
     // Close panel
     $('#closePanelBtn').click(function () {
       $('#vendorSlideInPanel').css('right', '-600px');
+
+      $('select.select2-hidden-accessible').select2('destroy');
     });
 
     $(".topMenu-item").click(function () {
@@ -285,6 +346,10 @@
       $(".vendorContainer").addClass('d-block')
 
       loadTableData()
+    })
+
+    $("#submitVendor").click(function () {
+      saveVendor()
     })
 
     toastr.options = {
@@ -409,6 +474,78 @@
       });
     }
 
+    function loadLocations() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/location/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#locations")
+            .select2({
+              placeholder: "Choose a location",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.location_name
+                };
+              }),
+            })
+
+          // Clearing selected value
+          $('#locations').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+
+    function saveVendor() {
+      const input_params = {
+        vendor_name: $("#vendor_name").val(),
+        representative: $("#representative").val(),
+        address: $("#address").val(),
+        phone: $("#phone").val(),
+        email: $("#email").val(),
+        location_master_id: $("#locations").val(),
+      }
+
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/vendor/create",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closePanelBtn").click()
+
+          loadTableData()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
 
   });
 </script>
