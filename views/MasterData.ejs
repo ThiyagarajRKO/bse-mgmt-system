@@ -89,14 +89,13 @@
       /* font-weight: bold; */
     }
 
-    .menuActiveStatus {
+    /* .topMenu-item {
       color: #f7f9fd;
       display: block !important;
-    }
+    } */
 
-    .menuActiveStatus.active {
+    .topMenu-item-active {
       color: #EA5453;
-      display: block !important;
     }
 
     .edit,
@@ -162,7 +161,7 @@
       </div>
 
       <div
-        class="topMenu-item col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
+        class="topMenu-item vendorMenu col-xs-6 col-sm-12 col-md-1 col-lg-1 d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-users"></i>
         </div>
@@ -214,7 +213,7 @@
     </div>
 
     <!-- Supplier Container -->
-    <div class="vendorContainer">
+    <div class="menu-container vendorContainer d-none">
       <div id="vendorSlideInPanel" class="vendorPanel">
         <div class="p-3">
           <h2>Panel Content</h2>
@@ -235,7 +234,7 @@
             </div>
           </div>
 
-          <table id="vendorTable" class="table table-hover nowrap">
+          <table id="vendorTable" class="table table-hover nowrap w-100">
             <thead>
               <tr>
                 <th></th>
@@ -260,8 +259,6 @@
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
 
-    loadTableData()
-
     // Open panel
     $('#openVendorPanelBtn').click(function () {
       $('#vendorSlideInPanel').css('right', '0');
@@ -271,6 +268,20 @@
     $('#closePanelBtn').click(function () {
       $('#vendorSlideInPanel').css('right', '-600px');
     });
+
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass('topMenu-item-active')
+
+      $(this).addClass('topMenu-item-active')
+    })
+
+    $(".vendorMenu").click(function () {
+      $(".menu-container").removeClass('d-none')
+
+      $(".vendorContainer").addClass('d-block')
+
+      loadTableData()
+    })
 
     toastr.options = {
       closeButton: false,
@@ -343,6 +354,7 @@
         processing: true,
         serverSide: true,
         scrollX: true,
+        // scrollY: "40vh",
         ordering: false,
         ajax: {
           type: "GET",
