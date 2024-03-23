@@ -21,6 +21,9 @@
 <!-- Responsive Datatable -->
 <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css">
 <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
+<!-- Datatable Buttons -->
+<link rel="stylesheet" href="/public/plugins/dataTables/datatables.buttons.min.css">
+<script src="/public/plugins/dataTables/datatables.buttons.min.js"></script>
 
 <!-- Toast -->
 <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
@@ -28,6 +31,14 @@
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+
+<!-- jQuery Confirm -->
+<link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css">
+<script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
+
+<!-- Slide-in Panel -->
+<link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css">
+<script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
@@ -86,6 +97,43 @@
     .menuActiveStatus.active {
       color: #EA5453;
       display: block !important;
+    }
+
+    .edit,
+    .del {
+      cursor: pointer;
+    }
+
+    .vendorPanel {
+      z-index: 9999;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -600px;
+      width: 500px;
+      height: 100%;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      transition: right 0.3s ease;
+      /* Transition for smooth sliding */
+    }
+
+    .page-item.active .page-link {
+      color: #fff !important;
+      background-color: #EA5455 !important;
+      border-color: #EA5455 !important;
+    }
+
+    .page-link {
+      color: #000 !important;
+      background-color: #fff !important;
+      border: 1px solid #dee2e6 !important;
+    }
+
+    .page-link:hover {
+      color: #fff !important;
+      background-color: #EA5455 !important;
+      border-color: #EA5455 !important;
     }
   </style>
 </head>
@@ -165,42 +213,46 @@
 
     </div>
 
-    <div class="">
+    <!-- Supplier Container -->
+    <div class="vendorContainer">
+      <div id="vendorSlideInPanel" class="vendorPanel">
+        <div class="p-3">
+          <h2>Panel Content</h2>
+          <p>This is some content inside the slide-in panel.</p>
+          <button id="closePanelBtn" class="btn btn-secondary">Close Panel</button>
+        </div>
+      </div>
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4">
 
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openVendorPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold">Add</span>
+            </div>
+          </div>
+
+          <table id="vendorTable" class="table table-hover nowrap">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th><span>Supplier Name</span><input class="form-control shadow-none" type="text"></th>
+                <th><span>Location</span><input class="form-control shadow-none" type="text"></th>
+                <th><span>Representative</span><input class="form-control shadow-none" type="text"></th>
+                <th><span>Phone</span><input class="form-control shadow-none" type="text"></th>
+                <th><span>Email</span><input class="form-control shadow-none" type="text"></th>
+                <th><span>Address</span><input class="form-control shadow-none" type="text"></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
     </div>
-
-
-    <!-- Table Content -->
-    <div class="d-flex justify-content-center mt-4 pt-4">
-      <table id="vendorTable" class="display table table-hover nowrap">
-        <thead>
-          <tr>
-            <th>Supplier ID</th>
-            <th>Supplier Name</th>
-            <th>Supplier Short Code</th>
-            <th>Address</th>
-            <th>Representative</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Location</th>
-            <th>Location Code</th>
-          </tr>
-          <tr>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-            <th><input class="form-control" type="text"></th>
-          </tr>
-        </thead>
-
-      </table>
-    </div>
-
+    <!-- Supplier Container Ends -->
 
   </div>
 </body>
@@ -208,15 +260,17 @@
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
 
-    $("#vendorTable").DataTable({
-      searching: false,
-      destroy: true,
-      responsive: false,
-      scroller: true,
-      processing: true,
-      scrollX: true,
-      ordering: false,
-    })
+    loadTableData()
+
+    // Open panel
+    $('#openVendorPanelBtn').click(function () {
+      $('#vendorSlideInPanel').css('right', '0');
+    });
+
+    // Close panel
+    $('#closePanelBtn').click(function () {
+      $('#vendorSlideInPanel').css('right', '-600px');
+    });
 
     toastr.options = {
       closeButton: false,
@@ -235,6 +289,109 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut",
     };
+
+    $(document).on('click', '.delRequest', (e) => {
+      let vendor_master_id = $(e.target).attr('vendor_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Request?',
+        content: 'Are you sure, do you want to remove this request?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/vendor/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  vendor_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadTableData()
+
+                toastr.success('Request deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Request failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Row is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function loadTableData() {
+      $("#vendorTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: true,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/vendor/get/all",
+          error: function (xhr, error, code) {
+            $("#vendorTable").DataTable().destroy();
+            $("#vendorTable").DataTable({ scrollX: true })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "vendor_name" },
+          { data: "LocationMaster.location_name" },
+          { data: "representative" },
+          { data: "phone" },
+          { data: "email" },
+          { data: "address" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editRequest" vendor_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to edit this row"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delRequest" vendor_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to delete this row"></i>'
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
 
 
   });
