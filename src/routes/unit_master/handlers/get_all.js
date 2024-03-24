@@ -1,19 +1,20 @@
-import { VendorMaster } from "../../../controllers";
+import { UnitMaster } from "../../../controllers";
 
 export const GetAll = (
-  { vendor_name, location_master_name },
+  { unit_code, unit_type, unit_name, location_master_name },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Creating User
-      let vendor_master = await VendorMaster.GetAll({
-        vendor_name,
+      let unit_master = await UnitMaster.GetAll({
+        unit_code,
+        unit_name,
+        unit_type,
         location_master_name,
       });
 
-      if (!vendor_master) {
+      if (!unit_master) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -21,7 +22,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: vendor_master,
+        data: unit_master,
       });
     } catch (err) {
       fastify.log.error(err);

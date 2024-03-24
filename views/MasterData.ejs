@@ -340,31 +340,26 @@
             </div>
 
             <div class="form-group mt-4">
-              <label for="unit-name">Unit Code</label>
-              <input id="unit_name" class="form-control" type="text" placeholder="eg. Chennai" name="unit-name"
-                required>
-            </div>
-
-            <div class="form-group mt-4">
               <label for="unit-name">Unit Name</label>
               <input id="unit_name" class="form-control" type="text" placeholder="eg. Chennai" name="unit-name"
                 required>
-            </div>
-
-            <div class="form-group mt-4">
-              <label for="unit-name">Unit Type</label>
-              <select class="form-control" id="unitType" name="location">
-                <option value="Peeling Center">Peeling Center</option>
-                <option value="Collection Center">Collection Center</option>
-                <option value="Cooking Center">Cooking Center</option>
-                <option value="Distribution Center">Distribution Center</option>
-              </select>
             </div>
 
             <div class="form-group my-3">
               <label for="Description">Location</label>
               <select class="form-control" id="unitLocations" name="unitLocation">
               </select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="unit-type">Unit Type</label>
+              <select class="form-control" id="unitType" name="unitType">
+              </select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="unit-code">Unit Code</label>
+              <input id="unit_code" class="form-control" type="text" name="unit-code" disabled>
             </div>
 
             <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
@@ -621,15 +616,7 @@
 
       loadUnitLocations()
 
-
-      $("#unitType")
-        .select2({
-          placeholder: "Choose a location",
-          allowClear: true,
-        })
-
-      // Clearing selected value
-      $('#unitType').val(null).trigger('change');
+      loadUnitType()
     });
 
     // Close panel
@@ -651,6 +638,22 @@
     $("#submitUnit").click(function () {
       saveUnit()
     })
+
+    $("#unitType").on('change', refreshUnitCode)
+    $("#unitLocations").on('change', refreshUnitCode)
+
+    let unitCode = ""
+    function refreshUnitCode() {
+      let unitType = $("#unitType").select2("data")[0]?.text || ''
+      let unitLocations = $("#unitLocations").select2("data")[0]?.text || ''
+
+      unitLocations = unitLocations?.replaceAll(" ", "")
+      unitType = unitType?.replaceAll(" ", "")
+
+      unitCode = `${unitLocations}-${unitType}`
+
+      $("#unit_code").val(unitCode)
+    }
 
     function loadUnitTableData() {
       $("#unitTable").DataTable({
@@ -688,7 +691,7 @@
           { data: "unit_code" },
           { data: "unit_name" },
           { data: "unit_type" },
-          { data: "location" },
+          { data: "LocationMaster.location_name" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -707,7 +710,7 @@
             },
           },
           {
-            targets: [4],
+            targets: [6],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -777,6 +780,35 @@
       });
     })
 
+    function loadUnitType() {
+      $("#unitType")
+        .select2({
+          placeholder: "Choose a location",
+          allowClear: true,
+          data: [
+            {
+              id: "Peeling Center",
+              text: "Peeling Center"
+            },
+            {
+              id: "Collection Center",
+              text: "Collection Center"
+            },
+            {
+              id: "Cooking Center",
+              text: "Cooking Center"
+            },
+            {
+              id: "Distribution Center",
+              text: "Distribution Center"
+            }
+          ]
+        })
+
+      // Clearing selected value
+      $('#unitType').val(null).trigger('change');
+    }
+
     function loadUnitLocations() {
       // Load Roles
       $.ajax({
@@ -802,6 +834,8 @@
 
           // Clearing selected value
           $('#unitLocations').val(null).trigger('change');
+          // // Clearing selected value
+          // $('#unitType').val(null).trigger('change');
         },
         error: (jqXhr, textStatus, errorThrown) => {
           if (jqXhr["status"] == 420) {
@@ -814,9 +848,13 @@
     }
 
     function saveUnit() {
+      // refreshUnitCode()
+
       const input_params = {
         unit_name: $("#unit_name").val(),
-        description: $("#description").val(),
+        unit_type: $("#unitType").val(),
+        unit_code: unitCode,
+        location_master_id: $("#unitLocations").val(),
       }
 
       $.ajax({

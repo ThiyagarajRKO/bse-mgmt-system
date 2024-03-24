@@ -3,6 +3,7 @@
 import usersRoute from "./users";
 import profileRoutes from "./profile";
 import roleMasterRoute from "./role_master";
+import unitMasterRoute from "./unit_master";
 import locationMasterRoute from "./location_master";
 import vendorMasterRoute from "./vendor_master";
 
@@ -24,6 +25,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.addHook("onRequest", ValidateUser);
 
   fastify.register(profileRoutes, { prefix: "/profile" });
+
+  fastify.register(unitMasterRoute, { prefix: "/master/unit" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 

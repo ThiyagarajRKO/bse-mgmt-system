@@ -4,7 +4,9 @@ export const getAllSchema = {
       type: "object",
       required: [],
       properties: {
-        vendor_name: { type: "string" },
+        unit_code: { type: "string" },
+        unit_name: { type: "string" },
+        unit_type: { type: "string" },
         location_master_name: { type: "string" },
       },
     },
