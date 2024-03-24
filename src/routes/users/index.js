@@ -77,7 +77,7 @@ export const usersRoutes = (fastify, opts, done) => {
     },
     async (req, reply) => {
       try {
-        reply.code(result.statusCode || 200).send({
+        reply.code(200).send({
           success: true,
           message: "pong",
         });
