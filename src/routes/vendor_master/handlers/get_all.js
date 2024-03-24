@@ -11,6 +11,7 @@ export const GetAll = ({ vendor_name, location_name }, session, fastify) => {
 
       if (!vendor_master) {
         return reject({
+          statusCode: 420,
           message: "No roles found!",
         });
       }

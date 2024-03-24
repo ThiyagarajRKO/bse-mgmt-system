@@ -6,8 +6,15 @@ export const Insert = async (location_data) => {
     try {
       if (!location_data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location data must not be empty!",
+        });
+      }
+
+      if (!location_data?.location_name) {
+        return reject({
+          statusCode: 420,
+          message: "Location name must not be empty!",
         });
       }
 
@@ -24,14 +31,14 @@ export const Update = async (profile_id, id, location_data) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location id must not be empty!",
         });
       }
 
       if (!location_data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location data must not be empty!",
         });
       }
@@ -56,7 +63,7 @@ export const Get = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location ID field must not be empty!",
         });
       }
@@ -103,7 +110,7 @@ export const Count = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location ID field must not be empty!",
         });
       }
@@ -128,7 +135,7 @@ export const Delete = ({ profile_id, id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Location ID field must not be empty!",
         });
       }

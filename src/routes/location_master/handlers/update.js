@@ -20,6 +20,7 @@ export const Update = (
       }
 
       resolve({
+        statusCode: 420,
         message: "Location master didn't update",
       });
     } catch (err) {

@@ -9,7 +9,7 @@ export const roleMasterRoute = (fastify, opts, done) => {
         fastify
       );
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         data: result,
       });

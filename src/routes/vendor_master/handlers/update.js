@@ -14,6 +14,7 @@ export const Update = (
 
         if (location_count == 0) {
           return reject({
+            statusCode: 420,
             message: "Invalid location master id!",
           });
         }
@@ -32,6 +33,7 @@ export const Update = (
       }
 
       resolve({
+        statusCode: 420,
         message: "Vendor master didn't update",
       });
     } catch (err) {

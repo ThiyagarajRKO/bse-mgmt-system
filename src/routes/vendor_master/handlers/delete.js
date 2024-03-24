@@ -15,6 +15,7 @@ export const Delete = ({ profile_id, vendor_master_id }, session, fastify) => {
       }
 
       resolve({
+        statusCode: 420,
         message: "Vendor master didn't delete",
       });
     } catch (err) {

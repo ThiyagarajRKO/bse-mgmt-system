@@ -11,7 +11,7 @@ export const profileRoutes = (fastify, opts, done) => {
       };
 
       let result = await GetProfileInfo(params, req.session, fastify);
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message,
         data: result?.data,
@@ -32,7 +32,7 @@ export const profileRoutes = (fastify, opts, done) => {
       };
 
       let result = await Update(params, fastify);
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message,
       });

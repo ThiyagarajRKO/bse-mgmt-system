@@ -6,7 +6,7 @@ export const DeleteSession = async ({ sid }) => {
     try {
       if (!sid) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "SID should not be empty!",
         });
       }

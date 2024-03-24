@@ -18,7 +18,7 @@ export const locationMasterRoute = (fastify, opts, done) => {
 
       const result = await Create(params, req?.session, fastify);
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
@@ -37,7 +37,7 @@ export const locationMasterRoute = (fastify, opts, done) => {
 
       const result = await Update(params, req?.session, fastify);
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
@@ -56,7 +56,7 @@ export const locationMasterRoute = (fastify, opts, done) => {
 
       const result = await Get(params, req?.session, fastify);
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
@@ -75,7 +75,7 @@ export const locationMasterRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
@@ -94,7 +94,7 @@ export const locationMasterRoute = (fastify, opts, done) => {
 
       const result = await Delete(params, req?.session, fastify);
 
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,

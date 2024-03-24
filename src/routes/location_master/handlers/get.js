@@ -9,6 +9,7 @@ export const Get = ({ location_master_id }, session, fastify) => {
 
       if (!location_master) {
         return reject({
+          statusCode: 420,
           message: "No roles found!",
         });
       }

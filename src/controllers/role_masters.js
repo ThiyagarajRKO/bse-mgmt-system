@@ -6,7 +6,7 @@ export const Get = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User ID field must not be empty!",
         });
       }

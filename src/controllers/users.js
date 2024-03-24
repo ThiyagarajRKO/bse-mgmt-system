@@ -7,7 +7,7 @@ export const Insert = async (userData, modelName) => {
     try {
       if (!userData) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User data must not be empty!",
         });
       }
@@ -32,14 +32,14 @@ export const Update = async (user_id, data) => {
     try {
       if (!user_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User Id must not be empty!",
         });
       }
 
       if (!data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User data must not be empty!",
         });
       }
@@ -63,7 +63,7 @@ export const DeleteByUser = async ({ user_id }) => {
     try {
       if (!user_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User Id must not be empty!",
         });
       }
@@ -92,14 +92,14 @@ export const UpdatePassword = async (user_id, password) => {
     try {
       if (!user_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "UserId must not be empty!",
         });
       }
 
       if (!password) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Password must not be empty!",
         });
       }
@@ -127,7 +127,7 @@ export const Get = ({ id, userType = "User" }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User ID field must not be empty!",
         });
       }
@@ -203,7 +203,7 @@ export const GetUserAndProfileByIdentifier = async ({
     try {
       if (!email && !phone) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Identity field must not be empty!",
         });
       }
@@ -323,7 +323,7 @@ export const GetByEmail = ({ email }) => {
     try {
       if (!email) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Email address field must not be empty!",
         });
       }

@@ -6,14 +6,14 @@ export const Insert = async (profile_data) => {
     try {
       if (!profile_data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User profile data must not be empty!",
         });
       }
 
       if (!profile_data?.created_by) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "User Id data must not be empty!",
         });
       }
@@ -31,14 +31,14 @@ export const Update = async (profile_id, profile_data) => {
     try {
       if (!profile_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile id must not be empty!",
         });
       }
 
       if (!profile_data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile data must not be empty!",
         });
       }
@@ -70,7 +70,7 @@ export const DeleteByUser = async ({ profile_id }) => {
     try {
       if (!profile_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile id must not be empty!",
         });
       }
@@ -103,7 +103,7 @@ export const Get = ({ id, username, role_id }) => {
     try {
       if (!id && !username && !role_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile ID/username field must not be empty!",
         });
       }
@@ -145,7 +145,7 @@ export const GetAdminUserByProfileId = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile ID field must not be empty!",
         });
       }
@@ -178,7 +178,7 @@ export const CheckAdminRole = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile ID field must not be empty!",
         });
       }
@@ -212,7 +212,7 @@ export const GetUsedStars = ({ id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Profile ID field must not be empty!",
         });
       }
@@ -315,7 +315,7 @@ export const GetByChatId = ({ chat_user_id }) => {
     try {
       if (!chat_user_id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "chat_user_id field must not be empty!",
         });
       }

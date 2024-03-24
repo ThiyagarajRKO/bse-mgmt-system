@@ -19,6 +19,7 @@ export const Delete = (
       }
 
       resolve({
+        statusCode: 420,
         message: "Location master didn't delete",
       });
     } catch (err) {

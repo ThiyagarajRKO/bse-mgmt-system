@@ -6,8 +6,15 @@ export const Insert = async (profile_id, vendor_master_data) => {
     try {
       if (!vendor_master_data) {
         return reject({
-          statusCode: 400,
-          message: "User Vendor data must not be empty!",
+          statusCode: 420,
+          message: "Vendor data must not be empty!",
+        });
+      }
+
+      if (!vendor_master_data?.vendor_name) {
+        return reject({
+          statusCode: 420,
+          message: "Vendor name must not be empty!",
         });
       }
 
@@ -24,14 +31,14 @@ export const Update = async (profile_id, id, vendor_master_data) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Vendor id must not be empty!",
         });
       }
 
       if (!vendor_master_data) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Vendor data must not be empty!",
         });
       }
@@ -57,7 +64,7 @@ export const Get = ({ id, vendor_name }) => {
     try {
       if (!id && !vendor_name) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Vendor ID field must not be empty!",
         });
       }
@@ -125,7 +132,7 @@ export const Delete = ({ profile_id, id }) => {
     try {
       if (!id) {
         return reject({
-          statusCode: 400,
+          statusCode: 420,
           message: "Vendor ID field must not be empty!",
         });
       }

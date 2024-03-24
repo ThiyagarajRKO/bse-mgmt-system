@@ -22,6 +22,7 @@ export const Create = (
 
       if (location_count == 0) {
         return reject({
+          statusCode: 420,
           message: "Invalid location master id!",
         });
       }

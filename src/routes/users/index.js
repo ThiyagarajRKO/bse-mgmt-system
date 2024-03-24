@@ -11,7 +11,7 @@ export const usersRoutes = (fastify, opts, done) => {
   fastify.post("/signin", signInSchema, async (req, reply) => {
     try {
       let result = await SignIn(req.body, req.session, fastify);
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message || "Signed in successfully",
         data: result?.data,
@@ -28,7 +28,7 @@ export const usersRoutes = (fastify, opts, done) => {
   fastify.post("/signup", signUpSchema, async (req, reply) => {
     try {
       let result = await SignUp(req.body, fastify);
-      reply.code(200).send({
+      reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message || "Account has been created successfully!",
         data: result?.data,
@@ -57,7 +57,7 @@ export const usersRoutes = (fastify, opts, done) => {
         req.session.destroy();
         reply.clearCookie("sessionId");
 
-        reply.code(200).send({
+        reply.code(result.statusCode || 200).send({
           success: true,
           message: result?.messsage || "User has been signed out successfully!",
         });
@@ -77,7 +77,7 @@ export const usersRoutes = (fastify, opts, done) => {
     },
     async (req, reply) => {
       try {
-        reply.code(200).send({
+        reply.code(result.statusCode || 200).send({
           success: true,
           message: "pong",
         });
