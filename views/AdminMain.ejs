@@ -2,272 +2,315 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<!-- title logo -->
-<link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
 
-<!-- Bootstrap
+  <!-- Bootstrap
 <link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
 
-<!-- MDB5  -->
-<link href="/public/plugins/MDB5-7.2.0/css/mdb.dark.min.css" rel="stylesheet" />
-<script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
+  <!-- MDB5  -->
+  <link
+    href="/public/plugins/MDB5-7.2.0/css/mdb.dark.min.css"
+    rel="stylesheet"
+  />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
 
-<!-- jQuery -->
-<script src="/public/plugins/jquery/jquery.min.js"></script>
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js"></script>
 
-<!-- Toast -->
-<link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
-<script src="/public/plugins/Toastr/toastr.min.js"></script>
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+  <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
 
-<!-- Remix Icons -->
-<link href="/public/plugins/remixicon/fonts/remixicon.css" rel="stylesheet" />
-<!-- Template CSS -->
-<link rel="stylesheet" href="/public/plugins/dashnav/dashnav.min.css" />
-<script src="/public/plugins/dashnav/dashnav.min.js"></script>
-<!-- Feather Icons -->
-<script src="/public/plugins/feathericons/feather.min.js"></script>
-<!-- perfect-scrollbar plugin -->
-<script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <!-- Remix Icons -->
+  <link href="/public/plugins/remixicon/fonts/remixicon.css" rel="stylesheet" />
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="/public/plugins/dashnav/dashnav.min.css" />
+  <script src="/public/plugins/dashnav/dashnav.min.js"></script>
+  <!-- Feather Icons -->
+  <script src="/public/plugins/feathericons/feather.min.js"></script>
+  <!-- perfect-scrollbar plugin -->
+  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
-<!-- Custom CSS -->
-<link rel="stylesheet" href="/public/css/style.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css" />
 
-<!-- Custom Script -->
-<script src="/public/custom/App.js"></script>
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BSE</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE</title>
 
-  <style type="text/css">
-    @font-face {
-      font-family: "CassandraPersonalUse";
-      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
-    }
+    <style type="text/css">
+      @font-face {
+        font-family: "CassandraPersonalUse";
+        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
+          format("truetype");
+      }
 
-    @font-face {
-      font-family: "CerebriSansPro-Regular";
-      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
-    }
+      @font-face {
+        font-family: "CerebriSansPro-Regular";
+        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
+          format("truetype");
+      }
 
-    body {
-      font-family: "CerebriSansPro-Regular";
-      overflow: hidden;
-    }
+      body {
+        font-family: "CerebriSansPro-Regular";
+        overflow: hidden;
+      }
 
-    .toast {
-      opacity: 1 !important;
-    }
+      .toast {
+        opacity: 1 !important;
+      }
 
-    #logout,
-    #settings {
-      cursor: pointer;
-    }
+      #logout,
+      #settings {
+        cursor: pointer;
+      }
 
-    #loading-bar {
-      display: none;
-      height: 4px;
-      width: 0%;
-      background-color: #007bff;
-      /* Loading bar color */
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 9999;
-      transition: width 0.3s;
-    }
+      #loading-bar {
+        display: none;
+        height: 4px;
+        width: 0%;
+        background-color: #007bff;
+        /* Loading bar color */
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transition: width 0.3s;
+      }
 
-    .headingSpan {
-      color: #ea5455;
-    }
-  </style>
-</head>
+      .headingSpan {
+        color: #ea5455;
+      }
+    </style>
+  </head>
 
-<body>
-  <div id="loading-bar"></div>
-  <div class="container-fluid">
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <a href="#" class="sidebar-logo"><span></span></a>
-        <a href="#" class="sidebar-logo-text">Britto<span>SFE</span></a>
-      </div>
-      <!-- sidebar-header -->
-      <div class="sidebar-search">
-        <div class="search-body">
-          <i data-feather="search"></i>
-          <input type="text" class="form-control shadow-none" placeholder="Search..." />
+  <body>
+    <div id="loading-bar"></div>
+    <div class="container-fluid">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <a href="#" class="sidebar-logo"><span></span></a>
+          <a href="#" class="sidebar-logo-text">Britto<span>SFE</span></a>
         </div>
-        <!-- search-body -->
-      </div>
-      <!-- sidebar-search -->
-      <div class="sidebar-body">
-        <nav class="nav-sidebar">
-          <li class="nav-item active">
-            <a id="dashboard" href="" class="nav-link"><i data-feather="package"></i><span>Dashboard</span></a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="shopping-cart"></i><span>Procurement</span></a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link with-sub"><i data-feather="package"></i><span>Production</span></a>
-
-            <nav class="nav-sub">
-              <a href="" class="sub-link"><span>Dispatch</span></a>
-              <a href="" class="sub-link"><span>Preprocessing</span></a>
-              <a href="" class="sub-link"><span>Dispatch</span></a>
-              <a href="" class="sub-link"><span>Packing</span></a>
-            </nav>
-          </li>
-
-          <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="shopping-bag"></i><span>Sales</span></a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="briefcase"></i><span>Accounting</span></a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="file-text"></i><span>Report</span></a>
-          </li>
-          <li class="nav-item">
-            <a id="masterData" href="" class="nav-link"><i data-feather="database"></i><span>Master Data</span></a>
-          </li>
-          <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="monitor"></i><span>Audit Logs</span></a>
-          </li>
-        </nav>
-
-      </div>
-      <!-- sidebar-body -->
-      <div class="sidebar-footer pt-4">
-        <a href="" class="avatar online"><span class="avatar-initial">b</span></a>
-        <div class="avatar-body my-auto">
-          <div class="d-flex align-items-center justify-content-between">
-            <h6>
-              <%=full_name%>
-            </h6>
-            <!-- <a href="" class="footer-menu"><i class="ri-settings-4-line"></i></a> -->
+        <!-- sidebar-header -->
+        <div class="sidebar-search">
+          <div class="search-body">
+            <i data-feather="search"></i>
+            <input
+              type="text"
+              class="form-control shadow-none"
+              placeholder="Search..."
+            />
           </div>
-          <span>
-            <%=role_name%>
-          </span>
+          <!-- search-body -->
         </div>
-        <!-- avatar-body -->
+        <!-- sidebar-search -->
+        <div class="sidebar-body">
+          <nav class="nav-sidebar">
+            <li class="nav-item active">
+              <a id="dashboard" href="" class="nav-link"
+                ><i data-feather="package"></i><span>Dashboard</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i data-feather="shopping-cart"></i><span>Procurement</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link with-sub"
+                ><i data-feather="package"></i><span>Production</span></a
+              >
+
+              <nav class="nav-sub">
+                <a href="" class="sub-link"><span>Dispatch</span></a>
+                <a href="" class="sub-link"><span>Preprocessing</span></a>
+                <a href="" class="sub-link"><span>Dispatch</span></a>
+                <a href="" class="sub-link"><span>Packing</span></a>
+              </nav>
+            </li>
+
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i data-feather="shopping-bag"></i><span>Sales</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i data-feather="briefcase"></i><span>Accounting</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i data-feather="file-text"></i><span>Report</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a id="masterData" href="" class="nav-link"
+                ><i data-feather="database"></i><span>Master Data</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i data-feather="monitor"></i><span>Audit Logs</span></a
+              >
+            </li>
+          </nav>
+        </div>
+        <!-- sidebar-body -->
+        <div class="sidebar-footer pt-4">
+          <a href="" class="avatar online"
+            ><span class="avatar-initial">b</span></a
+          >
+          <div class="avatar-body my-auto">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6><%=full_name%></h6>
+              <!-- <a href="" class="footer-menu"><i class="ri-settings-4-line"></i></a> -->
+            </div>
+            <span> <%=role_name%> </span>
+          </div>
+          <!-- avatar-body -->
+        </div>
+        <!-- sidebar-footer -->
       </div>
-      <!-- sidebar-footer -->
-    </div>
 
-    <div class="content">
-      <div class="content-header">
-        <div class="row">
-          <div class="col-md-4 col-lg-4 fs-5">
-            <a id="contentMenu" href="#" class="content-menu d-none d-lg-flex"><i data-feather="menu"></i></a>
-            <a id="mobileMenu" href="#" class="content-menu d-lg-none"><i data-feather="menu"></i></a>
-          </div>
+      <div class="content">
+        <div class="content-header">
+          <div class="row">
+            <div class="col-md-4 col-lg-4 fs-5">
+              <a id="contentMenu" href="#" class="content-menu d-none d-lg-flex"
+                ><i data-feather="menu"></i
+              ></a>
+              <a id="mobileMenu" href="#" class="content-menu d-lg-none"
+                ><i data-feather="menu"></i
+              ></a>
+            </div>
 
-          <div class="col-md-4 col-lg-4 fs-4 d-flex justify-content-center" style="color:#14274e">Britto&nbsp;<span
-              class="headingSpan">Seafoods</span>&nbsp;Exports
-          </div>
-          <div class="col-md-4 col-lg-4 d-flex justify-content-end">
-            <div class="row d-flex justify-content-center">
-              <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <i class="fa-solid fa-gear fs-5" id="settings"></i>
-              </div>
-              <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <i class="fas fa-power-off fs-5" id="logout"></i>
+            <div
+              class="col-md-4 col-lg-4 fs-4 d-flex justify-content-center"
+              style="color: #14274e"
+            >
+              Britto&nbsp;<span class="headingSpan">Seafoods</span>&nbsp;Exports
+            </div>
+            <div class="col-md-4 col-lg-4 d-flex justify-content-end">
+              <div class="row d-flex justify-content-center">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <i class="fa-solid fa-gear fs-5" id="settings"></i>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <i class="fas fa-power-off fs-5" id="logout"></i>
+                </div>
               </div>
             </div>
           </div>
+          <hr />
         </div>
+        <div class="content-body" id="iframe-container">
+          <iframe
+            id="iframe-main-content"
+            class="frame w-100"
+            src=""
+            frameborder="0"
+            style="height: 88vh"
+          ></iframe>
+        </div>
+        <!-- content-body -->
       </div>
-      <div class="content-body" id="iframe-container">
-        <iframe id="iframe-main-content" class="frame w-100" src="" frameborder="0" style="height:88vh"></iframe>
-      </div>
-      <!-- content-body -->
     </div>
-  </div>
-</body>
+  </body>
 
-<script type="text/javascript">
-  jQuery(document).ready(function ($) {
-    App.checkAccess();
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      App.checkAccess();
 
-    $("#logout").on("click", App.logout);
+      $("#logout").on("click", App.logout);
 
-    toastr.options = {
-      closeButton: false,
-      debug: false,
-      newestOnTop: true,
-      progressBar: true,
-      positionClass: "toast-top-right",
-      preventDuplicates: false,
-      onclick: null,
-      showDuration: "300",
-      hideDuration: "1000",
-      timeOut: "5000",
-      extendedTimeOut: "1000",
-      showEasing: "swing",
-      hideEasing: "linear",
-      showMethod: "fadeIn",
-      hideMethod: "fadeOut",
-    };
-
-
-    // Dashboard navigation
-    $("#dashboard").on("click", function () {
-      loadIframe("");
-    });
-
-    // Master data navigation
-    $("#masterData").on("click", function () {
-      loadIframe("/MasterData");
-    });
-
-    $("#settings").hover(function () {
-      $(this).addClass("fa-spin")
-    }, function () {
-      $(this).removeClass('fa-spin');
-    })
-
-    $("#logout").hover(function () {
-      $(this).addClass("fa-beat")
-    }, function () {
-      $(this).removeClass('fa-beat');
-    })
-
-    function loadIframe(src) {
-      var iframe = document.getElementById("iframe-main-content");
-      var loadingBar = document.getElementById("loading-bar");
-
-      // Show loading bar
-      loadingBar.style.display = "block";
-      loadingBar.style.width = "0%"; // Reset width
-
-      // Show iframe container
-      document.getElementById("iframe-container").style.display = "block";
-
-      // Update iframe src
-      iframe.src = src;
-
-      // Listen for iframe load event
-      iframe.onload = function () {
-        // Hide loading bar when iframe is loaded
-        loadingBar.style.display = "none";
+      toastr.options = {
+        closeButton: false,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "5000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
       };
 
-      // Update loading bar width as iframe loads
-      iframe.addEventListener("progress", function (event) {
-        var percentComplete = (event.loaded / event.total) * 100;
-        loadingBar.style.width = percentComplete + "%";
+      // Dashboard navigation
+      $("#dashboard").on("click", function () {
+        loadIframe("");
       });
-    }
-  });
-</script>
 
+      // Master data navigation
+      $("#masterData").on("click", function () {
+        loadIframe("/MasterData");
+      });
+
+      $("#settings").hover(
+        function () {
+          $(this).addClass("fa-spin");
+        },
+        function () {
+          $(this).removeClass("fa-spin");
+        }
+      );
+
+      $("#logout").hover(
+        function () {
+          $(this).addClass("fa-beat");
+        },
+        function () {
+          $(this).removeClass("fa-beat");
+        }
+      );
+
+      function loadIframe(src) {
+        var iframe = document.getElementById("iframe-main-content");
+        var loadingBar = document.getElementById("loading-bar");
+
+        // Show loading bar
+        loadingBar.style.display = "block";
+        loadingBar.style.width = "0%"; // Reset width
+
+        // Show iframe container
+        document.getElementById("iframe-container").style.display = "block";
+
+        // Update iframe src
+        iframe.src = src;
+
+        // Listen for iframe load event
+        iframe.onload = function () {
+          // Hide loading bar when iframe is loaded
+          loadingBar.style.display = "none";
+        };
+
+        // Update loading bar width as iframe loads
+        iframe.addEventListener("progress", function (event) {
+          var percentComplete = (event.loaded / event.total) * 100;
+          loadingBar.style.width = percentComplete + "%";
+        });
+      }
+    });
+  </script>
 </html>
