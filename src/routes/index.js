@@ -6,6 +6,7 @@ import roleMasterRoute from "./role_master";
 import unitMasterRoute from "./unit_master";
 import locationMasterRoute from "./location_master";
 import vendorMasterRoute from "./vendor_master";
+import vehicleMasterRoute from "./vehicle_master";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -31,6 +32,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 
   fastify.register(vendorMasterRoute, { prefix: "/master/vendor" });
+
+  fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
 
   done();
 };

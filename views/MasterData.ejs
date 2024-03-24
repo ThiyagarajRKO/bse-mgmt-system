@@ -323,6 +323,73 @@
     <!-- Top Menu Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Location Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container locationContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="locationSlideInPanel" class="locationPanel shadow-lg px-4">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4">
+              <span class="fw-bold fs-5">Add Location Data</span>
+              <hr />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="location-name">Location Name</label>
+              <input id="location_name" class="form-control" type="text" placeholder="eg. Chennai" name="location-name"
+                required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Description</label>
+              <input id="description" class="form-control" placeholder="eg. AJs" type="text" name="Description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+              <div id="submitLocation" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="closeLocationPanelBtn" class="col-lg-5 btn btn-outline-danger">Close</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openLocationPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold">Add</span>
+            </div>
+          </div>
+
+          <table id="locationTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Location Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Location Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Unit Container ---------------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="menu-container unitContainer d-none">
@@ -404,74 +471,6 @@
     <!-- Unit Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <!-- ------------------------------------- Location Container ---------------------------------------------------- -->
-    <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <div class="menu-container locationContainer d-none">
-
-      <!-- Slide-in Panel -->
-      <div id="locationSlideInPanel" class="locationPanel shadow-lg px-4">
-
-        <div class="row d-flex justify-content-center">
-
-          <div class="col-sm-12 col-md-12 col-md-12">
-
-            <div class="text-center mt-4">
-              <span class="fw-bold fs-5">Add Location Data</span>
-              <hr />
-            </div>
-
-            <div class="form-group mt-4">
-              <label for="location-name">Location Name</label>
-              <input id="location_name" class="form-control" type="text" placeholder="eg. Chennai" name="location-name"
-                required>
-            </div>
-
-            <div class="form-group my-3">
-              <label for="Description">Description</label>
-              <input id="description" class="form-control" placeholder="eg. AJs" type="text" name="Description">
-            </div>
-
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
-              <div id="submitLocation" class="col-lg-5 btn btn-danger">Save</div>
-              <div id="closeLocationPanelBtn" class="col-lg-5 btn btn-outline-danger">Close</div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Table Content -->
-      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-        <div class="border p-4 w-100">
-
-          <!-- Add Button -->
-          <div class="d-flex rounded-2 justify-content-end pb-4">
-            <div id="openLocationPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
-              style="width: 100px;">
-              <i class="fa-solid fa-circle-plus my-auto"></i>
-              <span style="margin-top: 4px;" class="fw-bold">Add</span>
-            </div>
-          </div>
-
-          <table id="locationTable" class="table table-hover nowrap w-100">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Location Name</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      </div>
-    </div>
-    <!-- Location Container Ends -->
-
-
-    <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Vendor Container ---------------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="menu-container vendorContainer d-none">
@@ -513,7 +512,7 @@
 
             <div class="form-group my-3">
               <label for="email">Email</label>
-              <input id="email" class="form-control" type="text"
+              <input id="email" class="form-control" type="email"
                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address"
                 placeholder="eg. xyz@gmail.com" name="email">
             </div>
@@ -566,6 +565,105 @@
       </div>
     </div>
     <!-- Vendor Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container vehicleContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="vehicleSlideInPanel" class="vehiclePanel shadow-lg px-4">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4">
+              <span class="fw-bold fs-5">Add Vehicle Data</span>
+              <hr />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="vehicle-number">Vehicle Number</label>
+              <input id="vehicle_number" class="form-control" type="text" placeholder="eg. TN65A1234"
+                name="vehicle-name" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Vehicle Brand</label>
+              <input id="vehicle_brand" class="form-control" placeholder="eg. Ashok Leyland" type="text" name="Model">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Model Number</label>
+              <input id="model_number" class="form-control" placeholder="eg. 4020 - 4x2 Tractor" type="text"
+                name="Model">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Insurance Provider</label>
+              <input id="insurance_provider" class="form-control" placeholder="eg. Bajaj" type="text" name="Model">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Insurance Number</label>
+              <input id="insurance_number" class="form-control" placeholder="eg. BJ0123456" type="text" name="Model">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Insurance Expiring On</label>
+              <input id="insurance_expiring_on" class="form-control" placeholder="eg. 27-02-2024" type="date"
+                name="Model">
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Last FC Date</label>
+              <input id="last_fc_date" class="form-control" placeholder="eg. Force" type="date" name="Model">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+              <div id="submitVehicle" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="closeVehiclePanelBtn" class="col-lg-5 btn btn-outline-danger">Close</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openVehiclePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold">Add</span>
+            </div>
+          </div>
+
+          <table id="vehicleTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Vehicle Plate Number</span></th>
+                <th class="fw-bold"><span>Vehicle Brand</span></th>
+                <th class="fw-bold"><span>Model Number</span></th>
+                <th class="fw-bold"><span>Insurance Provider</span></th>
+                <th class="fw-bold"><span>Insurance Number</span></th>
+                <th class="fw-bold"><span>Insurance Expiring On</span></th>
+                <th class="fw-bold"><span>Last FC Date</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Vehicle Container Ends -->
 
   </div>
 </body>
@@ -924,7 +1022,7 @@
           url: "/api/v1/master/location/get/all",
           error: function (xhr, error, code) {
             $("#locationTable").DataTable().destroy();
-            $("#locationTable").DataTable({ scrollX: true })
+            $("#locationTable").DataTable({ scrollX: true, ordering: false })
 
             toastr.error(xhr.responseJSON.message, 'Error')
           },
@@ -1106,7 +1204,7 @@
           url: "/api/v1/master/vendor/get/all",
           error: function (xhr, error, code) {
             $("#vendorTable").DataTable().destroy();
-            $("#vendorTable").DataTable({ scrollX: true })
+            $("#vendorTable").DataTable({ scrollX: true, ordering: false })
 
             toastr.error(xhr.responseJSON.message, 'Error')
           },
@@ -1286,6 +1384,287 @@
         },
       });
     }
+
+
+    // ---------------------------------------------------------
+    // ------------------------- Vehicle -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openVehiclePanelBtn').click(function () {
+      $('#vehicleSlideInPanel').css('right', '0');
+    });
+
+    // Close panel
+    $('#closeVehiclePanelBtn').click(function () {
+      $('#vehicleSlideInPanel').css('right', '-600px');
+    });
+
+    $(".vehicleMenu").click(function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".vehicleContainer").removeClass('d-none')
+      $(".vehicleContainer").addClass('d-block')
+
+      loadVehicleTableData()
+    })
+
+    $("#submitVehicle").click(function () {
+      saveVehicle()
+    })
+
+    function loadVehicleTableData() {
+      $("#vehicleTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: true,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        // scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/vehicle/get/all",
+          error: function (xhr, error, code) {
+            $("#vehicleTable").DataTable().destroy();
+            $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
+
+            toastr.error(xhr.responseJSON.message, "Error");
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "vehicle_number" },
+          { data: "vehicle_brand" },
+          { data: "model_number" },
+          { data: "insurance_provider" },
+          { data: "insurance_number" },
+          { data: "insurance_expiring_on" },
+          { data: "last_fc_date" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return (
+                '<i class="fa fa-pen-to-square edit editVehicle" vehicle_master_id=' +
+                row["id"] +
+                ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to edit this vehicle"></i>'
+              );
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return (
+                '<i class="fa fa-trash del delVehicle" vehicle_master_id=' +
+                row["id"] +
+                ' aria-hidden="true" style="font-size:15px;color:red" data-toggle="tooltip" data-placement="top" title="Click this button to delete this vehicle"></i>'
+              );
+            },
+          },
+          {
+            targets: [7],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["insurance_expiring_on"]);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              var strTime = hours + ":" + minutes + " " + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return (
+                day + "-" + month + "-" + date.getFullYear() + " " + strTime
+              );
+            },
+          },
+          {
+            targets: [8],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["last_fc_date"]);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              var strTime = hours + ":" + minutes + " " + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return (
+                day + "-" + month + "-" + date.getFullYear() + " " + strTime
+              );
+            },
+          },
+          {
+            targets: [9],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              var strTime = hours + ":" + minutes + " " + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return (
+                day + "-" + month + "-" + date.getFullYear() + " " + strTime
+              );
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.delVehicle', (e) => {
+      let vehicle_master_id = $(e.target).attr('vehicle_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Vehicle?',
+        content: 'Are you sure, do you want to remove this vehicle?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/vehicle/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  vehicle_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadVehicleTableData()
+
+                toastr.success('Vehicle deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Vehicle failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Vehicle is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveVehicle() {
+      const input_params = {
+        vehicle_number: $("#vehicle_number").val(),
+        vehicle_brand: $("#vehicle_brand").val(),
+        model_number: $("#model_number").val(),
+        insurance_provider: $("#insurance_provider").val(),
+        insurance_number: $("#insurance_number").val(),
+        insurance_expiring_on: $("#insurance_expiring_on").val(),
+        last_fc_date: $("#last_fc_date").val(),
+      }
+
+      $.ajax({
+        url: "/api/v1/master/vehicle/create",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeVehiclePanelBtn").click()
+
+          loadVehicleTableData()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
 
   });
 </script>
