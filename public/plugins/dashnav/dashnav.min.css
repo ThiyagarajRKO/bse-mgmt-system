@@ -4682,7 +4682,7 @@ progress {
   }
 }
 .content-header {
-  padding: 20px 25px;
+  padding: 20px 0px 25px;
   position: relative;
 }
 .content-menu {
@@ -4699,7 +4699,7 @@ progress {
   stroke-width: 2.5px;
 }
 .content-body {
-  padding: 20px 35px;
+  padding: 0px 35px;
 }
 .content-body .nav {
   display: flex;
