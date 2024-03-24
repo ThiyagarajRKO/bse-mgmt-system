@@ -34,6 +34,9 @@
 <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
 <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
+<!-- perfect-scrollbar plugin -->
+<script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
 <!-- Font Awesome -->
 <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
 
@@ -132,7 +135,7 @@
       width: 400px;
       background-color: #1f2d3e;
       color: #e3e3e3;
-
+      height: 88vh;
       /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
       transition: right 0.3s ease;
       border-radius: 8px;
@@ -203,8 +206,7 @@
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="topMenu-container d-flex justify-content-between">
-      <div
-        class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center">
+      <div class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center">
         <div class="fs-6">
           <i class="fa-solid fa-location-dot"></i>
         </div>
@@ -213,8 +215,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item unitMenu d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="topMenu-item unitMenu d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-warehouse"></i>
         </div>
@@ -223,8 +224,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item vendorMenu d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="topMenu-item vendorMenu d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-users"></i>
         </div>
@@ -233,8 +233,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item packageMenu d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="topMenu-item packageMenu d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-boxes-packing"></i>
         </div>
@@ -243,8 +242,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item productMenu d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="topMenu-item productMenu d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-shrimp"></i>
         </div>
@@ -253,8 +251,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item vehicleMenu d-flex flex-column justify-content-center align-items-center mx-3">
+      <div class="topMenu-item vehicleMenu d-flex flex-column justify-content-center align-items-center mx-3">
         <div class="fs-6">
           <i class="fa-solid fa-truck"></i>
         </div>
@@ -263,8 +260,7 @@
         </div>
       </div>
 
-      <div
-        class="topMenu-item driverMenu d-flex flex-column justify-content-center align-items-center">
+      <div class="topMenu-item driverMenu d-flex flex-column justify-content-center align-items-center">
         <div class="fs-6">
           <i class="fa-regular fa-id-card"></i>
         </div>
@@ -761,6 +757,10 @@
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
+
+    new PerfectScrollbar(".slideInPanel", {
+      suppressScrollX: true,
+    }).update()
 
     $(".topMenu-item").click(function () {
       $(".topMenu-item").removeClass('topMenu-item-active')
