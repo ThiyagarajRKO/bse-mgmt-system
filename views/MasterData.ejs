@@ -72,7 +72,8 @@
       background-color: #f7f9fd;
     }
 
-    #closeVehiclePanelBtn {
+    #closeVehiclePanelBtn,
+    .panelClose {
       cursor: pointer
     }
 
@@ -122,120 +123,71 @@
       cursor: pointer;
     }
 
-    .unitPanel {
+    .slideInPanel {
       z-index: 9999;
       position: fixed;
       top: 0;
       bottom: 0;
       right: -600px;
       width: 500px;
-      height: 100%;
-      background-color: #fff;
+      background-color: #1f2d3e;
+      color: #e3e3e3;
+
       /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
       transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+      border-radius: 8px;
     }
 
-    .locationPanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    /* Input */
+    .slideInPanel input {
+      background-color: transparent;
+      border-color: rgba(98, 114, 147, 0.6);
     }
 
-    .vendorPanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    .slideInPanel input:focus {
+      background-color: transparent;
     }
 
-    .packagePanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    .slideInPanel input:hover {
+      border-color: #627293;
     }
 
-    .productPanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    /* Select */
+    .slideInPanel .select2-container {
+      background-color: transparent;
+      border-color: rgba(98, 114, 147, 0.6);
     }
 
-    .vehiclePanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    .slideInPanel .select:focus {
+      background-color: transparent;
+      border-color: #627293;
     }
 
-    .driverPanel {
-      z-index: 9999;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -600px;
-      width: 500px;
-      height: 100%;
-      background-color: #fff;
-      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-      transition: right 0.3s ease;
-      /* Transition for smooth sliding */
+    .slideInPanel .select2-container:hover {
+      border-color: #627293;
     }
 
-    .page-item.active .page-link {
-      color: #fff !important;
-      background-color: #EA5455 !important;
-      border-color: #EA5455 !important;
+    /* TextArea */
+    .slideInPanel textarea {
+      background-color: transparent;
+      border-color: rgba(98, 114, 147, 0.6);
     }
 
-    .page-link {
-      color: #000 !important;
-      background-color: #fff !important;
-      border: 1px solid #dee2e6 !important;
+    .slideInPanel textarea:focus {
+      background-color: transparent;
     }
 
-    .page-link:hover {
-      color: #fff !important;
-      background-color: #EA5455 !important;
-      border-color: #EA5455 !important;
+    .slideInPanel textarea:hover {
+      border-color: #627293;
+    }
+
+    /* Form Control */
+    .slideInPanel .form-control {
+      color: #f7f9fc;
+    }
+
+    .slideInPanel .form-control::placeholder {
+      color: #627293;
     }
 
     .select2-dropdown {
@@ -332,7 +284,7 @@
     <div class="menu-container locationContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="locationSlideInPanel" class="locationPanel shadow-lg px-4">
+      <div id="locationSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
@@ -343,8 +295,9 @@
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeLocationPanelBtn"></i>
               </div>
-              <hr />
             </div>
+
+            <hr />
 
             <div class="form-group mt-4">
               <label for="location-name">Location Name</label>
@@ -357,7 +310,7 @@
               <input id="description" class="form-control" placeholder="eg. AJs" type="text" name="Description">
             </div>
 
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitLocation" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetLocationDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
@@ -402,7 +355,7 @@
     <div class="menu-container unitContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="unitSlideInPanel" class="unitPanel shadow-lg px-4">
+      <div id="unitSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
@@ -413,8 +366,9 @@
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeUnitPanelBtn"></i>
               </div>
-              <hr />
             </div>
+
+            <hr />
 
             <div class="form-group mt-4">
               <label for="unit-name">Unit Name</label>
@@ -430,16 +384,16 @@
 
             <div class="form-group mt-4">
               <label for="unit-type">Unit Type</label>
-              <select class="form-control input-dropdown" id="unitType" name="unitType">
+              <select class="form-control input-dropdown w-100" id="unitType" name="unitType">
               </select>
             </div>
 
             <div class="form-group mt-4">
               <label for="unit-code">Unit Code</label>
-              <input id="unit_code" class="form-control" type="text" name="unit-code" disabled>
+              <input id="unit_code" class="form-control" type="text" name="unit-code" readonly>
             </div>
 
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitUnit" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetUnitDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
@@ -486,7 +440,7 @@
     <div class="menu-container vendorContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="vendorSlideInPanel" class="vendorPanel shadow-lg px-4">
+      <div id="vendorSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
@@ -497,8 +451,9 @@
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVendorPanelBtn"></i>
               </div>
-              <hr />
             </div>
+
+            <hr />
 
             <div class="form-group mt-4">
               <label for="vendor-name">Vendor Name</label>
@@ -536,7 +491,7 @@
                 rows="4"></textarea>
             </div>
 
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitVendor" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetVendorDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
@@ -585,7 +540,7 @@
     <div class="menu-container vehicleContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="vehicleSlideInPanel" class="vehiclePanel shadow-lg px-4">
+      <div id="vehicleSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
@@ -596,8 +551,9 @@
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVehiclePanelBtn"></i>
               </div>
-              <hr />
             </div>
+
+            <hr />
 
             <div class="form-group mt-4">
               <label for="vehicle-number">Vehicle Number</label>
@@ -637,7 +593,7 @@
               <input id="last_fc_date" class="form-control" placeholder="eg. Force" type="date" name="Model">
             </div>
 
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitVehicle" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetVehicleDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
@@ -687,7 +643,7 @@
     <div class="menu-container driverContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="driverSlideInPanel" class="driverPanel shadow-lg px-4">
+      <div id="driverSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
@@ -698,61 +654,67 @@
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeDriverPanelBtn"></i>
               </div>
-              <hr />
             </div>
 
-            <div class="form-group mt-4">
-              <label for="driver-number">Driver Name</label>
-              <input id="driver_name" class="form-control" type="text" placeholder="eg. xyz" name="driver-name"
-                required>
-            </div>
+            <hr />
 
-            <div class="form-group my-3">
-              <label for="Description">License Number</label>
-              <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text" name="Model">
-            </div>
+            <div class="">
+              <div class="form-group mt-4">
+                <label for="driver-number">Driver Name</label>
+                <input id="driver_name" class="form-control" type="text" placeholder="eg. xyz" name="driver-name"
+                  required>
+              </div>
 
-            <div class="form-group my-3">
-              <label for="Aadhar">Aadhar Number</label>
-              <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012" type="text"
-                name="Model">
-            </div>
+              <div class="form-group my-3">
+                <label for="Description">License Number</label>
+                <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text"
+                  name="Model">
+              </div>
 
-            <div class="form-group my-3">
-              <label for="Description">Contact Number</label>
-              <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text"
-                name="Model">
-            </div>
+              <div class="form-group my-3">
+                <label for="Aadhar">Aadhar Number</label>
+                <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012" type="text"
+                  name="Model">
+              </div>
 
-            <div class="form-group my-3">
-              <label for="Description">Emergency Contact</label>
-              <input id="emergency_contact" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text"
-                name="Model">
-            </div>
+              <div class="form-group my-3">
+                <label for="Description">Contact Number</label>
+                <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text"
+                  name="Model">
+              </div>
 
-            <div class="form-group my-3">
-              <label for="Description">Blood Group</label>
-              <input id="blood_group" class="form-control" placeholder="eg. B+" type="text" name="Model">
-            </div>
+              <div class="form-group my-3">
+                <label for="Description">Emergency Contact</label>
+                <input id="emergency_contact" maxlength="10" class="form-control" placeholder="eg. 9876543210"
+                  type="text" name="Model">
+              </div>
 
-            <div class="form-group my-3">
-              <label for=HealthHistory">Health History</label>
-              <textarea id="health_history" rows="3" class="form-control" placeholder="eg. Diabetes"
-                name="Health History">
+              <div class="form-group my-3">
+                <label for="Description">Blood Group</label>
+                <input id="blood_group" class="form-control" placeholder="eg. B+" type="text" name="Model">
+              </div>
+
+              <div class="form-group my-3">
+                <label for=HealthHistory">Health History</label>
+                <textarea id="health_history" rows="3" class="form-control" placeholder="eg. Diabetes"
+                  name="Health History">
               </textarea>
-            </div>
+              </div>
 
-            <div class="form-group my-3">
-              <label for=Address">Address</label>
-              <textarea id="driver_address" rows="3" class="form-control" placeholder="eg. Address"
-                name="Health History">
+              <div class="form-group my-3">
+                <label for=Address">Address</label>
+                <textarea id="driver_address" rows="3" class="form-control" placeholder="eg. Address"
+                  name="Health History">
               </textarea>
+              </div>
             </div>
 
-            <div class="d-flex justify-content-between mt-4 bg-white py-3 bottom-0">
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitDriver" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetDriverDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
+
 
           </div>
         </div>
@@ -842,6 +804,13 @@
       $(".input-dropdown").val("")
       $(".input[type=date]").val("")
       $('textarea').val("")
+
+
+      // $('#unitLocations').val(null).trigger('change');
+      // $('#locationLocations').val(null).trigger('change');
+      // $('#vendorLocations').val(null).trigger('change');
+      // $('#vehicleLocations').val(null).trigger('change');
+      // $('#driverLocations').val(null).trigger('change');
     }
 
     // ---------------------------------------------------------
