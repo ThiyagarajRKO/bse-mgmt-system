@@ -82,7 +82,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ location_name }) => {
+export const GetAll = ({ location_name, start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -95,6 +95,8 @@ export const GetAll = ({ location_name }) => {
 
       const vendors = await models.LocationMaster.findAndCountAll({
         where,
+        offset: start,
+        length,
         order: [["created_at", "desc"]],
       });
 

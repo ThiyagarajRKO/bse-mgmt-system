@@ -1,11 +1,17 @@
 import { LocationMaster } from "../../../controllers";
 
-export const GetAll = ({ vendor_name, location_name }, session, fastify) => {
+export const GetAll = (
+  { vendor_name, location_name, start, length },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       let location_master = await LocationMaster.GetAll({
         vendor_name,
         location_name,
+        start,
+        length,
       });
 
       if (!location_master) {
