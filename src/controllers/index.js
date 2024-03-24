@@ -5,3 +5,4 @@ export * as LocationMaster from "./location_master";
 export * as VendorMaster from "./vendor_master";
 export * as UnitMaster from "./unit_master";
 export * as VehicleMaster from "./vehicle_master";
+export * as DriverMaster from "./driver_master";
