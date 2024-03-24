@@ -1,7 +1,7 @@
 import { VendorMaster } from "../../../controllers";
 
 export const GetAll = (
-  { vendor_name, location_master_name },
+  { start, length, vendor_name, location_master_name },
   session,
   fastify
 ) => {
@@ -9,6 +9,8 @@ export const GetAll = (
     try {
       // Creating User
       let vendor_master = await VendorMaster.GetAll({
+        start,
+        length,
         vendor_name,
         location_master_name,
       });

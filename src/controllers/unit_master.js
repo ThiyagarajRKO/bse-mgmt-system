@@ -109,6 +109,8 @@ export const GetAll = ({
   unit_name,
   unit_type,
   location_master_name,
+  start,
+  length,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -144,6 +146,8 @@ export const GetAll = ({
           },
         ],
         where,
+        offset: start,
+        length,
         order: [["created_at", "desc"]],
       });
 

@@ -23,12 +23,14 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = () => {
+export const GetAll = ({ start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await models.RoleMaster.findAll({
         attributes: ["id", "role_name"],
         where: { is_active: true },
+        offset: start,
+        length,
       });
       resolve(user);
     } catch (err) {

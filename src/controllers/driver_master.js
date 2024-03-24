@@ -116,6 +116,8 @@ export const GetAll = ({
   phone,
   blood_group,
   health_history,
+  start,
+  length,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -145,6 +147,8 @@ export const GetAll = ({
 
       const vendors = await models.DriverMaster.findAndCountAll({
         where,
+        offset: start,
+        length,
         order: [["created_at", "desc"]],
       });
 

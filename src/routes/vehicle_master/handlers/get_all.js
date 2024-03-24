@@ -1,13 +1,15 @@
 import { VehicleMaster } from "../../../controllers";
 
 export const GetAll = (
-  { vehicle_number, model_number, vehicle_brand },
+  { start, length, vehicle_number, model_number, vehicle_brand },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       let vehicle_master = await VehicleMaster.GetAll({
+        start,
+        length,
         vehicle_number,
         model_number,
         vehicle_brand,

@@ -103,7 +103,13 @@ export const Get = ({ id, vehicle_number }) => {
   });
 };
 
-export const GetAll = ({ vehicle_number, vehicle_brand, model_number }) => {
+export const GetAll = ({
+  start,
+  length,
+  vehicle_number,
+  vehicle_brand,
+  model_number,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -124,6 +130,8 @@ export const GetAll = ({ vehicle_number, vehicle_brand, model_number }) => {
 
       const vendors = await models.VehicleMaster.findAndCountAll({
         where,
+        offset: start,
+        length,
         order: [["created_at", "desc"]],
       });
 

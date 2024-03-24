@@ -1,13 +1,15 @@
 import { UnitMaster } from "../../../controllers";
 
 export const GetAll = (
-  { unit_code, unit_type, unit_name, location_master_name },
+  { start, length, unit_code, unit_type, unit_name, location_master_name },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       let unit_master = await UnitMaster.GetAll({
+        start,
+        length,
         unit_code,
         unit_name,
         unit_type,

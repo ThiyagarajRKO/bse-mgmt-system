@@ -90,7 +90,12 @@ export const Get = ({ id, vendor_name }) => {
   });
 };
 
-export const GetAll = ({ vendor_name, location_master_name }) => {
+export const GetAll = ({
+  start,
+  length,
+  vendor_name,
+  location_master_name,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -117,6 +122,8 @@ export const GetAll = ({ vendor_name, location_master_name }) => {
           },
         ],
         where,
+        offset: start,
+        length,
         order: [["created_at", "desc"]],
       });
 
