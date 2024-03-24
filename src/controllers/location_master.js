@@ -96,7 +96,7 @@ export const GetAll = ({ location_name, start, length }) => {
       const vendors = await models.LocationMaster.findAndCountAll({
         where,
         offset: start,
-        length,
+        limit: length,
         order: [["created_at", "desc"]],
       });
 

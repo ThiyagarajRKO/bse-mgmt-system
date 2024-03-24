@@ -30,7 +30,7 @@ export const GetAll = ({ start, length }) => {
         attributes: ["id", "role_name"],
         where: { is_active: true },
         offset: start,
-        length,
+        limit: length,
       });
       resolve(user);
     } catch (err) {

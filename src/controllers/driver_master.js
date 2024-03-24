@@ -148,7 +148,7 @@ export const GetAll = ({
       const vendors = await models.DriverMaster.findAndCountAll({
         where,
         offset: start,
-        length,
+        limit: length,
         order: [["created_at", "desc"]],
       });
 

@@ -123,7 +123,7 @@ export const GetAll = ({
         ],
         where,
         offset: start,
-        length,
+        limit: length,
         order: [["created_at", "desc"]],
       });
 

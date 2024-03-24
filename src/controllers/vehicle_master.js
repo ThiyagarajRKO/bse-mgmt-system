@@ -131,7 +131,7 @@ export const GetAll = ({
       const vendors = await models.VehicleMaster.findAndCountAll({
         where,
         offset: start,
-        length,
+        limit: length,
         order: [["created_at", "desc"]],
       });
 
