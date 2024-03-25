@@ -1,5 +1,13 @@
 "use strict";
 const { Model } = require("sequelize");
+
+const UnitTypes = {
+  "Collection Center": "clc",
+  "Peeling Center": "pc",
+  "Cooking Center": "coc",
+  "Distribution Center": "dc",
+};
+
 module.exports = (sequelize, DataTypes) => {
   class UnitMaster extends Model {
     static associate(models) {
@@ -39,11 +47,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       unit_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       unit_code: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
       },
       unit_type: {
         type: DataTypes.STRING,
@@ -70,6 +78,58 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
     }
   );
+
+  UnitMaster.beforeCreate(async (unit, options) => {
+    try {
+      if (unit?.unit_type && unit?.location_master_id) {
+        const { location_name } = await sequelize.models.LocationMaster.findOne(
+          {
+            attribute: "location_name",
+            where: { id: unit?.location_master_id, is_active: true },
+          }
+        );
+
+        let unit_type = UnitTypes[unit?.unit_type.trim()];
+
+        unit.unit_code = `${location_name
+          ?.trim()
+          ?.replaceAll(" ", "")
+          ?.toLowerCase()}-${unit_type}-${unit?.unit_name
+          .trim()
+          ?.replaceAll(" ", "")
+          ?.toLowerCase()}`;
+      }
+    } catch (err) {
+      console.log("Error while appending unit name", err?.message || err);
+    }
+  });
+
+  UnitMaster.beforeUpdate(async (unit, options) => {
+    try {
+      if (unit?.unit_name && unit?.unit_type && unit?.location_master_id) {
+        const { location_name } = await sequelize.models.LocationMaster.findOne(
+          {
+            attribute: "location_name",
+            where: { id: unit?.location_master_id, is_active: true },
+          }
+        );
+
+        let unit_type = UnitTypes[unit?.unit_type.trim()];
+
+        unit.unit_code = `${location_name
+          ?.trim()
+          ?.replaceAll(" ", "")
+          ?.toLowerCase()}-${unit_type}-${unit?.unit_name
+          .trim()
+          ?.replaceAll(" ", "")
+          ?.toLowerCase()}`;
+      }
+
+      unit.updated_at = new Date();
+    } catch (err) {
+      console.log("Error while appending unit name", err?.message || err);
+    }
+  });
 
   return UnitMaster;
 };

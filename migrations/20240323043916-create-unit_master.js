@@ -20,9 +20,6 @@ module.exports = {
         ),
         allowNull: false,
       },
-      unit_code: {
-        type: Sequelize.STRING,
-      },
       location_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -32,6 +29,11 @@ module.exports = {
           model: { tableName: "location_master" },
           key: "id",
         },
+      },
+      unit_code: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+        unique: true,
       },
       is_active: {
         defaultValue: false,

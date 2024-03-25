@@ -1,7 +1,7 @@
 import { UnitMaster, LocationMaster } from "../../../controllers";
 
 export const Create = (
-  { profile_id, unit_code, unit_name, unit_type, location_master_id },
+  { profile_id, unit_name, unit_type, location_master_id },
   session,
   fastify
 ) => {
@@ -19,7 +19,6 @@ export const Create = (
       }
 
       const unit_master = await UnitMaster.Insert({
-        unit_code,
         unit_name,
         unit_type,
         location_master_id,

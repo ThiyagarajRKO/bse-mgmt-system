@@ -18,13 +18,6 @@ export const Insert = async (unit_master_data) => {
         });
       }
 
-      if (!unit_master_data?.unit_code) {
-        return reject({
-          statusCode: 420,
-          message: "Unit code must not be empty!",
-        });
-      }
-
       if (!unit_master_data?.location_master_id) {
         return reject({
           statusCode: 420,
@@ -35,6 +28,9 @@ export const Insert = async (unit_master_data) => {
       const result = await models.UnitMaster.create(unit_master_data);
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({ statusCode: 420, message: "Unit already exists!" });
+      }
       reject(err);
     }
   });
@@ -57,7 +53,6 @@ export const Update = async (profile_id, id, unit_master_data) => {
         });
       }
 
-      unit_master_data.updated_at = new Date();
       unit_master_data.updated_by = profile_id;
 
       const result = await models.UnitMaster.update(unit_master_data, {
@@ -65,6 +60,7 @@ export const Update = async (profile_id, id, unit_master_data) => {
           id,
           is_active: true,
         },
+        individualHooks: true,
       });
       resolve(result);
     } catch (err) {
