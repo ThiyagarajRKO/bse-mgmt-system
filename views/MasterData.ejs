@@ -558,6 +558,112 @@
     <!-- Vendor Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Packaging Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container packagingContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="packagingSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span class="fw-bold fs-5">Add Packaging Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closePackagingPanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="">
+
+              <div class="form-group my-3">
+                <label for="packaging_type">Type</label>
+                <select class="form-control input-dropdown w-100" id="packagingType" name="packagingType" required>
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingLength">Length</label>
+                <input id="packagingLength" maxlength="12" class="form-control" placeholder="eg. 12 inches" type="text"
+                  name="packagingLength">
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingWidth">Width</label>
+                <input id="packagingWidth" maxlength="10" class="form-control" placeholder="eg. 2 inches" type="text"
+                  name="packagingWidth">
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingHeight">Height</label>
+                <input id="packagingHeight" maxlength="10" class="form-control" placeholder="eg. 2 inches" type="text"
+                  name="packagingHeight">
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingMaterialComposition">Material Composition</label>
+                <input id="packagingMaterialComposition" class="form-control" placeholder="eg. plastic" type="text"
+                  name="packagingMaterialComposition">
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingSupplier">Supplier</label>
+                <textarea id="packagingSupplier" rows="3" class="form-control" placeholder="eg. JCB"
+                  name="packagingSupplier">
+                  </textarea>
+              </div>
+            </div>
+
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitPackaging" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetPackagingDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openPackagingPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="PackagingTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Type</span></th>
+                <th class="fw-bold"><span>Length</span></th>
+                <th class="fw-bold"><span>Width</span></th>
+                <th class="fw-bold"><span>Height</span></th>
+                <th class="fw-bold"><span>Material Composition</span></th>
+                <th class="fw-bold"><span>Supplier</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Driver Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="menu-container vehicleContainer d-none">
@@ -778,6 +884,8 @@
       </div>
     </div>
     <!-- Driver Container Ends -->
+
+
 
   </div>
 </body>
@@ -1055,20 +1163,20 @@
       saveUnit()
     })
 
-    $("#unitType").on('change', refreshUnitCode)
-    $("#unitLocations").on('change', refreshUnitCode)
+    $("#unitType").on('change', refreshUnitName)
+    $("#unitLocations").on('change', refreshUnitName)
 
-    let unitCode = ""
-    function refreshUnitCode() {
+    let unitName = ""
+    function refreshUnitName() {
       let unitType = $("#unitType").select2("data")[0]?.text || ''
       let unitLocations = $("#unitLocations").select2("data")[0]?.text || ''
 
       unitLocations = unitLocations?.replaceAll(" ", "")
       unitType = unitType?.replaceAll(" ", "")
 
-      unitCode = `${unitLocations}-${unitType}`
+      unitName = `${unitLocations}-${unitType}`
 
-      $("#unit_code").val(unitCode)
+      $("#unit_name").val(unitName)
     }
 
     function loadUnitTableData() {
@@ -1104,7 +1212,6 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "unit_code" },
           { data: "unit_name" },
           { data: "unit_type" },
           { data: "LocationMaster.location_name" },
@@ -1267,9 +1374,8 @@
       // refreshUnitCode()
 
       const input_params = {
-        unit_name: $("#unit_name").val(),
+        unit_name: unitName,
         unit_type: $("#unitType").val(),
-        unit_code: unitCode,
         location_master_id: $("#unitLocations").val(),
       }
 
@@ -1534,71 +1640,97 @@
 
     $("#resetVendorDataBtn").on("click", resetAllInputs)
 
-
     // ---------------------------------------------------------
-    // ------------------------- Vehicle -----------------------
+    // ----------------------- Packaging ------------------------
     // ---------------------------------------------------------
 
     // Open panel
-    $('#openVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '0');
+    $('#openPackagingPanelBtn').click(function () {
+      $('#packagingSlideInPanel').css('right', '0');
+
+      loadPackagingName()
     });
 
     // Close panel
-    $('#closeVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '-600px');
+    $('#closePackagingPanelBtn').click(function () {
+      $('#packagingSlideInPanel').css('right', '-600px');
+
+      $('select.select2-hidden-accessible').select2('destroy');
     });
 
-    $(".vehicleMenu").click(function () {
+    $(".packagingMenu").click(function () {
       $(".menu-container").addClass('d-none')
 
-      $(".vehicleContainer").removeClass('d-none')
-      $(".vehicleContainer").addClass('d-block')
+      $(".packagingContainer").removeClass('d-none')
+      $(".packagingContainer").addClass('d-block')
 
-      loadVehicleTableData()
+      loadPackagingTableData()
     })
 
-    $("#submitVehicle").click(function () {
-      saveVehicle()
+    $("#submitPackaging").click(function () {
+      savePackaging()
     })
 
-    function loadVehicleTableData() {
-      $("#vehicleTable").DataTable({
+    $("#packagingType").on('change', refreshPackagingName)
+    $("#packaginglength").on('change', refreshPackagingName)
+    $("#packagingwidth").on('change', refreshPackagingName)
+    $("#packagingheight").on('change', refreshPackagingName)
+
+    let packagingName = ""
+    function refreshPackagingName() {
+      let packagingType = $("#packagingType").val || ''
+      let packagingLength = $("#packagingLength").val || ''
+      let packagingWidth = $("#packagingWidth").val || ''
+      let packagingHeight = $("#packagingHeight").val || ''
+
+
+      packaging = packagingName?.replaceAll(" ", "")
+
+      packagingName = `${packagingType}- ${packagingLength} X ${packagingWidth} X ${packagingHeight}`
+
+      $("#packaging_name").val(packagingName)
+    }
+
+    function loadPackagingTableData() {
+      $("#packagingTable").DataTable({
         // searching: true,
         destroy: true,
         responsive: false,
         processing: true,
         serverSide: true,
         scrollX: true,
-        scrollY: "41vh",
+        scrollY: '40vh',
         ordering: false,
         ajax: {
           type: "GET",
-          url: "/api/v1/master/vehicle/get/all",
+          url: "/api/v1/master/packaging/get/all",
           error: function (xhr, error, code) {
-            $("#vehicleTable").DataTable().destroy();
-            $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
+            $("#packagingTable").DataTable().destroy();
+            $("#packagingTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            })
 
-            toastr.error(xhr.responseJSON.message, "Error");
+            toastr.error(xhr.responseJSON.message, 'Error')
           },
-          dataSrc: function (json) {
-            json.iTotalRecords = json.data?.rows?.length;
-            json.iTotalDisplayRecords = json.data?.count;
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
 
             // Return the data to be displayed in the DataTable
             return json?.data?.rows;
-          },
+          }
         },
         columns: [
           { data: null },
           { data: null },
-          { data: "vehicle_number" },
-          { data: "vehicle_brand" },
-          { data: "model_number" },
-          { data: "insurance_provider" },
-          { data: "insurance_number" },
-          { data: "insurance_expiring_on" },
-          { data: "last_fc_date" },
+          { data: "packaging_name" },
+          { data: "packaging_type" },
+          { data: "packaging_length" },
+          { data: "packaging_width" },
+          { data: "packaging_height" },
+          { data: "packaging_material_composition" },
+          { data: "packaging_supplier" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -1606,112 +1738,33 @@
             targets: [0],
             className: "text-left",
             render: function (data, type, row) {
-              return (
-                '<i class="fa fa-pen-to-square edit editVehicle" vehicle_master_id=' +
-                row["id"] +
-                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this vehicle"></i>'
-              );
+              return '<i class="fa fa-pen-to-square edit editPackaging" packaging_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Packaging"></i>'
             },
           },
           {
             targets: [1],
             className: "text-left",
             render: function (data, type, row) {
-              return (
-                '<i class="fa fa-trash del delVehicle" vehicle_master_id=' +
-                row["id"] +
-                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this vehicle"></i>'
-              );
+              return '<i class="fa fa-trash del delPackaging" packaging_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Packaging"></i>'
             },
           },
           {
-            targets: [7],
-            className: "text-left",
-            render: function (data, type, row) {
-              const date = new Date(row["insurance_expiring_on"]);
-
-              var months = [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ];
-
-              var month = months[date.getMonth()];
-              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-              return (
-                day + "-" + month + "-" + date.getFullYear()
-              );
-            },
-          },
-          {
-            targets: [8],
-            className: "text-left",
-            render: function (data, type, row) {
-              const date = new Date(row["last_fc_date"]);
-
-              var months = [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ];
-
-              var month = months[date.getMonth()];
-              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-              return (
-                day + "-" + month + "-" + date.getFullYear()
-              );
-            },
-          },
-          {
-            targets: [9],
+            targets: [6],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
 
-              var months = [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ];
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
               var hours = date.getHours();
               var minutes = date.getMinutes();
-              var ampm = hours >= 12 ? "PM" : "AM";
+              var ampm = hours >= 12 ? 'PM' : 'AM';
               hours = hours % 12;
               hours = hours ? hours : 12; // Handle midnight (0 hours)
-              minutes = minutes < 10 ? "0" + minutes : minutes;
-              var strTime = hours + ":" + minutes + " " + ampm;
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
               var month = months[date.getMonth()];
-              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-              return (
-                day + "-" + month + "-" + date.getFullYear() + " " + strTime
-              );
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
             },
           },
         ],
@@ -1721,12 +1774,12 @@
       });
     }
 
-    $(document).on('click', '.delVehicle', (e) => {
-      let vehicle_master_id = $(e.target).attr('vehicle_master_id')
+    $(document).on('click', '.delUnit', (e) => {
+      let packaging_master_id = $(e.target).attr('packaging_master_id')
       let currentRow = $(e.target).closest('tr')
       $.confirm({
-        title: 'Delete Vehicle?',
-        content: 'Are you sure, do you want to remove this vehicle?',
+        title: 'Delete Packaging Detail?',
+        content: 'Are you sure, do you want to remove this Packaging?',
         backgroundDismiss: false,
         backgroundDismissAnimation: 'glow',
         type: 'red',
@@ -1742,290 +1795,589 @@
             btnClass: 'btn-red',
             action: function () {
               $.ajax({
-                url: '/api/v1/master/vehicle/delete',
+                url: '/api/v1/master/packaging/delete',
                 method: 'post',
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify({
-                  vehicle_master_id,
+                  unit_master_id,
                 })
               }).done(function (response) {
                 //loading data to table
-                loadVehicleTableData()
+                loadPackagingTableData()
 
-                toastr.success('Vehicle deleted successfully', 'Deleted')
+                toastr.success('Packaging detail deleted successfully', 'Deleted')
               }).fail(function () {
-                toastr.error('Vehicle failed to delete!', 'Error')
+                toastr.error('Packaging detail failed to delete!', 'Error')
               });
             }
           },
           no: function () {
-            toastr.info('Vehicle is safe now', 'Info')
+            toastr.info('Packaging detail is safe now', 'Info')
           }
         }
       });
     })
 
-    function saveVehicle() {
-      const input_params = {
-        vehicle_number: $("#vehicle_number").val(),
-        vehicle_brand: $("#vehicle_brand").val(),
-        model_number: $("#model_number").val(),
-        insurance_provider: $("#insurance_provider").val(),
-        insurance_number: $("#insurance_number").val(),
-        insurance_expiring_on: $("#insurance_expiring_on").val(),
-        last_fc_date: $("#last_fc_date").val(),
-      }
-
-      $.ajax({
-        url: "/api/v1/master/vehicle/create",
-        method: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(input_params),
-        crossDomain: true,
-        processData: false,
-        success: (data) => {
-          toastr["success"](data?.message);
-
-          $("#closeVehiclePanelBtn").click()
-
-          loadVehicleTableData()
-
-          resetAllInputs()
-        },
-        error: (jqXhr, textStatus, errorThrown) => {
-          if (jqXhr["status"] == 420) {
-            toastr["warning"](jqXhr["responseJSON"]["message"]);
-          } else {
-            toastr["error"](jqXhr["responseJSON"]["message"]);
-          }
-        },
-      });
-    }
-
-    $("#resetVehicleDataBtn").on("click", resetAllInputs)
-
-
-    // ---------------------------------------------------------
-    // -------------------------- Driver -----------------------
-    // ---------------------------------------------------------
-
-    // Open panel
-    $('#openDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '0');
-    });
-
-    // Close panel
-    $('#closeDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '-600px');
-    });
-
-    $(".driverMenu").click(function () {
-      $(".menu-container").addClass('d-none')
-
-      $(".driverContainer").removeClass('d-none')
-      $(".driverContainer").addClass('d-block')
-
-      loadDriverTableData()
-    })
-
-    $("#submitDriver").click(function () {
-      saveDriver()
-    })
-
-    function loadDriverTableData() {
-      $("#driverTable").DataTable({
-        // searching: true,
-        destroy: true,
-        responsive: false,
-        processing: true,
-        serverSide: true,
-        scrollX: true,
-        scrollY: "41vh",
-        ordering: false,
-        ajax: {
-          type: "GET",
-          url: "/api/v1/master/driver/get/all",
-          error: function (xhr, error, code) {
-            $("#driverTable").DataTable().destroy();
-            $("#driverTable").DataTable({ scrollX: true, ordering: false });
-
-            toastr.error(xhr.responseJSON.message, "Error");
-          },
-          dataSrc: function (json) {
-            json.iTotalRecords = json.data?.rows?.length;
-            json.iTotalDisplayRecords = json.data?.count;
-
-            // Return the data to be displayed in the DataTable
-            return json?.data?.rows;
-          },
-        },
-        columns: [
-          { data: null },
-          { data: null },
-          { data: "driver_name" },
-          { data: "license_number" },
-          { data: "phone" },
-          { data: "emergency_contact" },
-          { data: "aadhar_number" },
-          { data: "blood_group" },
-          { data: "health_history" },
-          { data: "address" },
-          { data: "created_at" },
-        ],
-        columnDefs: [
-          {
-            targets: [0],
-            className: "text-left",
-            render: function (data, type, row) {
-              return (
-                '<i class="fa fa-pen-to-square edit editDriver" driver_master_id=' +
-                row["id"] +
-                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this driver"></i>'
-              );
+    function loadPackagingType() {
+      $("#packagingType")
+        .select2({
+          placeholder: "Choose a Packaging Type",
+          allowClear: true,
+          data: [
+            {
+              id: "pouch",
+              text: "Pouch"
             },
-          },
-          {
-            targets: [1],
-            className: "text-left",
-            render: function (data, type, row) {
-              return (
-                '<i class="fa fa-trash del delDriver" driver_master_id=' +
-                row["id"] +
-                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this driver"></i>'
-              );
+            {
+              id: "Master Carton",
+              text: "Master Carton"
             },
-          },
-          {
-            targets: [10],
-            className: "text-left",
-            render: function (data, type, row) {
-              const date = new Date(row["created_at"]);
-
-              var months = [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
-              ];
-              var hours = date.getHours();
-              var minutes = date.getMinutes();
-              var ampm = hours >= 12 ? "PM" : "AM";
-              hours = hours % 12;
-              hours = hours ? hours : 12; // Handle midnight (0 hours)
-              minutes = minutes < 10 ? "0" + minutes : minutes;
-              var strTime = hours + ":" + minutes + " " + ampm;
-              var month = months[date.getMonth()];
-              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-              return (
-                day + "-" + month + "-" + date.getFullYear() + " " + strTime
-              );
+            {
+              id: "Duplex Carton",
+              text: "Duplex Carton"
             },
-          },
-        ],
-        // "infoCallback": function (settings, start, end, max, total, pre) {
-        //   return start + " to " + end;
-        // }
-      });
+          ]
+        })
+
+      // Clearing selected value
+      $('#packagingType').val(null).trigger('change');
     }
-
-    $(document).on('click', '.delDriver', (e) => {
-      let driver_master_id = $(e.target).attr('driver_master_id')
-      let currentRow = $(e.target).closest('tr')
-      $.confirm({
-        title: 'Delete Driver?',
-        content: 'Are you sure, do you want to remove this driver?',
-        backgroundDismiss: false,
-        backgroundDismissAnimation: 'glow',
-        type: 'red',
-        closeIcon: true,
-        closeIconClass: 'fa fa-close',
-        typeAnimated: true,
-        boxWidth: '30%',
-        useBootstrap: false,
-        autoClose: 'no|5000',
-        buttons: {
-          delete: {
-            text: 'Delete',
-            btnClass: 'btn-red',
-            action: function () {
-              $.ajax({
-                url: '/api/v1/master/driver/delete',
-                method: 'post',
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify({
-                  driver_master_id,
-                })
-              }).done(function (response) {
-                //loading data to table
-                loadDriverTableData()
-
-                toastr.success('Driver deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Driver failed to delete!', 'Error')
-              });
-            }
-          },
-          no: function () {
-            toastr.info('Driver is safe now', 'Info')
-          }
-        }
-      });
-    })
-
-    function saveDriver() {
-      const input_params = {
-        driver_name: $("#driver_name").val(),
-        license_number: $("#license_number").val(),
-        aadhar_number: $("#aadhar_number").val(),
-        address: $("#driver_address").val(),
-        phone: $("#driver_phone").val(),
-        emergency_contact: $("#emergency_contact").val(),
-        blood_group: $("#blood_group").val(),
-        health_history: $("#health_history").val(),
-      }
-
-      $.ajax({
-        url: "/api/v1/master/driver/create",
-        method: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(input_params),
-        crossDomain: true,
-        processData: false,
-        success: (data) => {
-          toastr["success"](data?.message);
-
-          $("#closeDriverPanelBtn").click()
-
-          loadDriverTableData()
-
-          resetAllInputs()
-        },
-        error: (jqXhr, textStatus, errorThrown) => {
-          if (jqXhr["status"] == 420) {
-            toastr["warning"](jqXhr["responseJSON"]["message"]);
-          } else {
-            toastr["error"](jqXhr["responseJSON"]["message"]);
-          }
-        },
-      });
-    }
-
-    $("#resetDriverDataBtn").on("click", resetAllInputs)
-
 
   });
+
+  function savePackaging() {
+    // refreshUnitCode()
+
+    const input_params = {
+      packaging_type: $("#packagingType").val(),
+      packaging_length: $("#packagingLength").val(),
+      packaging_width: $("#packagingWidth").val(),
+      packaging_height: $("#packagingheight").val(),
+      packaging_master_composition: $("#packagingMasterComposition").val(),
+      packaging_supplier: $("#packagingSupplier").val(),
+    }
+
+    $.ajax({
+      url: "/api/v1/master/packaging/create",
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(input_params),
+      crossDomain: true,
+      processData: false,
+      success: (data) => {
+        toastr["success"](data?.message);
+
+        $("#closePackagingPanelBtn").click()
+
+        loadPackagingTableData()
+
+        resetAllInputs()
+      },
+      error: (jqXhr, textStatus, errorThrown) => {
+        if (jqXhr["status"] == 420) {
+          toastr["warning"](jqXhr["responseJSON"]["message"]);
+        } else {
+          toastr["error"](jqXhr["responseJSON"]["message"]);
+        }
+      },
+    });
+  }
+
+
+  $("#resetPackagingDataBtn").on("click", resetAllInputs)
+
+
+  // ---------------------------------------------------------
+  // ------------------------- Vehicle -----------------------
+  // ---------------------------------------------------------
+
+  // Open panel
+  $('#openVehiclePanelBtn').click(function () {
+    $('#vehicleSlideInPanel').css('right', '0');
+  });
+
+  // Close panel
+  $('#closeVehiclePanelBtn').click(function () {
+    $('#vehicleSlideInPanel').css('right', '-600px');
+  });
+
+  $(".vehicleMenu").click(function () {
+    $(".menu-container").addClass('d-none')
+
+    $(".vehicleContainer").removeClass('d-none')
+    $(".vehicleContainer").addClass('d-block')
+
+    loadVehicleTableData()
+  })
+
+  $("#submitVehicle").click(function () {
+    saveVehicle()
+  })
+
+  function loadVehicleTableData() {
+    $("#vehicleTable").DataTable({
+      // searching: true,
+      destroy: true,
+      responsive: false,
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: "41vh",
+      ordering: false,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/master/vehicle/get/all",
+        error: function (xhr, error, code) {
+          $("#vehicleTable").DataTable().destroy();
+          $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
+
+          toastr.error(xhr.responseJSON.message, "Error");
+        },
+        dataSrc: function (json) {
+          json.iTotalRecords = json.data?.rows?.length;
+          json.iTotalDisplayRecords = json.data?.count;
+
+          // Return the data to be displayed in the DataTable
+          return json?.data?.rows;
+        },
+      },
+      columns: [
+        { data: null },
+        { data: null },
+        { data: "vehicle_number" },
+        { data: "vehicle_brand" },
+        { data: "model_number" },
+        { data: "insurance_provider" },
+        { data: "insurance_number" },
+        { data: "insurance_expiring_on" },
+        { data: "last_fc_date" },
+        { data: "created_at" },
+      ],
+      columnDefs: [
+        {
+          targets: [0],
+          className: "text-left",
+          render: function (data, type, row) {
+            return (
+              '<i class="fa fa-pen-to-square edit editVehicle" vehicle_master_id=' +
+              row["id"] +
+              ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this vehicle"></i>'
+            );
+          },
+        },
+        {
+          targets: [1],
+          className: "text-left",
+          render: function (data, type, row) {
+            return (
+              '<i class="fa fa-trash del delVehicle" vehicle_master_id=' +
+              row["id"] +
+              ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this vehicle"></i>'
+            );
+          },
+        },
+        {
+          targets: [7],
+          className: "text-left",
+          render: function (data, type, row) {
+            const date = new Date(row["insurance_expiring_on"]);
+
+            var months = [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ];
+
+            var month = months[date.getMonth()];
+            var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+            return (
+              day + "-" + month + "-" + date.getFullYear()
+            );
+          },
+        },
+        {
+          targets: [8],
+          className: "text-left",
+          render: function (data, type, row) {
+            const date = new Date(row["last_fc_date"]);
+
+            var months = [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ];
+
+            var month = months[date.getMonth()];
+            var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+            return (
+              day + "-" + month + "-" + date.getFullYear()
+            );
+          },
+        },
+        {
+          targets: [9],
+          className: "text-left",
+          render: function (data, type, row) {
+            const date = new Date(row["created_at"]);
+
+            var months = [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ];
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Handle midnight (0 hours)
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            var strTime = hours + ":" + minutes + " " + ampm;
+            var month = months[date.getMonth()];
+            var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+            return (
+              day + "-" + month + "-" + date.getFullYear() + " " + strTime
+            );
+          },
+        },
+      ],
+      // "infoCallback": function (settings, start, end, max, total, pre) {
+      //   return start + " to " + end;
+      // }
+    });
+  }
+
+  $(document).on('click', '.delVehicle', (e) => {
+    let vehicle_master_id = $(e.target).attr('vehicle_master_id')
+    let currentRow = $(e.target).closest('tr')
+    $.confirm({
+      title: 'Delete Vehicle?',
+      content: 'Are you sure, do you want to remove this vehicle?',
+      backgroundDismiss: false,
+      backgroundDismissAnimation: 'glow',
+      type: 'red',
+      closeIcon: true,
+      closeIconClass: 'fa fa-close',
+      typeAnimated: true,
+      boxWidth: '30%',
+      useBootstrap: false,
+      autoClose: 'no|5000',
+      buttons: {
+        delete: {
+          text: 'Delete',
+          btnClass: 'btn-red',
+          action: function () {
+            $.ajax({
+              url: '/api/v1/master/vehicle/delete',
+              method: 'post',
+              dataType: "json",
+              contentType: "application/json",
+              data: JSON.stringify({
+                vehicle_master_id,
+              })
+            }).done(function (response) {
+              //loading data to table
+              loadVehicleTableData()
+
+              toastr.success('Vehicle deleted successfully', 'Deleted')
+            }).fail(function () {
+              toastr.error('Vehicle failed to delete!', 'Error')
+            });
+          }
+        },
+        no: function () {
+          toastr.info('Vehicle is safe now', 'Info')
+        }
+      }
+    });
+  })
+
+  function saveVehicle() {
+    const input_params = {
+      vehicle_number: $("#vehicle_number").val(),
+      vehicle_brand: $("#vehicle_brand").val(),
+      model_number: $("#model_number").val(),
+      insurance_provider: $("#insurance_provider").val(),
+      insurance_number: $("#insurance_number").val(),
+      insurance_expiring_on: $("#insurance_expiring_on").val(),
+      last_fc_date: $("#last_fc_date").val(),
+    }
+
+    $.ajax({
+      url: "/api/v1/master/vehicle/create",
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(input_params),
+      crossDomain: true,
+      processData: false,
+      success: (data) => {
+        toastr["success"](data?.message);
+
+        $("#closeVehiclePanelBtn").click()
+
+        loadVehicleTableData()
+
+        resetAllInputs()
+      },
+      error: (jqXhr, textStatus, errorThrown) => {
+        if (jqXhr["status"] == 420) {
+          toastr["warning"](jqXhr["responseJSON"]["message"]);
+        } else {
+          toastr["error"](jqXhr["responseJSON"]["message"]);
+        }
+      },
+    });
+  }
+
+  $("#resetVehicleDataBtn").on("click", resetAllInputs)
+
+
+  // ---------------------------------------------------------
+  // -------------------------- Driver -----------------------
+  // ---------------------------------------------------------
+
+  // Open panel
+  $('#openDriverPanelBtn').click(function () {
+    $('#driverSlideInPanel').css('right', '0');
+  });
+
+  // Close panel
+  $('#closeDriverPanelBtn').click(function () {
+    $('#driverSlideInPanel').css('right', '-600px');
+  });
+
+  $(".driverMenu").click(function () {
+    $(".menu-container").addClass('d-none')
+
+    $(".driverContainer").removeClass('d-none')
+    $(".driverContainer").addClass('d-block')
+
+    loadDriverTableData()
+  })
+
+  $("#submitDriver").click(function () {
+    saveDriver()
+  })
+
+  function loadDriverTableData() {
+    $("#driverTable").DataTable({
+      // searching: true,
+      destroy: true,
+      responsive: false,
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: "41vh",
+      ordering: false,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/master/driver/get/all",
+        error: function (xhr, error, code) {
+          $("#driverTable").DataTable().destroy();
+          $("#driverTable").DataTable({ scrollX: true, ordering: false });
+
+          toastr.error(xhr.responseJSON.message, "Error");
+        },
+        dataSrc: function (json) {
+          json.iTotalRecords = json.data?.rows?.length;
+          json.iTotalDisplayRecords = json.data?.count;
+
+          // Return the data to be displayed in the DataTable
+          return json?.data?.rows;
+        },
+      },
+      columns: [
+        { data: null },
+        { data: null },
+        { data: "driver_name" },
+        { data: "license_number" },
+        { data: "phone" },
+        { data: "emergency_contact" },
+        { data: "aadhar_number" },
+        { data: "blood_group" },
+        { data: "health_history" },
+        { data: "address" },
+        { data: "created_at" },
+      ],
+      columnDefs: [
+        {
+          targets: [0],
+          className: "text-left",
+          render: function (data, type, row) {
+            return (
+              '<i class="fa fa-pen-to-square edit editDriver" driver_master_id=' +
+              row["id"] +
+              ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this driver"></i>'
+            );
+          },
+        },
+        {
+          targets: [1],
+          className: "text-left",
+          render: function (data, type, row) {
+            return (
+              '<i class="fa fa-trash del delDriver" driver_master_id=' +
+              row["id"] +
+              ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this driver"></i>'
+            );
+          },
+        },
+        {
+          targets: [10],
+          className: "text-left",
+          render: function (data, type, row) {
+            const date = new Date(row["created_at"]);
+
+            var months = [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ];
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Handle midnight (0 hours)
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            var strTime = hours + ":" + minutes + " " + ampm;
+            var month = months[date.getMonth()];
+            var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+            return (
+              day + "-" + month + "-" + date.getFullYear() + " " + strTime
+            );
+          },
+        },
+      ],
+      // "infoCallback": function (settings, start, end, max, total, pre) {
+      //   return start + " to " + end;
+      // }
+    });
+  }
+
+  $(document).on('click', '.delDriver', (e) => {
+    let driver_master_id = $(e.target).attr('driver_master_id')
+    let currentRow = $(e.target).closest('tr')
+    $.confirm({
+      title: 'Delete Driver?',
+      content: 'Are you sure, do you want to remove this driver?',
+      backgroundDismiss: false,
+      backgroundDismissAnimation: 'glow',
+      type: 'red',
+      closeIcon: true,
+      closeIconClass: 'fa fa-close',
+      typeAnimated: true,
+      boxWidth: '30%',
+      useBootstrap: false,
+      autoClose: 'no|5000',
+      buttons: {
+        delete: {
+          text: 'Delete',
+          btnClass: 'btn-red',
+          action: function () {
+            $.ajax({
+              url: '/api/v1/master/driver/delete',
+              method: 'post',
+              dataType: "json",
+              contentType: "application/json",
+              data: JSON.stringify({
+                driver_master_id,
+              })
+            }).done(function (response) {
+              //loading data to table
+              loadDriverTableData()
+
+              toastr.success('Driver deleted successfully', 'Deleted')
+            }).fail(function () {
+              toastr.error('Driver failed to delete!', 'Error')
+            });
+          }
+        },
+        no: function () {
+          toastr.info('Driver is safe now', 'Info')
+        }
+      }
+    });
+  })
+
+  function saveDriver() {
+    const input_params = {
+      driver_name: $("#driver_name").val(),
+      license_number: $("#license_number").val(),
+      aadhar_number: $("#aadhar_number").val(),
+      address: $("#driver_address").val(),
+      phone: $("#driver_phone").val(),
+      emergency_contact: $("#emergency_contact").val(),
+      blood_group: $("#blood_group").val(),
+      health_history: $("#health_history").val(),
+    }
+
+    $.ajax({
+      url: "/api/v1/master/driver/create",
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(input_params),
+      crossDomain: true,
+      processData: false,
+      success: (data) => {
+        toastr["success"](data?.message);
+
+        $("#closeDriverPanelBtn").click()
+
+        loadDriverTableData()
+
+        resetAllInputs()
+      },
+      error: (jqXhr, textStatus, errorThrown) => {
+        if (jqXhr["status"] == 420) {
+          toastr["warning"](jqXhr["responseJSON"]["message"]);
+        } else {
+          toastr["error"](jqXhr["responseJSON"]["message"]);
+        }
+      },
+    });
+  }
+
+  $("#resetDriverDataBtn").on("click", resetAllInputs)
+
 </script>
 
 </html>
