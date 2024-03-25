@@ -18,12 +18,11 @@ export const Create = (
         });
       }
 
-      const unit_master = await UnitMaster.Insert({
+      const unit_master = await UnitMaster.Insert(profile_id, {
         unit_name,
         unit_type,
         location_master_id,
         is_active: true,
-        created_by: profile_id,
       });
 
       resolve({

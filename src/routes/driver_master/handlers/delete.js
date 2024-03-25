@@ -8,7 +8,7 @@ export const Delete = ({ profile_id, driver_master_id }, session, fastify) => {
         id: driver_master_id,
       });
 
-      if (driver_master?.[0] > 0) {
+      if (driver_master > 0) {
         return resolve({
           message: "Driver master has been deleted successfully",
         });

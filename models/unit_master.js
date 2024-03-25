@@ -12,21 +12,21 @@ module.exports = (sequelize, DataTypes) => {
   class UnitMaster extends Model {
     static associate(models) {
       UnitMaster.belongsTo(models.UserProfiles, {
-        as: "creator_profile",
+        as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
       UnitMaster.belongsTo(models.UserProfiles, {
-        as: "updater_profile",
+        as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
       UnitMaster.belongsTo(models.UserProfiles, {
-        as: "deleter_profile",
+        as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
@@ -76,58 +76,75 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       createdAt: false,
       updatedAt: false,
+      paranoid: true,
+      deletedAt: "deleted_at",
     }
   );
 
-  UnitMaster.beforeCreate(async (unit, options) => {
+  // Create Hook
+  UnitMaster.beforeCreate(async (data, options) => {
     try {
-      if (unit?.unit_type && unit?.location_master_id) {
+      if (data?.unit_type && data?.location_master_id) {
         const { location_name } = await sequelize.models.LocationMaster.findOne(
           {
             attribute: "location_name",
-            where: { id: unit?.location_master_id, is_active: true },
+            where: { id: data?.location_master_id, is_active: true },
           }
         );
 
-        let unit_type = UnitTypes[unit?.unit_type.trim()];
+        let unit_type = UnitTypes[data?.unit_type.trim()];
 
-        unit.unit_code = `${location_name
+        data.unit_code = `${location_name
           ?.trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}-${unit_type}-${unit?.unit_name
+          ?.toLowerCase()}-${unit_type}-${data?.unit_name
           .trim()
           ?.replaceAll(" ", "")
           ?.toLowerCase()}`;
       }
+      data.created_by = options.profile_id;
     } catch (err) {
-      console.log("Error while appending unit name", err?.message || err);
+      console.log("Error while appending an unit name", err?.message || err);
     }
   });
 
-  UnitMaster.beforeUpdate(async (unit, options) => {
+  // Update Hook
+  UnitMaster.beforeUpdate(async (data, options) => {
     try {
-      if (unit?.unit_name && unit?.unit_type && unit?.location_master_id) {
+      if (data?.unit_name && data?.unit_type && data?.location_master_id) {
         const { location_name } = await sequelize.models.LocationMaster.findOne(
           {
             attribute: "location_name",
-            where: { id: unit?.location_master_id, is_active: true },
+            where: { id: data?.location_master_id, is_active: true },
           }
         );
 
-        let unit_type = UnitTypes[unit?.unit_type.trim()];
+        let unit_type = UnitTypes[data?.unit_type.trim()];
 
-        unit.unit_code = `${location_name
+        data.unit_code = `${location_name
           ?.trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}-${unit_type}-${unit?.unit_name
+          ?.toLowerCase()}-${unit_type}-${data?.unit_name
           .trim()
           ?.replaceAll(" ", "")
           ?.toLowerCase()}`;
       }
 
-      unit.updated_at = new Date();
+      data.updated_at = new Date();
     } catch (err) {
-      console.log("Error while appending unit name", err?.message || err);
+      console.log("Error while updating an unit name", err?.message || err);
+    }
+  });
+
+  // Delete Hook
+  UnitMaster.afterDestroy(async (data, options) => {
+    try {
+      data.deleted_by = options?.profile_id;
+      data.is_active = false;
+
+      await data.save({ profile_id: options.profile_id });
+    } catch (err) {
+      console.log("Error while deleting an unit", err?.message || err);
     }
   });
 

@@ -1,21 +1,19 @@
 import { Users, UserProfiles } from "../../../controllers";
 
-export const SignUp = (params) => {
+export const SignUp = ({
+  username,
+  full_name,
+  first_name,
+  last_name,
+  password,
+  email = "",
+  phone = "",
+  dob,
+  country_code,
+  role_id,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let {
-        username,
-        full_name,
-        first_name,
-        last_name,
-        password,
-        email = "",
-        phone = "",
-        dob,
-        country_code,
-        role_id,
-      } = params;
-
       let user_data = {};
       let profile_data = {};
       let is_new_account = false;
@@ -47,6 +45,7 @@ export const SignUp = (params) => {
           is_email_verified: false,
           is_mobile_verified: false,
           user_status: "0",
+          username,
           email,
           phone,
           country_code,
@@ -81,7 +80,7 @@ export const SignUp = (params) => {
         resolve({
           message: `Account exists already!`,
           data: {
-            user_id: user_data?.dataValues?.UserProfile?.dataValues?.id,
+            user_id: user_data?.UserProfile?.id,
           },
         });
       }

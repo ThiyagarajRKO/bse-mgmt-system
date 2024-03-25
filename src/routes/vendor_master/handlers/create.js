@@ -35,7 +35,6 @@ export const Create = (
         phone,
         email,
         location_master_id,
-        created_by: profile_id,
         is_active: true,
       });
 

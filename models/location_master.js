@@ -4,19 +4,19 @@ module.exports = (sequelize, DataTypes) => {
   class LocationMaster extends Model {
     static associate(models) {
       LocationMaster.belongsTo(models.UserProfiles, {
-        as: "creator_profile",
+        as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
       LocationMaster.belongsTo(models.UserProfiles, {
-        as: "updater_profile",
+        as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
       LocationMaster.belongsTo(models.UserProfiles, {
-        as: "deleter_profile",
+        as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
@@ -57,8 +57,44 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       createdAt: false,
       updatedAt: false,
+      paranoid: true,
+      deletedAt: "deleted_at",
     }
   );
+
+  // Create Hook
+  LocationMaster.beforeCreate(async (data, options) => {
+    try {
+      data.created_by = options.profile_id;
+    } catch (err) {
+      console.log(
+        "Error while inserting a driver details",
+        err?.message || err
+      );
+    }
+  });
+
+  // Update Hook
+  LocationMaster.beforeUpdate(async (data, options) => {
+    try {
+      data.updated_at = new Date();
+      data.updated_by = options?.profile_id;
+    } catch (err) {
+      console.log("Error while updating a driver", err?.message || err);
+    }
+  });
+
+  // Delete Hook
+  LocationMaster.afterDestroy(async (data, options) => {
+    try {
+      data.deleted_by = options?.profile_id;
+      data.is_active = false;
+
+      await data.save({ profile_id: options.profile_id });
+    } catch (err) {
+      console.log("Error while deleting a driver", err?.message || err);
+    }
+  });
 
   return LocationMaster;
 };

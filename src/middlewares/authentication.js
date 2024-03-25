@@ -18,10 +18,10 @@ export const ValidateUser = async (req, reply) => {
     if (!user_data) {
       return reply
         .code(403)
-        .send({ success: false, message: "Unauthorized User!" });
+        .send({ success: false, message: "Profile doesn't exist!" });
     }
 
-    if (user_data?.User?.user_status != 1) {
+    if (user_data?.creator?.user_status != 1) {
       return reply
         .code(403)
         .send({ success: false, message: "User isn't in the Active state" });

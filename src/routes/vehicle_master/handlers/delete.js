@@ -8,7 +8,7 @@ export const Delete = ({ profile_id, vehicle_master_id }, session, fastify) => {
         id: vehicle_master_id,
       });
 
-      if (vehicle_master?.[0] > 0) {
+      if (vehicle_master > 0) {
         return resolve({
           message: "Vehicle master has been deleted successfully",
         });

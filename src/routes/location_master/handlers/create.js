@@ -7,11 +7,10 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const location_master = await LocationMaster.Insert({
+      const location_master = await LocationMaster.Insert(profile_id, {
         location_name,
         description,
         is_active: true,
-        created_by: profile_id,
       });
 
       resolve({

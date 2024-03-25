@@ -14,7 +14,6 @@ module.exports = {
           is_admin: false,
           role_id: "c4be6a50-1bda-4237-bbf5-b607c37cd9b0",
           created_by: "0a6495f7-7c0f-442c-aad0-a13d8c2d4ce5",
-          updated_by: "0a6495f7-7c0f-442c-aad0-a13d8c2d4ce5",
         },
       ],
       {}

@@ -12,7 +12,7 @@ export const Delete = (
         id: location_master_id,
       });
 
-      if (location_master?.[0] > 0) {
+      if (location_master > 0) {
         return resolve({
           message: "Location master has been deleted successfully",
         });

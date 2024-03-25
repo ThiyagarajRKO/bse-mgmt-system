@@ -2,9 +2,11 @@ export const signInSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["identity", "password"],
+      required: ["password"],
       properties: {
-        identity: { type: "string" },
+        username: { type: "string" },
+        email: { type: "string" },
+        phone: { type: "string" },
         password: { type: "string" },
         role_id: { type: "string" },
       },

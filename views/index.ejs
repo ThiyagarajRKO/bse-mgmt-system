@@ -143,11 +143,11 @@
     // Login Function
     $("#signin").on("click", function () {
 
-      const identity = $("#username").val()
+      const username = $("#username").val()
       const password = $("#password").val()
       const role_id = $("#roles").val()
 
-      if (!identity || !password || !role_id) {
+      if (!username || !password || !role_id) {
         toastr["warning"]("Fill all the required fields");
         return
       }
@@ -155,7 +155,7 @@
       const role_name = $("#roles").select2("data")[0].text
 
       let input_params = {
-        identity,
+        username,
         password,
         role_id,
       };

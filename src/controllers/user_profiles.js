@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_data) => {
+export const Insert = async (profile_id, profile_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!profile_data) {
         return reject({
           statusCode: 420,
@@ -18,7 +25,9 @@ export const Insert = async (profile_data) => {
         });
       }
 
-      const result = await models.UserProfiles.create(profile_data);
+      const result = await models.UserProfiles.create(profile_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
       reject(err);
@@ -43,13 +52,6 @@ export const Update = async (profile_id, profile_data) => {
         });
       }
 
-      if (profile_data?.first_name || profile_data?.last_name)
-        profile_data.full_name = (
-          profile_data?.first_name +
-          " " +
-          profile_data?.last_name
-        )?.trim();
-
       const result = await models.UserProfiles.update(profile_data, {
         where: {
           id: profile_id,
@@ -57,6 +59,7 @@ export const Update = async (profile_id, profile_data) => {
           role_id: "e7daa45c-627d-455a-ac57-ec32aa57d009",
           is_banned: false,
         },
+        individualHooks: true,
       });
       resolve(result);
     } catch (err) {
@@ -65,7 +68,7 @@ export const Update = async (profile_id, profile_data) => {
   });
 };
 
-export const DeleteByUser = async ({ profile_id }) => {
+export const Delete = async ({ profile_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -75,22 +78,17 @@ export const DeleteByUser = async ({ profile_id }) => {
         });
       }
 
-      const result = await models.UserProfiles.update(
-        {
-          is_active: false,
-          updated_at: new Date(),
+      const result = await models.UserProfiles.destroy({
+        where: {
+          id: profile_id,
+          is_active: true,
+          [Op.or]: [
+            { role_id: "e7daa45c-627d-455a-ac57-ec32aa57d009" },
+            { role_id: "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee" },
+          ],
         },
-        {
-          where: {
-            id: profile_id,
-            is_active: true,
-            [Op.or]: [
-              { role_id: "e7daa45c-627d-455a-ac57-ec32aa57d009" },
-              { role_id: "29e07c7e-8d9b-40e0-9fc4-1cdc466a89ee" },
-            ],
-          },
-        }
-      );
+        individualHooks: true,
+      });
       resolve(result);
     } catch (err) {
       reject(err);
@@ -125,6 +123,7 @@ export const Get = ({ id, username, role_id }) => {
       const user = await models.UserProfiles.findOne({
         include: [
           {
+            as: "creator",
             model: models.Users,
             where: {
               is_active: true,

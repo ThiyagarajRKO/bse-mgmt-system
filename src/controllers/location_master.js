@@ -1,13 +1,20 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (location_data) => {
+export const Insert = async (profile_id, location_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!location_data) {
         return reject({
           statusCode: 420,
           message: "Location data must not be empty!",
+        });
+      }
+
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
         });
       }
 
@@ -18,9 +25,15 @@ export const Insert = async (location_data) => {
         });
       }
 
-      const result = await models.LocationMaster.create(location_data);
+      const result = await models.LocationMaster.create(location_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({ statusCode: 420, message: "Location already exists!" });
+      }
+
       reject(err);
     }
   });
@@ -36,6 +49,13 @@ export const Update = async (profile_id, id, location_data) => {
         });
       }
 
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!location_data) {
         return reject({
           statusCode: 420,
@@ -43,13 +63,13 @@ export const Update = async (profile_id, id, location_data) => {
         });
       }
 
-      location_data.updated_at = new Date();
-      location_data.updated_by = profile_id;
       const result = await models.LocationMaster.update(location_data, {
         where: {
           id,
           is_active: true,
         },
+        individualHooks: true,
+        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -142,20 +162,22 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.LocationMaster.update(
-        {
-          is_active: false,
-          deleted_by: profile_id,
-          deleted_at: new Date(),
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const vendor = await models.LocationMaster.destroy({
+        where: {
+          id,
+          is_active: true,
+          created_by: profile_id,
         },
-        {
-          where: {
-            id,
-            is_active: true,
-            created_by: profile_id,
-          },
-        }
-      );
+        individualHooks: true,
+        profile_id,
+      });
 
       resolve(vendor);
     } catch (err) {

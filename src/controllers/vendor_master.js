@@ -4,6 +4,13 @@ import models from "../../models";
 export const Insert = async (profile_id, vendor_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!vendor_master_data) {
         return reject({
           statusCode: 420,
@@ -18,9 +25,17 @@ export const Insert = async (profile_id, vendor_master_data) => {
         });
       }
 
-      const result = await models.VendorMaster.create(vendor_master_data);
+      const result = await models.VendorMaster.create(vendor_master_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "Vendor already exists!",
+        });
+      }
       reject(err);
     }
   });
@@ -36,6 +51,13 @@ export const Update = async (profile_id, id, vendor_master_data) => {
         });
       }
 
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!vendor_master_data) {
         return reject({
           statusCode: 420,
@@ -43,14 +65,13 @@ export const Update = async (profile_id, id, vendor_master_data) => {
         });
       }
 
-      vendor_master_data.updated_at = new Date();
-      vendor_master_data.updated_by = profile_id;
-
       const result = await models.VendorMaster.update(vendor_master_data, {
         where: {
           id,
           is_active: true,
         },
+        individualHooks: true,
+        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -144,20 +165,22 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.VendorMaster.update(
-        {
-          is_active: false,
-          deleted_by: profile_id,
-          deleted_at: new Date(),
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const vendor = await models.VendorMaster.destroy({
+        where: {
+          id,
+          is_active: true,
+          created_by: profile_id,
         },
-        {
-          where: {
-            id,
-            is_active: true,
-            created_by: profile_id,
-          },
-        }
-      );
+        individualHooks: true,
+        profile_id,
+      });
 
       resolve(vendor);
     } catch (err) {

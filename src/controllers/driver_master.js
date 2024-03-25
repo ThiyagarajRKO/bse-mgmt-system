@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (driver_data) => {
+export const Insert = async (profile_id, driver_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!driver_data) {
         return reject({
           statusCode: 420,
@@ -46,9 +53,17 @@ export const Insert = async (driver_data) => {
         });
       }
 
-      const result = await models.DriverMaster.create(driver_data);
+      const result = await models.DriverMaster.create(driver_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "Driver already exists!",
+        });
+      }
       reject(err);
     }
   });
@@ -64,6 +79,13 @@ export const Update = async (profile_id, id, driver_data) => {
         });
       }
 
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!driver_data) {
         return reject({
           statusCode: 420,
@@ -71,13 +93,13 @@ export const Update = async (profile_id, id, driver_data) => {
         });
       }
 
-      driver_data.updated_at = new Date();
-      driver_data.updated_by = profile_id;
       const result = await models.DriverMaster.update(driver_data, {
         where: {
           id,
           is_active: true,
         },
+        individualHooks: true,
+        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -159,7 +181,7 @@ export const GetAll = ({
   });
 };
 
-export const Count = ({ id, driver_number }) => {
+export const Count = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -194,20 +216,15 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.DriverMaster.update(
-        {
-          is_active: false,
-          deleted_by: profile_id,
-          deleted_at: new Date(),
+      const vendor = await models.DriverMaster.destroy({
+        where: {
+          id,
+          is_active: true,
+          created_by: profile_id,
         },
-        {
-          where: {
-            id,
-            is_active: true,
-            created_by: profile_id,
-          },
-        }
-      );
+        individualHooks: true,
+        profile_id,
+      });
 
       resolve(vendor);
     } catch (err) {

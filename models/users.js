@@ -7,13 +7,22 @@ module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     static associate(models) {
       Users.hasOne(models.UserProfiles, {
+        as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
       Users.hasOne(models.UserProfiles, {
+        as: "updater",
         foreignKey: "updated_by",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      Users.hasOne(models.UserProfiles, {
+        as: "deleter",
+        foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -77,15 +86,30 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       createdAt: false,
       updatedAt: false,
+      paranoid: true,
+      deletedAt: "deleted_at",
     }
   );
 
-  Users.beforeCreate((user, options) => {
-    if (user?.password) {
-      user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
+  Users.beforeCreate((data, options) => {
+    try {
+      if (data?.password) {
+        data.password = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10));
+      }
+      if (data?.email) {
+        data.email = data?.email?.toLowerCase();
+      }
+    } catch (err) {
+      console.log("Error while creating an user", err?.message || err);
     }
-    if (user?.email) {
-      user.email = user?.email?.toLowerCase();
+  });
+
+  // Update Hook
+  Users.beforeUpdate(async (data, options) => {
+    try {
+      data.updated_at = new Date();
+    } catch (err) {
+      console.log("Error while updating an user", err?.message || err);
     }
   });
 

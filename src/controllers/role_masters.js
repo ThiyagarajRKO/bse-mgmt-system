@@ -7,7 +7,7 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "User ID field must not be empty!",
+          message: "Role master id field must not be empty!",
         });
       }
 

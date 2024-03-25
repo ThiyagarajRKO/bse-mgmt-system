@@ -17,7 +17,7 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const driver_master = await DriverMaster.Insert({
+      const driver_master = await DriverMaster.Insert(profile_id, {
         driver_name,
         license_number,
         aadhar_number,
@@ -27,7 +27,6 @@ export const Create = (
         blood_group,
         health_history,
         is_active: true,
-        created_by: profile_id,
       });
 
       resolve({

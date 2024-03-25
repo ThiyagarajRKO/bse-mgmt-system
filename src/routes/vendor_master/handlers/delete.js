@@ -8,7 +8,7 @@ export const Delete = ({ profile_id, vendor_master_id }, session, fastify) => {
         id: vendor_master_id,
       });
 
-      if (vendor_master?.[0] > 0) {
+      if (vendor_master > 0) {
         return resolve({
           message: "Vendor master has been deleted successfully",
         });

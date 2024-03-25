@@ -16,7 +16,7 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const vehicle_master = await VehicleMaster.Insert({
+      const vehicle_master = await VehicleMaster.Insert(profile_id, {
         vehicle_number,
         vehicle_brand,
         model_number,
@@ -25,7 +25,6 @@ export const Create = (
         insurance_expiring_on,
         last_fc_date,
         is_active: true,
-        created_by: profile_id,
       });
 
       resolve({

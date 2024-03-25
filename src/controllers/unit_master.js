@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (unit_master_data) => {
+export const Insert = async (profile_id, unit_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!unit_master_data?.unit_name) {
         return reject({
           statusCode: 420,
@@ -25,7 +32,9 @@ export const Insert = async (unit_master_data) => {
         });
       }
 
-      const result = await models.UnitMaster.create(unit_master_data);
+      const result = await models.UnitMaster.create(unit_master_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
@@ -43,6 +52,13 @@ export const Update = async (profile_id, id, unit_master_data) => {
         return reject({
           statusCode: 420,
           message: "Unit id must not be empty!",
+        });
+      }
+
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
         });
       }
 
@@ -164,20 +180,22 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.UnitMaster.update(
-        {
-          is_active: false,
-          deleted_by: profile_id,
-          deleted_at: new Date(),
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const unit = await models.UnitMaster.destroy({
+        where: {
+          id,
+          is_active: true,
+          created_by: profile_id,
         },
-        {
-          where: {
-            id,
-            is_active: true,
-            created_by: profile_id,
-          },
-        }
-      );
+        individualHooks: true,
+        profile_id,
+      });
 
       resolve(unit);
     } catch (err) {

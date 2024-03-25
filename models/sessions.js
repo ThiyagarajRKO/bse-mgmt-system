@@ -32,9 +32,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Sessions.beforeCreate((like, options) => {
-    like.unique_key = like?.created_by + "-" + like?.post_id;
-  });
-
   return Sessions;
 };

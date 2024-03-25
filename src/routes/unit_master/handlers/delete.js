@@ -8,7 +8,7 @@ export const Delete = ({ profile_id, unit_master_id }, session, fastify) => {
         id: unit_master_id,
       });
 
-      if (unit_master?.[0] > 0) {
+      if (unit_master > 0) {
         return resolve({
           message: "Unit master has been deleted successfully",
         });

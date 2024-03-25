@@ -58,7 +58,9 @@ module.exports = {
         type: Sequelize.DATE,
       },
       updated_at: {
-        defaultValue: Sequelize.fn("now"),
+        type: Sequelize.DATE,
+      },
+      deleted_at: {
         type: Sequelize.DATE,
       },
       created_by: {
@@ -73,7 +75,15 @@ module.exports = {
       },
       updated_by: {
         type: Sequelize.UUID,
-        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { schema: "auth", tableName: "users" },
+          key: "id",
+        },
+      },
+      deleted_by: {
+        type: Sequelize.UUID,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
