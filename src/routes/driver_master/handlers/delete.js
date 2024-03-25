@@ -16,7 +16,7 @@ export const Delete = ({ profile_id, driver_master_id }, session, fastify) => {
 
       resolve({
         statusCode: 420,
-        message: "Vehicle master didn't delete",
+        message: "Driver master didn't delete",
       });
     } catch (err) {
       fastify.log.error(err);

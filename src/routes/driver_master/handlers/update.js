@@ -21,7 +21,7 @@ export const Update = (
 
       resolve({
         statusCode: 420,
-        message: "Vehicle master didn't update",
+        message: "Driver master didn't update",
       });
     } catch (err) {
       fastify.log.error(err);

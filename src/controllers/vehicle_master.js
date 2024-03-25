@@ -87,9 +87,9 @@ export const Get = ({ id, vehicle_number }) => {
       };
 
       if (id) {
-        where[id] = id;
+        where.id = id;
       } else if (vehicle_number) {
-        where[vehicle_number] = vehicle_number;
+        where.vehicle_number = vehicle_number;
       }
 
       const vehicle = await models.VehicleMaster.findOne({
