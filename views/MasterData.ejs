@@ -411,11 +411,6 @@
               </select>
             </div>
 
-            <div class="form-group mt-4">
-              <label for="unit-code">Unit Code</label>
-              <input id="unit_code" class="form-control" type="text" name="unit-code" readonly>
-            </div>
-
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitUnit" class="col-lg-5 btn btn-danger">Save</div>
               <div id="resetUnitDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
@@ -587,27 +582,27 @@
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingLength">Length</label>
-                <input id="packagingLength" maxlength="12" class="form-control" placeholder="eg. 12 inches" type="text"
+                <label for="packagingLength">Length (inches)</label>
+                <input id="packagingLength" maxlength="12" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingLength">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingWidth">Width</label>
-                <input id="packagingWidth" maxlength="10" class="form-control" placeholder="eg. 2 inches" type="text"
+                <label for="packagingWidth">Width (inches)</label>
+                <input id="packagingWidth" maxlength="10" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingWidth">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingHeight">Height</label>
-                <input id="packagingHeight" maxlength="10" class="form-control" placeholder="eg. 2 inches" type="text"
+                <label for="packagingHeight">Height (inches)</label>
+                <input id="packagingHeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
                   name="packagingHeight">
               </div>
 
               <div class="form-group my-3">
                 <label for="packagingMaterialComposition">Material Composition</label>
-                <input id="packagingMaterialComposition" class="form-control" placeholder="eg. plastic" type="text"
-                  name="packagingMaterialComposition">
+                <select id="packagingMaterialComposition" class="form-control input-dropdown w-100"
+                  name="packagingMaterialComposition" required></select>
               </div>
 
               <div class="form-group my-3">
@@ -650,9 +645,9 @@
                 <th></th>
                 <th class="fw-bold"><span>Name</span></th>
                 <th class="fw-bold"><span>Type</span></th>
-                <th class="fw-bold"><span>Length</span></th>
-                <th class="fw-bold"><span>Width</span></th>
-                <th class="fw-bold"><span>Height</span></th>
+                <th class="fw-bold"><span>Length (inches)</span></th>
+                <th class="fw-bold"><span>Width (inches)</span></th>
+                <th class="fw-bold"><span>Height (inches)</span></th>
                 <th class="fw-bold"><span>Material Composition</span></th>
                 <th class="fw-bold"><span>Supplier</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
@@ -1650,6 +1645,7 @@
       $('#packagingSlideInPanel').css('right', '0');
 
       loadPackagingType()
+      loadPackagingMaterialComposition()
     });
 
     // Close panel
@@ -1807,7 +1803,7 @@
           allowClear: true,
           data: [
             {
-              id: "pouch",
+              id: "Pouch",
               text: "Pouch"
             },
             {
@@ -1817,6 +1813,31 @@
             {
               id: "Duplex Carton",
               text: "Duplex Carton"
+            },
+          ]
+        })
+
+      // Clearing selected value
+      $('#packagingType').val(null).trigger('change');
+    }
+
+    function loadPackagingMaterialComposition() {
+      $("#packagingMaterialComposition")
+        .select2({
+          placeholder: "Choose a Packaging Material",
+          allowClear: true,
+          data: [
+            {
+              id: "Plastic",
+              text: "Plastic"
+            },
+            {
+              id: "Cardboard",
+              text: "Cardboard"
+            },
+            {
+              id: "Thermocol",
+              text: "Thermocol"
             },
           ]
         })

@@ -10,25 +10,26 @@ module.exports = {
       packaging_name: {
         type: Sequelize.TEXT,
         allowNull: false,
+        unique: true,
       },
       packaging_type: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM("Pouch", "Master Carton", "Duplex Carton"),
         allowNull: false,
       },
       packaging_height: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       packaging_width: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       packaging_length: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       packaging_material_composition: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.ENUM("Plastic", "Cardboard", "Thermocol"),
         allowNull: false,
       },
       packaging_supplier: {

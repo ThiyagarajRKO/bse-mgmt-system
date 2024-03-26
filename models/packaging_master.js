@@ -1,6 +1,18 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
+  const PackagingTypes = {
+    Pouch: "PO",
+    "Master Carton": "MC",
+    "Duplex Carton": "DC",
+  };
+
+  const PackagingMaterials = {
+    Plastic: "PA",
+    Cardboard: "CB",
+    Thermocol: "TC",
+  };
+
   class PackagingMaster extends Model {
     static associate(models) {
       PackagingMaster.belongsTo(models.UserProfiles, {
@@ -37,13 +49,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       packaging_height: {
-        type: DataTypes.STRING(12),
+        type: DataTypes.INTEGER,
       },
       packaging_width: {
-        type: DataTypes.STRING(12),
+        type: DataTypes.INTEGER,
       },
       packaging_length: {
-        type: DataTypes.STRING(12),
+        type: DataTypes.INTEGER,
       },
       packaging_material_composition: {
         type: DataTypes.STRING(50),
@@ -79,14 +91,15 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
-      if (
-        data?.packaging_type &&
-        data?.packaging_length &&
-        data?.packaging_width &&
-        data?.packaging_height
-      ) {
-        data.packaging_name = `${data?.packaging_type}-${data?.packaging_length}x${data?.packaging_width}x${data?.packaging_height}`;
-      }
+      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+        data?.packaging_length
+      }x${data?.packaging_width}x${data?.packaging_height}-${
+        PackagingMaterials[data?.packaging_material_composition]
+      }-${data?.packaging_supplier
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}`;
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
@@ -99,14 +112,14 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
-      if (
-        data?.packaging_type &&
-        data?.packaging_length &&
-        data?.packaging_width &&
-        data?.packaging_height
-      ) {
-        data.packaging_name = `${data?.packaging_type}-${data?.packaging_length}x${data?.packaging_width}x${data?.packaging_height}`;
-      }
+      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+        data?.packaging_length
+      }x${data?.packaging_width}x${data?.packaging_height}-${
+        PackagingMaterials[data?.packaging_material_composition]
+      }-${data?.packaging_supplier
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUppserCase()}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

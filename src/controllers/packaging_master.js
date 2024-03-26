@@ -63,6 +63,10 @@ export const Insert = async (profile_id, packaging_data) => {
       });
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({ statusCode: 420, message: "Location already exists!" });
+      }
+
       reject(err);
     }
   });

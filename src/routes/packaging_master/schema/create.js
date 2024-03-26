@@ -12,9 +12,9 @@ export const createSchema = {
       ],
       properties: {
         packaging_type: { type: "string" },
-        packaging_height: { type: "string" },
-        packaging_width: { type: "string" },
-        packaging_length: { type: "string" },
+        packaging_height: { type: "integer" },
+        packaging_width: { type: "integer" },
+        packaging_length: { type: "integer" },
         packaging_material_composition: { type: "string" },
         packaging_supplier: { type: "string" },
       },
