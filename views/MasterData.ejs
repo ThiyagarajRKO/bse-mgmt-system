@@ -170,6 +170,10 @@
       border-color: rgba(98, 114, 147, 0.6);
     }
 
+    .select2-container {
+      width: 100% !important;
+    }
+
     .slideInPanel .select:focus {
       background-color: transparent;
       border-color: #627293;
@@ -314,7 +318,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Location Data</span>
+              <span id="locationPanelHeading" class="fw-bold fs-5">Add Location Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeLocationPanelBtn"></i>
               </div>
@@ -385,7 +389,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Unit Data</span>
+              <span id="unitPanelHeading" class="fw-bold fs-5">Add Unit Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeUnitPanelBtn"></i>
               </div>
@@ -401,7 +405,7 @@
 
             <div class="form-group my-3">
               <label for="Description">Location</label>
-              <select class="form-control input-dropdown" id="unitLocations" name="unitLocation">
+              <select class="form-control input-dropdown w-100" id="unitLocations" name="unitLocation">
               </select>
             </div>
 
@@ -465,7 +469,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Vendor Data</span>
+              <span id="vendorPanelHeading" class="fw-bold fs-5">Add Vendor Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVendorPanelBtn"></i>
               </div>
@@ -565,7 +569,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Packaging Data</span>
+              <span id="packagingPanelHeading" class="fw-bold fs-5">Add Packaging Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closePackagingPanelBtn"></i>
               </div>
@@ -672,7 +676,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Vehicle Data</span>
+              <span id="vehiclePanelHeading" class="fw-bold fs-5">Add Vehicle Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVehiclePanelBtn"></i>
               </div>
@@ -688,34 +692,35 @@
 
             <div class="form-group my-3">
               <label for="Description">Vehicle Brand</label>
-              <input id="vehicle_brand" class="form-control" placeholder="eg. Ashok Leyland" type="text" name="Model">
+              <input id="vehicle_brand" class="form-control" placeholder="eg. Ashok Leyland" type="text">
             </div>
 
             <div class="form-group my-3">
               <label for="Description">Model Number</label>
-              <input id="model_number" class="form-control" placeholder="eg. 4020 - 4x2 Tractor" type="text"
-                name="Model">
+              <input id="model_number" class="form-control" placeholder="eg. 4020 - 4x2 Tractor" type="text">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Provider</label>
-              <input id="insurance_provider" class="form-control" placeholder="eg. Bajaj" type="text" name="Model">
+              <label for="InsuranceProvider">Insurance Provider</label>
+              <input id="insurance_provider" class="form-control" placeholder="eg. Bajaj" type="text"
+                name="InsuranceProvider">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Number</label>
-              <input id="insurance_number" class="form-control" placeholder="eg. BJ0123456" type="text" name="Model">
+              <label for="InsuranceNumber">Insurance Number</label>
+              <input id="insurance_number" class="form-control" placeholder="eg. BJ0123456" type="text"
+                name="InsuranceNumber">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Expiring On</label>
-              <input id="insurance_expiring_on" class="form-control" placeholder="eg. 27-02-2024" type="date"
-                name="Model">
+              <label for="InsuranceExpiringOn">Insurance Expiring On</label>
+              <input id="insurance_expiring_on" class="form-control" placeholder="27-02-2024" type="date"
+                name="InsuranceExpiringOn">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Last FC Date</label>
-              <input id="last_fc_date" class="form-control" placeholder="eg. Force" type="date" name="Model">
+              <label for="LastFCDate">Last FC Date</label>
+              <input id="last_fc_date" class="form-control" placeholder="27-02-2024" type="date" name="LastFCDate">
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
@@ -775,7 +780,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Driver Data</span>
+              <span id="driverPanelHeading" class="fw-bold fs-5">Add Driver Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeDriverPanelBtn"></i>
               </div>
@@ -792,31 +797,29 @@
 
               <div class="form-group my-3">
                 <label for="Description">License Number</label>
-                <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text"
-                  name="Model">
+                <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Aadhar">Aadhar Number</label>
-                <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012" type="text"
-                  name="Model">
+                <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012"
+                  type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Contact Number</label>
-                <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text"
-                  name="Model">
+                <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Emergency Contact</label>
                 <input id="emergency_contact" maxlength="10" class="form-control" placeholder="eg. 9876543210"
-                  type="text" name="Model">
+                  type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Blood Group</label>
-                <input id="blood_group" class="form-control" placeholder="eg. B+" type="text" name="Model">
+                <input id="blood_group" class="form-control" placeholder="eg. B+" type="text">
               </div>
 
               <div class="form-group my-3">
@@ -889,19 +892,10 @@
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
 
+    // Declarations
     new PerfectScrollbar(".slideInPanel", {
       suppressScrollX: true,
     }).update()
-
-    $(".topMenu-item").click(function () {
-      $(".topMenu-item").removeClass('topMenu-item-active')
-
-      $(this).addClass('topMenu-item-active')
-
-      $(".panelClose").click()
-
-      resetAllInputs()
-    })
 
     toastr.options = {
       closeButton: false,
@@ -921,14 +915,7 @@
       hideMethod: "fadeOut",
     };
 
-    function resetAllInputs() {
-      $("input").val("")
-      $(".input-dropdown").val("")
-      $(".input[type=date]").val("")
-      $('textarea').val("")
-    }
-
-    // Open Location default
+    // Open Location on load (default)
     $(".locationMenu").click()
     $(".menu-container").addClass('d-none')
 
@@ -937,18 +924,101 @@
 
     loadLocationTableData()
 
+    // Menu navigation
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass('topMenu-item-active')
+
+      $(this).addClass('topMenu-item-active')
+
+      $(".panelClose").click()
+
+      resetAllInputs()
+    })
+
+    // Global Functions
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      // Ensure 2-digit formatting
+      if (day < 10) {
+        day = '0' + day;
+      }
+      if (month < 10) {
+        month = '0' + month;
+      }
+
+      return year + '-' + month + '-' + day;
+    }
+
+    function resetAllInputs() {
+      $("input").val("")
+
+      // Reset all date inputs
+      var dateInputs = document.querySelectorAll('input[type="date"]');
+      // looping all the date inputs
+      dateInputs.forEach(function (input) {
+        input.value = formatDate(new Date());
+      });
+
+      // Resetting textarea
+      $('textarea').val("")
+
+      // Resetting select field selected option
+      $("#unitLocations").val(null).trigger('change');
+      $("#unitType").val(null).trigger('change');
+      $("#vendorLocations").val(null).trigger('change');
+      $("#packagingType").val(null).trigger('change');
+      $("#packagingMaterialComposition").val(null).trigger('change');
+    }
+
+    function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css('right', '0');
+
+      // Changing panel Heading label
+      $(`#${panelHeadingId}`).text(`Add ${panelType} Data`)
+
+      // Changing panel save button label
+      $(`#${panelSubmitButton}`).text("Save")
+
+      // Changing panel save button attribute
+      $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null)
+    }
+
+
+    function closeSlidePanel(panelId) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css('right', '-600px');
+
+      // Resetting all the input fields' data
+      resetAllInputs()
+
+      // Destroying select2 all the dropdowns
+      // $('select.select2-hidden-accessible').select2('destroy');
+    }
+
+    // Pre loading dropdown data
+    loadUnitLocations()
+    loadUnitType()
+    loadVendorLocations()
+    loadPackagingType()
+    loadPackagingMaterialComposition()
+
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
     // ---------------------------------------------------------
 
     // Open panel
     $('#openLocationPanelBtn').click(function () {
-      $('#locationSlideInPanel').css('right', '0');
+      openSlidePanel("locationSlideInPanel", "locationPanelHeading", "Location", "submitLocation", "location_master_id")
     });
 
     // Close panel
     $('#closeLocationPanelBtn').click(function () {
-      $('#locationSlideInPanel').css('right', '-600px');
+      closeSlidePanel("locationSlideInPanel")
     });
 
     $(".locationMenu").click(function () {
@@ -1039,6 +1109,24 @@
       });
     }
 
+    $(document).on('click', '.editLocation', (e) => {
+      // Changing panel input fields data
+      $("#location_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#description").val($(e.target).closest('tr').children("td").eq(3).text())
+
+      // Opening Slied Panel
+      $("#openLocationPanelBtn").click()
+
+      // Changing panel heading
+      $("#locationPanelHeading").text("Edit Location Data")
+
+      // Changing panel button label
+      $("#submitLocation").text("Update")
+
+      // Changing panel button attribute
+      $("#submitLocation").attr("location_master_id", $(e.target).attr('location_master_id'))
+    })
+
     $(document).on('click', '.delLocation', (e) => {
       let location_master_id = $(e.target).attr('location_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -1085,13 +1173,27 @@
     })
 
     function saveLocation() {
-      const input_params = {
+      const location_master_id = $("#submitLocation").attr('location_master_id')
+
+      let url = "/api/v1/master/location/create"
+      let input_params = {
         location_name: $("#location_name").val(),
         description: $("#description").val(),
       }
 
+      if (location_master_id) {
+        url = "/api/v1/master/location/update"
+
+        input_params = {
+          location_master_id,
+          location_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/location/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1125,18 +1227,16 @@
 
     // Open panel
     $('#openUnitPanelBtn').click(function () {
-      $('#unitSlideInPanel').css('right', '0');
+      openSlidePanel("unitSlideInPanel", "unitPanelHeading", "Unit", "submitUnit", "unit_master_id")
 
-      loadUnitLocations()
+      // loadUnitLocations()
 
-      loadUnitType()
+      // loadUnitType()
     });
 
     // Close panel
     $('#closeUnitPanelBtn').click(function () {
-      $('#unitSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("unitSlideInPanel")
     });
 
     $(".unitMenu").click(function () {
@@ -1231,6 +1331,27 @@
         // }
       });
     }
+
+    $(document).on('click', '.editUnit', (e) => {
+      // Changing panel input fields data
+      $("#unit_name").val($(e.target).closest('tr').children("td").eq(3).text())
+
+      // Opening Slied Panel
+      $("#openUnitPanelBtn").click()
+
+      // Loading dropdowns value after panel has been loaded
+      $("#unitType").val($(`#unitType option:contains(${$(e.target).closest('tr').children("td").eq(4).text()})`).val()).trigger('change')
+      $("#unitLocations").val($(`#unitLocations option:contains(${$(e.target).closest('tr').children("td").eq(5).text()})`).val()).trigger('change')
+
+      // Changing panel heading
+      $("#unitPanelHeading").text("Edit Unit Data")
+
+      // Changing panel button label
+      $("#submitUnit").text("Update")
+
+      // Changing panel button attribute
+      $("#submitUnit").attr("unit_master_id", $(e.target).attr('unit_master_id'))
+    })
 
     $(document).on('click', '.delUnit', (e) => {
       let unit_master_id = $(e.target).attr('unit_master_id')
@@ -1345,16 +1466,28 @@
     }
 
     function saveUnit() {
-      // refreshUnitCode()
+      const unit_master_id = $("#submitUnit").attr('unit_master_id')
 
-      const input_params = {
-        unit_name: unitName,
+      let url = "/api/v1/master/unit/create"
+      let input_params = {
+        unit_name: $("#unit_name").val(),
         unit_type: $("#unitType").val(),
         location_master_id: $("#unitLocations").val(),
       }
 
+      if (unit_master_id) {
+        url = "/api/v1/master/unit/update"
+
+        input_params = {
+          unit_master_id,
+          unit_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/unit/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1389,16 +1522,14 @@
 
     // Open panel
     $('#openVendorPanelBtn').click(function () {
-      $('#vendorSlideInPanel').css('right', '0');
-      // Load locations
-      loadVendorLocations()
+      openSlidePanel("vendorSlideInPanel", "vendorPanelHeading", "Vendor", "submitVendor", "vendor_master_id")
+
+      // loadVendorLocations()
     });
 
     // Close panel
     $('#closeVendorPanelBtn').click(function () {
-      $('#vendorSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("vendorSlideInPanel")
     });
 
     $(".vendorMenu").click(function () {
@@ -1493,6 +1624,28 @@
       });
     }
 
+    $(document).on('click', '.editVendor', (e) => {
+      // Changing panel input fields data
+      $("#vendor_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#vendorLocations").val($(`#vendorLocations option:contains(${$(e.target).closest('tr').children("td").eq(3).text()})`).val()).trigger('change')
+      $("#representative").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#phone").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#email").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#address").val($(e.target).closest('tr').children("td").eq(7).text())
+
+      // Opening slide panel
+      $("#openVendorPanelBtn").click()
+
+      // Changing panel heading
+      $("#vendorPanelHeading").text("Edit Vendor Data")
+
+      // Changing panel button label
+      $("#submitVendor").text("Update")
+
+      // Changing panel button attribute
+      $("#submitVendor").attr("vendor_master_id", $(e.target).attr('vendor_master_id'))
+    })
+
     $(document).on('click', '.delVendor', (e) => {
       let vendor_master_id = $(e.target).attr('vendor_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -1575,7 +1728,10 @@
     }
 
     function saveVendor() {
-      const input_params = {
+      const vendor_master_id = $("#submitVendor").attr('vendor_master_id')
+
+      let url = "/api/v1/master/vendor/create"
+      let input_params = {
         vendor_name: $("#vendor_name").val(),
         representative: $("#representative").val(),
         address: $("#address").val(),
@@ -1584,9 +1740,20 @@
         location_master_id: $("#vendorLocations").val(),
       }
 
+      if (vendor_master_id) {
+        url = "/api/v1/master/vendor/update"
+
+        input_params = {
+          vendor_master_id,
+          vendor_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       // Load Roles
       $.ajax({
-        url: "/api/v1/master/vendor/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1620,17 +1787,12 @@
 
     // Open panel
     $('#openPackagingPanelBtn').click(function () {
-      $('#packagingSlideInPanel').css('right', '0');
-
-      loadPackagingType()
-      loadPackagingMaterialComposition()
+      openSlidePanel("packagingSlideInPanel", "packagingPanelHeading", "Packaging", "submitPackaging", "packaging_master_id")
     });
 
     // Close panel
     $('#closePackagingPanelBtn').click(function () {
-      $('#packagingSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("packagingSlideInPanel")
     });
 
     $(".packagingMenu").click(function () {
@@ -1729,6 +1891,28 @@
       });
     }
 
+    $(document).on('click', '.editPackaging', (e) => {
+      // Changing panel input fields data
+      $("#packagingType").val($(`#packagingType option:contains(${$(e.target).closest('tr').children("td").eq(3).text()})`).val()).trigger('change')
+      $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#packagingMaterialComposition").val($(`#packagingMaterialComposition option:contains(${$(e.target).closest('tr').children("td").eq(7).text()})`).val()).trigger('change')
+      $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(8).text())
+
+      // Opening slide panel
+      $("#openPackagingPanelBtn").click()
+
+      // Changing panel heading
+      $("#packagingPanelHeading").text("Edit Packaging Data")
+
+      // Changing panel button label
+      $("#submitPackaging").text("Update")
+
+      // Changing panel button attribute
+      $("#submitPackaging").attr("packaging_master_id", $(e.target).attr('packaging_master_id'))
+    })
+
     $(document).on('click', '.delPackaging', (e) => {
       let packaging_master_id = $(e.target).attr('packaging_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -1821,13 +2005,14 @@
         })
 
       // Clearing selected value
-      $('#packagingType').val(null).trigger('change');
+      $('#packagingMaterialComposition').val(null).trigger('change');
     }
 
     function savePackaging() {
-      // refreshUnitCode()
+      const packaging_master_id = $("#submitPackaging").attr('packaging_master_id')
 
-      const input_params = {
+      let url = "/api/v1/master/packaging/create"
+      let input_params = {
         packaging_type: $("#packagingType").val(),
         packaging_length: $("#packagingLength").val(),
         packaging_width: $("#packagingWidth").val(),
@@ -1836,8 +2021,19 @@
         packaging_supplier: $("#packagingSupplier").val(),
       }
 
+      if (packaging_master_id) {
+        url = "/api/v1/master/packaging/update"
+
+        input_params = {
+          packaging_master_id,
+          packaging_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/packaging/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1873,12 +2069,12 @@
 
     // Open panel
     $('#openVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '0');
+      openSlidePanel("vehicleSlideInPanel", "vehiclePanelHeading", "Vehicle", "submitVehicle", "vehicle_master_id")
     });
 
     // Close panel
     $('#closeVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '-600px');
+      closeSlidePanel("vehicleSlideInPanel")
     });
 
     $(".vehicleMenu").click(function () {
@@ -2053,6 +2249,29 @@
       });
     }
 
+    $(document).on('click', '.editVehicle', (e) => {
+      // Changing panel input fields data
+      $("#vehicle_number").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#vehicle_brand").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#model_number").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#insurance_provider").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#insurance_number").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#insurance_expiring_on").val(formatDate(new Date($(e.target).closest('tr').children("td").eq(7).text())))
+      $("#last_fc_date").val(formatDate(new Date($(e.target).closest('tr').children("td").eq(8).text())))
+
+      // Opening slide panel
+      $("#openVehiclePanelBtn").click()
+
+      // Changing panel heading
+      $("#vehiclePanelHeading").text("Edit Vehicle Data")
+
+      // Changing panel button label
+      $("#submitVehicle").text("Update")
+
+      // Changing panel button attribute
+      $("#submitVehicle").attr("vehicle_master_id", $(e.target).attr('vehicle_master_id'))
+    })
+
     $(document).on('click', '.delVehicle', (e) => {
       let vehicle_master_id = $(e.target).attr('vehicle_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -2099,7 +2318,10 @@
     })
 
     function saveVehicle() {
-      const input_params = {
+      const vehicle_master_id = $("#submitVehicle").attr('vehicle_master_id')
+
+      let url = "/api/v1/master/vehicle/create"
+      let input_params = {
         vehicle_number: $("#vehicle_number").val(),
         vehicle_brand: $("#vehicle_brand").val(),
         model_number: $("#model_number").val(),
@@ -2109,8 +2331,19 @@
         last_fc_date: $("#last_fc_date").val(),
       }
 
+      if (vehicle_master_id) {
+        url = "/api/v1/master/vehicle/update"
+
+        input_params = {
+          vehicle_master_id,
+          vehicle_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/vehicle/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -2145,12 +2378,12 @@
 
     // Open panel
     $('#openDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '0');
+      openSlidePanel("driverSlideInPanel", "driverPanelHeading", "Driver", "submitDriver", "driver_master_id")
     });
 
     // Close panel
     $('#closeDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '-600px');
+      closeSlidePanel("driverSlideInPanel")
     });
 
     $(".driverMenu").click(function () {
@@ -2270,6 +2503,30 @@
       });
     }
 
+    $(document).on('click', '.editDriver', (e) => {
+      // Changing panel input fields data
+      $("#driver_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#license_number").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#driver_phone").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#emergency_contact").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#aadhar_number").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#blood_group").val($(e.target).closest('tr').children("td").eq(7).text())
+      $("#health_history").val($(e.target).closest('tr').children("td").eq(8).text())
+      $("#driver_address").val($(e.target).closest('tr').children("td").eq(9).text())
+
+      // Opening slide panel
+      $("#openDriverPanelBtn").click()
+
+      // Changing panel heading
+      $("#driverPanelHeading").text("Edit Driver Data")
+
+      // Changing panel button label
+      $("#submitDriver").text("Update")
+
+      // Changing panel button attribute
+      $("#submitDriver").attr("driver_master_id", $(e.target).attr('driver_master_id'))
+    })
+
     $(document).on('click', '.delDriver', (e) => {
       let driver_master_id = $(e.target).attr('driver_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -2316,7 +2573,10 @@
     })
 
     function saveDriver() {
-      const input_params = {
+      const driver_master_id = $("#submitDriver").attr('driver_master_id')
+
+      let url = "/api/v1/master/driver/create"
+      let input_params = {
         driver_name: $("#driver_name").val(),
         license_number: $("#license_number").val(),
         aadhar_number: $("#aadhar_number").val(),
@@ -2327,8 +2587,19 @@
         health_history: $("#health_history").val(),
       }
 
+      if (driver_master_id) {
+        url = "/api/v1/master/driver/update"
+
+        input_params = {
+          driver_master_id,
+          driver_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/driver/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",

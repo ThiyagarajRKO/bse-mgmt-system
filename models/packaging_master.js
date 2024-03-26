@@ -119,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
       }-${data?.packaging_supplier
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUppserCase()}`;
+        ?.toUpperCase()}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
