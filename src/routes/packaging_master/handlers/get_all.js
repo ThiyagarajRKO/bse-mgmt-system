@@ -1,7 +1,8 @@
 import { PackagingMaster } from "../../../controllers";
 
 export const GetAll = (
-  { packaging_name,
+  {
+    packaging_code,
     packaging_type,
     packaging_height,
     packaging_width,
@@ -15,7 +16,7 @@ export const GetAll = (
   return new Promise(async (resolve, reject) => {
     try {
       let packaging_master = await PackagingMaster.GetAll({
-        packaging_name,
+        packaging_code,
         packaging_type,
         packaging_height,
         packaging_width,

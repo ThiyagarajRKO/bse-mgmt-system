@@ -138,7 +138,7 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
-  packaging_name,
+  packaging_code,
   packaging_type,
   packaging_height,
   packaging_width,
@@ -153,8 +153,8 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (packaging_name) {
-        where.packaging_name = { [Op.iLike]: packaging_name };
+      if (packaging_code) {
+        where.packaging_code = { [Op.iLike]: packaging_code };
       }
 
       if (packaging_type) {

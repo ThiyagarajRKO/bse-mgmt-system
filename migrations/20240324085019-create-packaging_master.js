@@ -7,7 +7,7 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      packaging_name: {
+      packaging_code: {
         type: Sequelize.TEXT,
         allowNull: false,
         unique: true,

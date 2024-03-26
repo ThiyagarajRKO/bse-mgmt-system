@@ -582,19 +582,19 @@
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingLength">Length (inches)</label>
+                <label for="packagingLength">Length (cm)</label>
                 <input id="packagingLength" maxlength="12" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingLength">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingWidth">Width (inches)</label>
+                <label for="packagingWidth">Width (cm)</label>
                 <input id="packagingWidth" maxlength="10" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingWidth">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingHeight">Height (inches)</label>
+                <label for="packagingHeight">Height (cm)</label>
                 <input id="packagingHeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
                   name="packagingHeight">
               </div>
@@ -643,11 +643,11 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Code</span></th>
                 <th class="fw-bold"><span>Type</span></th>
-                <th class="fw-bold"><span>Length (inches)</span></th>
-                <th class="fw-bold"><span>Width (inches)</span></th>
-                <th class="fw-bold"><span>Height (inches)</span></th>
+                <th class="fw-bold"><span>Length (cm)</span></th>
+                <th class="fw-bold"><span>Width (cm)</span></th>
+                <th class="fw-bold"><span>Height (cm)</span></th>
                 <th class="fw-bold"><span>Material Composition</span></th>
                 <th class="fw-bold"><span>Supplier</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
@@ -903,15 +903,6 @@
       resetAllInputs()
     })
 
-
-    $(".locationMenu").click(function () {
-      $(".menu-container").removeClass('d-none')
-
-      $(".vendorContainer").addClass('d-block')
-
-      loadVendorsTableData()
-    })
-
     toastr.options = {
       closeButton: false,
       debug: false,
@@ -935,14 +926,16 @@
       $(".input-dropdown").val("")
       $(".input[type=date]").val("")
       $('textarea').val("")
-
-
-      // $('#unitLocations').val(null).trigger('change');
-      // $('#locationLocations').val(null).trigger('change');
-      // $('#vendorLocations').val(null).trigger('change');
-      // $('#vehicleLocations').val(null).trigger('change');
-      // $('#driverLocations').val(null).trigger('change');
     }
+
+    // Open Location default
+    $(".locationMenu").click()
+    $(".menu-container").addClass('d-none')
+
+    $(".locationContainer").removeClass('d-none')
+    $(".locationContainer").addClass('d-block')
+
+    loadLocationTableData()
 
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
@@ -1686,7 +1679,7 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "packaging_name" },
+          { data: "packaging_code" },
           { data: "packaging_type" },
           { data: "packaging_length" },
           { data: "packaging_width" },

@@ -4,7 +4,7 @@ export const getAllSchema = {
       type: "object",
       required: [],
       properties: {
-        packaging_name: { type: "string" },
+        packaging_code: { type: "string" },
         packaging_type: { type: "string" },
         packaging_height: { type: "string" },
         packaging_width: { type: "string" },

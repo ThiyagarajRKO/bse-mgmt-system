@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      packaging_name: {
+      packaging_code: {
         type: DataTypes.TEXT,
       },
       packaging_type: {
@@ -91,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
-      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
         data?.packaging_length
       }x${data?.packaging_width}x${data?.packaging_height}-${
         PackagingMaterials[data?.packaging_material_composition]
@@ -112,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
-      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
         data?.packaging_length
       }x${data?.packaging_width}x${data?.packaging_height}-${
         PackagingMaterials[data?.packaging_material_composition]
