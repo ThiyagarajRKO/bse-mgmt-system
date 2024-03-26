@@ -32,33 +32,27 @@ module.exports = (sequelize, DataTypes) => {
       },
       driver_name: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       driver_profile_url: {
         type: DataTypes.TEXT,
       },
       license_number: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       address: {
         type: DataTypes.TEXT,
       },
       aadhar_number: {
         type: DataTypes.STRING(12),
-        allowNull: false,
       },
       phone: {
         type: DataTypes.STRING(50),
-        allowNull: false,
       },
       emergency_contact: {
         type: DataTypes.STRING(50),
-        allowNull: false,
       },
       blood_group: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       health_history: {
         type: DataTypes.TEXT,

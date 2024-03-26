@@ -44,7 +44,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       last_name: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       dob: {
         type: DataTypes.STRING,

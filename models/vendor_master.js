@@ -40,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       vendor_name: {
         type: DataTypes.STRING(100),
-        allowNull: false,
       },
       vendor_profile_url: {
         type: DataTypes.TEXT,

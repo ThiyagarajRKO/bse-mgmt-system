@@ -32,31 +32,24 @@ module.exports = (sequelize, DataTypes) => {
       },
       packaging_name: {
         type: DataTypes.TEXT,
-        allowNull: false,
       },
       packaging_type: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       packaging_height: {
         type: DataTypes.STRING(12),
-        allowNull: false,
       },
       packaging_width: {
         type: DataTypes.STRING(12),
-        allowNull: false,
       },
       packaging_length: {
         type: DataTypes.STRING(12),
-        allowNull: false,
       },
       packaging_material_composition: {
         type: DataTypes.STRING(50),
-        allowNull: false,
       },
       packaging_supplier: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       is_active: {
         type: DataTypes.BOOLEAN,

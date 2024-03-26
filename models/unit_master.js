@@ -48,7 +48,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       unit_name: {
         type: DataTypes.TEXT,
-        allowNull: false,
       },
       unit_code: {
         type: DataTypes.TEXT,
