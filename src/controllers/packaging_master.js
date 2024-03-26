@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (packaging_data) => {
+export const Insert = async (profile_id, packaging_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!packaging_data) {
         return reject({
           statusCode: 420,
@@ -57,7 +64,9 @@ export const Insert = async (packaging_data) => {
         });
       }
 
-      const result = await models.PackagingMaster.create(packaging_data);
+      const result = await models.PackagingMaster.create(packaging_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
       reject(err);
@@ -75,6 +84,13 @@ export const Update = async (profile_id, id, packaging_data) => {
         });
       }
 
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
       if (!packaging_data) {
         return reject({
           statusCode: 420,
@@ -89,6 +105,8 @@ export const Update = async (profile_id, id, packaging_data) => {
           id,
           is_active: true,
         },
+        individualHooks: true,
+        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -206,20 +224,22 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.PackagingMaster.update(
-        {
-          is_active: false,
-          deleted_by: profile_id,
-          deleted_at: new Date(),
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const vendor = await models.PackagingMaster.destroy({
+        where: {
+          id,
+          is_active: true,
+          created_by: profile_id,
         },
-        {
-          where: {
-            id,
-            is_active: true,
-            created_by: profile_id,
-          },
-        }
-      );
+        individualHooks: true,
+        profile_id,
+      });
 
       resolve(vendor);
     } catch (err) {

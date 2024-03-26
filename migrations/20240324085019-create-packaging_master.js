@@ -14,15 +14,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      packaging_length: {
-        type: Sequelize.TEXT,
+      packaging_height: {
+        type: Sequelize.STRING(12),
       },
       packaging_width: {
         type: Sequelize.STRING(12),
         allowNull: false,
       },
       packaging_length: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(12),
         allowNull: false,
       },
       packaging_material_composition: {
@@ -78,6 +78,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("driver_master");
+    await queryInterface.dropTable("packaging_master");
   },
 };

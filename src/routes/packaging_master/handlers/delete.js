@@ -1,6 +1,10 @@
 import { PackagingMaster } from "../../../controllers";
 
-export const Delete = ({ profile_id, packaging_master_id }, session, fastify) => {
+export const Delete = (
+  { profile_id, packaging_master_id },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       const packaging_master = await PackagingMaster.Delete({
@@ -8,7 +12,7 @@ export const Delete = ({ profile_id, packaging_master_id }, session, fastify) =>
         id: packaging_master_id,
       });
 
-      if (packaging_master?.[0] > 0) {
+      if (packaging_master > 0) {
         return resolve({
           message: "Packaging master has been deleted successfully",
         });

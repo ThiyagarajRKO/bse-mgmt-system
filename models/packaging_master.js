@@ -4,19 +4,19 @@ module.exports = (sequelize, DataTypes) => {
   class PackagingMaster extends Model {
     static associate(models) {
       PackagingMaster.belongsTo(models.UserProfiles, {
-        as: "creator_profile",
+        as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
       PackagingMaster.belongsTo(models.UserProfiles, {
-        as: "updater_profile",
+        as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
       PackagingMaster.belongsTo(models.UserProfiles, {
-        as: "deleter_profile",
+        as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
@@ -32,18 +32,18 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       packaging_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       packaging_type: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
       },
       packaging_height: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(12),
         allowNull: false,
       },
       packaging_width: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(12),
       },
       packaging_length: {
         type: DataTypes.STRING(12),
@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       packaging_supplier: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       is_active: {
@@ -77,8 +77,61 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       createdAt: false,
       updatedAt: false,
+      paranoid: true,
+      deletedAt: "deleted_at",
     }
   );
+
+  // Create Hook
+  PackagingMaster.beforeCreate(async (data, options) => {
+    try {
+      if (
+        data?.packaging_type &&
+        data?.packaging_length &&
+        data?.packaging_width &&
+        data?.packaging_height
+      ) {
+        data.packaging_name = `${data?.packaging_type}-${data?.packaging_length}x${data?.packaging_width}x${data?.packaging_height}`;
+      }
+      data.created_by = options.profile_id;
+    } catch (err) {
+      console.log(
+        "Error while inserting a driver details",
+        err?.message || err
+      );
+    }
+  });
+
+  // Update Hook
+  PackagingMaster.beforeUpdate(async (data, options) => {
+    try {
+      if (
+        data?.packaging_type &&
+        data?.packaging_length &&
+        data?.packaging_width &&
+        data?.packaging_height
+      ) {
+        data.packaging_name = `${data?.packaging_type}-${data?.packaging_length}x${data?.packaging_width}x${data?.packaging_height}`;
+      }
+
+      data.updated_at = new Date();
+      data.updated_by = options?.profile_id;
+    } catch (err) {
+      console.log("Error while updating a driver", err?.message || err);
+    }
+  });
+
+  // Delete Hook
+  PackagingMaster.afterDestroy(async (data, options) => {
+    try {
+      data.deleted_by = options?.profile_id;
+      data.is_active = false;
+
+      await data.save({ profile_id: options.profile_id });
+    } catch (err) {
+      console.log("Error while deleting a driver", err?.message || err);
+    }
+  });
 
   return PackagingMaster;
 };

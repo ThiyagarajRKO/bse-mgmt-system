@@ -260,12 +260,12 @@
         </div>
       </div>
 
-      <div class="topMenu-item packageMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+      <div class="topMenu-item packagingMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-boxes-packing"></i>
         </div>
         <div class="pt-2">
-          <span>Packages</span>
+          <span>Packaging</span>
         </div>
       </div>
 
@@ -582,7 +582,8 @@
 
               <div class="form-group my-3">
                 <label for="packaging_type">Type</label>
-                <select class="form-control input-dropdown w-100" id="packagingType" name="packagingType" required>
+                <select class="form-control input-dropdown w-100" id="packagingType" name="packagingType"
+                  required></select>
               </div>
 
               <div class="form-group my-3">
@@ -642,7 +643,7 @@
             </div>
           </div>
 
-          <table id="PackagingTable" class="table table-hover nowrap w-100">
+          <table id="packagingTable" class="table table-hover nowrap w-100">
             <thead>
               <tr>
                 <th></th>
@@ -1641,14 +1642,14 @@
     $("#resetVendorDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
-    // ----------------------- Packaging ------------------------
+    // ----------------------- Packaging -----------------------
     // ---------------------------------------------------------
 
     // Open panel
     $('#openPackagingPanelBtn').click(function () {
       $('#packagingSlideInPanel').css('right', '0');
 
-      loadPackagingName()
+      loadPackagingType()
     });
 
     // Close panel
@@ -1670,26 +1671,6 @@
     $("#submitPackaging").click(function () {
       savePackaging()
     })
-
-    $("#packagingType").on('change', refreshPackagingName)
-    $("#packaginglength").on('change', refreshPackagingName)
-    $("#packagingwidth").on('change', refreshPackagingName)
-    $("#packagingheight").on('change', refreshPackagingName)
-
-    let packagingName = ""
-    function refreshPackagingName() {
-      let packagingType = $("#packagingType").val || ''
-      let packagingLength = $("#packagingLength").val || ''
-      let packagingWidth = $("#packagingWidth").val || ''
-      let packagingHeight = $("#packagingHeight").val || ''
-
-
-      packaging = packagingName?.replaceAll(" ", "")
-
-      packagingName = `${packagingType}- ${packagingLength} X ${packagingWidth} X ${packagingHeight}`
-
-      $("#packaging_name").val(packagingName)
-    }
 
     function loadPackagingTableData() {
       $("#packagingTable").DataTable({
@@ -1749,7 +1730,7 @@
             },
           },
           {
-            targets: [6],
+            targets: [9],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -1851,7 +1832,7 @@
         packaging_type: $("#packagingType").val(),
         packaging_length: $("#packagingLength").val(),
         packaging_width: $("#packagingWidth").val(),
-        packaging_height: $("#packagingheight").val(),
+        packaging_height: $("#packagingHeight").val(),
         packaging_master_composition: $("#packagingMasterComposition").val(),
         packaging_supplier: $("#packagingSupplier").val(),
       }
