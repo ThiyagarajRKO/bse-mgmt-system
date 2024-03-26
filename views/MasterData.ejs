@@ -1159,22 +1159,6 @@
       saveUnit()
     })
 
-    $("#unitType").on('change', refreshUnitName)
-    $("#unitLocations").on('change', refreshUnitName)
-
-    let unitName = ""
-    function refreshUnitName() {
-      let unitType = $("#unitType").select2("data")[0]?.text || ''
-      let unitLocations = $("#unitLocations").select2("data")[0]?.text || ''
-
-      unitLocations = unitLocations?.replaceAll(" ", "")
-      unitType = unitType?.replaceAll(" ", "")
-
-      unitName = `${unitLocations}-${unitType}`
-
-      $("#unit_name").val(unitName)
-    }
-
     function loadUnitTableData() {
       $("#unitTable").DataTable({
         // searching: true,
@@ -1208,6 +1192,7 @@
         columns: [
           { data: null },
           { data: null },
+          { data: "unit_code" },
           { data: "unit_name" },
           { data: "unit_type" },
           { data: "LocationMaster.location_name" },
