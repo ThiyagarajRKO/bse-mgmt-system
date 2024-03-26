@@ -17,12 +17,6 @@ export const Insert = async (profile_id, packaging_data) => {
           message: "Packaging data must not be empty!",
         });
       }
-      if (!packaging_data?.packaging_name) {
-        return reject({
-          statusCode: 420,
-          message: "Packaging name must not be empty!",
-        });
-      }
 
       if (!packaging_data?.packaging_type) {
         return reject({

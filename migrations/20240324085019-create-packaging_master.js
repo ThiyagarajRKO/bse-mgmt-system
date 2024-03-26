@@ -9,6 +9,7 @@ module.exports = {
       },
       packaging_name: {
         type: Sequelize.TEXT,
+        allowNull: false,
       },
       packaging_type: {
         type: Sequelize.STRING,
@@ -16,6 +17,7 @@ module.exports = {
       },
       packaging_height: {
         type: Sequelize.STRING(12),
+        allowNull: false,
       },
       packaging_width: {
         type: Sequelize.STRING(12),

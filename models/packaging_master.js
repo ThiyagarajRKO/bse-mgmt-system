@@ -30,13 +30,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-
       packaging_name: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
       packaging_type: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       packaging_height: {
         type: DataTypes.STRING(12),
@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       packaging_width: {
         type: DataTypes.STRING(12),
+        allowNull: false,
       },
       packaging_length: {
         type: DataTypes.STRING(12),

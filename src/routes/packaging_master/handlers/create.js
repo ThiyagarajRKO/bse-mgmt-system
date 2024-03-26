@@ -23,7 +23,6 @@ export const Create = (
         packaging_material_composition,
         packaging_supplier,
         is_active: true,
-        created_by: profile_id,
       });
 
       resolve({
