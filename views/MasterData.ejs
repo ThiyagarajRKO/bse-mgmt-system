@@ -692,7 +692,94 @@
         </div>
       </div>
     </div>
-    <!-- Driver Container Ends -->
+    <!-- Packaging Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container speciesContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="speciesSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="speciesPanelHeading" class="fw-bold fs-5">Add Species Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSpeciesPanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Species Name</label>
+              <input id="species_name" class="form-control" type="text" placeholder="eg. Cuttle Fish"
+                name="species_name" required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Species Code</label>
+              <input id="species_code" class="form-control" type="text" placeholder="eg. CF" name="species_code"
+                required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Scientific Name</label>
+              <input id="scientific_name" class="form-control" type="text" placeholder="eg. Sepia officinalis"
+                name="scientific_name" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="species_description">Description</label>
+              <input id="species_description" class="form-control"
+                placeholder="eg. Cuttlefish, or cuttles, are marine molluscs of the order Sepiida." type="text"
+                name="species_description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSpecies" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetSpeciesDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openSpeciesPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="speciesTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Species Code</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Scientific Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Species Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
@@ -2132,6 +2219,224 @@
 
     $("#resetPackagingDataBtn").on("click", resetAllInputs)
 
+    // ---------------------------------------------------------
+    // ----------------------- Speciess -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openSpeciesPanelBtn').click(function () {
+      openSlidePanel("speciesSlideInPanel", "speciesPanelHeading", "Species", "submitSpecies", "species_master_id")
+    });
+
+    // Close panel
+    $('#closeSpeciesPanelBtn').click(function () {
+      closeSlidePanel("speciesSlideInPanel")
+    });
+
+    $(document).on('click', '.speciesMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".speciesContainer").removeClass('d-none')
+      $(".speciesContainer").addClass('d-block')
+
+      loadSpeciesTableData()
+    })
+
+    $("#submitSpecies").click(function () {
+      saveSpecies()
+    })
+
+    function loadSpeciesTableData() {
+      $("#speciesTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/species/get/all",
+          error: function (xhr, error, code) {
+            $("#speciesTable").DataTable().destroy();
+            $("#speciesTable").DataTable({ scrollX: true, ordering: false })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "species_code" },
+          { data: "species_name" },
+          { data: "scientific_name" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editSpecies" species_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this species"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delSpecies" species_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this species"></i>'
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editSpecies', (e) => {
+      // Changing panel input fields data
+      $("#species_code").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#species_name").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(5).text())
+
+      // Opening Slied Panel
+      $("#openSpeciesPanelBtn").click()
+
+      // Changing panel heading
+      $("#speciesPanelHeading").text("Edit Species Data")
+
+      // Changing panel button label
+      $("#submitSpecies").text("Update")
+
+      // Changing panel button attribute
+      $("#submitSpecies").attr("species_master_id", $(e.target).attr('species_master_id'))
+    })
+
+    $(document).on('click', '.delSpecies', (e) => {
+      let species_master_id = $(e.target).attr('species_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Species?',
+        content: 'Are you sure, do you want to remove this species?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/species/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  species_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadSpeciesTableData()
+
+                toastr.success('Species deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Species failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Species is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveSpecies() {
+      const species_master_id = $("#submitSpecies").attr('species_master_id')
+
+      let url = "/api/v1/master/species/create"
+      let input_params = {
+        species_name: $("#species_name").val(),
+        scientific_name: $("#scientific_name").val(),
+        description: $("#species_description").val(),
+      }
+
+      if (species_master_id) {
+        url = "/api/v1/master/species/update"
+
+        input_params = {
+          species_master_id,
+          species_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeSpeciesPanelBtn").click()
+
+          loadSpeciesTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetSpeciesDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
     // ------------------------- Vehicle -----------------------
