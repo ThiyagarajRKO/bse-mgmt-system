@@ -1,21 +1,21 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class LocationMaster extends Model {
+  class SpeciesMaster extends Model {
     static associate(models) {
-      LocationMaster.belongsTo(models.UserProfiles, {
+      SpeciesMaster.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      LocationMaster.belongsTo(models.UserProfiles, {
+      SpeciesMaster.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      LocationMaster.belongsTo(models.UserProfiles, {
+      SpeciesMaster.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
@@ -23,14 +23,20 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  LocationMaster.init(
+  SpeciesMaster.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      location_name: {
+      species_code: {
+        type: DataTypes.STRING,
+      },
+      species_name: {
+        type: DataTypes.STRING,
+      },
+      scientific_name: {
         type: DataTypes.STRING,
       },
       description: {
@@ -51,8 +57,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "LocationMaster",
-      tableName: "location_master",
+      modelName: "SpeciesMaster",
+      tableName: "species_master",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -62,38 +68,35 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Create Hook
-  LocationMaster.beforeCreate(async (data, options) => {
+  SpeciesMaster.beforeCreate(async (data, options) => {
     try {
       data.created_by = options.profile_id;
     } catch (err) {
-      console.log(
-        "Error while inserting a location details",
-        err?.message || err
-      );
+      console.log("Error while inserting a species", err?.message || err);
     }
   });
 
   // Update Hook
-  LocationMaster.beforeUpdate(async (data, options) => {
+  SpeciesMaster.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a location", err?.message || err);
+      console.log("Error while updating a species", err?.message || err);
     }
   });
 
   // Delete Hook
-  LocationMaster.afterDestroy(async (data, options) => {
+  SpeciesMaster.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a location", err?.message || err);
+      console.log("Error while deleting a species", err?.message || err);
     }
   });
 
-  return LocationMaster;
+  return SpeciesMaster;
 };

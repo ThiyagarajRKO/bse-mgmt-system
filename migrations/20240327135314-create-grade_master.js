@@ -1,40 +1,19 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("packaging_master", {
+    await queryInterface.createTable("grade_master", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      packaging_code: {
-        type: Sequelize.TEXT,
+      grade_name: {
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      packaging_type: {
-        type: Sequelize.ENUM("Pouch", "Master Carton", "Duplex Carton"),
-        allowNull: false,
-      },
-      packaging_height: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      packaging_width: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      packaging_length: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      packaging_material_composition: {
-        type: Sequelize.ENUM("Plastic", "Cardboard", "Thermocol"),
-        allowNull: false,
-      },
-      packaging_supplier: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      description: {
+        type: Sequelize.TEXT,
       },
       is_active: {
         defaultValue: false,
@@ -81,6 +60,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("packaging_master");
+    await queryInterface.dropTable("grade_master");
   },
 };

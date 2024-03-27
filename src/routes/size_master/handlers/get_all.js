@@ -1,15 +1,15 @@
-import { LocationMaster } from "../../../controllers";
+import { SizeMaster } from "../../../controllers";
 
-export const GetAll = ({ location_name, start, length }, session, fastify) => {
+export const GetAll = ({ start, length, grade_name }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let location_master = await LocationMaster.GetAll({
-        location_name,
+      let size_master = await SizeMaster.GetAll({
         start,
         length,
+        grade_name,
       });
 
-      if (!location_master) {
+      if (!size_master) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -17,7 +17,7 @@ export const GetAll = ({ location_name, start, length }, session, fastify) => {
       }
 
       resolve({
-        data: location_master,
+        data: size_master,
       });
     } catch (err) {
       fastify.log.error(err);

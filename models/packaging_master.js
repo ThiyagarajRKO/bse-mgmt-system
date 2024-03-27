@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      packaging_name: {
+      packaging_code: {
         type: DataTypes.TEXT,
       },
       packaging_type: {
@@ -91,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
-      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
         data?.packaging_length
       }x${data?.packaging_width}x${data?.packaging_height}-${
         PackagingMaterials[data?.packaging_material_composition]
@@ -100,10 +100,11 @@ module.exports = (sequelize, DataTypes) => {
         ?.replaceAll(" ", "")
         ?.toUpperCase()}`;
 
-      data.created_by = options.profile_id;
+      data.updated_at = new Date();
+      data.updated_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a driver details",
+        "Error while inserting a packaging data",
         err?.message || err
       );
     }
@@ -112,19 +113,19 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
-      data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${
+      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
         data?.packaging_length
       }x${data?.packaging_width}x${data?.packaging_height}-${
         PackagingMaterials[data?.packaging_material_composition]
       }-${data?.packaging_supplier
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUppserCase()}`;
+        ?.toUpperCase()}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a driver", err?.message || err);
+      console.log("Error while updating a packaging data", err?.message || err);
     }
   });
 
@@ -136,7 +137,7 @@ module.exports = (sequelize, DataTypes) => {
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a driver", err?.message || err);
+      console.log("Error while deleting a packaging data", err?.message || err);
     }
   });
 

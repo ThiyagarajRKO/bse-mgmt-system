@@ -48,6 +48,11 @@
 <link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css">
 <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
 
+<!-- Tippy -->
+<link rel="stylesheet" href="/public/plugins/tippy/scale.css">
+<script src="/public/plugins/tippy/popper.min.js"></script>
+<script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
 
@@ -88,7 +93,17 @@
       display: none !important;
     }
 
-    .topMenu-item {
+    #lastMenu {
+      border-right: 0px solid #414a57;
+    }
+
+    .bg-danger,
+    .btn-red {
+      background-color: #ea5455;
+    }
+
+    .topMenu-item,
+    .topSubMenuContainer {
       display: block;
       color: rgb(44 44 44);
       text-align: center;
@@ -96,29 +111,17 @@
       text-decoration: none;
       border-right: 0px solid #1F2D3E;
       /* padding-bottom: 3px !important; */
-      /* width: 25vh !important; */
+      width: 100px;
       cursor: pointer;
     }
 
-    #lastMenu {
-      border-right: 0px solid #414a57;
-    }
-
-    .topMenu-item:hover:not(.topMenu-item-active) {
+    .topMenu-item:hover:not(.topMenu-item-active),
+    .topSubMenuContainer:hover {
       /* border-bottom: 1px solid #ea5455; */
       color: #ea5455 !important;
       /* font-weight: bold; */
       transition: right 0.3s ease;
-    }
-
-    .topMenu-item {
-      color: #14274e !important;
-      width: 100px;
-    }
-
-    .bg-danger,
-    .btn-red {
-      background-color: #ea5455;
+      cursor: pointer;
     }
 
     .topMenu-item-active {
@@ -128,6 +131,33 @@
       /* border-radius: 8px; */
       transition: right 0.3s ease;
       /* font-weight: bold; */
+    }
+
+    .topSubMenu-item {
+      /* color: #14274e !important; */
+      width: 100px;
+    }
+
+    .topSubMenu-item:hover:not(.topSubMenu-item-active) {
+      border-bottom: 1px solid #ea5455;
+      color: #ea5455 !important;
+      /* font-weight: bold; */
+      transition: right 0.3s ease;
+      cursor: pointer;
+    }
+
+    .topSubMenu-item-active {
+      border-bottom: 1px solid #ea5455;
+      color: #ea5455 !important;
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
+
+    .tippy-box[data-theme~='tomato'] {
+      background-color: #4f4f4f;
+      color: white;
     }
 
     .edit,
@@ -168,7 +198,18 @@
     .slideInPanel .select2-container {
       background-color: transparent !important;
       border-color: rgba(98, 114, 147, 0.6) !important;
-      color: #627293 !important;
+      color: 627293 !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-selection__rendered,
+    .select2-selection__clear,
+    .select2-selection__arrow {
+      color: white !important;
+      margin-top: 0.25rem !important;
     }
 
     .slideInPanel .select:focus {
@@ -244,7 +285,8 @@
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="topMenu-container d-flex justify-content-center mt-0">
-      <div class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+      <div
+        class="topMenu-item topMenu-item-active locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-location-dot"></i>
         </div>
@@ -289,7 +331,8 @@
         </div>
       </div>
 
-      <div class="topMenu-item productMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+      <div
+        class="topSubMenuContainer productTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-shrimp"></i>
         </div>
@@ -334,7 +377,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Location Data</span>
+              <span id="locationPanelHeading" class="fw-bold fs-5">Add Location Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeLocationPanelBtn"></i>
               </div>
@@ -405,7 +448,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Unit Data</span>
+              <span id="unitPanelHeading" class="fw-bold fs-5">Add Unit Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeUnitPanelBtn"></i>
               </div>
@@ -421,7 +464,7 @@
 
             <div class="form-group my-3">
               <label for="Description">Location</label>
-              <select class="form-control input-dropdown" id="unitLocations" name="unitLocation">
+              <select class="form-control input-dropdown w-100" id="unitLocations" name="unitLocation">
               </select>
             </div>
 
@@ -485,7 +528,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Vendor Data</span>
+              <span id="vendorPanelHeading" class="fw-bold fs-5">Add Vendor Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVendorPanelBtn"></i>
               </div>
@@ -585,7 +628,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Packaging Data</span>
+              <span id="packagingPanelHeading" class="fw-bold fs-5">Add Packaging Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closePackagingPanelBtn"></i>
               </div>
@@ -602,19 +645,19 @@
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingLength">Length (inches)</label>
+                <label for="packagingLength">Length (cm)</label>
                 <input id="packagingLength" maxlength="12" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingLength">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingWidth">Width (inches)</label>
+                <label for="packagingWidth">Width (cm)</label>
                 <input id="packagingWidth" maxlength="10" class="form-control" placeholder="eg. 12" type="number"
                   name="packagingWidth">
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingHeight">Height (inches)</label>
+                <label for="packagingHeight">Height (cm)</label>
                 <input id="packagingHeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
                   name="packagingHeight">
               </div>
@@ -663,11 +706,11 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Code</span></th>
                 <th class="fw-bold"><span>Type</span></th>
-                <th class="fw-bold"><span>Length (inches)</span></th>
-                <th class="fw-bold"><span>Width (inches)</span></th>
-                <th class="fw-bold"><span>Height (inches)</span></th>
+                <th class="fw-bold"><span>Length (cm)</span></th>
+                <th class="fw-bold"><span>Width (cm)</span></th>
+                <th class="fw-bold"><span>Height (cm)</span></th>
                 <th class="fw-bold"><span>Material Composition</span></th>
                 <th class="fw-bold"><span>Supplier</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
@@ -677,7 +720,236 @@
         </div>
       </div>
     </div>
-    <!-- Driver Container Ends -->
+    <!-- Packaging Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container speciesContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="speciesSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="speciesPanelHeading" class="fw-bold fs-5">Add Species Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSpeciesPanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Species Name</label>
+              <input id="species_name" class="form-control" type="text" placeholder="eg. Cuttle Fish"
+                name="species_name" required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Species Code</label>
+              <input id="species_code" class="form-control" type="text" placeholder="eg. CF" name="species_code"
+                required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Scientific Name</label>
+              <input id="scientific_name" class="form-control" type="text" placeholder="eg. Sepia officinalis"
+                name="scientific_name" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="species_description">Description</label>
+              <input id="species_description" class="form-control"
+                placeholder="eg. Cuttlefish, or cuttles, are marine molluscs of the order Sepiida." type="text"
+                name="species_description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSpecies" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetSpeciesDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openSpeciesPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="speciesTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Species Code</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Scientific Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Species Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------- Grade Container ------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container gradeContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="gradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="gradePanelHeading" class="fw-bold fs-5">Add Grade Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeGradePanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Grade Name</label>
+              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="grade_description">Description</label>
+              <input id="grade_description" class="form-control" placeholder="eg. 1st grade quality" type="text"
+                name="grade_description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitGrade" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetGradeDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openGradePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="gradeTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Grade Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Grade Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------- Size Container ------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container sizeContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="sizeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="sizePanelHeading" class="fw-bold fs-5">Add Size Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSizePanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Size Name</label>
+              <input id="size" class="form-control" type="text" placeholder="eg. 1/2" name="species_name" required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="size_description">Description</label>
+              <input id="size_description" class="form-control" placeholder="eg. half size" type="text"
+                name="size_description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSize" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetSizeDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openSizePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="sizeTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Size</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Size Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Inventory Container ---------------------------------------------------- -->
@@ -692,7 +964,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Inventory Data</span>
+              <span id="inventoryPanelHeading" class="fw-bold fs-5">Add Inventory Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeInventoryPanelBtn"></i>
               </div>
@@ -778,7 +1050,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Vehicle Data</span>
+              <span id="vehiclePanelHeading" class="fw-bold fs-5">Add Vehicle Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVehiclePanelBtn"></i>
               </div>
@@ -794,34 +1066,35 @@
 
             <div class="form-group my-3">
               <label for="Description">Vehicle Brand</label>
-              <input id="vehicle_brand" class="form-control" placeholder="eg. Ashok Leyland" type="text" name="Model">
+              <input id="vehicle_brand" class="form-control" placeholder="eg. Ashok Leyland" type="text">
             </div>
 
             <div class="form-group my-3">
               <label for="Description">Model Number</label>
-              <input id="model_number" class="form-control" placeholder="eg. 4020 - 4x2 Tractor" type="text"
-                name="Model">
+              <input id="model_number" class="form-control" placeholder="eg. 4020 - 4x2 Tractor" type="text">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Provider</label>
-              <input id="insurance_provider" class="form-control" placeholder="eg. Bajaj" type="text" name="Model">
+              <label for="InsuranceProvider">Insurance Provider</label>
+              <input id="insurance_provider" class="form-control" placeholder="eg. Bajaj" type="text"
+                name="InsuranceProvider">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Number</label>
-              <input id="insurance_number" class="form-control" placeholder="eg. BJ0123456" type="text" name="Model">
+              <label for="InsuranceNumber">Insurance Number</label>
+              <input id="insurance_number" class="form-control" placeholder="eg. BJ0123456" type="text"
+                name="InsuranceNumber">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Insurance Expiring On</label>
-              <input id="insurance_expiring_on" class="form-control" placeholder="eg. 27-02-2024" type="date"
-                name="Model">
+              <label for="InsuranceExpiringOn">Insurance Expiring On</label>
+              <input id="insurance_expiring_on" class="form-control" placeholder="27-02-2024" type="date"
+                name="InsuranceExpiringOn">
             </div>
 
             <div class="form-group my-3">
-              <label for="Description">Last FC Date</label>
-              <input id="last_fc_date" class="form-control" placeholder="eg. Force" type="date" name="Model">
+              <label for="LastFCDate">Last FC Date</label>
+              <input id="last_fc_date" class="form-control" placeholder="27-02-2024" type="date" name="LastFCDate">
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
@@ -881,7 +1154,7 @@
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span class="fw-bold fs-5">Add Driver Data</span>
+              <span id="driverPanelHeading" class="fw-bold fs-5">Add Driver Data</span>
               <div class="col my-auto d-flex justify-content-end">
                 <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeDriverPanelBtn"></i>
               </div>
@@ -898,31 +1171,29 @@
 
               <div class="form-group my-3">
                 <label for="Description">License Number</label>
-                <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text"
-                  name="Model">
+                <input id="license_number" class="form-control" placeholder="eg. TN201902032323" type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Aadhar">Aadhar Number</label>
-                <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012" type="text"
-                  name="Model">
+                <input id="aadhar_number" maxlength="12" class="form-control" placeholder="eg. 123456789012"
+                  type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Contact Number</label>
-                <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text"
-                  name="Model">
+                <input id="driver_phone" maxlength="10" class="form-control" placeholder="eg. 9876543210" type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Emergency Contact</label>
                 <input id="emergency_contact" maxlength="10" class="form-control" placeholder="eg. 9876543210"
-                  type="text" name="Model">
+                  type="text">
               </div>
 
               <div class="form-group my-3">
                 <label for="Description">Blood Group</label>
-                <input id="blood_group" class="form-control" placeholder="eg. B+" type="text" name="Model">
+                <input id="blood_group" class="form-control" placeholder="eg. B+" type="text">
               </div>
 
               <div class="form-group my-3">
@@ -987,36 +1258,16 @@
     </div>
     <!-- Driver Container Ends -->
 
-
-
   </div>
 </body>
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
 
+    // Declarations
     new PerfectScrollbar(".slideInPanel", {
       suppressScrollX: true,
     }).update()
-
-    $(".topMenu-item").click(function () {
-      $(".topMenu-item").removeClass('topMenu-item-active')
-
-      $(this).addClass('topMenu-item-active')
-
-      $(".panelClose").click()
-
-      resetAllInputs()
-    })
-
-
-    $(".locationMenu").click(function () {
-      $(".menu-container").removeClass('d-none')
-
-      $(".vendorContainer").addClass('d-block')
-
-      loadVendorsTableData()
-    })
 
     toastr.options = {
       closeButton: false,
@@ -1036,19 +1287,141 @@
       hideMethod: "fadeOut",
     };
 
+    // Open Location on load (default)
+    $(".menu-container").addClass('d-none')
+
+    $(".locationContainer").removeClass('d-none')
+    $(".locationContainer").addClass('d-block')
+
+    loadLocationTableData()
+
+    // Menu navigation
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass('topMenu-item-active')
+      $(".topSubMenu-item").removeClass('topSubMenu-item-active')
+
+      $(this).addClass('topMenu-item-active')
+      $(".productTopMenu").removeClass('topMenu-item-active')
+      $(".panelClose").click()
+
+      resetAllInputs()
+    })
+
+    // Sub Menu navigation
+    $(document).on('click', '.topSubMenu-item', function () {
+      $(".topSubMenu-item").removeClass('topSubMenu-item-active')
+      $(".topMenu-item").removeClass('topMenu-item-active')
+
+      $(".productTopMenu").addClass('topMenu-item-active')
+      $(this).addClass('topSubMenu-item-active')
+
+      $(".panelClose").click()
+
+      resetAllInputs()
+    })
+
+    const productSubMenus = document.getElementById('productSubMenus');
+    tippy('.productTopMenu', {
+      content: `<div class="d-flex justify-content-between p-3 fs-6">
+        <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-fish-fins mb-2"></i>Species</div>
+        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
+        <div class="topSubMenu-item sizeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
+        <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-shrimp mb-2"></i>Product</div>
+      </div>`,
+      placement: 'bottom',
+      arrow: true,
+      trigger: 'click',
+      interactive: true,
+      allowHTML: true,
+      theme: 'tomato',
+      hideOnClick: true,
+      animation: 'shift-toward',
+      onMount(instance) {
+        if (!$(".productTopMenu").hasClass('topMenu-item-active')) {
+          // Resetting Buttons
+          $(".topSubMenu-item").removeClass('topSubMenu-item-active')
+        }
+      }
+    });
+
+    // Global Functions
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      // Ensure 2-digit formatting
+      if (day < 10) {
+        day = '0' + day;
+      }
+      if (month < 10) {
+        month = '0' + month;
+      }
+
+      return year + '-' + month + '-' + day;
+    }
+
     function resetAllInputs() {
       $("input").val("")
-      $(".input-dropdown").val("")
-      $(".input[type=date]").val("")
+
+      // Reset all date inputs
+      var dateInputs = document.querySelectorAll('input[type="date"]');
+      // looping all the date inputs
+      dateInputs.forEach(function (input) {
+        input.value = formatDate(new Date());
+      });
+
+      // Resetting textarea
       $('textarea').val("")
 
-
-      // $('#unitLocations').val(null).trigger('change');
-      // $('#locationLocations').val(null).trigger('change');
-      // $('#vendorLocations').val(null).trigger('change');
-      // $('#vehicleLocations').val(null).trigger('change');
-      // $('#driverLocations').val(null).trigger('change');
+      // Resetting select field selected option
+      $("#unitLocations").val(null).trigger('change');
+      $("#unitType").val(null).trigger('change');
+      $("#vendorLocations").val(null).trigger('change');
+      $("#packagingType").val(null).trigger('change');
+      $("#packagingMaterialComposition").val(null).trigger('change');
+      $("#gradeSpeciesNames").val(null).trigger('change');
     }
+
+    function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css('right', '0');
+
+      // Changing panel Heading label
+      $(`#${panelHeadingId}`).text(`Add ${panelType} Data`)
+
+      // Changing panel save button label
+      $(`#${panelSubmitButton}`).text("Save")
+
+      // Changing panel save button attribute
+      $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null)
+    }
+
+
+    function closeSlidePanel(panelId) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css('right', '-600px');
+
+      // Resetting all the input fields' data
+      resetAllInputs()
+
+      // Destroying select2 all the dropdowns
+      // $('select.select2-hidden-accessible').select2('destroy');
+    }
+
+    // Pre loading dropdown data
+    loadUnitLocations()
+    loadUnitType()
+    loadVendorLocations()
+    loadPackagingType()
+    loadPackagingMaterialComposition()
+    loadInventoryVendors()
+    loadInventoryCategory()
 
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
@@ -1056,12 +1429,12 @@
 
     // Open panel
     $('#openLocationPanelBtn').click(function () {
-      $('#locationSlideInPanel').css('right', '0');
+      openSlidePanel("locationSlideInPanel", "locationPanelHeading", "Location", "submitLocation", "location_master_id")
     });
 
     // Close panel
     $('#closeLocationPanelBtn').click(function () {
-      $('#locationSlideInPanel').css('right', '-600px');
+      closeSlidePanel("locationSlideInPanel")
     });
 
     $(".locationMenu").click(function () {
@@ -1152,6 +1525,24 @@
       });
     }
 
+    $(document).on('click', '.editLocation', (e) => {
+      // Changing panel input fields data
+      $("#location_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#description").val($(e.target).closest('tr').children("td").eq(3).text())
+
+      // Opening Slied Panel
+      $("#openLocationPanelBtn").click()
+
+      // Changing panel heading
+      $("#locationPanelHeading").text("Edit Location Data")
+
+      // Changing panel button label
+      $("#submitLocation").text("Update")
+
+      // Changing panel button attribute
+      $("#submitLocation").attr("location_master_id", $(e.target).attr('location_master_id'))
+    })
+
     $(document).on('click', '.delLocation', (e) => {
       let location_master_id = $(e.target).attr('location_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -1198,13 +1589,27 @@
     })
 
     function saveLocation() {
-      const input_params = {
+      const location_master_id = $("#submitLocation").attr('location_master_id')
+
+      let url = "/api/v1/master/location/create"
+      let input_params = {
         location_name: $("#location_name").val(),
         description: $("#description").val(),
       }
 
+      if (location_master_id) {
+        url = "/api/v1/master/location/update"
+
+        input_params = {
+          location_master_id,
+          location_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/location/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1238,18 +1643,16 @@
 
     // Open panel
     $('#openUnitPanelBtn').click(function () {
-      $('#unitSlideInPanel').css('right', '0');
+      openSlidePanel("unitSlideInPanel", "unitPanelHeading", "Unit", "submitUnit", "unit_master_id")
 
-      loadUnitLocations()
+      // loadUnitLocations()
 
-      loadUnitType()
+      // loadUnitType()
     });
 
     // Close panel
     $('#closeUnitPanelBtn').click(function () {
-      $('#unitSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("unitSlideInPanel")
     });
 
     $(".unitMenu").click(function () {
@@ -1320,6 +1723,13 @@
             },
           },
           {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span location_master_id='${row['LocationMaster'].id}'>${data}</span>`
+            },
+          },
+          {
             targets: [6],
             className: "text-left",
             render: function (data, type, row) {
@@ -1344,6 +1754,25 @@
         // }
       });
     }
+
+    $(document).on('click', '.editUnit', (e) => {
+      // Changing panel input fields data
+      $("#unit_name").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#unitType").val($(e.target).closest('tr').children("td").eq(4).text()).trigger('change')
+      $("#unitLocations").val($(e.target).closest('tr').children("td").eq(5).find('span').attr("location_master_id")).trigger('change')
+
+      // Opening Slied Panel
+      $("#openUnitPanelBtn").click()
+
+      // Changing panel heading
+      $("#unitPanelHeading").text("Edit Unit Data")
+
+      // Changing panel button label
+      $("#submitUnit").text("Update")
+
+      // Changing panel button attribute
+      $("#submitUnit").attr("unit_master_id", $(e.target).attr('unit_master_id'))
+    })
 
     $(document).on('click', '.delUnit', (e) => {
       let unit_master_id = $(e.target).attr('unit_master_id')
@@ -1458,16 +1887,28 @@
     }
 
     function saveUnit() {
-      // refreshUnitCode()
+      const unit_master_id = $("#submitUnit").attr('unit_master_id')
 
-      const input_params = {
-        unit_name: unitName,
+      let url = "/api/v1/master/unit/create"
+      let input_params = {
+        unit_name: $("#unit_name").val(),
         unit_type: $("#unitType").val(),
         location_master_id: $("#unitLocations").val(),
       }
 
+      if (unit_master_id) {
+        url = "/api/v1/master/unit/update"
+
+        input_params = {
+          unit_master_id,
+          unit_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/unit/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1502,16 +1943,14 @@
 
     // Open panel
     $('#openVendorPanelBtn').click(function () {
-      $('#vendorSlideInPanel').css('right', '0');
-      // Load locations
-      loadVendorLocations()
+      openSlidePanel("vendorSlideInPanel", "vendorPanelHeading", "Vendor", "submitVendor", "vendor_master_id")
+
+      // loadVendorLocations()
     });
 
     // Close panel
     $('#closeVendorPanelBtn').click(function () {
-      $('#vendorSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("vendorSlideInPanel")
     });
 
     $(".vendorMenu").click(function () {
@@ -1581,6 +2020,13 @@
             },
           },
           {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span location_master_id='${row["LocationMaster"].id}'>${data}</span>`
+            },
+          },
+          {
             targets: [8],
             className: "text-left",
             render: function (data, type, row) {
@@ -1605,6 +2051,28 @@
         // }
       });
     }
+
+    $(document).on('click', '.editVendor', (e) => {
+      // Changing panel input fields data
+      $("#vendor_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#vendorLocations").val($(e.target).closest('tr').children("td").eq(3).find("span").attr("location_master_id")).trigger('change')
+      $("#representative").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#phone").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#email").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#address").val($(e.target).closest('tr').children("td").eq(7).text())
+
+      // Opening slide panel
+      $("#openVendorPanelBtn").click()
+
+      // Changing panel heading
+      $("#vendorPanelHeading").text("Edit Vendor Data")
+
+      // Changing panel button label
+      $("#submitVendor").text("Update")
+
+      // Changing panel button attribute
+      $("#submitVendor").attr("vendor_master_id", $(e.target).attr('vendor_master_id'))
+    })
 
     $(document).on('click', '.delVendor', (e) => {
       let vendor_master_id = $(e.target).attr('vendor_master_id')
@@ -1688,7 +2156,10 @@
     }
 
     function saveVendor() {
-      const input_params = {
+      const vendor_master_id = $("#submitVendor").attr('vendor_master_id')
+
+      let url = "/api/v1/master/vendor/create"
+      let input_params = {
         vendor_name: $("#vendor_name").val(),
         representative: $("#representative").val(),
         address: $("#address").val(),
@@ -1697,9 +2168,20 @@
         location_master_id: $("#vendorLocations").val(),
       }
 
+      if (vendor_master_id) {
+        url = "/api/v1/master/vendor/update"
+
+        input_params = {
+          vendor_master_id,
+          vendor_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       // Load Roles
       $.ajax({
-        url: "/api/v1/master/vendor/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1733,17 +2215,12 @@
 
     // Open panel
     $('#openPackagingPanelBtn').click(function () {
-      $('#packagingSlideInPanel').css('right', '0');
-
-      loadPackagingType()
-      loadPackagingMaterialComposition()
+      openSlidePanel("packagingSlideInPanel", "packagingPanelHeading", "Packaging", "submitPackaging", "packaging_master_id")
     });
 
     // Close panel
     $('#closePackagingPanelBtn').click(function () {
-      $('#packagingSlideInPanel').css('right', '-600px');
-
-      $('select.select2-hidden-accessible').select2('destroy');
+      closeSlidePanel("packagingSlideInPanel")
     });
 
     $(".packagingMenu").click(function () {
@@ -1792,7 +2269,7 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "packaging_name" },
+          { data: "packaging_code" },
           { data: "packaging_type" },
           { data: "packaging_length" },
           { data: "packaging_width" },
@@ -1841,6 +2318,28 @@
         // }
       });
     }
+
+    $(document).on('click', '.editPackaging', (e) => {
+      // Changing panel input fields data
+      $("#packagingType").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
+      $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(7).text()).trigger('change')
+      $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(8).text())
+
+      // Opening slide panel
+      $("#openPackagingPanelBtn").click()
+
+      // Changing panel heading
+      $("#packagingPanelHeading").text("Edit Packaging Data")
+
+      // Changing panel button label
+      $("#submitPackaging").text("Update")
+
+      // Changing panel button attribute
+      $("#submitPackaging").attr("packaging_master_id", $(e.target).attr('packaging_master_id'))
+    })
 
     $(document).on('click', '.delPackaging', (e) => {
       let packaging_master_id = $(e.target).attr('packaging_master_id')
@@ -1934,13 +2433,14 @@
         })
 
       // Clearing selected value
-      $('#packagingType').val(null).trigger('change');
+      $('#packagingMaterialComposition').val(null).trigger('change');
     }
 
     function savePackaging() {
-      // refreshUnitCode()
+      const packaging_master_id = $("#submitPackaging").attr('packaging_master_id')
 
-      const input_params = {
+      let url = "/api/v1/master/packaging/create"
+      let input_params = {
         packaging_type: $("#packagingType").val(),
         packaging_length: $("#packagingLength").val(),
         packaging_width: $("#packagingWidth").val(),
@@ -1949,8 +2449,19 @@
         packaging_supplier: $("#packagingSupplier").val(),
       }
 
+      if (packaging_master_id) {
+        url = "/api/v1/master/packaging/update"
+
+        input_params = {
+          packaging_master_id,
+          packaging_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/packaging/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -1980,23 +2491,19 @@
     $("#resetPackagingDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
-    // -------------------------- Inventory ------------------------
+    // ----------------------- Inventory -----------------------
     // ---------------------------------------------------------
 
     // Open panel
     $('#openInventoryPanelBtn').click(function () {
       $('#inventorySlideInPanel').css('right', '0');
-
-      loadInventoryVendors()
-
-      loadInventoryCategory()
     });
 
     // Close panel
     $('#closeInventoryPanelBtn').click(function () {
       $('#inventorySlideInPanel').css('right', '-600px');
 
-      $('select.select2-hidden-accessible').select2('destroy');
+      // $('select.select2-hidden-accessible').select2('destroy');
     });
 
     $(".inventoryMenu").click(function () {
@@ -2067,6 +2574,13 @@
             },
           },
           {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span vendor_master_id='${row["VendorMaster"].id}'">${data}</span>`
+            },
+          },
+          {
             targets: [6],
             className: "text-left",
             render: function (data, type, row) {
@@ -2091,6 +2605,26 @@
         // }
       });
     }
+
+    $(document).on('click', '.editInventory', (e) => {
+      // Changing panel input fields data
+      $("#inventory_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#inventory_uom").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#inventory_category").val($(e.target).closest('tr').children("td").eq(4).text()).trigger('change');
+      $("#inventory_supplier").val($(e.target).closest('tr').children("td").eq(5).find("span").attr("vendor_master_id")).trigger('change')
+
+      // Opening Slied Panel
+      $("#openInventoryPanelBtn").click()
+
+      // Changing panel heading
+      $("#inventoryPanelHeading").text("Edit Inventory Data")
+
+      // Changing panel button label
+      $("#submitInventory").text("Update")
+
+      // Changing panel button attribute
+      $("#submitinventory").attr("inventory_master_id", $(e.target).attr('inventory_master_id'))
+    })
 
     $(document).on('click', '.delInventory', (e) => {
       let inventory_master_id = $(e.target).attr('inventory_master_id')
@@ -2252,17 +2786,673 @@
 
 
     // ---------------------------------------------------------
+    // ------------------------ Speciess -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openSpeciesPanelBtn').click(function () {
+      openSlidePanel("speciesSlideInPanel", "speciesPanelHeading", "Species", "submitSpecies", "species_master_id")
+    });
+
+    // Close panel
+    $('#closeSpeciesPanelBtn').click(function () {
+      closeSlidePanel("speciesSlideInPanel")
+    });
+
+    $(document).on('click', '.speciesMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".speciesContainer").removeClass('d-none')
+      $(".speciesContainer").addClass('d-block')
+
+      loadSpeciesTableData()
+    })
+
+    $("#submitSpecies").click(function () {
+      saveSpecies()
+    })
+
+    function loadSpeciesTableData() {
+      $("#speciesTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/species/get/all",
+          error: function (xhr, error, code) {
+            $("#speciesTable").DataTable().destroy();
+            $("#speciesTable").DataTable({ scrollX: true, ordering: false })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "species_code" },
+          { data: "species_name" },
+          { data: "scientific_name" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editSpecies" species_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this species"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delSpecies" species_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this species"></i>'
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editSpecies', (e) => {
+      // Changing panel input fields data
+      $("#species_code").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#species_name").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(5).text())
+
+      // Opening Slied Panel
+      $("#openSpeciesPanelBtn").click()
+
+      // Changing panel heading
+      $("#speciesPanelHeading").text("Edit Species Data")
+
+      // Changing panel button label
+      $("#submitSpecies").text("Update")
+
+      // Changing panel button attribute
+      $("#submitSpecies").attr("species_master_id", $(e.target).attr('species_master_id'))
+    })
+
+    $(document).on('click', '.delSpecies', (e) => {
+      let species_master_id = $(e.target).attr('species_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Species?',
+        content: 'Are you sure, do you want to remove this species?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/species/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  species_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadSpeciesTableData()
+
+                toastr.success('Species deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Species failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Species is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveSpecies() {
+      const species_master_id = $("#submitSpecies").attr('species_master_id')
+
+      let url = "/api/v1/master/species/create"
+      let input_params = {
+        species_name: $("#species_name").val(),
+        species_code: $("#species_code").val(),
+        scientific_name: $("#scientific_name").val(),
+        description: $("#species_description").val(),
+      }
+
+      if (species_master_id) {
+        url = "/api/v1/master/species/update"
+
+        input_params = {
+          species_master_id,
+          species_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeSpeciesPanelBtn").click()
+
+          loadSpeciesTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetSpeciesDataBtn").on("click", resetAllInputs)
+
+    // ---------------------------------------------------------
+    // --------------------------- Grade -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openGradePanelBtn').click(function () {
+      openSlidePanel("gradeSlideInPanel", "gradePanelHeading", "Grade", "submitGrade", "grade_master_id")
+    });
+
+    // Close panel
+    $('#closeGradePanelBtn').click(function () {
+      closeSlidePanel("gradeSlideInPanel")
+    });
+
+    $(document).on('click', '.gradeMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".gradeContainer").removeClass('d-none')
+      $(".gradeContainer").addClass('d-block')
+
+      loadGradeTableData()
+    })
+
+    $("#submitGrade").click(function () {
+      saveGrade()
+    })
+
+    function loadGradeTableData() {
+      $("#gradeTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: '40vh',
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/grade/get/all",
+          error: function (xhr, error, code) {
+            $("#gradeTable").DataTable().destroy();
+            $("#gradeTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "grade_name" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editGrade" grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this grade"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delGrade" grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this grade"></i>'
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editGrade', (e) => {
+      // Changing panel input fields data
+      $("#grade_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#grade_description").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
+
+      // Opening Slied Panel
+      $("#openGradePanelBtn").click()
+
+      // Changing panel heading
+      $("#gradePanelHeading").text("Edit Grade Data")
+
+      // Changing panel button label
+      $("#submitGrade").text("Update")
+
+      // Changing panel button attribute
+      $("#submitGrade").attr("grade_master_id", $(e.target).attr('grade_master_id'))
+    })
+
+    $(document).on('click', '.delGrade', (e) => {
+      let grade_master_id = $(e.target).attr('grade_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Grade?',
+        content: 'Are you sure, do you want to remove this grade?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/grade/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  grade_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadGradeTableData()
+
+                toastr.success('Grade deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Grade failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Grade is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveGrade() {
+      const grade_master_id = $("#submitGrade").attr('grade_master_id')
+
+      let url = "/api/v1/master/grade/create"
+      let input_params = {
+        grade_name: $("#grade_name").val(),
+        description: $("#grade_description").val()
+      };
+
+      if (grade_master_id) {
+        url = "/api/v1/master/grade/update"
+
+        input_params = {
+          grade_master_id,
+          grade_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeGradePanelBtn").click()
+
+          loadGradeTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+
+    $("#resetGradeDataBtn").on("click", resetAllInputs)
+
+    // ---------------------------------------------------------
+    // ---------------------------- Size -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openSizePanelBtn').click(function () {
+      openSlidePanel("sizeSlideInPanel", "sizePanelHeading", "Size", "submitSize", "size_master_id")
+    });
+
+    // Close panel
+    $('#closeSizePanelBtn').click(function () {
+      closeSlidePanel("sizeSlideInPanel")
+    });
+
+    $(document).on('click', '.sizeMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".sizeContainer").removeClass('d-none')
+      $(".sizeContainer").addClass('d-block')
+
+      loadSizeTableData()
+    })
+
+    $("#submitSize").click(function () {
+      saveSize()
+    })
+
+    function loadSizeTableData() {
+      $("#sizeTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: '40vh',
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/size/get/all",
+          error: function (xhr, error, code) {
+            $("#sizeTable").DataTable().destroy();
+            $("#sizeTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "size" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editSize" size_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this size"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delSize" size_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this size"></i>'
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editSize', (e) => {
+      // Changing panel input fields data
+      $("#size").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#size_description").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
+
+      // Opening Slied Panel
+      $("#openSizePanelBtn").click()
+
+      // Changing panel heading
+      $("#sizePanelHeading").text("Edit Size Data")
+
+      // Changing panel button label
+      $("#submitSize").text("Update")
+
+      // Changing panel button attribute
+      $("#submitSize").attr("size_master_id", $(e.target).attr('size_master_id'))
+    })
+
+    $(document).on('click', '.delSize', (e) => {
+      let size_master_id = $(e.target).attr('size_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Size?',
+        content: 'Are you sure, do you want to remove this size?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/size/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  size_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadSizeTableData()
+
+                toastr.success('Size deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Size failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Size is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveSize() {
+      const size_master_id = $("#submitSize").attr('size_master_id')
+
+      let url = "/api/v1/master/size/create"
+      let input_params = {
+        size: $("#size").val(),
+        description: $("#size_description").val()
+      };
+
+      if (size_master_id) {
+        url = "/api/v1/master/size/update"
+
+        input_params = {
+          size_master_id,
+          size_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeSizePanelBtn").click()
+
+          loadSizeTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+
+    $("#resetSizeDataBtn").on("click", resetAllInputs)
+
+    // ---------------------------------------------------------
     // ------------------------- Vehicle -----------------------
     // ---------------------------------------------------------
 
     // Open panel
     $('#openVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '0');
+      openSlidePanel("vehicleSlideInPanel", "vehiclePanelHeading", "Vehicle", "submitVehicle", "vehicle_master_id")
     });
 
     // Close panel
     $('#closeVehiclePanelBtn').click(function () {
-      $('#vehicleSlideInPanel').css('right', '-600px');
+      closeSlidePanel("vehicleSlideInPanel")
     });
 
     $(".vehicleMenu").click(function () {
@@ -2437,6 +3627,29 @@
       });
     }
 
+    $(document).on('click', '.editVehicle', (e) => {
+      // Changing panel input fields data
+      $("#vehicle_number").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#vehicle_brand").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#model_number").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#insurance_provider").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#insurance_number").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#insurance_expiring_on").val(formatDate(new Date($(e.target).closest('tr').children("td").eq(7).text())))
+      $("#last_fc_date").val(formatDate(new Date($(e.target).closest('tr').children("td").eq(8).text())))
+
+      // Opening slide panel
+      $("#openVehiclePanelBtn").click()
+
+      // Changing panel heading
+      $("#vehiclePanelHeading").text("Edit Vehicle Data")
+
+      // Changing panel button label
+      $("#submitVehicle").text("Update")
+
+      // Changing panel button attribute
+      $("#submitVehicle").attr("vehicle_master_id", $(e.target).attr('vehicle_master_id'))
+    })
+
     $(document).on('click', '.delVehicle', (e) => {
       let vehicle_master_id = $(e.target).attr('vehicle_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -2483,7 +3696,10 @@
     })
 
     function saveVehicle() {
-      const input_params = {
+      const vehicle_master_id = $("#submitVehicle").attr('vehicle_master_id')
+
+      let url = "/api/v1/master/vehicle/create"
+      let input_params = {
         vehicle_number: $("#vehicle_number").val(),
         vehicle_brand: $("#vehicle_brand").val(),
         model_number: $("#model_number").val(),
@@ -2493,8 +3709,19 @@
         last_fc_date: $("#last_fc_date").val(),
       }
 
+      if (vehicle_master_id) {
+        url = "/api/v1/master/vehicle/update"
+
+        input_params = {
+          vehicle_master_id,
+          vehicle_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/vehicle/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
@@ -2529,12 +3756,12 @@
 
     // Open panel
     $('#openDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '0');
+      openSlidePanel("driverSlideInPanel", "driverPanelHeading", "Driver", "submitDriver", "driver_master_id")
     });
 
     // Close panel
     $('#closeDriverPanelBtn').click(function () {
-      $('#driverSlideInPanel').css('right', '-600px');
+      closeSlidePanel("driverSlideInPanel")
     });
 
     $(".driverMenu").click(function () {
@@ -2654,6 +3881,30 @@
       });
     }
 
+    $(document).on('click', '.editDriver', (e) => {
+      // Changing panel input fields data
+      $("#driver_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#license_number").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#driver_phone").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#emergency_contact").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#aadhar_number").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#blood_group").val($(e.target).closest('tr').children("td").eq(7).text())
+      $("#health_history").val($(e.target).closest('tr').children("td").eq(8).text())
+      $("#driver_address").val($(e.target).closest('tr').children("td").eq(9).text())
+
+      // Opening slide panel
+      $("#openDriverPanelBtn").click()
+
+      // Changing panel heading
+      $("#driverPanelHeading").text("Edit Driver Data")
+
+      // Changing panel button label
+      $("#submitDriver").text("Update")
+
+      // Changing panel button attribute
+      $("#submitDriver").attr("driver_master_id", $(e.target).attr('driver_master_id'))
+    })
+
     $(document).on('click', '.delDriver', (e) => {
       let driver_master_id = $(e.target).attr('driver_master_id')
       let currentRow = $(e.target).closest('tr')
@@ -2700,7 +3951,10 @@
     })
 
     function saveDriver() {
-      const input_params = {
+      const driver_master_id = $("#submitDriver").attr('driver_master_id')
+
+      let url = "/api/v1/master/driver/create"
+      let input_params = {
         driver_name: $("#driver_name").val(),
         license_number: $("#license_number").val(),
         aadhar_number: $("#aadhar_number").val(),
@@ -2711,8 +3965,19 @@
         health_history: $("#health_history").val(),
       }
 
+      if (driver_master_id) {
+        url = "/api/v1/master/driver/update"
+
+        input_params = {
+          driver_master_id,
+          driver_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/driver/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",

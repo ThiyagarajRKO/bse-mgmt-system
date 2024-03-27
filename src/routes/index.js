@@ -3,13 +3,16 @@
 import usersRoute from "./users";
 import profileRoutes from "./profile";
 import roleMasterRoute from "./role_master";
-import unitMasterRoute from "./unit_master";
 import locationMasterRoute from "./location_master";
+import unitMasterRoute from "./unit_master";
 import vendorMasterRoute from "./vendor_master";
-import vehicleMasterRoute from "./vehicle_master";
-import driverMasterRoute from "./driver_master";
 import PackagingMasterRoute from "./packaging_master";
 import inventoryMasterRoute from "./inventory_master";
+import SpeciesMasterRoute from "./species_master";
+import GradeMasterRoute from "./grade_master";
+import SizeMasterRoute from "./size_master";
+import vehicleMasterRoute from "./vehicle_master";
+import driverMasterRoute from "./driver_master";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -30,19 +33,25 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(profileRoutes, { prefix: "/profile" });
 
-  fastify.register(unitMasterRoute, { prefix: "/master/unit" });
-
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 
+  fastify.register(unitMasterRoute, { prefix: "/master/unit" });
+
   fastify.register(vendorMasterRoute, { prefix: "/master/vendor" });
-
-  fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
-
-  fastify.register(driverMasterRoute, { prefix: "/master/driver" });
 
   fastify.register(PackagingMasterRoute, { prefix: "/master/packaging" });
 
   fastify.register(inventoryMasterRoute, { prefix: "/master/inventory" });
+
+  fastify.register(SpeciesMasterRoute, { prefix: "/master/species" });
+
+  fastify.register(GradeMasterRoute, { prefix: "/master/grade" });
+
+  fastify.register(SizeMasterRoute, { prefix: "/master/size" });
+
+  fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
+
+  fastify.register(driverMasterRoute, { prefix: "/master/driver" });
 
   done();
 };

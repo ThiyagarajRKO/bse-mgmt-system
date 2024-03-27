@@ -130,6 +130,7 @@ module.exports = (sequelize, DataTypes) => {
       }
 
       data.updated_at = new Date();
+      data.updated_by = options.profile_id;
     } catch (err) {
       console.log("Error while updating an unit name", err?.message || err);
     }

@@ -64,7 +64,10 @@ export const Insert = async (profile_id, packaging_data) => {
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Location already exists!" });
+        return reject({
+          statusCode: 420,
+          message: "Packaging data already exists!",
+        });
       }
 
       reject(err);
@@ -138,7 +141,7 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
-  packaging_name,
+  packaging_code,
   packaging_type,
   packaging_height,
   packaging_width,
@@ -153,8 +156,8 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (packaging_name) {
-        where.packaging_name = { [Op.iLike]: packaging_name };
+      if (packaging_code) {
+        where.packaging_code = { [Op.iLike]: packaging_code };
       }
 
       if (packaging_type) {

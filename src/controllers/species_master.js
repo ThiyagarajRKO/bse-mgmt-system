@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, unit_master_data) => {
+export const Insert = async (profile_id, species_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!species_data) {
+        return reject({
+          statusCode: 420,
+          message: "Species data must not be empty!",
+        });
+      }
+
       if (!profile_id) {
         return reject({
           statusCode: 420,
@@ -11,47 +18,34 @@ export const Insert = async (profile_id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data?.unit_name) {
+      if (!species_data?.species_name) {
         return reject({
           statusCode: 420,
-          message: "Unit name must not be empty!",
+          message: "Species name must not be empty!",
         });
       }
 
-      if (!unit_master_data?.unit_type) {
-        return reject({
-          statusCode: 420,
-          message: "Unit type must not be empty!",
-        });
-      }
-
-      if (!unit_master_data?.location_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Location master id must not be empty!",
-        });
-      }
-
-      const result = await models.UnitMaster.create(unit_master_data, {
+      const result = await models.SpeciesMaster.create(species_data, {
         profile_id,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Unit already exists!" });
+        return reject({ statusCode: 420, message: "Species already exists!" });
       }
+
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, unit_master_data) => {
+export const Update = async (profile_id, id, species_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit id must not be empty!",
+          message: "Species id must not be empty!",
         });
       }
 
@@ -62,14 +56,14 @@ export const Update = async (profile_id, id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data) {
+      if (!species_data) {
         return reject({
           statusCode: 420,
-          message: "Unit data must not be empty!",
+          message: "Species data must not be empty!",
         });
       }
 
-      const result = await models.UnitMaster.update(unit_master_data, {
+      const result = await models.SpeciesMaster.update(species_data, {
         where: {
           id,
           is_active: true,
@@ -84,13 +78,13 @@ export const Update = async (profile_id, id, unit_master_data) => {
   });
 };
 
-export const Get = ({ id, unit_name }) => {
+export const Get = ({ id, species_code }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !unit_name) {
+      if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Species ID field must not be empty!",
         });
       }
 
@@ -100,15 +94,15 @@ export const Get = ({ id, unit_name }) => {
 
       if (id) {
         where.id = id;
-      } else if (unit_name) {
-        where.unit_name = unit_name;
+      } else if (species_code) {
+        where.species_code = species_code;
       }
 
-      const unit = await models.UnitMaster.findOne({
+      const species = await models.SpeciesMaster.findOne({
         where,
       });
 
-      resolve(unit);
+      resolve(species);
     } catch (err) {
       reject(err);
     }
@@ -116,10 +110,9 @@ export const Get = ({ id, unit_name }) => {
 };
 
 export const GetAll = ({
-  unit_code,
-  unit_name,
-  unit_type,
-  location_master_name,
+  species_code,
+  species_name,
+  scientific_name,
   start,
   length,
 }) => {
@@ -129,40 +122,51 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (unit_code) {
-        where.unit_code = { [Op.iLike]: unit_code };
+      if (species_name) {
+        where.species_name = { [Op.iLike]: species_name };
       }
 
-      if (unit_name) {
-        where.unit_name = { [Op.iLike]: unit_name };
+      if (species_code) {
+        where.species_code = { [Op.iLike]: species_code };
       }
 
-      if (unit_type) {
-        where.unit_type = { [Op.iLike]: unit_type };
+      if (scientific_name) {
+        where.scientific_name = { [Op.iLike]: scientific_name };
       }
 
-      let locationWhere = {
-        is_active: true,
-      };
-
-      if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
-      }
-
-      const units = await models.UnitMaster.findAndCountAll({
-        include: [
-          {
-            model: models.LocationMaster,
-            where: locationWhere,
-          },
-        ],
+      const vendors = await models.SpeciesMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(units);
+      resolve(vendors);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const Count = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Species ID field must not be empty!",
+        });
+      }
+
+      const species = await models.SpeciesMaster.count({
+        where: {
+          id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      resolve(species);
     } catch (err) {
       reject(err);
     }
@@ -175,7 +179,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Species ID field must not be empty!",
         });
       }
 
@@ -186,7 +190,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.UnitMaster.destroy({
+      const vendor = await models.SpeciesMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -196,7 +200,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(unit);
+      resolve(vendor);
     } catch (err) {
       reject(err);
     }

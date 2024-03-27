@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, unit_master_data) => {
+export const Insert = async (profile_id, grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,47 +11,36 @@ export const Insert = async (profile_id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data?.unit_name) {
+      if (!grade_master_data?.grade_name) {
         return reject({
           statusCode: 420,
-          message: "Unit name must not be empty!",
+          message: "Grade name must not be empty!",
         });
       }
 
-      if (!unit_master_data?.unit_type) {
-        return reject({
-          statusCode: 420,
-          message: "Unit type must not be empty!",
-        });
-      }
-
-      if (!unit_master_data?.location_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Location master id must not be empty!",
-        });
-      }
-
-      const result = await models.UnitMaster.create(unit_master_data, {
+      const result = await models.GradeMaster.create(grade_master_data, {
         profile_id,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Unit already exists!" });
+        return reject({
+          statusCode: 420,
+          message: "Grade already exists!",
+        });
       }
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, unit_master_data) => {
+export const Update = async (profile_id, id, grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit id must not be empty!",
+          message: "Grade id must not be empty!",
         });
       }
 
@@ -62,14 +51,14 @@ export const Update = async (profile_id, id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data) {
+      if (!grade_master_data) {
         return reject({
           statusCode: 420,
-          message: "Unit data must not be empty!",
+          message: "Grade data must not be empty!",
         });
       }
 
-      const result = await models.UnitMaster.update(unit_master_data, {
+      const result = await models.GradeMaster.update(grade_master_data, {
         where: {
           id,
           is_active: true,
@@ -84,13 +73,13 @@ export const Update = async (profile_id, id, unit_master_data) => {
   });
 };
 
-export const Get = ({ id, unit_name }) => {
+export const Get = ({ id, grade_name }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !unit_name) {
+      if (!id && !grade_name) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Grade ID field must not be empty!",
         });
       }
 
@@ -100,11 +89,11 @@ export const Get = ({ id, unit_name }) => {
 
       if (id) {
         where.id = id;
-      } else if (unit_name) {
-        where.unit_name = unit_name;
+      } else if (grade_name) {
+        where.grade_name = grade_name;
       }
 
-      const unit = await models.UnitMaster.findOne({
+      const unit = await models.GradeMaster.findOne({
         where,
       });
 
@@ -115,47 +104,18 @@ export const Get = ({ id, unit_name }) => {
   });
 };
 
-export const GetAll = ({
-  unit_code,
-  unit_name,
-  unit_type,
-  location_master_name,
-  start,
-  length,
-}) => {
+export const GetAll = ({ grade_name, start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (unit_code) {
-        where.unit_code = { [Op.iLike]: unit_code };
+      if (grade_name) {
+        where.grade_name = { [Op.iLike]: grade_name };
       }
 
-      if (unit_name) {
-        where.unit_name = { [Op.iLike]: unit_name };
-      }
-
-      if (unit_type) {
-        where.unit_type = { [Op.iLike]: unit_type };
-      }
-
-      let locationWhere = {
-        is_active: true,
-      };
-
-      if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
-      }
-
-      const units = await models.UnitMaster.findAndCountAll({
-        include: [
-          {
-            model: models.LocationMaster,
-            where: locationWhere,
-          },
-        ],
+      const units = await models.GradeMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
@@ -175,7 +135,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Grade ID field must not be empty!",
         });
       }
 
@@ -186,7 +146,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.UnitMaster.destroy({
+      const unit = await models.GradeMaster.destroy({
         where: {
           id,
           is_active: true,

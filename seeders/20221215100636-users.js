@@ -8,7 +8,7 @@ module.exports = {
         {
           id: "0a6495f7-7c0f-442c-aad0-a13d8c2d4ce5",
           username: "BRCRAB",
-          email: "hello@brittoseafoods.com",
+          email: "hello@seafoods.com",
           phone: "6379248545",
           country_code: "+91",
           password:
