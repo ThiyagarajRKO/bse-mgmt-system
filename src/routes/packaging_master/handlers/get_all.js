@@ -7,8 +7,9 @@ export const GetAll = (
     packaging_height,
     packaging_width,
     packaging_length,
+    packaging_weight,
     package_material_composition,
-    package_supplier,
+    vendor_master_name,
   },
   session,
   fastify
@@ -21,8 +22,9 @@ export const GetAll = (
         packaging_height,
         packaging_width,
         packaging_length,
+        packaging_weight,
         package_material_composition,
-        package_supplier,
+        vendor_master_name,
       });
 
       if (!packaging_master) {

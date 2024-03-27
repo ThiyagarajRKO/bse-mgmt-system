@@ -28,13 +28,23 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      packaging_weight: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       packaging_material_composition: {
         type: Sequelize.ENUM("Plastic", "Cardboard", "Thermocol"),
         allowNull: false,
       },
-      packaging_supplier: {
-        type: Sequelize.STRING,
+      vendor_master_id: {
+        type: Sequelize.UUID,
         allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "vendor_master" },
+          key: "id",
+        },
       },
       is_active: {
         defaultValue: false,

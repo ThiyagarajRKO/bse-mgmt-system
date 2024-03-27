@@ -663,6 +663,12 @@
               </div>
 
               <div class="form-group my-3">
+                <label for="packagingWeight">Height (inches)</label>
+                <input id="packagingWeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                  name="packagingWeight">
+              </div>
+
+              <div class="form-group my-3">
                 <label for="packagingMaterialComposition">Material Composition</label>
                 <select id="packagingMaterialComposition" class="form-control input-dropdown w-100"
                   name="packagingMaterialComposition" required></select>
@@ -670,9 +676,9 @@
 
               <div class="form-group my-3">
                 <label for="packagingSupplier">Supplier</label>
-                <textarea id="packagingSupplier" rows="3" class="form-control" placeholder="eg. JCB"
-                  name="packagingSupplier">
-                  </textarea>
+                <select id="packagingSupplier" class="form-control input-dropdown w-100" name="packagingSupplier"
+                  required></select>
+                </textarea>
               </div>
             </div>
 
@@ -708,9 +714,10 @@
                 <th></th>
                 <th class="fw-bold"><span>Code</span></th>
                 <th class="fw-bold"><span>Type</span></th>
-                <th class="fw-bold"><span>Length (cm)</span></th>
-                <th class="fw-bold"><span>Width (cm)</span></th>
-                <th class="fw-bold"><span>Height (cm)</span></th>
+                <th class="fw-bold"><span>Length (cms)</span></th>
+                <th class="fw-bold"><span>Width (cms)</span></th>
+                <th class="fw-bold"><span>Height (cms)</span></th>
+                <th class="fw-bold"><span>Weight (kgs)</span></th>
                 <th class="fw-bold"><span>Material Composition</span></th>
                 <th class="fw-bold"><span>Supplier</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
@@ -2216,6 +2223,11 @@
     // Open panel
     $('#openPackagingPanelBtn').click(function () {
       openSlidePanel("packagingSlideInPanel", "packagingPanelHeading", "Packaging", "submitPackaging", "packaging_master_id")
+      $('#packagingSlideInPanel').css('right', '0');
+
+      loadPackagingType()
+      loadPackagingMaterialComposition()
+      loadPackagingVendor()
     });
 
     // Close panel
@@ -2274,8 +2286,9 @@
           { data: "packaging_length" },
           { data: "packaging_width" },
           { data: "packaging_height" },
+          { data: "packaging_weight" },
           { data: "packaging_material_composition" },
-          { data: "packaging_supplier" },
+          { data: "VendorMaster.vendor_name" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -2325,6 +2338,7 @@
       $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
       $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
       $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
+      $("#packagingWeight").val($(e.target).closest('tr').children("td").eq(6).text())
       $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(7).text()).trigger('change')
       $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(8).text())
 
@@ -2436,6 +2450,44 @@
       $('#packagingMaterialComposition').val(null).trigger('change');
     }
 
+    function loadPackagingVendor() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/vendor/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#packagingSupplier")
+            .select2({
+              placeholder: "Choose a Supplier",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.vendor_name
+                };
+              }),
+            })
+
+          // Clearing selected value
+          $('#packagingSupplier').val(null).trigger('change');
+          // // Clearing selected value
+          // $('#unitType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
     function savePackaging() {
       const packaging_master_id = $("#submitPackaging").attr('packaging_master_id')
 
@@ -2445,8 +2497,9 @@
         packaging_length: $("#packagingLength").val(),
         packaging_width: $("#packagingWidth").val(),
         packaging_height: $("#packagingHeight").val(),
+        packaging_weight: $("#packagingWeight").val(),
         packaging_material_composition: $("#packagingMaterialComposition").val(),
-        packaging_supplier: $("#packagingSupplier").val(),
+        vendor_master_id: $("#packagingSupplier").val(),
       }
 
       if (packaging_master_id) {

@@ -51,10 +51,10 @@ export const Insert = async (profile_id, packaging_data) => {
           message: "Packaging Width must not be empty!",
         });
       }
-      if (!packaging_data?.packaging_supplier) {
+      if (!packaging_data?.vendor_master_id) {
         return reject({
           statusCode: 420,
-          message: "Packaging Supplier must not be empty!",
+          message: "Vendor master id must not be empty!",
         });
       }
 
@@ -146,7 +146,9 @@ export const GetAll = ({
   packaging_height,
   packaging_width,
   packaging_length,
-  packaging_supplier,
+  packaging_weight,
+  packaging_material_composition,
+  vendor_master_name,
   start,
   length,
 }) => {
@@ -172,18 +174,39 @@ export const GetAll = ({
         where.packaging_width = { [Op.iLike]: packaging_width };
       }
 
-      if (packaging_supplier) {
-        where.packaging_supplier = { [Op.iLike]: packaging_supplier };
+      if (packaging_height) {
+        where.packaging_height = { [Op.iLike]: packaging_height };
+      }
+      if (packaging_weight) {
+        where.packaging_weight = { [Op.iLike]: packaging_weight };
       }
 
-      const vendors = await models.PackagingMaster.findAndCountAll({
+      if (packaging_material_composition) {
+        where.packaging_material_composition = { [Op.iLike]: packaging_material_composition };
+      }
+
+      let vendorWhere = {
+        is_active: true,
+      };
+
+      if (vendor_master_name) {
+        where.vendor_name = { [Op.iLike]: vendor_master_name };
+      }
+
+      const packagings = await models.PackagingMaster.findAndCountAll({
+        include: [
+          {
+            model: models.VendorMaster,
+            where: vendorWhere,
+          },
+        ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(packagings);
     } catch (err) {
       reject(err);
     }
@@ -232,7 +255,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.PackagingMaster.destroy({
+      const packaging = await models.PackagingMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -242,7 +265,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(packaging);
     } catch (err) {
       reject(err);
     }

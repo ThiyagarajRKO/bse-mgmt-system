@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+      PackagingMaster.belongsTo(models.VendorMaster, {
+        foreignKey: "vendor_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   PackagingMaster.init(
@@ -57,11 +62,11 @@ module.exports = (sequelize, DataTypes) => {
       packaging_length: {
         type: DataTypes.INTEGER,
       },
+      packaging_weight: {
+        type: DataTypes.INTEGER,
+      },
       packaging_material_composition: {
         type: DataTypes.STRING(50),
-      },
-      packaging_supplier: {
-        type: DataTypes.STRING,
       },
       is_active: {
         type: DataTypes.BOOLEAN,
@@ -91,14 +96,21 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
-      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
-        data?.packaging_length
-      }x${data?.packaging_width}x${data?.packaging_height}-${
-        PackagingMaterials[data?.packaging_material_composition]
-      }-${data?.packaging_supplier
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
+      if (data?.packaging_type && data?.vendor_master_id) {
+        const { vendor_name } = await sequelize.models.VendorMaster.findOne(
+          {
+            attribute: "vendor_name",
+            where: { id: data?.vendor_master_id, is_active: true },
+          }
+        );
+
+        data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
+          }x${data?.packaging_width}x${data?.packaging_height}-${PackagingMaterials[data?.packaging_material_composition]
+          }-${vendor_name
+            ?.trim()
+            ?.replaceAll(" ", "")
+            ?.toUpperCase()}`;
+      }
 
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
@@ -113,14 +125,21 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
-      data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
-        data?.packaging_length
-      }x${data?.packaging_width}x${data?.packaging_height}-${
-        PackagingMaterials[data?.packaging_material_composition]
-      }-${data?.packaging_supplier
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
+      if (data?.packaging_type && data?.vendor_master_id) {
+        const { vendor_name } = await sequelize.models.VendorMaster.findOne(
+          {
+            attribute: "vendor_name",
+            where: { id: data?.vendor_master_id, is_active: true },
+          }
+        );
+
+        data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
+          }x${data?.packaging_width}x${data?.packaging_height}-${PackagingMaterials[data?.packaging_material_composition]
+          }-${vendor_name
+            ?.trim()
+            ?.replaceAll(" ", "")
+            ?.toUpperCase()}`;
+      }
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
