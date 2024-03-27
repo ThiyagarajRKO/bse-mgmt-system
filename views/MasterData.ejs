@@ -267,7 +267,8 @@
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="topMenu-container d-flex justify-content-center mt-0">
-      <div class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+      <div
+        class="topMenu-item topMenu-item-active locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-location-dot"></i>
         </div>
@@ -1002,20 +1003,6 @@
     </div>
     <!-- Driver Container Ends -->
 
-
-    <div id="productSubMenus" style="display: none;">
-      <div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-fish-fins mb-2"></i>Species</div>
-        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
-        <div class="topSubMenu-item sizeMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
-        <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-shrimp mb-2"></i>Product</div>
-      </div>
-    </div>
-
   </div>
 </body>
 
@@ -1046,7 +1033,6 @@
     };
 
     // Open Location on load (default)
-    $(".locationMenu").click()
     $(".menu-container").addClass('d-none')
 
     $(".locationContainer").removeClass('d-none')
@@ -1081,7 +1067,16 @@
 
     const productSubMenus = document.getElementById('productSubMenus');
     tippy('.productTopMenu', {
-      content: productSubMenus.innerHTML,
+      content: `<div class="d-flex justify-content-between p-3 fs-6">
+        <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-fish-fins mb-2"></i>Species</div>
+        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
+        <div class="topSubMenu-item sizeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
+        <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-shrimp mb-2"></i>Product</div>
+      </div>`,
       placement: 'bottom',
       arrow: true,
       trigger: 'click',
@@ -1090,6 +1085,12 @@
       theme: 'tomato',
       hideOnClick: true,
       animation: 'shift-toward',
+      onMount(instance) {
+        if (!$(".productTopMenu").hasClass('topMenu-item-active')) {
+          // Resetting Buttons
+          $(".topSubMenu-item").removeClass('topSubMenu-item-active')
+        }
+      }
     });
 
     // Global Functions
@@ -1464,6 +1465,13 @@
             },
           },
           {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span location_master_id='${row['LocationMaster'].id}'>${data}</span>`
+            },
+          },
+          {
             targets: [6],
             className: "text-left",
             render: function (data, type, row) {
@@ -1492,13 +1500,11 @@
     $(document).on('click', '.editUnit', (e) => {
       // Changing panel input fields data
       $("#unit_name").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#unitType").val($(e.target).closest('tr').children("td").eq(4).text()).trigger('change')
+      $("#unitLocations").val($(e.target).closest('tr').children("td").eq(5).find('span').attr("location_master_id")).trigger('change')
 
       // Opening Slied Panel
       $("#openUnitPanelBtn").click()
-
-      // Loading dropdowns value after panel has been loaded
-      $("#unitType").val($(`#unitType option:contains(${$(e.target).closest('tr').children("td").eq(4).text()})`).val()).trigger('change')
-      $("#unitLocations").val($(`#unitLocations option:contains(${$(e.target).closest('tr').children("td").eq(5).text()})`).val()).trigger('change')
 
       // Changing panel heading
       $("#unitPanelHeading").text("Edit Unit Data")
@@ -1756,6 +1762,13 @@
             },
           },
           {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span location_master_id='${row["LocationMaster"].id}'>${data}</span>`
+            },
+          },
+          {
             targets: [8],
             className: "text-left",
             render: function (data, type, row) {
@@ -1784,7 +1797,7 @@
     $(document).on('click', '.editVendor', (e) => {
       // Changing panel input fields data
       $("#vendor_name").val($(e.target).closest('tr').children("td").eq(2).text())
-      $("#vendorLocations").val($(`#vendorLocations option:contains(${$(e.target).closest('tr').children("td").eq(3).text()})`).val()).trigger('change')
+      $("#vendorLocations").val($(e.target).closest('tr').children("td").eq(3).find("span").attr("location_master_id")).trigger('change')
       $("#representative").val($(e.target).closest('tr').children("td").eq(4).text())
       $("#phone").val($(e.target).closest('tr').children("td").eq(5).text())
       $("#email").val($(e.target).closest('tr').children("td").eq(6).text())
@@ -2050,11 +2063,11 @@
 
     $(document).on('click', '.editPackaging', (e) => {
       // Changing panel input fields data
-      $("#packagingType").val($(`#packagingType option:contains(${$(e.target).closest('tr').children("td").eq(3).text()})`).val()).trigger('change')
+      $("#packagingType").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
       $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
       $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
       $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
-      $("#packagingMaterialComposition").val($(`#packagingMaterialComposition option:contains(${$(e.target).closest('tr').children("td").eq(7).text()})`).val()).trigger('change')
+      $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(7).text()).trigger('change')
       $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(8).text())
 
       // Opening slide panel
