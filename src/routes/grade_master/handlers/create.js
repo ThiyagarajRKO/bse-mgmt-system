@@ -1,4 +1,4 @@
-import { GradeMaster, SpeciesMaster } from "../../../controllers";
+import { GradeMaster } from "../../../controllers";
 
 export const Create = (
   { profile_id, grade_name, description },

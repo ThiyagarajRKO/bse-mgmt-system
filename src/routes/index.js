@@ -11,6 +11,7 @@ import SpeciesMasterRoute from "./species_master";
 import GradeMasterRoute from "./grade_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
+import SizeMasterRoute from "./size_master";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -42,6 +43,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(SpeciesMasterRoute, { prefix: "/master/species" });
 
   fastify.register(GradeMasterRoute, { prefix: "/master/grade" });
+
+  fastify.register(SizeMasterRoute, { prefix: "/master/size" });
 
   fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
 

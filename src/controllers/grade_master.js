@@ -14,7 +14,7 @@ export const Insert = async (profile_id, grade_master_data) => {
       if (!grade_master_data?.grade_name) {
         return reject({
           statusCode: 420,
-          message: "Species Grade name must not be empty!",
+          message: "Grade name must not be empty!",
         });
       }
 
@@ -40,7 +40,7 @@ export const Update = async (profile_id, id, grade_master_data) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Species Grade id must not be empty!",
+          message: "Grade id must not be empty!",
         });
       }
 
@@ -54,7 +54,7 @@ export const Update = async (profile_id, id, grade_master_data) => {
       if (!grade_master_data) {
         return reject({
           statusCode: 420,
-          message: "Species Grade data must not be empty!",
+          message: "Grade data must not be empty!",
         });
       }
 
@@ -64,6 +64,7 @@ export const Update = async (profile_id, id, grade_master_data) => {
           is_active: true,
         },
         individualHooks: true,
+        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -78,7 +79,7 @@ export const Get = ({ id, grade_name }) => {
       if (!id && !grade_name) {
         return reject({
           statusCode: 420,
-          message: "Species Grade ID field must not be empty!",
+          message: "Grade ID field must not be empty!",
         });
       }
 
@@ -134,7 +135,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Species Grade ID field must not be empty!",
+          message: "Grade ID field must not be empty!",
         });
       }
 

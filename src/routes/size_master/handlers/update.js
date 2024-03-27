@@ -1,27 +1,27 @@
-import { GradeMaster } from "../../../controllers";
+import { SizeMaster } from "../../../controllers";
 
 export const Update = (
-  { profile_id, grade_master_id, grade_master_data },
+  { profile_id, size_master_id, size_master_data },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const updated_data = await GradeMaster.Update(
+      const updated_data = await SizeMaster.Update(
         profile_id,
-        grade_master_id,
-        grade_master_data
+        size_master_id,
+        size_master_data
       );
 
       if (updated_data?.[0] > 0) {
         return resolve({
-          message: "Grade has been updated successfully",
+          message: "Size has been updated successfully",
         });
       }
 
       resolve({
         statusCode: 420,
-        message: "Grade didn't update",
+        message: "Size didn't update",
       });
     } catch (err) {
       fastify.log.error(err);
