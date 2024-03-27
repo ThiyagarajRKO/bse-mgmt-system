@@ -2,10 +2,9 @@ export const getSchema = {
   schema: {
     query: {
       type: "object",
-      required: [],
+      required: ["species_grade_master_id"],
       properties: {
-        species_master_id: { type: "string" },
-        species_code: { type: "string" },
+        species_grade_master_id: { type: "string" },
       },
     },
   },

@@ -1,27 +1,28 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("species_master", {
+    await queryInterface.createTable("species_grade_master", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      species_code: {
+      grade_name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
-      },
-      species_name: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: false,
-      },
-      scientific_name: {
-        type: Sequelize.STRING,
       },
       description: {
         type: Sequelize.TEXT,
+      },
+      species_master_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "species_master" },
+          key: "id",
+        },
       },
       is_active: {
         defaultValue: false,
@@ -68,6 +69,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("species_master");
+    await queryInterface.dropTable("species_grade_master");
   },
 };

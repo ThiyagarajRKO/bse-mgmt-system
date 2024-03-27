@@ -783,6 +783,86 @@
     <!-- Species Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container speciesGradeContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="speciesGradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="speciesGradePanelHeading" class="fw-bold fs-5">Add Species Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSpeciesGradePanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Species Grade Name</label>
+              <input id="species_grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name"
+                required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="speciesgradeSpeciesNames">Species Name</label>
+              <select class="form-control input-dropdown w-100" id="speciesGradeSpeciesNames"
+                name="speciesgradeSpeciesNames">
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="species_grade_description">Description</label>
+              <input id="species_grade_description" class="form-control" placeholder="eg. 1st grade quality" type="text"
+                name="species_grade_description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSpeciesGrade" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetSpeciesGradeDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openSpeciesGradePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="speciesGradeTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Species Grade Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Species Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="menu-container vehicleContainer d-none">
@@ -1070,9 +1150,9 @@
       content: `<div class="d-flex justify-content-between p-3 fs-6">
         <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-fish-fins mb-2"></i>Species</div>
-        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSubMenu-item speciesGradeMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
-        <div class="topSubMenu-item sizeMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSubMenu-item speciesSizeMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
         <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-shrimp mb-2"></i>Product</div>
@@ -1130,6 +1210,7 @@
       $("#vendorLocations").val(null).trigger('change');
       $("#packagingType").val(null).trigger('change');
       $("#packagingMaterialComposition").val(null).trigger('change');
+      $("#speciesGradeSpeciesNames").val(null).trigger('change');
     }
 
     function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
@@ -1164,6 +1245,7 @@
     loadVendorLocations()
     loadPackagingType()
     loadPackagingMaterialComposition()
+    loadSpeciesGradeSpeciesNames()
 
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
@@ -2451,6 +2533,271 @@
     }
 
     $("#resetSpeciesDataBtn").on("click", resetAllInputs)
+
+    // ---------------------------------------------------------
+    // ---------------------- Species Grade --------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openSpeciesGradePanelBtn').click(function () {
+      openSlidePanel("speciesGradeSlideInPanel", "speciesGradePanelHeading", "Species Grade", "submitSpeciesGrade", "species_grade_master_id")
+    });
+
+    // Close panel
+    $('#closeSpeciesGradePanelBtn').click(function () {
+      closeSlidePanel("speciesGradeSlideInPanel")
+    });
+
+    $(document).on('click', '.speciesGradeMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".speciesGradeContainer").removeClass('d-none')
+      $(".speciesGradeContainer").addClass('d-block')
+
+      loadSpeciesGradeTableData()
+    })
+
+    $("#submitSpeciesGrade").click(function () {
+      saveSpeciesGrade()
+    })
+
+    function loadSpeciesGradeTableData() {
+      $("#speciesGradeTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: '40vh',
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/species/grade/get/all",
+          error: function (xhr, error, code) {
+            $("#species_gradeTable").DataTable().destroy();
+            $("#species_gradeTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "SpeciesMaster.species_name" },
+          { data: "grade_name" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editSpeciesGrade" species_grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this species_grade"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delSpeciesGrade" species_grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this species_grade"></i>'
+            },
+          },
+          {
+            targets: [2],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span species_master_id='${row['SpeciesMaster'].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editSpeciesGrade', (e) => {
+      // Changing panel input fields data
+      $("#speciesGradeSpeciesNames").val($(e.target).closest('tr').children("td").eq(2).find('span').attr("species_master_id")).trigger('change')
+      $("#species_grade_name").val($(e.target).closest('tr').children("td").eq(3).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(4).text()).trigger('change')
+
+      // Opening Slied Panel
+      $("#openSpeciesGradePanelBtn").click()
+
+      // Changing panel heading
+      $("#species_gradePanelHeading").text("Edit Species Grade Data")
+
+      // Changing panel button label
+      $("#submitSpeciesGrade").text("Update")
+
+      // Changing panel button attribute
+      $("#submitSpeciesGrade").attr("species_grade_master_id", $(e.target).attr('species_grade_master_id'))
+    })
+
+    $(document).on('click', '.delSpeciesGrade', (e) => {
+      let species_grade_master_id = $(e.target).attr('species_grade_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete SpeciesGrade?',
+        content: 'Are you sure, do you want to remove this species_grade?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/species_grade/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  species_grade_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadSpeciesGradeTableData()
+
+                toastr.success('SpeciesGrade deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('SpeciesGrade failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('SpeciesGrade is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function loadSpeciesGradeSpeciesNames() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/species/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#speciesGradeSpeciesNames").select2({
+            placeholder: "Choose a location",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.species_name,
+              };
+            }),
+          });
+
+          // Clearing selected value
+          $("#speciesGradeSpeciesNames").val(null).trigger("change");
+          // // Clearing selected value
+          // $('#species_gradeType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function saveSpeciesGrade() {
+      const species_grade_master_id = $("#submitSpeciesGrade").attr('species_grade_master_id')
+
+      let url = "/api/v1/master/species/grade/create"
+      let input_params = {
+        grade_name: $("#species_grade_name").val(),
+        description: $("#species_grade_description").val(),
+        species_master_id: $("#speciesGradeSpeciesNames").val(),
+      };
+
+      if (species_grade_master_id) {
+        url = "/api/v1/master/species/grade/update"
+
+        input_params = {
+          species_grade_master_id,
+          species_grade_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeSpeciesGradePanelBtn").click()
+
+          loadSpeciesGradeTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+
+    $("#resetSpeciesGradeDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
     // ------------------------- Vehicle -----------------------

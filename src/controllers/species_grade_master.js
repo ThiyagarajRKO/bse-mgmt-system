@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, unit_master_data) => {
+export const Insert = async (profile_id, species_grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,47 +11,46 @@ export const Insert = async (profile_id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data?.unit_name) {
+      if (!species_grade_master_data?.grade_name) {
         return reject({
           statusCode: 420,
-          message: "Unit name must not be empty!",
+          message: "Species Grade name must not be empty!",
         });
       }
 
-      if (!unit_master_data?.unit_type) {
+      if (!species_grade_master_data?.species_master_id) {
         return reject({
           statusCode: 420,
-          message: "Unit type must not be empty!",
+          message: "Species master id must not be empty!",
         });
       }
 
-      if (!unit_master_data?.location_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Location master id must not be empty!",
-        });
-      }
-
-      const result = await models.UnitMaster.create(unit_master_data, {
-        profile_id,
-      });
+      const result = await models.SpeciesGradeMaster.create(
+        species_grade_master_data,
+        {
+          profile_id,
+        }
+      );
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Unit already exists!" });
+        return reject({
+          statusCode: 420,
+          message: "Species Grade already exists!",
+        });
       }
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, unit_master_data) => {
+export const Update = async (profile_id, id, species_grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit id must not be empty!",
+          message: "Species Grade id must not be empty!",
         });
       }
 
@@ -62,20 +61,23 @@ export const Update = async (profile_id, id, unit_master_data) => {
         });
       }
 
-      if (!unit_master_data) {
+      if (!species_grade_master_data) {
         return reject({
           statusCode: 420,
-          message: "Unit data must not be empty!",
+          message: "Species Grade data must not be empty!",
         });
       }
 
-      const result = await models.UnitMaster.update(unit_master_data, {
-        where: {
-          id,
-          is_active: true,
-        },
-        individualHooks: true,
-      });
+      const result = await models.SpeciesGradeMaster.update(
+        species_grade_master_data,
+        {
+          where: {
+            id,
+            is_active: true,
+          },
+          individualHooks: true,
+        }
+      );
       resolve(result);
     } catch (err) {
       reject(err);
@@ -83,13 +85,13 @@ export const Update = async (profile_id, id, unit_master_data) => {
   });
 };
 
-export const Get = ({ id, unit_name }) => {
+export const Get = ({ id, species_grade_name }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !unit_name) {
+      if (!id && !species_grade_name) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Species Grade ID field must not be empty!",
         });
       }
 
@@ -99,11 +101,11 @@ export const Get = ({ id, unit_name }) => {
 
       if (id) {
         where.id = id;
-      } else if (unit_name) {
-        where.unit_name = unit_name;
+      } else if (species_grade_name) {
+        where.grade_name = species_grade_name;
       }
 
-      const unit = await models.UnitMaster.findOne({
+      const unit = await models.SpeciesGradeMaster.findOne({
         where,
       });
 
@@ -115,10 +117,9 @@ export const Get = ({ id, unit_name }) => {
 };
 
 export const GetAll = ({
-  unit_code,
-  unit_name,
-  unit_type,
-  location_master_name,
+  species_grade_name,
+  species_master_name,
+  species_master_code,
   start,
   length,
 }) => {
@@ -128,31 +129,27 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (unit_code) {
-        where.unit_code = { [Op.iLike]: unit_code };
+      if (species_grade_name) {
+        where.grade_name = { [Op.iLike]: species_grade_name };
       }
 
-      if (unit_name) {
-        where.unit_name = { [Op.iLike]: unit_name };
-      }
-
-      if (unit_type) {
-        where.unit_type = { [Op.iLike]: unit_type };
-      }
-
-      let locationWhere = {
+      let speciesWhere = {
         is_active: true,
       };
 
-      if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
+      if (species_master_name) {
+        where.species_name = { [Op.iLike]: species_master_name };
       }
 
-      const units = await models.UnitMaster.findAndCountAll({
+      if (species_master_code) {
+        where.species_code = { [Op.iLike]: species_master_code };
+      }
+
+      const units = await models.SpeciesGradeMaster.findAndCountAll({
         include: [
           {
-            model: models.LocationMaster,
-            where: locationWhere,
+            model: models.SpeciesMaster,
+            where: speciesWhere,
           },
         ],
         where,
@@ -174,7 +171,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Unit ID field must not be empty!",
+          message: "Species Grade ID field must not be empty!",
         });
       }
 
@@ -185,7 +182,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.UnitMaster.destroy({
+      const unit = await models.SpeciesGradeMaster.destroy({
         where: {
           id,
           is_active: true,
