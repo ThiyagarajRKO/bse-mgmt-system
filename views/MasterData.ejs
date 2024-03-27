@@ -48,6 +48,11 @@
 <link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css">
 <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
 
+<!-- Tippy -->
+<link rel="stylesheet" href="/public/plugins/tippy/scale.css">
+<script src="/public/plugins/tippy/popper.min.js"></script>
+<script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
 
@@ -88,7 +93,17 @@
       display: none !important;
     }
 
-    .topMenu-item {
+    #lastMenu {
+      border-right: 0px solid #414a57;
+    }
+
+    .bg-danger,
+    .btn-red {
+      background-color: #ea5455;
+    }
+
+    .topMenu-item,
+    .topSubMenuContainer {
       display: block;
       color: rgb(44 44 44);
       text-align: center;
@@ -96,29 +111,17 @@
       text-decoration: none;
       border-right: 0px solid #1F2D3E;
       /* padding-bottom: 3px !important; */
-      /* width: 25vh !important; */
+      width: 100px;
       cursor: pointer;
     }
 
-    #lastMenu {
-      border-right: 0px solid #414a57;
-    }
-
-    .topMenu-item:hover:not(.topMenu-item-active) {
+    .topMenu-item:hover:not(.topMenu-item-active),
+    .topSubMenuContainer:hover {
       /* border-bottom: 1px solid #ea5455; */
       color: #ea5455 !important;
       /* font-weight: bold; */
       transition: right 0.3s ease;
-    }
-
-    .topMenu-item {
-      color: #14274e !important;
-      width: 100px;
-    }
-
-    .bg-danger,
-    .btn-red {
-      background-color: #ea5455;
+      cursor: pointer;
     }
 
     .topMenu-item-active {
@@ -128,6 +131,33 @@
       /* border-radius: 8px; */
       transition: right 0.3s ease;
       /* font-weight: bold; */
+    }
+
+    .topSubMenu-item {
+      /* color: #14274e !important; */
+      width: 100px;
+    }
+
+    .topSubMenu-item:hover:not(.topSubMenu-item-active) {
+      border-bottom: 1px solid #ea5455;
+      color: #ea5455 !important;
+      /* font-weight: bold; */
+      transition: right 0.3s ease;
+      cursor: pointer;
+    }
+
+    .topSubMenu-item-active {
+      border-bottom: 1px solid #ea5455;
+      color: #ea5455 !important;
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
+
+    .tippy-box[data-theme~='tomato'] {
+      background-color: #4f4f4f;
+      color: white;
     }
 
     .edit,
@@ -273,7 +303,8 @@
         </div>
       </div>
 
-      <div class="topMenu-item productMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+      <div
+        class="topSubMenuContainer productTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-shrimp"></i>
         </div>
@@ -885,6 +916,18 @@
     <!-- Driver Container Ends -->
 
 
+    <div id="productSubMenus" style="display: none;">
+      <div class="d-flex justify-content-between p-3 fs-6">
+        <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-fish-fins mb-2"></i>Species</div>
+        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
+        <div class="topSubMenu-item sizeMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
+        <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-shrimp mb-2"></i>Product</div>
+      </div>
+    </div>
 
   </div>
 </body>
@@ -927,13 +970,40 @@
     // Menu navigation
     $(".topMenu-item").click(function () {
       $(".topMenu-item").removeClass('topMenu-item-active')
+      $(".topSubMenu-item").removeClass('topSubMenu-item-active')
 
       $(this).addClass('topMenu-item-active')
+      $(".productTopMenu").removeClass('topMenu-item-active')
+      $(".panelClose").click()
+
+      resetAllInputs()
+    })
+
+    // Sub Menu navigation
+    $(document).on('click', '.topSubMenu-item', function () {
+      $(".topSubMenu-item").removeClass('topSubMenu-item-active')
+      $(".topMenu-item").removeClass('topMenu-item-active')
+
+      $(".productTopMenu").addClass('topMenu-item-active')
+      $(this).addClass('topSubMenu-item-active')
 
       $(".panelClose").click()
 
       resetAllInputs()
     })
+
+    const productSubMenus = document.getElementById('productSubMenus');
+    tippy('.productTopMenu', {
+      content: productSubMenus.innerHTML,
+      placement: 'bottom',
+      arrow: true,
+      trigger: 'click',
+      interactive: true,
+      allowHTML: true,
+      theme: 'tomato',
+      hideOnClick: true,
+      animation: 'shift-toward',
+    });
 
     // Global Functions
     // Function to format date as YYYY-MM-DD
