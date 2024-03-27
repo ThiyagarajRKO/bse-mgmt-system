@@ -9,6 +9,7 @@ import vendorMasterRoute from "./vendor_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
 import PackagingMasterRoute from "./packaging_master";
+import inventoryMasterRoute from "./inventory_master";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -40,6 +41,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(driverMasterRoute, { prefix: "/master/driver" });
 
   fastify.register(PackagingMasterRoute, { prefix: "/master/packaging" });
+
+  fastify.register(inventoryMasterRoute, { prefix: "/master/inventory" });
 
   done();
 };

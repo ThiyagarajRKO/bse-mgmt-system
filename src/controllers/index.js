@@ -7,3 +7,4 @@ export * as UnitMaster from "./unit_master";
 export * as VehicleMaster from "./vehicle_master";
 export * as DriverMaster from "./driver_master";
 export * as PackagingMaster from "./packaging_master";
+export * as InventoryMaster from "./inventory_master";

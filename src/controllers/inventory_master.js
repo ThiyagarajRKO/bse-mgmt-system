@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, vendor_master_data) => {
+export const Insert = async (profile_id, inventory_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,43 +11,54 @@ export const Insert = async (profile_id, vendor_master_data) => {
         });
       }
 
-      if (!vendor_master_data) {
+      if (!inventory_master_data?.inventory_name) {
         return reject({
           statusCode: 420,
-          message: "Vendor data must not be empty!",
+          message: "inventory name must not be empty!",
         });
       }
 
-      if (!vendor_master_data?.vendor_name) {
+      if (!inventory_master_data?.inventory_uom) {
         return reject({
           statusCode: 420,
-          message: "Vendor name must not be empty!",
+          message: "inventory unit of measure must not be empty!",
         });
       }
 
-      const result = await models.VendorMaster.create(vendor_master_data, {
+      if (!inventory_master_data?.inventory_category) {
+        return reject({
+          statusCode: 420,
+          message: "inventory category must not be empty!",
+        });
+      }
+
+      if (!inventory_master_data?.vendor_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Vendor master id must not be empty!",
+        });
+      }
+
+      const result = await models.InventoryMaster.create(inventory_master_data, {
         profile_id,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({
-          statusCode: 420,
-          message: "Vendor already exists!",
-        });
+        return reject({ statusCode: 420, message: "inventory already exists!" });
       }
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, vendor_master_data) => {
+export const Update = async (profile_id, id, inventory_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Vendor id must not be empty!",
+          message: "inventory id must not be empty!",
         });
       }
 
@@ -58,20 +69,21 @@ export const Update = async (profile_id, id, vendor_master_data) => {
         });
       }
 
-      if (!vendor_master_data) {
+      if (!inventory_master_data) {
         return reject({
           statusCode: 420,
-          message: "Vendor data must not be empty!",
+          message: "inventory data must not be empty!",
         });
       }
 
-      const result = await models.VendorMaster.update(vendor_master_data, {
+      inventory_master_data.updated_by = profile_id;
+
+      const result = await models.InventoryMaster.update(inventory_master_data, {
         where: {
           id,
           is_active: true,
         },
         individualHooks: true,
-        profile_id,
       });
       resolve(result);
     } catch (err) {
@@ -80,13 +92,13 @@ export const Update = async (profile_id, id, vendor_master_data) => {
   });
 };
 
-export const Get = ({ id, vendor_name }) => {
+export const Get = ({ id, inventory_name }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !vendor_name) {
+      if (!id && !inventory_name) {
         return reject({
           statusCode: 420,
-          message: "Vendor ID field must not be empty!",
+          message: "inventory ID field must not be empty!",
         });
       }
 
@@ -96,15 +108,15 @@ export const Get = ({ id, vendor_name }) => {
 
       if (id) {
         where.id = id;
-      } else if (vendor_name) {
-        where.vendor_name = vendor_name;
+      } else if (inventory_name) {
+        where.inventory_name = inventory_name;
       }
 
-      const vendor = await models.VendorMaster.findOne({
+      const inventory = await models.inventoryMaster.findOne({
         where,
       });
 
-      resolve(vendor);
+      resolve(inventory);
     } catch (err) {
       reject(err);
     }
@@ -112,10 +124,12 @@ export const Get = ({ id, vendor_name }) => {
 };
 
 export const GetAll = ({
+  inventory_name,
+  inventory_uom,
+  inventory_category,
+  vendor_master_name,
   start,
   length,
-  vendor_name,
-  location_master_name,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -123,23 +137,31 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (vendor_name) {
-        where.vendor_name = { [Op.iLike]: vendor_name };
+      if (inventory_name) {
+        where.inventory_name = { [Op.iLike]: inventory_name };
       }
 
-      let locationWhere = {
+      if (inventory_uom) {
+        where.inventory_uom = { [Op.iLike]: inventory_uom };
+      }
+
+      if (inventory_category) {
+        where.inventory_category = { [Op.iLike]: inventory_category };
+      }
+
+      let vendorWhere = {
         is_active: true,
       };
 
-      if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
+      if (vendor_master_name) {
+        where.vendor_name = { [Op.iLike]: vendor_master_name };
       }
 
-      const vendors = await models.VendorMaster.findAndCountAll({
+      const inventories = await models.InventoryMaster.findAndCountAll({
         include: [
           {
-            model: models.LocationMaster,
-            where: locationWhere,
+            model: models.VendorMaster,
+            where: vendorWhere,
           },
         ],
         where,
@@ -148,32 +170,7 @@ export const GetAll = ({
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const Count = ({ id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Vendor ID field must not be empty!",
-        });
-      }
-
-      const vendor = await models.VendorMaster.count({
-        where: {
-          id,
-          is_active: true,
-        },
-        raw: true,
-      });
-
-      resolve(vendor);
+      resolve(inventories);
     } catch (err) {
       reject(err);
     }
@@ -186,7 +183,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Vendor ID field must not be empty!",
+          message: "Inventory ID field must not be empty!",
         });
       }
 
@@ -197,7 +194,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.VendorMaster.destroy({
+      const inventory = await models.InventoryMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -207,7 +204,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(inventory);
     } catch (err) {
       reject(err);
     }
