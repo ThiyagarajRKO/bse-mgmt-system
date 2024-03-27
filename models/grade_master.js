@@ -2,23 +2,23 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class SpeciesGradeMaster extends Model {
+  class GradeMaster extends Model {
     static associate(models) {
-      SpeciesGradeMaster.belongsTo(models.UserProfiles, {
+      GradeMaster.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      SpeciesGradeMaster.belongsTo(models.UserProfiles, {
+      GradeMaster.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      SpeciesGradeMaster.belongsTo(models.UserProfiles, {
+      GradeMaster.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  SpeciesGradeMaster.init(
+  GradeMaster.init(
     {
       id: {
         primaryKey: true,
@@ -54,8 +54,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "SpeciesGradeMaster",
-      tableName: "species_grade_master",
+      modelName: "GradeMaster",
+      tableName: "grade_master",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -65,34 +65,35 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Create Hook
-  SpeciesGradeMaster.beforeCreate(async (data, options) => {
+  GradeMaster.beforeCreate(async (data, options) => {
     try {
       data.created_by = options.profile_id;
     } catch (err) {
-      console.log("Error while appending an unit name", err?.message || err);
+      console.log("Error while appending an grade", err?.message || err);
     }
   });
 
   // Update Hook
-  SpeciesGradeMaster.beforeUpdate(async (data, options) => {
+  GradeMaster.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
+      data.updated_by = options.profile_id;
     } catch (err) {
-      console.log("Error while updating an unit name", err?.message || err);
+      console.log("Error while updating an grade", err?.message || err);
     }
   });
 
   // Delete Hook
-  SpeciesGradeMaster.afterDestroy(async (data, options) => {
+  GradeMaster.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting an unit", err?.message || err);
+      console.log("Error while deleting an grade", err?.message || err);
     }
   });
 
-  return SpeciesGradeMaster;
+  return GradeMaster;
 };

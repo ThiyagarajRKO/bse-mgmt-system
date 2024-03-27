@@ -8,7 +8,7 @@ import unitMasterRoute from "./unit_master";
 import vendorMasterRoute from "./vendor_master";
 import PackagingMasterRoute from "./packaging_master";
 import SpeciesMasterRoute from "./species_master";
-import SpeciesGradeMasterRoute from "./species_grade_master";
+import GradeMasterRoute from "./grade_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
 
@@ -41,9 +41,7 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(SpeciesMasterRoute, { prefix: "/master/species" });
 
-  fastify.register(SpeciesGradeMasterRoute, {
-    prefix: "/master/species/grade",
-  });
+  fastify.register(GradeMasterRoute, { prefix: "/master/grade" });
 
   fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
 

@@ -783,41 +783,40 @@
     <!-- Species Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------- Grade Container ------------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <div class="menu-container speciesGradeContainer d-none">
+    <div class="menu-container gradeContainer d-none">
 
       <!-- Slide-in Panel -->
-      <div id="speciesGradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+      <div id="gradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
 
         <div class="row d-flex justify-content-center">
 
           <div class="col-sm-12 col-md-12 col-md-12">
 
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span id="speciesGradePanelHeading" class="fw-bold fs-5">Add Species Data</span>
+              <span id="gradePanelHeading" class="fw-bold fs-5">Add Grade Data</span>
               <div class="col my-auto d-flex justify-content-end">
-                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSpeciesGradePanelBtn"></i>
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeGradePanelBtn"></i>
               </div>
             </div>
 
             <hr />
 
             <div class="form-group mt-4">
-              <label for="species-name">Species Grade Name</label>
-              <input id="species_grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name"
-                required>
+              <label for="species-name">Grade Name</label>
+              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name" required>
             </div>
 
             <div class="form-group my-3">
-              <label for="species_grade_description">Description</label>
-              <input id="species_grade_description" class="form-control" placeholder="eg. 1st grade quality" type="text"
-                name="species_grade_description">
+              <label for="grade_description">Description</label>
+              <input id="grade_description" class="form-control" placeholder="eg. 1st grade quality" type="text"
+                name="grade_description">
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-              <div id="submitSpeciesGrade" class="col-lg-5 btn btn-danger">Save</div>
-              <div id="resetSpeciesGradeDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+              <div id="submitGrade" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetGradeDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
             </div>
 
           </div>
@@ -831,14 +830,14 @@
 
           <!-- Add Button -->
           <div class="d-flex rounded-2 justify-content-end pb-4">
-            <div id="openSpeciesGradePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+            <div id="openGradePanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
               style="width: 100px;">
               <i class="fa-solid fa-circle-plus my-auto"></i>
               <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
             </div>
           </div>
 
-          <table id="speciesGradeTable" class="table table-hover nowrap w-100">
+          <table id="gradeTable" class="table table-hover nowrap w-100">
             <thead>
               <tr>
                 <th></th>
@@ -1142,7 +1141,7 @@
       content: `<div class="d-flex justify-content-between p-3 fs-6">
         <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-fish-fins mb-2"></i>Species</div>
-        <div class="topSubMenu-item speciesGradeMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSubMenu-item gradeMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-ranking-star mb-2"></i>Grades</div>
         <div class="topSubMenu-item speciesSizeMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
@@ -1202,7 +1201,7 @@
       $("#vendorLocations").val(null).trigger('change');
       $("#packagingType").val(null).trigger('change');
       $("#packagingMaterialComposition").val(null).trigger('change');
-      $("#speciesGradeSpeciesNames").val(null).trigger('change');
+      $("#gradeSpeciesNames").val(null).trigger('change');
     }
 
     function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
@@ -2526,34 +2525,34 @@
     $("#resetSpeciesDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
-    // ---------------------- Species Grade --------------------
+    // --------------------------- Grade -----------------------
     // ---------------------------------------------------------
 
     // Open panel
-    $('#openSpeciesGradePanelBtn').click(function () {
-      openSlidePanel("speciesGradeSlideInPanel", "speciesGradePanelHeading", "Species Grade", "submitSpeciesGrade", "species_grade_master_id")
+    $('#openGradePanelBtn').click(function () {
+      openSlidePanel("gradeSlideInPanel", "gradePanelHeading", "Grade", "submitGrade", "grade_master_id")
     });
 
     // Close panel
-    $('#closeSpeciesGradePanelBtn').click(function () {
-      closeSlidePanel("speciesGradeSlideInPanel")
+    $('#closeGradePanelBtn').click(function () {
+      closeSlidePanel("gradeSlideInPanel")
     });
 
-    $(document).on('click', '.speciesGradeMenu', function () {
+    $(document).on('click', '.gradeMenu', function () {
       $(".menu-container").addClass('d-none')
 
-      $(".speciesGradeContainer").removeClass('d-none')
-      $(".speciesGradeContainer").addClass('d-block')
+      $(".gradeContainer").removeClass('d-none')
+      $(".gradeContainer").addClass('d-block')
 
-      loadSpeciesGradeTableData()
+      loadGradeTableData()
     })
 
-    $("#submitSpeciesGrade").click(function () {
-      saveSpeciesGrade()
+    $("#submitGrade").click(function () {
+      saveGrade()
     })
 
-    function loadSpeciesGradeTableData() {
-      $("#speciesGradeTable").DataTable({
+    function loadGradeTableData() {
+      $("#gradeTable").DataTable({
         // searching: true,
         destroy: true,
         responsive: false,
@@ -2564,10 +2563,10 @@
         ordering: false,
         ajax: {
           type: "GET",
-          url: "/api/v1/master/species/grade/get/all",
+          url: "/api/v1/master/grade/get/all",
           error: function (xhr, error, code) {
-            $("#species_gradeTable").DataTable().destroy();
-            $("#species_gradeTable").DataTable({
+            $("#gradeTable").DataTable().destroy();
+            $("#gradeTable").DataTable({
               scrollX: true,
               ordering: false,
             })
@@ -2594,14 +2593,14 @@
             targets: [0],
             className: "text-left",
             render: function (data, type, row) {
-              return '<i class="fa fa-pen-to-square edit editSpeciesGrade" species_grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this species_grade"></i>'
+              return '<i class="fa fa-pen-to-square edit editGrade" grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this grade"></i>'
             },
           },
           {
             targets: [1],
             className: "text-left",
             render: function (data, type, row) {
-              return '<i class="fa fa-trash del delSpeciesGrade" species_grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this species_grade"></i>'
+              return '<i class="fa fa-trash del delGrade" grade_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this grade"></i>'
             },
           },
           {
@@ -2630,30 +2629,30 @@
       });
     }
 
-    $(document).on('click', '.editSpeciesGrade', (e) => {
+    $(document).on('click', '.editGrade', (e) => {
       // Changing panel input fields data
-      $("#species_grade_name").val($(e.target).closest('tr').children("td").eq(2).text())
-      $("#species_description").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
+      $("#grade_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#grade_description").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
 
       // Opening Slied Panel
-      $("#openSpeciesGradePanelBtn").click()
+      $("#openGradePanelBtn").click()
 
       // Changing panel heading
-      $("#species_gradePanelHeading").text("Edit Species Grade Data")
+      $("#gradePanelHeading").text("Edit Grade Data")
 
       // Changing panel button label
-      $("#submitSpeciesGrade").text("Update")
+      $("#submitGrade").text("Update")
 
       // Changing panel button attribute
-      $("#submitSpeciesGrade").attr("species_grade_master_id", $(e.target).attr('species_grade_master_id'))
+      $("#submitGrade").attr("grade_master_id", $(e.target).attr('grade_master_id'))
     })
 
-    $(document).on('click', '.delSpeciesGrade', (e) => {
-      let species_grade_master_id = $(e.target).attr('species_grade_master_id')
+    $(document).on('click', '.delGrade', (e) => {
+      let grade_master_id = $(e.target).attr('grade_master_id')
       let currentRow = $(e.target).closest('tr')
       $.confirm({
-        title: 'Delete SpeciesGrade?',
-        content: 'Are you sure, do you want to remove this species_grade?',
+        title: 'Delete Grade?',
+        content: 'Are you sure, do you want to remove this grade?',
         backgroundDismiss: false,
         backgroundDismissAnimation: 'glow',
         type: 'red',
@@ -2669,45 +2668,45 @@
             btnClass: 'btn-red',
             action: function () {
               $.ajax({
-                url: '/api/v1/master/species_grade/delete',
+                url: '/api/v1/master/grade/delete',
                 method: 'post',
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify({
-                  species_grade_master_id,
+                  grade_master_id,
                 })
               }).done(function (response) {
                 //loading data to table
-                loadSpeciesGradeTableData()
+                loadGradeTableData()
 
-                toastr.success('SpeciesGrade deleted successfully', 'Deleted')
+                toastr.success('Grade deleted successfully', 'Deleted')
               }).fail(function () {
-                toastr.error('SpeciesGrade failed to delete!', 'Error')
+                toastr.error('Grade failed to delete!', 'Error')
               });
             }
           },
           no: function () {
-            toastr.info('SpeciesGrade is safe now', 'Info')
+            toastr.info('Grade is safe now', 'Info')
           }
         }
       });
     })
 
-    function saveSpeciesGrade() {
-      const species_grade_master_id = $("#submitSpeciesGrade").attr('species_grade_master_id')
+    function saveGrade() {
+      const grade_master_id = $("#submitGrade").attr('grade_master_id')
 
-      let url = "/api/v1/master/species/grade/create"
+      let url = "/api/v1/master/grade/create"
       let input_params = {
-        grade_name: $("#species_grade_name").val(),
-        description: $("#species_grade_description").val()
+        grade_name: $("#grade_name").val(),
+        description: $("#grade_description").val()
       };
 
-      if (species_grade_master_id) {
-        url = "/api/v1/master/species/grade/update"
+      if (grade_master_id) {
+        url = "/api/v1/master/grade/update"
 
         input_params = {
-          species_grade_master_id,
-          species_grade_master_data: {
+          grade_master_id,
+          grade_master_data: {
             ...input_params
           }
         }
@@ -2724,9 +2723,9 @@
         success: (data) => {
           toastr["success"](data?.message);
 
-          $("#closeSpeciesGradePanelBtn").click()
+          $("#closeGradePanelBtn").click()
 
-          loadSpeciesGradeTableData()
+          loadGradeTableData()
 
           resetAllInputs()
         },
@@ -2741,7 +2740,7 @@
     }
 
 
-    $("#resetSpeciesGradeDataBtn").on("click", resetAllInputs)
+    $("#resetGradeDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
     // ------------------------- Vehicle -----------------------

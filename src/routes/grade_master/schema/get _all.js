@@ -6,7 +6,7 @@ export const getAllSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
-        species_grade_name: { type: "string" },
+        grade_name: { type: "string" },
       },
     },
   },

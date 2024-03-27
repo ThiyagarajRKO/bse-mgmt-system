@@ -87,7 +87,7 @@ module.exports = (sequelize, DataTypes) => {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a driver details",
+        "Error while inserting a vendor details",
         err?.message || err
       );
     }
@@ -99,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a driver", err?.message || err);
+      console.log("Error while updating a vendor", err?.message || err);
     }
   });
 
@@ -111,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a driver", err?.message || err);
+      console.log("Error while deleting a vendor", err?.message || err);
     }
   });
 

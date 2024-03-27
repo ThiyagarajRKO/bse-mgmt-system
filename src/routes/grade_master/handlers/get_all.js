@@ -1,19 +1,15 @@
-import { SpeciesGradeMaster } from "../../../controllers";
+import { GradeMaster } from "../../../controllers";
 
-export const GetAll = (
-  { start, length, species_grade_name },
-  session,
-  fastify
-) => {
+export const GetAll = ({ start, length, grade_name }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let species_grade_master = await SpeciesGradeMaster.GetAll({
+      let grade_master = await GradeMaster.GetAll({
         start,
         length,
-        species_grade_name,
+        grade_name,
       });
 
-      if (!species_grade_master) {
+      if (!grade_master) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -21,7 +17,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: species_grade_master,
+        data: grade_master,
       });
     } catch (err) {
       fastify.log.error(err);

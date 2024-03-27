@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, species_grade_master_data) => {
+export const Insert = async (profile_id, grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,25 +11,22 @@ export const Insert = async (profile_id, species_grade_master_data) => {
         });
       }
 
-      if (!species_grade_master_data?.grade_name) {
+      if (!grade_master_data?.grade_name) {
         return reject({
           statusCode: 420,
           message: "Species Grade name must not be empty!",
         });
       }
 
-      const result = await models.SpeciesGradeMaster.create(
-        species_grade_master_data,
-        {
-          profile_id,
-        }
-      );
+      const result = await models.GradeMaster.create(grade_master_data, {
+        profile_id,
+      });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
           statusCode: 420,
-          message: "Species Grade already exists!",
+          message: "Grade already exists!",
         });
       }
       reject(err);
@@ -37,7 +34,7 @@ export const Insert = async (profile_id, species_grade_master_data) => {
   });
 };
 
-export const Update = async (profile_id, id, species_grade_master_data) => {
+export const Update = async (profile_id, id, grade_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -54,23 +51,20 @@ export const Update = async (profile_id, id, species_grade_master_data) => {
         });
       }
 
-      if (!species_grade_master_data) {
+      if (!grade_master_data) {
         return reject({
           statusCode: 420,
           message: "Species Grade data must not be empty!",
         });
       }
 
-      const result = await models.SpeciesGradeMaster.update(
-        species_grade_master_data,
-        {
-          where: {
-            id,
-            is_active: true,
-          },
-          individualHooks: true,
-        }
-      );
+      const result = await models.GradeMaster.update(grade_master_data, {
+        where: {
+          id,
+          is_active: true,
+        },
+        individualHooks: true,
+      });
       resolve(result);
     } catch (err) {
       reject(err);
@@ -78,10 +72,10 @@ export const Update = async (profile_id, id, species_grade_master_data) => {
   });
 };
 
-export const Get = ({ id, species_grade_name }) => {
+export const Get = ({ id, grade_name }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !species_grade_name) {
+      if (!id && !grade_name) {
         return reject({
           statusCode: 420,
           message: "Species Grade ID field must not be empty!",
@@ -94,11 +88,11 @@ export const Get = ({ id, species_grade_name }) => {
 
       if (id) {
         where.id = id;
-      } else if (species_grade_name) {
-        where.grade_name = species_grade_name;
+      } else if (grade_name) {
+        where.grade_name = grade_name;
       }
 
-      const unit = await models.SpeciesGradeMaster.findOne({
+      const unit = await models.GradeMaster.findOne({
         where,
       });
 
@@ -109,18 +103,18 @@ export const Get = ({ id, species_grade_name }) => {
   });
 };
 
-export const GetAll = ({ species_grade_name, start, length }) => {
+export const GetAll = ({ grade_name, start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (species_grade_name) {
-        where.grade_name = { [Op.iLike]: species_grade_name };
+      if (grade_name) {
+        where.grade_name = { [Op.iLike]: grade_name };
       }
 
-      const units = await models.SpeciesGradeMaster.findAndCountAll({
+      const units = await models.GradeMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
@@ -151,7 +145,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.SpeciesGradeMaster.destroy({
+      const unit = await models.GradeMaster.destroy({
         where: {
           id,
           is_active: true,

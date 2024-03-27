@@ -11,7 +11,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
 
-export const SpeciesGradeMasterRoute = (fastify, opts, done) => {
+export const GradeMasterRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -110,4 +110,4 @@ export const SpeciesGradeMasterRoute = (fastify, opts, done) => {
   done();
 };
 
-export default SpeciesGradeMasterRoute;
+export default GradeMasterRoute;

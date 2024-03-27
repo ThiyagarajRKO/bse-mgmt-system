@@ -1,4 +1,4 @@
-import { SpeciesGradeMaster, SpeciesMaster } from "../../../controllers";
+import { GradeMaster, SpeciesMaster } from "../../../controllers";
 
 export const Create = (
   { profile_id, grade_name, description },
@@ -7,16 +7,16 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const species_grade_master = await SpeciesGradeMaster.Insert(profile_id, {
+      const grade_master = await GradeMaster.Insert(profile_id, {
         grade_name,
         description,
         is_active: true,
       });
 
       resolve({
-        message: "Species grade has been inserted successfully",
+        message: "Grade has been inserted successfully",
         data: {
-          species_grade_master_id: species_grade_master?.id,
+          grade_master_id: grade_master?.id,
         },
       });
     } catch (err) {
