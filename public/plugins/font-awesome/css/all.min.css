@@ -7481,6 +7481,10 @@
     content: "\f372"
 }
 
+.fa-inventory.before {
+    content: "\e4c7"
+}
+
 .fa-font-awesome-flag:before,
 .fa-font-awesome-logo-full:before,
 .fa-font-awesome:before {

@@ -166,8 +166,9 @@
 
     /* Select */
     .slideInPanel .select2-container {
-      background-color: transparent;
-      border-color: rgba(98, 114, 147, 0.6);
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      color: #627293 !important;
     }
 
     .slideInPanel .select:focus {
@@ -202,6 +203,10 @@
       color: #627293;
     }
 
+    .select2-selection::placeholder {
+      color: #627293;
+    }
+
     .page-item.active .page-link {
       color: #fff !important;
       background-color: #ea5455 !important;
@@ -218,6 +223,12 @@
       color: #fff !important;
       background-color: #f17979 !important;
       border-color: #ea5455 !important;
+    }
+
+    .select2-selection {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      height: 35px !important;
     }
 
     .select2-dropdown {
@@ -266,6 +277,15 @@
         </div>
         <div class="pt-2">
           <span>Packaging</span>
+        </div>
+      </div>
+
+      <div class="topMenu-item packagingMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+        <div class="fs-6">
+          <i class="fa-solid fa-inventory"></i>
+        </div>
+        <div class="pt-2">
+          <span>Inventory</span>
         </div>
       </div>
 
