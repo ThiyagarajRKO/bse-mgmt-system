@@ -2623,7 +2623,7 @@
       $("#submitInventory").text("Update")
 
       // Changing panel button attribute
-      $("#submitinventory").attr("inventory_master_id", $(e.target).attr('inventory_master_id'))
+      $("#submitInventory").attr("inventory_master_id", $(e.target).attr('inventory_master_id'))
     })
 
     $(document).on('click', '.delInventory', (e) => {
@@ -2739,23 +2739,29 @@
     }
 
     function saveInventory() {
-      // refreshUnitCode()
-      // Define inventoryName variable
-      const inventoryName = $("#inventory_name").val();
+      const inventory_master_id = $("#submitInventory").attr('inventory_master_id')
 
-      // Define inventoryUOM variable
-      const inventoryUOM = $("#inventory_uom").val();
-
-
-      const input_params = {
-        inventory_name: inventoryName,
-        inventory_uom: inventoryUOM,
+      let url = "/api/v1/master/inventory/create"
+      let input_params = {
+        inventory_name: $("#inventory_name").val(),
+        inventory_uom: $("#inventory_uom").val(),
         inventory_category: $("#inventory_category").val(),
         vendor_master_id: $("#inventory_supplier").val(),
       }
 
+      if (inventory_master_id) {
+        url = "/api/v1/master/inventory/update"
+
+        input_params = {
+          inventory_master_id,
+          inventory_master_data: {
+            ...input_params
+          }
+        }
+      }
+
       $.ajax({
-        url: "/api/v1/master/inventory/create",
+        url,
         method: "POST",
         dataType: "json",
         contentType: "application/json",
