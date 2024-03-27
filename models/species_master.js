@@ -70,8 +70,6 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   SpeciesMaster.beforeCreate(async (data, options) => {
     try {
-      data.species_code = data?.species_name;
-
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(

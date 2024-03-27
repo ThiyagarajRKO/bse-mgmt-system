@@ -2,7 +2,7 @@ export const createSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["species_name", "scientific_name"],
+      required: ["species_code", "species_name", "scientific_name"],
       properties: {
         species_code: { type: "string" },
         species_name: { type: "string" },

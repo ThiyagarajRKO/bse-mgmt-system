@@ -1,7 +1,7 @@
 import { SpeciesMaster } from "../../../controllers";
 
 export const Create = (
-  { profile_id, species_name, scientific_name, description },
+  { profile_id, species_code, species_name, scientific_name, description },
   session,
   fastify
 ) => {
@@ -9,8 +9,9 @@ export const Create = (
     try {
       const species_master = await SpeciesMaster.Insert(profile_id, {
         species_name,
-        description,
+        species_code,
         scientific_name,
+        description,
         is_active: true,
       });
 
