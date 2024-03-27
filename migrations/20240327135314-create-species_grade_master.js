@@ -10,19 +10,10 @@ module.exports = {
       grade_name: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       description: {
         type: Sequelize.TEXT,
-      },
-      species_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "species_master" },
-          key: "id",
-        },
       },
       is_active: {
         defaultValue: false,

@@ -18,13 +18,6 @@ export const Insert = async (profile_id, species_grade_master_data) => {
         });
       }
 
-      if (!species_grade_master_data?.species_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Species master id must not be empty!",
-        });
-      }
-
       const result = await models.SpeciesGradeMaster.create(
         species_grade_master_data,
         {
@@ -116,13 +109,7 @@ export const Get = ({ id, species_grade_name }) => {
   });
 };
 
-export const GetAll = ({
-  species_grade_name,
-  species_master_name,
-  species_master_code,
-  start,
-  length,
-}) => {
+export const GetAll = ({ species_grade_name, start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -133,25 +120,7 @@ export const GetAll = ({
         where.grade_name = { [Op.iLike]: species_grade_name };
       }
 
-      let speciesWhere = {
-        is_active: true,
-      };
-
-      if (species_master_name) {
-        where.species_name = { [Op.iLike]: species_master_name };
-      }
-
-      if (species_master_code) {
-        where.species_code = { [Op.iLike]: species_master_code };
-      }
-
       const units = await models.SpeciesGradeMaster.findAndCountAll({
-        include: [
-          {
-            model: models.SpeciesMaster,
-            where: speciesWhere,
-          },
-        ],
         where,
         offset: start,
         limit: length,

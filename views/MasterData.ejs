@@ -810,13 +810,6 @@
             </div>
 
             <div class="form-group my-3">
-              <label for="speciesgradeSpeciesNames">Species Name</label>
-              <select class="form-control input-dropdown w-100" id="speciesGradeSpeciesNames"
-                name="speciesgradeSpeciesNames">
-              </select>
-            </div>
-
-            <div class="form-group my-3">
               <label for="species_grade_description">Description</label>
               <input id="species_grade_description" class="form-control" placeholder="eg. 1st grade quality" type="text"
                 name="species_grade_description">
@@ -851,7 +844,6 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Species Name</span></th>
-                <th class="fw-bold"><span>Species Grade Name</span></th>
                 <th class="fw-bold"><span>Description</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
@@ -1245,7 +1237,6 @@
     loadVendorLocations()
     loadPackagingType()
     loadPackagingMaterialComposition()
-    loadSpeciesGradeSpeciesNames()
 
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
@@ -2315,7 +2306,7 @@
     $("#resetPackagingDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
-    // ----------------------- Speciess -----------------------
+    // ------------------------ Speciess -----------------------
     // ---------------------------------------------------------
 
     // Open panel
@@ -2594,7 +2585,6 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "SpeciesMaster.species_name" },
           { data: "grade_name" },
           { data: "description" },
           { data: "created_at" },
@@ -2615,14 +2605,7 @@
             },
           },
           {
-            targets: [2],
-            className: "text-left",
-            render: function (data, type, row) {
-              return `<span species_master_id='${row['SpeciesMaster'].id}'>${data}</span>`
-            },
-          },
-          {
-            targets: [5],
+            targets: [4],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -2649,9 +2632,8 @@
 
     $(document).on('click', '.editSpeciesGrade', (e) => {
       // Changing panel input fields data
-      $("#speciesGradeSpeciesNames").val($(e.target).closest('tr').children("td").eq(2).find('span').attr("species_master_id")).trigger('change')
-      $("#species_grade_name").val($(e.target).closest('tr').children("td").eq(3).text())
-      $("#species_description").val($(e.target).closest('tr').children("td").eq(4).text()).trigger('change')
+      $("#species_grade_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
 
       // Opening Slied Panel
       $("#openSpeciesGradePanelBtn").click()
@@ -2711,51 +2693,13 @@
       });
     })
 
-    function loadSpeciesGradeSpeciesNames() {
-      // Load Roles
-      $.ajax({
-        url: "/api/v1/master/species/get/all",
-        method: "GET",
-        dataType: "json",
-        contentType: "application/json",
-        crossDomain: true,
-        processData: false,
-        success: (data) => {
-          // Loading data
-          $("#speciesGradeSpeciesNames").select2({
-            placeholder: "Choose a location",
-            allowClear: true,
-            data: $.map(data?.data?.rows, function (item) {
-              return {
-                id: item.id,
-                text: item.species_name,
-              };
-            }),
-          });
-
-          // Clearing selected value
-          $("#speciesGradeSpeciesNames").val(null).trigger("change");
-          // // Clearing selected value
-          // $('#species_gradeType').val(null).trigger('change');
-        },
-        error: (jqXhr, textStatus, errorThrown) => {
-          if (jqXhr["status"] == 420) {
-            toastr["warning"](jqXhr["responseJSON"]["message"]);
-          } else {
-            toastr["error"](jqXhr["responseJSON"]["message"]);
-          }
-        },
-      });
-    }
-
     function saveSpeciesGrade() {
       const species_grade_master_id = $("#submitSpeciesGrade").attr('species_grade_master_id')
 
       let url = "/api/v1/master/species/grade/create"
       let input_params = {
         grade_name: $("#species_grade_name").val(),
-        description: $("#species_grade_description").val(),
-        species_master_id: $("#speciesGradeSpeciesNames").val(),
+        description: $("#species_grade_description").val()
       };
 
       if (species_grade_master_id) {

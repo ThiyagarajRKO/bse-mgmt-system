@@ -1,27 +1,15 @@
 import { SpeciesGradeMaster, SpeciesMaster } from "../../../controllers";
 
 export const Create = (
-  { profile_id, grade_name, description, species_master_id },
+  { profile_id, grade_name, description },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const species_count = await SpeciesMaster.Count({
-        id: species_master_id,
-      });
-
-      if (species_count == 0) {
-        return reject({
-          statusCode: 420,
-          message: "Invalid species master id!",
-        });
-      }
-
       const species_grade_master = await SpeciesGradeMaster.Insert(profile_id, {
         grade_name,
         description,
-        species_master_id,
         is_active: true,
       });
 

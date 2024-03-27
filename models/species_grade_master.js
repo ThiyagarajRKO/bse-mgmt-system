@@ -24,12 +24,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-
-      SpeciesGradeMaster.belongsTo(models.SpeciesMaster, {
-        foreignKey: "species_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
     }
   }
   SpeciesGradeMaster.init(

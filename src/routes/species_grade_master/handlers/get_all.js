@@ -1,13 +1,7 @@
 import { SpeciesGradeMaster } from "../../../controllers";
 
 export const GetAll = (
-  {
-    start,
-    length,
-    species_grade_name,
-    species_master_name,
-    species_master_code,
-  },
+  { start, length, species_grade_name },
   session,
   fastify
 ) => {
@@ -17,8 +11,6 @@ export const GetAll = (
         start,
         length,
         species_grade_name,
-        species_master_name,
-        species_master_code,
       });
 
       if (!species_grade_master) {
