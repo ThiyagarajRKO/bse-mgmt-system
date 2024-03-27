@@ -97,23 +97,19 @@ module.exports = (sequelize, DataTypes) => {
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
       if (data?.packaging_type && data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne(
-          {
-            attribute: "vendor_name",
-            where: { id: data?.vendor_master_id, is_active: true },
-          }
-        );
+        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
+          attribute: "vendor_name",
+          where: { id: data?.vendor_master_id, is_active: true },
+        });
 
-        data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
-          }x${data?.packaging_width}x${data?.packaging_height}-${PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name
-            ?.trim()
-            ?.replaceAll(" ", "")
-            ?.toUpperCase()}`;
+        data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
+          data?.packaging_length
+        }x${data?.packaging_width}x${data?.packaging_height}-${
+          PackagingMaterials[data?.packaging_material_composition]
+        }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
       }
 
-      data.updated_at = new Date();
-      data.updated_by = options.profile_id;
+      data.created_by = options.profile_id;
     } catch (err) {
       console.log(
         "Error while inserting a packaging data",
@@ -126,19 +122,16 @@ module.exports = (sequelize, DataTypes) => {
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
       if (data?.packaging_type && data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne(
-          {
-            attribute: "vendor_name",
-            where: { id: data?.vendor_master_id, is_active: true },
-          }
-        );
+        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
+          attribute: "vendor_name",
+          where: { id: data?.vendor_master_id, is_active: true },
+        });
 
-        data.packaging_name = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
-          }x${data?.packaging_width}x${data?.packaging_height}-${PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name
-            ?.trim()
-            ?.replaceAll(" ", "")
-            ?.toUpperCase()}`;
+        data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
+          data?.packaging_length
+        }x${data?.packaging_width}x${data?.packaging_height}-${
+          PackagingMaterials[data?.packaging_material_composition]
+        }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
       }
 
       data.updated_at = new Date();

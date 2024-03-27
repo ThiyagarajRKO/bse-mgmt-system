@@ -8,7 +8,7 @@ export const createSchema = {
         "packaging_width",
         "packaging_length",
         "packaging_material_composition",
-        "packaging_supplier",
+        "vendor_master_id",
       ],
       properties: {
         packaging_type: { type: "string" },
@@ -16,7 +16,7 @@ export const createSchema = {
         packaging_width: { type: "integer" },
         packaging_length: { type: "integer" },
         packaging_material_composition: { type: "string" },
-        packaging_supplier: { type: "string" },
+        vendor_master_id: { type: "string" },
       },
     },
   },

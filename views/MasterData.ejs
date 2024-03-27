@@ -663,7 +663,7 @@
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingWeight">Height (inches)</label>
+                <label for="packagingWeight">Weight (cm)</label>
                 <input id="packagingWeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
                   name="packagingWeight">
               </div>
@@ -1429,6 +1429,7 @@
     loadVendorLocations()
     loadPackagingType()
     loadPackagingMaterialComposition()
+    loadPackagingVendor()
     loadInventoryVendors()
     loadInventoryCategory()
 
@@ -2226,10 +2227,6 @@
     $('#openPackagingPanelBtn').click(function () {
       openSlidePanel("packagingSlideInPanel", "packagingPanelHeading", "Packaging", "submitPackaging", "packaging_master_id")
       $('#packagingSlideInPanel').css('right', '0');
-
-      loadPackagingType()
-      loadPackagingMaterialComposition()
-      loadPackagingVendor()
     });
 
     // Close panel
@@ -2312,6 +2309,13 @@
             targets: [9],
             className: "text-left",
             render: function (data, type, row) {
+              return `<span packaging_master_id='${row["VendorMaster"].id}'>${data}</i>`
+            },
+          },
+          {
+            targets: [10],
+            className: "text-left",
+            render: function (data, type, row) {
               const date = new Date(row["created_at"]);
 
               var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -2340,9 +2344,9 @@
       $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
       $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
       $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
-      $("#packagingWeight").val($(e.target).closest('tr').children("td").eq(6).text())
-      $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(7).text()).trigger('change')
-      $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(8).text())
+      $("#packagingWeight").val($(e.target).closest('tr').children("td").eq(7).text())
+      $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(8).text()).trigger('change')
+      $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(9).find("span").attr("packaging_master_id")).trigger('change')
 
       // Opening slide panel
       $("#openPackagingPanelBtn").click()
