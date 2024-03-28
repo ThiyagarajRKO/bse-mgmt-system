@@ -663,7 +663,7 @@
               </div>
 
               <div class="form-group my-3">
-                <label for="packagingWeight">Weight (cm)</label>
+                <label for="packagingWeight">Weight (kgs)</label>
                 <input id="packagingWeight" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
                   name="packagingWeight">
               </div>
@@ -1395,6 +1395,7 @@
       $("#gradeSpeciesNames").val(null).trigger('change');
       $("#inventory_category").val(null).trigger('change');
       $("#inventory_supplier").val(null).trigger('change');
+      $("#packagingSupplier").val(null).trigger('change');
     }
 
     function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
@@ -2341,10 +2342,10 @@
     $(document).on('click', '.editPackaging', (e) => {
       // Changing panel input fields data
       $("#packagingType").val($(e.target).closest('tr').children("td").eq(3).text()).trigger('change')
-      $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text())
-      $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text())
-      $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text())
-      $("#packagingWeight").val($(e.target).closest('tr').children("td").eq(7).text())
+      $("#packagingLength").val($(e.target).closest('tr').children("td").eq(4).text() || 0)
+      $("#packagingWidth").val($(e.target).closest('tr').children("td").eq(5).text() || 0)
+      $("#packagingHeight").val($(e.target).closest('tr').children("td").eq(6).text() || 0)
+      $("#packagingWeight").val($(e.target).closest('tr').children("td").eq(7).text() || 0)
       $("#packagingMaterialComposition").val($(e.target).closest('tr').children("td").eq(8).text()).trigger('change')
       $("#packagingSupplier").val($(e.target).closest('tr').children("td").eq(9).find("span").attr("packaging_master_id")).trigger('change')
 
@@ -2500,10 +2501,10 @@
       let url = "/api/v1/master/packaging/create"
       let input_params = {
         packaging_type: $("#packagingType").val(),
-        packaging_length: $("#packagingLength").val(),
-        packaging_width: $("#packagingWidth").val(),
-        packaging_height: $("#packagingHeight").val(),
-        packaging_weight: $("#packagingWeight").val(),
+        packaging_length: $("#packagingLength").val() || 0,
+        packaging_width: $("#packagingWidth").val() || 0,
+        packaging_height: $("#packagingHeight").val() || 0,
+        packaging_weight: $("#packagingWeight").val() || 0,
         packaging_material_composition: $("#packagingMaterialComposition").val(),
         vendor_master_id: $("#packagingSupplier").val(),
       }

@@ -96,10 +96,10 @@ module.exports = (sequelize, DataTypes) => {
         data.unit_code = `${location_name
           ?.trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}-${unit_type}-${data?.unit_name
+          ?.toUpperCase()}-${unit_type}-${data?.unit_name
           .trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}`;
+          ?.toUpperCase()}`;
       }
       data.created_by = options.profile_id;
     } catch (err) {
@@ -123,10 +123,10 @@ module.exports = (sequelize, DataTypes) => {
         data.unit_code = `${location_name
           ?.trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}-${unit_type}-${data?.unit_name
+          ?.toUpperCase()}-${unit_type}-${data?.unit_name
           .trim()
           ?.replaceAll(" ", "")
-          ?.toLowerCase()}`;
+          ?.toUpperCase()}`;
       }
 
       data.updated_at = new Date();
