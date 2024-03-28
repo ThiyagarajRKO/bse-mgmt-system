@@ -1661,7 +1661,12 @@
             $("#divisionTable").DataTable().destroy();
             $("#divisionTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -1770,8 +1775,12 @@
                 loadDivisionTableData()
 
                 toastr.success('Division deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Division failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -1875,7 +1884,12 @@
             $("#locationTable").DataTable().destroy();
             $("#locationTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -1984,8 +1998,12 @@
                 loadLocationTableData()
 
                 toastr.success('Location deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Location failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2096,7 +2114,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2215,8 +2238,12 @@
                 loadUnitTableData()
 
                 toastr.success('Unit deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Unit failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2392,7 +2419,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2524,8 +2556,12 @@
                 loadProductTableData()
 
                 toastr.success('Product deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Product failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2710,7 +2746,12 @@
             $("#vendorTable").DataTable().destroy();
             $("#vendorTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2834,8 +2875,12 @@
                 loadVendorsTableData()
 
                 toastr.success('Vendor deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Vendor failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2984,7 +3029,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3111,8 +3161,12 @@
                 loadPackagingTableData()
 
                 toastr.success('Packaging detail deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Packaging detail failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3315,7 +3369,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3435,8 +3494,12 @@
                 loadInventoryTableData()
 
                 toastr.success('Inventory deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Inventory failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3611,7 +3674,12 @@
             $("#speciesTable").DataTable().destroy();
             $("#speciesTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3733,8 +3801,12 @@
                 loadSpeciesTableData()
 
                 toastr.success('Species deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Species failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3882,7 +3954,11 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3991,8 +4067,12 @@
                 loadGradeTableData()
 
                 toastr.success('Grade deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Grade failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4100,7 +4180,11 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -4209,8 +4293,12 @@
                 loadSizeTableData()
 
                 toastr.success('Size deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Size failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4317,7 +4405,12 @@
             $("#vehicleTable").DataTable().destroy();
             $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
 
-            toastr.error(xhr.responseJSON.message, "Error");
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           dataSrc: function (json) {
             json.iTotalRecords = json.data?.rows?.length;
@@ -4515,8 +4608,12 @@
                 loadVehicleTableData()
 
                 toastr.success('Vehicle deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Vehicle failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4626,7 +4723,12 @@
             $("#driverTable").DataTable().destroy();
             $("#driverTable").DataTable({ scrollX: true, ordering: false });
 
-            toastr.error(xhr.responseJSON.message, "Error");
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           dataSrc: function (json) {
             json.iTotalRecords = json.data?.rows?.length;
@@ -4770,8 +4872,12 @@
                 loadDriverTableData()
 
                 toastr.success('Driver deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Driver failed to delete!', 'Error')
+              }).fail(function (xhr) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },

@@ -213,7 +213,22 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.SpeciesMaster.destroy({
+      const product = await models.ProductMaster.count({
+        where: {
+          species_master_id: id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      if (product > 0) {
+        return reject({
+          statusCode: 420,
+          message: "This species is being used by a product!",
+        });
+      }
+
+      const species = await models.SpeciesMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -223,7 +238,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(species);
     } catch (err) {
       reject(err);
     }
