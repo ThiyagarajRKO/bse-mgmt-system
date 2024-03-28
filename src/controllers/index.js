@@ -2,6 +2,7 @@ export * as Users from "./users";
 export * as UserProfiles from "./user_profiles";
 export * as RoleMasters from "./role_masters";
 export * as LocationMaster from "./location_master";
+export * as Procurement from "./procurement";
 export * as UnitMaster from "./unit_master";
 export * as VendorMaster from "./vendor_master";
 export * as PackagingMaster from "./packaging_master";

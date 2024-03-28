@@ -66,6 +66,10 @@ fastify.get("/AdminMain", function (req, res) {
   });
 });
 
+fastify.get("/Procurement", function (req, res) {
+  res.view("Procurement.ejs");
+});
+
 fastify.get("/MasterData", function (req, res) {
   res.view("MasterData.ejs");
 });
