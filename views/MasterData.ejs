@@ -843,6 +843,12 @@
             </div>
 
             <div class="form-group mt-4">
+              <label for="speciesDivision">Division Name</label>
+              <select id="speciesDivision" class="form-control input-dropdown w-100" name="speciesDivision"
+                required></select>
+            </div>
+
+            <div class="form-group mt-4">
               <label for="species-code">Scientific Name</label>
               <input id="scientific_name" class="form-control" type="text" placeholder="eg. Sepia officinalis"
                 name="scientific_name" required>
@@ -884,6 +890,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Species Code</span></th>
+                <th class="fw-bold"><span>Division Name</span></th>
                 <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Scientific Name</span></th>
                 <th class="fw-bold"><span>Description</span></th>
@@ -919,7 +926,7 @@
 
             <div class="form-group mt-4">
               <label for="species-name">Grade Name</label>
-              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name" required>
+              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="grade_name" required>
             </div>
 
             <div class="form-group my-3">
@@ -990,7 +997,7 @@
 
             <div class="form-group mt-4">
               <label for="species-name">Size Name</label>
-              <input id="size" class="form-control" type="text" placeholder="eg. 1/2" name="species_name" required>
+              <input id="size" class="form-control" type="text" placeholder="eg. 1/2" name="size_name" required>
             </div>
 
             <div class="form-group my-3">
@@ -1511,6 +1518,7 @@
     loadPackagingType()
     loadPackagingMaterialComposition()
     loadPackagingVendor()
+    loadSpeciesDivision()
     loadInventoryVendors()
     loadInventoryCategory()
 
@@ -3203,6 +3211,7 @@
           { data: null },
           { data: null },
           { data: "species_code" },
+          { data: "DivisionMaster.division_name" },
           { data: "species_name" },
           { data: "scientific_name" },
           { data: "description" },
@@ -3224,7 +3233,14 @@
             },
           },
           {
-            targets: [6],
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span division_master_id='${row["DivisionMaster"].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [7],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -3252,9 +3268,10 @@
     $(document).on('click', '.editSpecies', (e) => {
       // Changing panel input fields data
       $("#species_code").val($(e.target).closest('tr').children("td").eq(2).text())
-      $("#species_name").val($(e.target).closest('tr').children("td").eq(3).text())
-      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(4).text())
-      $("#species_description").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#speciesDivision").val($(e.target).closest('tr').children("td").eq(3).find('span').attr('division_master_id')).trigger('change')
+      $("#species_name").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(6).text())
 
       // Opening Slied Panel
       $("#openSpeciesPanelBtn").click()
@@ -3314,11 +3331,50 @@
       });
     })
 
+    function loadSpeciesDivision() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/division/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#speciesDivision")
+            .select2({
+              placeholder: "Choose a division",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.division_name
+                };
+              }),
+            })
+
+          // Clearing selected value
+          $('#speciesDivision').val(null).trigger('change');
+          // // Clearing selected value
+          // $('#unitType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
     function saveSpecies() {
       const species_master_id = $("#submitSpecies").attr('species_master_id')
 
       let url = "/api/v1/master/species/create"
       let input_params = {
+        division_master_id: $("#speciesDivision").val(),
         species_name: $("#species_name").val(),
         species_code: $("#species_code").val(),
         scientific_name: $("#scientific_name").val(),

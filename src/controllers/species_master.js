@@ -143,9 +143,16 @@ export const GetAll = ({
       }
 
       const vendors = await models.SpeciesMaster.findAndCountAll({
-        includes: [
+        include: [
           {
-            models: models.ProductMaster,
+            model: models.DivisionMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: false,
+            model: models.ProductMaster,
             where: {
               is_active: true,
             },
