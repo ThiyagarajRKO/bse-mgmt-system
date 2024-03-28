@@ -10,6 +10,7 @@ export const getAllSchema = {
         inventory_uom: { type: "string" },
         inventory_category: { type: "string" },
         vendor_master_name: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

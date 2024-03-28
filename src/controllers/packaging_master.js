@@ -131,6 +131,7 @@ export const GetAll = ({
   vendor_master_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -139,30 +140,32 @@ export const GetAll = ({
       };
 
       if (packaging_code) {
-        where.packaging_code = { [Op.iLike]: packaging_code };
+        where.packaging_code = { [Op.iLike]: `%${packaging_code}%` };
       }
 
       if (packaging_type) {
-        where.packaging_type = { [Op.iLike]: packaging_type };
+        where.packaging_type = { [Op.iLike]: `%${packaging_type}%` };
       }
 
       if (packaging_length) {
-        where.packaging_length = { [Op.iLike]: packaging_length };
+        where.packaging_length = { [Op.iLike]: `%${packaging_length}%` };
       }
 
       if (packaging_width) {
-        where.packaging_width = { [Op.iLike]: packaging_width };
+        where.packaging_width = { [Op.iLike]: `%${packaging_width}%` };
       }
 
       if (packaging_height) {
-        where.packaging_height = { [Op.iLike]: packaging_height };
+        where.packaging_height = { [Op.iLike]: `%${packaging_height}%` };
       }
       if (packaging_weight) {
-        where.packaging_weight = { [Op.iLike]: packaging_weight };
+        where.packaging_weight = { [Op.iLike]: `%${packaging_weight}%` };
       }
 
       if (packaging_material_composition) {
-        where.packaging_material_composition = { [Op.iLike]: packaging_material_composition };
+        where.packaging_material_composition = {
+          [Op.iLike]: `%${packaging_material_composition}%`,
+        };
       }
 
       let vendorWhere = {
@@ -170,7 +173,21 @@ export const GetAll = ({
       };
 
       if (vendor_master_name) {
-        where.vendor_name = { [Op.iLike]: vendor_master_name };
+        vendorWhere.vendor_name = { [Op.iLike]: `%${vendor_master_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { packaging_code: { [Op.iLike]: `%${search}%` } },
+          // { packaging_type: { [Op.iLike]: `%${search}%` } },
+          { packaging_length: { [Op.iLike]: `%${search}%` } },
+          { packaging_width: { [Op.iLike]: `%${search}%` } },
+          { packaging_height: { [Op.iLike]: `%${search}%` } },
+          { packaging_weight: { [Op.iLike]: `%${search}%` } },
+          // { packaging_material_composition: { [Op.iLike]: `%${search}%` } },
+        ];
+
+        // vendorWhere.vendor_name = { [Op.iLike]: `%${search}%` };
       }
 
       const packagings = await models.PackagingMaster.findAndCountAll({

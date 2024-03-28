@@ -109,6 +109,7 @@ export const GetAll = ({
   length,
   vendor_name,
   location_master_name,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -117,7 +118,7 @@ export const GetAll = ({
       };
 
       if (vendor_name) {
-        where.vendor_name = { [Op.iLike]: vendor_name };
+        where.vendor_name = { [Op.iLike]: `%${vendor_name}%` };
       }
 
       let locationWhere = {
@@ -125,7 +126,21 @@ export const GetAll = ({
       };
 
       if (location_master_name) {
-        locationWhere.location_name = { [Op.iLike]: location_master_name };
+        locationWhere.location_name = {
+          [Op.iLike]: `%${location_master_name}%`,
+        };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { vendor_name: { [Op.iLike]: `%${search}%` } },
+          { address: { [Op.iLike]: `%${search}%` } },
+          { representative: { [Op.iLike]: `%${search}%` } },
+          { phone: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } },
+        ];
+
+        // where["LocationMaster"].location_name = { [Op.iLike]: search };
       }
 
       const vendors = await models.VendorMaster.findAndCountAll({

@@ -102,7 +102,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ location_name, start, length }) => {
+export const GetAll = ({ location_name, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -110,7 +110,14 @@ export const GetAll = ({ location_name, start, length }) => {
       };
 
       if (location_name) {
-        where.location_name = { [Op.iLike]: location_name };
+        where.location_name = { [Op.iLike]: `%${location_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { location_name: { [Op.iLike]: `%${search}%` } },
+          { description: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const vendors = await models.LocationMaster.findAndCountAll({

@@ -10,6 +10,7 @@ export const getAllSchema = {
         product_name: { type: "string" },
         product_type: { type: "string" },
         location_master_name: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

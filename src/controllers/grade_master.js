@@ -108,6 +108,10 @@ export const GetAll = ({ grade_name, start, length }) => {
         where.grade_name = { [Op.iLike]: grade_name };
       }
 
+      if (search) {
+        where[Op.or] = [{ grade_name: { [Op.iLike]: `%${search}%` } }];
+      }
+
       const units = await models.GradeMaster.findAndCountAll({
         where,
         offset: start,

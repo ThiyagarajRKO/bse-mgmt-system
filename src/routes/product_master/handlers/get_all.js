@@ -1,7 +1,14 @@
 import { ProductMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, product_short_code, product_name, species_master_name },
+  {
+    start,
+    length,
+    product_short_code,
+    product_name,
+    species_master_name,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -13,6 +20,7 @@ export const GetAll = (
         product_short_code,
         product_name,
         species_master_name,
+        search,
       });
 
       if (!product_master) {

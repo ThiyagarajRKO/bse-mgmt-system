@@ -9,6 +9,7 @@ export const getAllSchema = {
         vehicle_number: { type: "string" },
         vehicle_brand: { type: "string" },
         model_number: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

@@ -122,6 +122,7 @@ export const GetAll = ({
   species_master_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -130,11 +131,11 @@ export const GetAll = ({
       };
 
       if (product_short_code) {
-        where.product_code = { [Op.iLike]: product_code };
+        where.product_code = { [Op.iLike]: `%${product_code}%` };
       }
 
       if (product_name) {
-        where.product_name = { [Op.iLike]: product_name };
+        where.product_name = { [Op.iLike]: `%${product_name}%` };
       }
 
       let speciesWhere = {
@@ -142,7 +143,18 @@ export const GetAll = ({
       };
 
       if (species_master_name) {
-        speciesWhere.species_name = { [Op.iLike]: species_master_name };
+        speciesWhere.species_name = { [Op.iLike]: `%${species_master_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { product_name: { [Op.iLike]: `%${search}%` } },
+          { product_short_code: { [Op.iLike]: `%${search}%` } },
+          { product_code: { [Op.iLike]: `%${search}%` } },
+          { size_master_sizes: { [Op.iLike]: `%${search}%` } },
+        ];
+
+        // speciesWhere.species_name = { [Op.iLike]: `%${search}%` };
       }
 
       const products = await models.ProductMaster.findAndCountAll({

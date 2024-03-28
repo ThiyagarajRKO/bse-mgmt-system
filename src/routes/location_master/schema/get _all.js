@@ -7,6 +7,7 @@ export const getAllSchema = {
         location_name: { type: "string" },
         start: { type: "number" },
         length: { type: "number" },
+        "search[value]": { type: "string" },
       },
     },
   },

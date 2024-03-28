@@ -1,10 +1,14 @@
 import { RoleMasters } from "../../../controllers";
 
-export const GetAll = ({ start, length }, session, fastify) => {
+export const GetAll = (
+  { start, length, "search[value]": search },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Creating User
-      let role_master = await RoleMasters.GetAll({ start, length });
+      let role_master = await RoleMasters.GetAll({ start, length, search });
 
       if (!role_master) {
         return reject({

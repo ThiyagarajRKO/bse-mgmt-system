@@ -9,6 +9,7 @@ export const getAllSchema = {
         phone: { type: "string" },
         blood_group: { type: "string" },
         health_history: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

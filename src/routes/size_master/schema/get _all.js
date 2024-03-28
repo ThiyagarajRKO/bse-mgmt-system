@@ -7,6 +7,7 @@ export const getAllSchema = {
         start: { type: "number" },
         length: { type: "number" },
         size: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

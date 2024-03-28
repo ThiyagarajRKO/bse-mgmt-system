@@ -1,7 +1,15 @@
 import { SpeciesMaster } from "../../../controllers";
 
 export const GetAll = (
-  { species_code, species_name, scientific_name, start, length },
+  {
+    species_code,
+    species_name,
+    scientific_name,
+    division_name,
+    start,
+    length,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -11,8 +19,10 @@ export const GetAll = (
         species_code,
         species_name,
         scientific_name,
+        division_name,
         start,
         length,
+        search,
       });
 
       if (!species_master) {

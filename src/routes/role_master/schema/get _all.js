@@ -6,6 +6,7 @@ export const getAllSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
+        "search[value]": { type: "string" },
       },
     },
   },

@@ -82,8 +82,6 @@ export const Update = async (profile_id, id, inventory_master_data) => {
         });
       }
 
-      inventory_master_data.updated_by = profile_id;
-
       const result = await models.InventoryMaster.update(
         inventory_master_data,
         {
@@ -132,6 +130,7 @@ export const GetAll = ({
   vendor_master_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -140,15 +139,15 @@ export const GetAll = ({
       };
 
       if (inventory_name) {
-        where.inventory_name = { [Op.iLike]: inventory_name };
+        where.inventory_name = { [Op.iLike]: `%${inventory_name}%` };
       }
 
       if (inventory_uom) {
-        where.inventory_uom = { [Op.iLike]: inventory_uom };
+        where.inventory_uom = { [Op.iLike]: `%${inventory_uom}%` };
       }
 
       if (inventory_category) {
-        where.inventory_category = { [Op.iLike]: inventory_category };
+        where.inventory_category = { [Op.iLike]: `%${inventory_category}%` };
       }
 
       let vendorWhere = {
@@ -156,7 +155,19 @@ export const GetAll = ({
       };
 
       if (vendor_master_name) {
-        where.vendor_name = { [Op.iLike]: vendor_master_name };
+        vendorWhere.vendor_name = { [Op.iLike]: `%${vendor_master_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { inventory_name: { [Op.iLike]: `%${search}%` } },
+          { inventory_uom: { [Op.iLike]: `%${search}%` } },
+          // { inventory_category: { [Op.iLike]: `%${search}%` } },
+        ];
+
+        // vendorWhere.vendor_name = {
+        //   [Op.iLike]: `%${search}%`,
+        // };
       }
 
       const inventories = await models.InventoryMaster.findAndCountAll({

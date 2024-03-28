@@ -121,8 +121,10 @@ export const GetAll = ({
   species_code,
   species_name,
   scientific_name,
+  division_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -131,24 +133,40 @@ export const GetAll = ({
       };
 
       if (species_name) {
-        where.species_name = { [Op.iLike]: species_name };
+        where.species_name = { [Op.iLike]: `%${species_name}%` };
       }
 
       if (species_code) {
-        where.species_code = { [Op.iLike]: species_code };
+        where.species_code = { [Op.iLike]: `%${species_code}%` };
       }
 
       if (scientific_name) {
-        where.scientific_name = { [Op.iLike]: scientific_name };
+        where.scientific_name = { [Op.iLike]: `%${scientific_name}%` };
+      }
+
+      let divisionWhere = {
+        is_active: true,
+      };
+
+      if (division_name) {
+        divisionWhere.division_name = { [Op.iLike]: `%${division_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { species_name: { [Op.iLike]: `%${search}%` } },
+          { species_code: { [Op.iLike]: `%${search}%` } },
+          { scientific_name: { [Op.iLike]: `%${search}%` } },
+        ];
+
+        // divisionWhere.division_name = { [Op.iLike]: `%${search}%` };
       }
 
       const vendors = await models.SpeciesMaster.findAndCountAll({
         include: [
           {
             model: models.DivisionMaster,
-            where: {
-              is_active: true,
-            },
+            where: divisionWhere,
           },
           {
             required: false,

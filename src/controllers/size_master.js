@@ -97,7 +97,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ size, start, length }) => {
+export const GetAll = ({ size, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -105,7 +105,14 @@ export const GetAll = ({ size, start, length }) => {
       };
 
       if (size) {
-        where.size = { [Op.iLike]: size };
+        where.size = { [Op.iLike]: `%${size}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { size: { [Op.iLike]: `%${search}%` } },
+          { description: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const units = await models.SizeMaster.findAndCountAll({

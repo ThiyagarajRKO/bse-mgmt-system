@@ -10,6 +10,7 @@ export const GetAll = (
     packaging_weight,
     package_material_composition,
     vendor_master_name,
+    "search[value]": search,
   },
   session,
   fastify
@@ -25,6 +26,7 @@ export const GetAll = (
         packaging_weight,
         package_material_composition,
         vendor_master_name,
+        search,
       });
 
       if (!packaging_master) {

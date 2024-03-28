@@ -1,12 +1,17 @@
 import { SizeMaster } from "../../../controllers";
 
-export const GetAll = ({ start, length, grade_name }, session, fastify) => {
+export const GetAll = (
+  { start, length, grade_name, "search[value]": search },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       let size_master = await SizeMaster.GetAll({
         start,
         length,
         grade_name,
+        search,
       });
 
       if (!size_master) {

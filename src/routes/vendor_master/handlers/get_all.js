@@ -1,7 +1,7 @@
 import { VendorMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, vendor_name, location_master_name },
+  { start, length, vendor_name, location_master_name, "search[value]": search },
   session,
   fastify
 ) => {
@@ -13,6 +13,7 @@ export const GetAll = (
         length,
         vendor_name,
         location_master_name,
+        search,
       });
 
       if (!vendor_master) {

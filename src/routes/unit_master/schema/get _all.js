@@ -10,6 +10,7 @@ export const getAllSchema = {
         unit_name: { type: "string" },
         unit_type: { type: "string" },
         location_master_name: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },
