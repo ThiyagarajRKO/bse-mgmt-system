@@ -2376,6 +2376,7 @@
     // Open panel
     $('#openProductPanelBtn').click(function () {
       openSlidePanel("productSlideInPanel", "productPanelHeading", "Product", "submitProduct", "product_master_id")
+      $('#productSizes').prop('multiple', true).attr('name', 'sub_type[]').select2({ allowClear: true, placeholder: 'Select sizes' })
     });
 
     // Close panel
@@ -2510,6 +2511,8 @@
 
       // Opening Slied Panel
       $("#openProductPanelBtn").click()
+
+      $('#productSizes').prop('multiple', false).attr('name', 'sub_type').select2({ allowClear: true, placeholder: 'Select a size' })
 
       $("#product_category").attr("product_category_master_id", $(e.target).closest('tr').children("td").eq(4).find("span").attr("product_category_master_id"))
 

@@ -24,9 +24,9 @@ export const Update = (
         }
       }
 
-      if (product_master_data?.size_master_id) {
+      if (product_master_data?.size_master_ids) {
         const size_count = await SizeMaster.Count({
-          id: product_master_data?.size_master_id,
+          id: product_master_data?.size_master_ids,
         });
 
         if (size_count == 0) {
@@ -44,13 +44,13 @@ export const Update = (
           product_category: product_master_data?.product_category,
           species_master_id: product_master_data?.species_master_id,
         }
-      );
+      ).catch(console.log);
 
       const updated_data = await ProductMaster.Update(
         profile_id,
         product_master_id,
         {
-          size_master_id: product_master_data?.size_master_ids[0],
+          size_master_id: product_master_data?.size_master_ids,
         }
       );
 

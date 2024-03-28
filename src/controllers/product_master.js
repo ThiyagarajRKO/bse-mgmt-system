@@ -30,7 +30,6 @@ export const Insert = async (profile_id, product_master_data) => {
       });
       resolve(result);
     } catch (err) {
-      console.log(err?.message);
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
           statusCode: 420,
@@ -76,6 +75,12 @@ export const Update = async (profile_id, id, product_master_data) => {
       });
       resolve(result);
     } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "Product already exists!",
+        });
+      }
       reject(err);
     }
   });
