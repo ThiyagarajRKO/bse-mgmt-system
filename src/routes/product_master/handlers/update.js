@@ -1,4 +1,8 @@
-import { ProductMaster, SizeMaster } from "../../../controllers";
+import {
+  ProductMaster,
+  ProductCategoryMaster,
+  SizeMaster,
+} from "../../../controllers";
 
 export const Update = (
   { profile_id, product_master_id, product_master_data },
@@ -33,10 +37,21 @@ export const Update = (
         }
       }
 
+      await ProductCategoryMaster.Update(
+        profile_id,
+        product_master_data?.product_category_id,
+        {
+          product_category: product_master_data?.product_category,
+          species_master_id: product_master_data?.species_master_id,
+        }
+      );
+
       const updated_data = await ProductMaster.Update(
         profile_id,
         product_master_id,
-        product_master_data
+        {
+          size_master_id: product_master_data?.size_master_ids[0],
+        }
       );
 
       if (updated_data?.[0] > 0) {

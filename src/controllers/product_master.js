@@ -30,6 +30,7 @@ export const Insert = async (profile_id, product_master_data) => {
       });
       resolve(result);
     } catch (err) {
+      console.log(err?.message);
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
           statusCode: 420,

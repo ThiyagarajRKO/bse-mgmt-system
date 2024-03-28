@@ -109,7 +109,7 @@ module.exports = (sequelize, DataTypes) => {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a vendor details",
+        "Error while inserting a product master details",
         err?.message || err
       );
     }
@@ -119,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
   ProductMaster.beforeUpdate(async (data, options) => {
     try {
       const product_category =
-        await sequelize.models.PackageCategoryMaster.findOne({
+        await sequelize.models.ProductCategoryMaster.findOne({
           required: true,
           attribute: "product_category",
           include: [
@@ -151,7 +151,7 @@ module.exports = (sequelize, DataTypes) => {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a vendor", err?.message || err);
+      console.log("Error while updating a product master", err?.message || err);
     }
   });
 
@@ -163,7 +163,7 @@ module.exports = (sequelize, DataTypes) => {
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a vendor", err?.message || err);
+      console.log("Error while deleting a product master", err?.message || err);
     }
   });
 

@@ -40,7 +40,7 @@ export const Update = async (profile_id, id, product_category_master_data) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Product id must not be empty!",
+          message: "Product category master id must not be empty!",
         });
       }
 
