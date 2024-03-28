@@ -97,7 +97,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ grade_name, start, length }) => {
+export const GetAll = ({ grade_name, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {

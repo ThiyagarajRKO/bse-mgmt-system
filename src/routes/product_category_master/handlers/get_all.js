@@ -1,13 +1,11 @@
-import { ProductMaster } from "../../../controllers";
+import { ProductCategoryMaster } from "../../../controllers";
 
 export const GetAll = (
   {
     start,
     length,
-    product_name,
+    product_category,
     species_master_name,
-    product_category_name,
-    product_size,
     "search[value]": search,
   },
   session,
@@ -15,13 +13,11 @@ export const GetAll = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let product_master = await ProductMaster.GetAll({
+      let product_master = await ProductCategoryMaster.GetAll({
         start,
         length,
-        product_name,
+        product_category,
         species_master_name,
-        product_category_name,
-        product_size,
         search,
       });
 

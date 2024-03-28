@@ -1,6 +1,5 @@
 "use strict";
 const { Model } = require("sequelize");
-const { Op } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class ProductMaster extends Model {
@@ -26,8 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
-      ProductMaster.belongsTo(models.SpeciesMaster, {
-        foreignKey: "species_master_id",
+      ProductMaster.belongsTo(models.ProductCategoryMaster, {
+        foreignKey: "product_category_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      ProductMaster.belongsTo(models.SizeMaster, {
+        foreignKey: "size_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -41,19 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       product_name: {
-        type: DataTypes.STRING,
-      },
-      product_short_code: {
-        type: DataTypes.STRING,
-      },
-      product_code: {
         type: DataTypes.TEXT,
-      },
-      size_master_ids: {
-        type: DataTypes.ARRAY(DataTypes.UUID),
-      },
-      size_master_sizes: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
       },
       is_active: {
         type: DataTypes.BOOLEAN,
@@ -83,31 +76,35 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   ProductMaster.beforeCreate(async (data, options) => {
     try {
-      const { species_name } = await sequelize.models.SpeciesMaster.findOne({
-        attribute: "species_name",
-        where: { id: data?.species_master_id, is_active: true },
-      });
+      const product_category =
+        await sequelize.models.ProductCategoryMaster.findOne({
+          required: true,
+          attribute: "product_category",
+          include: [
+            {
+              required: true,
+              attribute: "species_name",
+              model: sequelize.models.SpeciesMaster,
+              where: {
+                is_active: true,
+              },
+            },
+          ],
+          where: { id: data?.product_category_master_id, is_active: true },
+        });
 
-      data.product_code = `${species_name
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${data.product_name
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
-
-      const size_master = await sequelize.models.SizeMaster.findAll({
+      const { size } = await sequelize.models.SizeMaster.findOne({
         attribute: "size",
-        where: {
-          id: { [Op.in]: data?.size_master_ids },
-          is_active: true,
-        },
+        where: { id: data?.size_master_id, is_active: true },
       });
 
-      let Sizes = [];
-      size_master.forEach(({ size }) => Sizes.push(size));
-
-      data.size_master_sizes = Sizes;
+      data.product_name = `${product_category?.SpeciesMaster?.species_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${product_category.product_category
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${size?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
 
       data.created_by = options.profile_id;
     } catch (err) {
@@ -121,31 +118,35 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   ProductMaster.beforeUpdate(async (data, options) => {
     try {
-      const { species_name } = await sequelize.models.SpeciesMaster.findOne({
-        attribute: "species_name",
-        where: { id: data?.species_master_id, is_active: true },
-      });
+      const product_category =
+        await sequelize.models.PackageCategoryMaster.findOne({
+          required: true,
+          attribute: "product_category",
+          include: [
+            {
+              required: true,
+              attribute: "species_name",
+              model: sequelize.models.SpeciesMaster,
+              where: {
+                is_active: true,
+              },
+            },
+          ],
+          where: { id: data?.product_category_master_id, is_active: true },
+        });
 
-      data.product_code = `${species_name
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${data.product_name
-        ?.trim()
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
-
-      const size_master = await sequelize.models.SizeMaster.findAll({
+      const { size } = await sequelize.models.SizeMaster.findOne({
         attribute: "size",
-        where: {
-          id: { [Op.in]: data?.size_master_ids },
-          is_active: true,
-        },
+        where: { id: data?.size_master_id, is_active: true },
       });
 
-      let Sizes = [];
-      size_master.forEach(({ size }) => Sizes.push(size));
-
-      data.size_master_sizes = Sizes;
+      data.product_name = `${product_category?.SpeciesMaster?.species_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${product_category.product_category
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${size?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

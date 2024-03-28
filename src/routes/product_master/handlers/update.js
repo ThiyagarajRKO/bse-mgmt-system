@@ -1,4 +1,4 @@
-import { ProductMaster, LocationMaster } from "../../../controllers";
+import { ProductMaster, SizeMaster } from "../../../controllers";
 
 export const Update = (
   { profile_id, product_master_id, product_master_data },
@@ -7,15 +7,28 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (product_master_data?.location_master_id) {
-        const location_count = await LocationMaster.Count({
-          id: product_master_data?.location_master_id,
+      if (product_master_data?.product_category_aster_id) {
+        const product_category_count = await ProductCategoryMaster.Count({
+          id: product_master_data?.product_category_aster_id,
         });
 
-        if (location_count == 0) {
+        if (product_category_count == 0) {
           return reject({
             statusCode: 420,
-            message: "Invalid location master id!",
+            message: "Invalid product category master id!",
+          });
+        }
+      }
+
+      if (product_master_data?.size_master_id) {
+        const size_count = await SizeMaster.Count({
+          id: product_master_data?.size_master_id,
+        });
+
+        if (size_count == 0) {
+          return reject({
+            statusCode: 420,
+            message: "Invalid size master master id!",
           });
         }
       }

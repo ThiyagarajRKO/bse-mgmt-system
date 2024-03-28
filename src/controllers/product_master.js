@@ -11,24 +11,17 @@ export const Insert = async (profile_id, product_master_data) => {
         });
       }
 
-      if (!product_master_data?.species_master_id) {
+      if (!product_master_data?.product_category_master_id) {
         return reject({
           statusCode: 420,
-          message: "Species master id must not be empty!",
+          message: "Product master id must not be empty!",
         });
       }
 
-      if (!product_master_data?.product_name) {
+      if (!product_master_data?.size_master_id) {
         return reject({
           statusCode: 420,
-          message: "Product name must not be empty!",
-        });
-      }
-
-      if (product_master_data?.size_master_ids?.length <= 0) {
-        return reject({
-          statusCode: 420,
-          message: "Product size master ids must not be empty!",
+          message: "Size master id must not be empty!",
         });
       }
 
@@ -38,7 +31,10 @@ export const Insert = async (profile_id, product_master_data) => {
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Product already exists!" });
+        return reject({
+          statusCode: 420,
+          message: "Product already exists!",
+        });
       }
       reject(err);
     }
@@ -65,7 +61,7 @@ export const Update = async (profile_id, id, product_master_data) => {
       if (!product_master_data) {
         return reject({
           statusCode: 420,
-          message: "Product data must not be empty!",
+          message: "Product master data must not be empty!",
         });
       }
 
@@ -95,9 +91,26 @@ export const Get = ({ id }) => {
       }
 
       const product = await models.ProductMaster.findOne({
-        includes: [
+        required: true,
+        include: [
           {
-            models: models.SpeciesMaster,
+            required: true,
+            model: models.ProductCategoryMaster,
+            include: [
+              {
+                model: models.SpeciesMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: true,
+            model: models.SizeMaster,
             where: {
               is_active: true,
             },
@@ -117,9 +130,10 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
-  product_short_code,
   product_name,
   species_master_name,
+  product_category_name,
+  product_size,
   start,
   length,
   search,
@@ -129,10 +143,6 @@ export const GetAll = ({
       let where = {
         is_active: true,
       };
-
-      if (product_short_code) {
-        where.product_code = { [Op.iLike]: `%${product_code}%` };
-      }
 
       if (product_name) {
         where.product_name = { [Op.iLike]: `%${product_name}%` };
@@ -146,21 +156,65 @@ export const GetAll = ({
         speciesWhere.species_name = { [Op.iLike]: `%${species_master_name}%` };
       }
 
+      let productCategoryWhere = {
+        is_active: true,
+      };
+
+      if (product_category_name) {
+        productCategoryWhere.product_category = {
+          [Op.iLike]: `%${product_category_name}%`,
+        };
+      }
+
+      let sizeWhere = {
+        is_active: true,
+      };
+
+      if (product_size) {
+        sizeWhere.size = {
+          [Op.iLike]: `%${product_size}%`,
+        };
+      }
+
       if (search) {
         where[Op.or] = [
           { product_name: { [Op.iLike]: `%${search}%` } },
-          { product_short_code: { [Op.iLike]: `%${search}%` } },
-          { product_code: { [Op.iLike]: `%${search}%` } },
-          // { size_master_sizes: { [Op.iLike]: `%${search}%` } },
-          { "$SpeciesMaster.species_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$SizeMaster.size$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            "$ProductCategoryMaster.product_category$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            "$ProductCategoryMaster.SpeciesMaster.species_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ];
       }
 
       const products = await models.ProductMaster.findAndCountAll({
+        required: true,
         include: [
           {
-            model: models.SpeciesMaster,
-            where: speciesWhere,
+            required: true,
+            model: models.ProductCategoryMaster,
+            include: [
+              {
+                model: models.SpeciesMaster,
+                where: speciesWhere,
+              },
+            ],
+            where: productCategoryWhere,
+          },
+          {
+            required: true,
+            model: models.SizeMaster,
+            where: sizeWhere,
           },
         ],
         where,

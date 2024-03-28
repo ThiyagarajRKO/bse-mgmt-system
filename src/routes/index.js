@@ -12,6 +12,7 @@ import inventoryMasterRoute from "./inventory_master";
 import speciesMasterRoute from "./species_master";
 import gradeMasterRoute from "./grade_master";
 import sizeMasterRoute from "./size_master";
+import productCategoryMasterRoute from "./product_category_master";
 import productMasterRoute from "./product_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
@@ -52,6 +53,10 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(gradeMasterRoute, { prefix: "/master/grade" });
 
   fastify.register(sizeMasterRoute, { prefix: "/master/size" });
+
+  fastify.register(productCategoryMasterRoute, {
+    prefix: "/master/product/category",
+  });
 
   fastify.register(productMasterRoute, { prefix: "/master/product" });
 

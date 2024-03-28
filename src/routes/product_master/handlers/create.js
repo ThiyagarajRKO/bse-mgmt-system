@@ -1,34 +1,41 @@
-import { ProductMaster, SpeciesMaster } from "../../../controllers";
+import {
+  ProductCategoryMaster,
+  ProductMaster,
+  SizeMaster,
+} from "../../../controllers";
 
 export const Create = (
-  {
-    profile_id,
-    species_master_id,
-    product_name,
-    product_short_code,
-    size_master_ids,
-  },
+  { profile_id, product_category_master_id, size_master_id },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const species_count = await SpeciesMaster.Count({
-        id: species_master_id,
+      const product_category_count = await ProductCategoryMaster.Count({
+        id: product_category_master_id,
       });
 
-      if (species_count == 0) {
+      if (product_category_count == 0) {
         return reject({
           statusCode: 420,
-          message: "Invalid species master id!",
+          message: "Invalid product category master id!",
+        });
+      }
+
+      const size_count = await SizeMaster.Count({
+        id: size_master_id,
+      });
+
+      if (size_count == 0) {
+        return reject({
+          statusCode: 420,
+          message: "Invalid size master master id!",
         });
       }
 
       const product_master = await ProductMaster.Insert(profile_id, {
-        species_master_id,
-        product_name,
-        product_short_code,
-        size_master_ids,
+        product_category_master_id,
+        size_master_id,
         is_active: true,
       });
 
