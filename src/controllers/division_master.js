@@ -1,9 +1,16 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, size_master_data) => {
+export const Insert = async (profile_id, division_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!division_data) {
+        return reject({
+          statusCode: 420,
+          message: "Division data must not be empty!",
+        });
+      }
+
       if (!profile_id) {
         return reject({
           statusCode: 420,
@@ -11,36 +18,34 @@ export const Insert = async (profile_id, size_master_data) => {
         });
       }
 
-      if (!size_master_data?.size) {
+      if (!division_data?.division_name) {
         return reject({
           statusCode: 420,
-          message: "Size must not be empty!",
+          message: "Division name must not be empty!",
         });
       }
 
-      const result = await models.SizeMaster.create(size_master_data, {
+      const result = await models.DivisionMaster.create(division_data, {
         profile_id,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({
-          statusCode: 420,
-          message: "Size already exists!",
-        });
+        return reject({ statusCode: 420, message: "Division already exists!" });
       }
+
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, size_master_data) => {
+export const Update = async (profile_id, id, division_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size master id must not be empty!",
+          message: "Division id must not be empty!",
         });
       }
 
@@ -51,14 +56,14 @@ export const Update = async (profile_id, id, size_master_data) => {
         });
       }
 
-      if (!size_master_data) {
+      if (!division_data) {
         return reject({
           statusCode: 420,
-          message: "Size data must not be empty!",
+          message: "Division data must not be empty!",
         });
       }
 
-      const result = await models.SizeMaster.update(size_master_data, {
+      const result = await models.DivisionMaster.update(division_data, {
         where: {
           id,
           is_active: true,
@@ -79,43 +84,68 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size ID field must not be empty!",
+          message: "Division ID field must not be empty!",
         });
       }
 
-      const unit = await models.SizeMaster.findOne({
+      const division = await models.DivisionMaster.findOne({
         where: {
           id,
           is_active: true,
         },
       });
 
-      resolve(unit);
+      resolve(division);
     } catch (err) {
       reject(err);
     }
   });
 };
 
-export const GetAll = ({ size, start, length }) => {
+export const GetAll = ({ division_name, start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (size) {
-        where.size = { [Op.iLike]: size };
+      if (division_name) {
+        where.division_name = { [Op.iLike]: division_name };
       }
 
-      const units = await models.SizeMaster.findAndCountAll({
+      const vendors = await models.DivisionMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(units);
+      resolve(vendors);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const Count = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Division ID field must not be empty!",
+        });
+      }
+
+      const division = await models.DivisionMaster.count({
+        where: {
+          id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      resolve(division);
     } catch (err) {
       reject(err);
     }
@@ -128,7 +158,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size master id field must not be empty!",
+          message: "Division ID field must not be empty!",
         });
       }
 
@@ -139,7 +169,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.SizeMaster.destroy({
+      const vendor = await models.DivisionMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -149,7 +179,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(unit);
+      resolve(vendor);
     } catch (err) {
       reject(err);
     }

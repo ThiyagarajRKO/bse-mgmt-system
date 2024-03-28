@@ -2,9 +2,9 @@ export const getSchema = {
   schema: {
     query: {
       type: "object",
-      required: ["species_master_id"],
+      required: ["product_master_id"],
       properties: {
-        species_master_id: { type: "string" },
+        product_master_id: { type: "string" },
       },
     },
   },

@@ -73,28 +73,21 @@ export const Update = async (profile_id, id, grade_master_data) => {
   });
 };
 
-export const Get = ({ id, grade_name }) => {
+export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !grade_name) {
+      if (!id) {
         return reject({
           statusCode: 420,
           message: "Grade ID field must not be empty!",
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (grade_name) {
-        where.grade_name = grade_name;
-      }
-
       const unit = await models.GradeMaster.findOne({
-        where,
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(unit);

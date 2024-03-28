@@ -84,28 +84,21 @@ export const Update = async (profile_id, id, unit_master_data) => {
   });
 };
 
-export const Get = ({ id, unit_name }) => {
+export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !unit_name) {
+      if (!id) {
         return reject({
           statusCode: 420,
           message: "Unit ID field must not be empty!",
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (unit_name) {
-        where.unit_name = unit_name;
-      }
-
       const unit = await models.UnitMaster.findOne({
-        where,
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(unit);
@@ -146,7 +139,7 @@ export const GetAll = ({
       };
 
       if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
+        locationWhere.location_name = { [Op.iLike]: location_master_name };
       }
 
       const units = await models.UnitMaster.findAndCountAll({

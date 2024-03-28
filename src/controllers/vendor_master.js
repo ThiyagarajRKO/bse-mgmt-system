@@ -80,28 +80,21 @@ export const Update = async (profile_id, id, vendor_master_data) => {
   });
 };
 
-export const Get = ({ id, vendor_name }) => {
+export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id && !vendor_name) {
+      if (!id) {
         return reject({
           statusCode: 420,
           message: "Vendor ID field must not be empty!",
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (vendor_name) {
-        where.vendor_name = vendor_name;
-      }
-
       const vendor = await models.VendorMaster.findOne({
-        where,
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(vendor);
@@ -132,7 +125,7 @@ export const GetAll = ({
       };
 
       if (location_master_name) {
-        where.location_name = { [Op.iLike]: location_master_name };
+        locationWhere.location_name = { [Op.iLike]: location_master_name };
       }
 
       const vendors = await models.VendorMaster.findAndCountAll({

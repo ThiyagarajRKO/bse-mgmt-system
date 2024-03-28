@@ -286,7 +286,16 @@
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="topMenu-container d-flex justify-content-center mt-0">
       <div
-        class="topMenu-item topMenu-item-active locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+        class="topMenu-item topMenu-item-active divisionMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
+        <div class="fs-6">
+          <i class="fa-solid fa-table-cells-large"></i>
+        </div>
+        <div class="pt-2">
+          <span>Division</span>
+        </div>
+      </div>
+
+      <div class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-location-dot"></i>
         </div>
@@ -363,6 +372,77 @@
       </div>
     </div>
     <!-- Top Menu Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Division Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container divisionContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="divisionSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="divisionPanelHeading" class="fw-bold fs-5">Add Division Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeDivisionPanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="division-name">Division Name</label>
+              <input id="division_name" class="form-control" type="text" placeholder="eg. Chennai" name="division-name"
+                required>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Description</label>
+              <input id="description" class="form-control" placeholder="eg. AJs" type="text" name="Description">
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitDivision" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetDivisionDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openDivisionPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="divisionTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Division Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Division Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Location Container ---------------------------------------------------- -->
@@ -763,6 +843,12 @@
             </div>
 
             <div class="form-group mt-4">
+              <label for="speciesDivision">Division Name</label>
+              <select id="speciesDivision" class="form-control input-dropdown w-100" name="speciesDivision"
+                required></select>
+            </div>
+
+            <div class="form-group mt-4">
               <label for="species-code">Scientific Name</label>
               <input id="scientific_name" class="form-control" type="text" placeholder="eg. Sepia officinalis"
                 name="scientific_name" required>
@@ -804,6 +890,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Species Code</span></th>
+                <th class="fw-bold"><span>Division Name</span></th>
                 <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Scientific Name</span></th>
                 <th class="fw-bold"><span>Description</span></th>
@@ -839,7 +926,7 @@
 
             <div class="form-group mt-4">
               <label for="species-name">Grade Name</label>
-              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="species_name" required>
+              <input id="grade_name" class="form-control" type="text" placeholder="eg. A" name="grade_name" required>
             </div>
 
             <div class="form-group my-3">
@@ -910,7 +997,7 @@
 
             <div class="form-group mt-4">
               <label for="species-name">Size Name</label>
-              <input id="size" class="form-control" type="text" placeholder="eg. 1/2" name="species_name" required>
+              <input id="size" class="form-control" type="text" placeholder="eg. 1/2" name="size_name" required>
             </div>
 
             <div class="form-group my-3">
@@ -957,6 +1044,93 @@
       </div>
     </div>
     <!-- Size Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Product Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container productContainer d-none">
+
+      <!-- Slide-in Panel -->
+      <div id="productSlideInPanel" class="slideInPanel px-4 overflow-auto">
+
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-sm-12 col-md-12 col-md-12">
+
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="productPanelHeading" class="fw-bold fs-5">Add Product Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeProductPanelBtn"></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="product-name">Species Name</label>
+              <select id="productSpecies" class="form-control input-dropdown" name="productSpecies">
+              </select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="product-name">Product Name</label>
+              <input id="product_name" class="form-control" type="text" placeholder="eg. HEAD" name="product-name"
+                required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="product_short_code">Product Short Code</label>
+              <input id="product_short_code" class="form-control" type="text" placeholder="eg. HD"
+                name="product_short_code" required>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="productSizes">Sizes</label>
+              <select id="productSizes" class="form-control input-dropdown" name="productSizes">
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitProduct" class="col-lg-5 btn btn-danger">Save</div>
+              <div id="resetProductDataBtn" class="col-lg-5 btn btn-outline-danger">Clear</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openProductPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px;">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px;" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="productTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Product Code</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Product Name</span></th>
+                <th class="fw-bold"><span>Product Short Code</span></th>
+                <th class="fw-bold"><span>Sizes</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Product Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Inventory Container ---------------------------------------------------- -->
@@ -1297,10 +1471,10 @@
     // Open Location on load (default)
     $(".menu-container").addClass('d-none')
 
-    $(".locationContainer").removeClass('d-none')
-    $(".locationContainer").addClass('d-block')
+    $(".divisionContainer").removeClass('d-none')
+    $(".divisionContainer").addClass('d-block')
 
-    loadLocationTableData()
+    loadDivisionTableData()
 
     // Menu navigation
     $(".topMenu-item").click(function () {
@@ -1311,6 +1485,7 @@
       $(".productTopMenu").removeClass('topMenu-item-active')
       $(".panelClose").click()
 
+      loadDropdowns()
       resetAllInputs()
     })
 
@@ -1324,6 +1499,7 @@
 
       $(".panelClose").click()
 
+      loadDropdowns()
       resetAllInputs()
     })
 
@@ -1396,6 +1572,8 @@
       $("#inventory_category").val(null).trigger('change');
       $("#inventory_supplier").val(null).trigger('change');
       $("#packagingSupplier").val(null).trigger('change');
+      $("#productSpecies").val(null).trigger('change');
+      $("#productSizes").val(null).trigger('change');
     }
 
     function openSlidePanel(panelId, panelHeadingId, panelType, panelSubmitButton, panelBtnAttrName) {
@@ -1424,15 +1602,234 @@
       // $('select.select2-hidden-accessible').select2('destroy');
     }
 
-    // Pre loading dropdown data
-    loadUnitLocations()
-    loadUnitType()
-    loadVendorLocations()
-    loadPackagingType()
-    loadPackagingMaterialComposition()
-    loadPackagingVendor()
-    loadInventoryVendors()
-    loadInventoryCategory()
+    function loadDropdowns() {
+      // Pre loading dropdown data
+      loadUnitLocations()
+      loadUnitType()
+      loadVendorLocations()
+      loadPackagingType()
+      loadPackagingMaterialComposition()
+      loadPackagingVendor()
+      loadSpeciesDivision()
+      loadInventoryVendors()
+      loadInventoryCategory()
+      loadProductSpecies()
+      loadProductSizes()
+    }
+
+    // ---------------------------------------------------------
+    // ----------------------- Divisions -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openDivisionPanelBtn').click(function () {
+      openSlidePanel("divisionSlideInPanel", "divisionPanelHeading", "Division", "submitDivision", "division_master_id")
+    });
+
+    // Close panel
+    $('#closeDivisionPanelBtn').click(function () {
+      closeSlidePanel("divisionSlideInPanel")
+    });
+
+    $(".divisionMenu").click(function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".divisionContainer").removeClass('d-none')
+      $(".divisionContainer").addClass('d-block')
+
+      loadDivisionTableData()
+    })
+
+    $("#submitDivision").click(function () {
+      saveDivision()
+    })
+
+    function loadDivisionTableData() {
+      $("#divisionTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/division/get/all",
+          error: function (xhr, error, code) {
+            $("#divisionTable").DataTable().destroy();
+            $("#divisionTable").DataTable({ scrollX: true, ordering: false })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "division_name" },
+          { data: "description" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editDivision" division_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this division"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delDivision" division_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this division"></i>'
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editDivision', (e) => {
+      // Changing panel input fields data
+      $("#division_name").val($(e.target).closest('tr').children("td").eq(2).text())
+      $("#description").val($(e.target).closest('tr').children("td").eq(3).text())
+
+      // Opening Slied Panel
+      $("#openDivisionPanelBtn").click()
+
+      // Changing panel heading
+      $("#divisionPanelHeading").text("Edit Division Data")
+
+      // Changing panel button label
+      $("#submitDivision").text("Update")
+
+      // Changing panel button attribute
+      $("#submitDivision").attr("division_master_id", $(e.target).attr('division_master_id'))
+    })
+
+    $(document).on('click', '.delDivision', (e) => {
+      let division_master_id = $(e.target).attr('division_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Division?',
+        content: 'Are you sure, do you want to remove this division?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/division/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  division_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadDivisionTableData()
+
+                toastr.success('Division deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Division failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Division is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function saveDivision() {
+      const division_master_id = $("#submitDivision").attr('division_master_id')
+
+      let url = "/api/v1/master/division/create"
+      let input_params = {
+        division_name: $("#division_name").val(),
+        description: $("#description").val(),
+      }
+
+      if (division_master_id) {
+        url = "/api/v1/master/division/update"
+
+        input_params = {
+          division_master_id,
+          division_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeDivisionPanelBtn").click()
+
+          loadDivisionTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetDivisionDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
     // ----------------------- Locations -----------------------
@@ -1947,6 +2344,325 @@
 
 
     $("#resetUnitDataBtn").on("click", resetAllInputs)
+
+    // ---------------------------------------------------------
+    // ----------------------- Products ------------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $('#openProductPanelBtn').click(function () {
+      openSlidePanel("productSlideInPanel", "productPanelHeading", "Product", "submitProduct", "product_master_id")
+    });
+
+    // Close panel
+    $('#closeProductPanelBtn').click(function () {
+      closeSlidePanel("productSlideInPanel")
+    });
+
+    $(document).on('click', '.productMenu', function () {
+      $(".menu-container").addClass('d-none')
+
+      $(".productContainer").removeClass('d-none')
+      $(".productContainer").addClass('d-block')
+
+      loadProductTableData()
+    })
+
+    $("#submitProduct").click(function () {
+      saveProduct()
+    })
+
+    function loadProductTableData() {
+      $("#productTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollY: '40vh',
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/product/get/all",
+          error: function (xhr, error, code) {
+            $("#productTable").DataTable().destroy();
+            $("#productTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            })
+
+            toastr.error(xhr.responseJSON.message, 'Error')
+          },
+          "dataSrc": function (json) {
+            json.iTotalRecords = json.data?.rows?.length
+            json.iTotalDisplayRecords = json.data?.count
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          }
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "product_code" },
+          { data: "SpeciesMaster.species_name" },
+          { data: "product_name" },
+          { data: "product_short_code" },
+          { data: "size_master_sizes" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-pen-to-square edit editProduct" product_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>'
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return '<i class="fa fa-trash del delProduct" product_master_id=' + row["id"] + ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this product"></i>'
+            },
+          },
+          {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span species_master_id='${row['SpeciesMaster'].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              let htmlContent = `<div class="d-flex flex-column" size_master_ids='${row["size_master_ids"]}'>`
+              data?.forEach((dt) => { htmlContent += `<span>${dt}</span>` })
+              htmlContent += `</div>`
+              return htmlContent
+            },
+          },
+          {
+            targets: [7],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? 'PM' : 'AM';
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? '0' + minutes : minutes;
+              var strTime = hours + ':' + minutes + ' ' + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, '0'); // Ensure day is always two digits
+              return day + '-' + month + '-' + date.getFullYear() + ' ' + strTime;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    $(document).on('click', '.editProduct', (e) => {
+      // Changing panel input fields data
+      $("#productSpecies").val($(e.target).closest('tr').children("td").eq(3).find('span').attr("species_master_id")).trigger('change')
+      $("#product_name").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#product_short_code").val($(e.target).closest('tr').children("td").eq(5).text())
+      const size_product_ids = $(e.target).closest('tr').children("td").eq(6).find('div').attr("size_master_ids")
+      $("#productSizes").val(size_product_ids?.split(",")).trigger('change')
+
+      // Opening Slied Panel
+      $("#openProductPanelBtn").click()
+
+      // Changing panel heading
+      $("#productPanelHeading").text("Edit Product Data")
+
+      // Changing panel button label
+      $("#submitProduct").text("Update")
+
+      // Changing panel button attribute
+      $("#submitProduct").attr("product_master_id", $(e.target).attr('product_master_id'))
+    })
+
+    $(document).on('click', '.delProduct', (e) => {
+      let product_master_id = $(e.target).attr('product_master_id')
+      let currentRow = $(e.target).closest('tr')
+      $.confirm({
+        title: 'Delete Product?',
+        content: 'Are you sure, do you want to remove this product?',
+        backgroundDismiss: false,
+        backgroundDismissAnimation: 'glow',
+        type: 'red',
+        closeIcon: true,
+        closeIconClass: 'fa fa-close',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        autoClose: 'no|5000',
+        buttons: {
+          delete: {
+            text: 'Delete',
+            btnClass: 'btn-red',
+            action: function () {
+              $.ajax({
+                url: '/api/v1/master/product/delete',
+                method: 'post',
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                  product_master_id,
+                })
+              }).done(function (response) {
+                //loading data to table
+                loadProductTableData()
+
+                toastr.success('Product deleted successfully', 'Deleted')
+              }).fail(function () {
+                toastr.error('Product failed to delete!', 'Error')
+              });
+            }
+          },
+          no: function () {
+            toastr.info('Product is safe now', 'Info')
+          }
+        }
+      });
+    })
+
+    function loadProductSpecies() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/species/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#productSpecies").select2({
+            placeholder: "Choose a species",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.species_name,
+              };
+            }),
+          });
+
+          // Clearing selected value
+          $("#productSpecies").val(null).trigger("change");
+          // // Clearing selected value
+          // $('#productType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadProductSizes() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/size/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#productSizes")
+            .select2({
+              placeholder: "Choose sizes",
+              allowClear: true,
+              multiple: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.size
+                };
+              }),
+            })
+
+          // Clearing selected value
+          $("#productSizes").val(null).trigger("change");
+          // // Clearing selected value
+          // $('#productType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function saveProduct() {
+      const product_master_id = $("#submitProduct").attr('product_master_id')
+
+      let url = "/api/v1/master/product/create"
+      let input_params = {
+        product_name: $("#product_name").val(),
+        product_short_code: $("#product_short_code").val(),
+        species_master_id: $("#productSpecies").val(),
+        size_master_ids: $("#productSizes").val()
+      };
+
+      if (product_master_id) {
+        url = "/api/v1/master/product/update"
+
+        input_params = {
+          product_master_id,
+          product_master_data: {
+            ...input_params
+          }
+        }
+      }
+
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeProductPanelBtn").click()
+
+          loadProductTableData()
+
+          resetAllInputs()
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+
+    $("#resetProductDataBtn").on("click", resetAllInputs)
 
     // ---------------------------------------------------------
     // ------------------------- Vendors -----------------------
@@ -2909,6 +3625,7 @@
           { data: null },
           { data: null },
           { data: "species_code" },
+          { data: "DivisionMaster.division_name" },
           { data: "species_name" },
           { data: "scientific_name" },
           { data: "description" },
@@ -2930,7 +3647,14 @@
             },
           },
           {
-            targets: [6],
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span division_master_id='${row["DivisionMaster"].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [7],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -2958,9 +3682,10 @@
     $(document).on('click', '.editSpecies', (e) => {
       // Changing panel input fields data
       $("#species_code").val($(e.target).closest('tr').children("td").eq(2).text())
-      $("#species_name").val($(e.target).closest('tr').children("td").eq(3).text())
-      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(4).text())
-      $("#species_description").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#speciesDivision").val($(e.target).closest('tr').children("td").eq(3).find('span').attr('division_master_id')).trigger('change')
+      $("#species_name").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#scientific_name").val($(e.target).closest('tr').children("td").eq(5).text())
+      $("#species_description").val($(e.target).closest('tr').children("td").eq(6).text())
 
       // Opening Slied Panel
       $("#openSpeciesPanelBtn").click()
@@ -3020,11 +3745,50 @@
       });
     })
 
+    function loadSpeciesDivision() {
+      // Load Roles
+      $.ajax({
+        url: "/api/v1/master/division/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#speciesDivision")
+            .select2({
+              placeholder: "Choose a division",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.division_name
+                };
+              }),
+            })
+
+          // Clearing selected value
+          $('#speciesDivision').val(null).trigger('change');
+          // // Clearing selected value
+          // $('#unitType').val(null).trigger('change');
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
     function saveSpecies() {
       const species_master_id = $("#submitSpecies").attr('species_master_id')
 
       let url = "/api/v1/master/species/create"
       let input_params = {
+        division_master_id: $("#speciesDivision").val(),
         species_name: $("#species_name").val(),
         species_code: $("#species_code").val(),
         scientific_name: $("#scientific_name").val(),
@@ -3506,6 +4270,8 @@
 
 
     $("#resetSizeDataBtn").on("click", resetAllInputs)
+
+
 
     // ---------------------------------------------------------
     // ------------------------- Vehicle -----------------------
