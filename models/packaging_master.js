@@ -92,7 +92,6 @@ module.exports = (sequelize, DataTypes) => {
       deletedAt: "deleted_at",
     }
   );
-
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
@@ -101,12 +100,17 @@ module.exports = (sequelize, DataTypes) => {
           attribute: "vendor_name",
           where: { id: data?.vendor_master_id, is_active: true },
         });
+        if (packaging_weight = null) {
+          data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
+            } cm x${data?.packaging_width} cm x ${data?.packaging_height}cm-${PackagingMaterials[data?.packaging_material_composition]
+            }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        }
+        else {
 
-        data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
-          data?.packaging_length
-        }x${data?.packaging_width}x${data?.packaging_height}-${
-          PackagingMaterials[data?.packaging_material_composition]
-        }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_weight
+            }kgs-${PackagingMaterials[data?.packaging_material_composition]
+            }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        }
       }
 
       data.created_by = options.profile_id;
@@ -126,14 +130,18 @@ module.exports = (sequelize, DataTypes) => {
           attribute: "vendor_name",
           where: { id: data?.vendor_master_id, is_active: true },
         });
+        if (packaging_weight = null) {
+          data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
+            } cm x${data?.packaging_width} cm x ${data?.packaging_height}cm-${PackagingMaterials[data?.packaging_material_composition]
+            }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        }
+        else {
 
-        data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
-          data?.packaging_length
-        }x${data?.packaging_width}x${data?.packaging_height}-${
-          PackagingMaterials[data?.packaging_material_composition]
-        }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_weight
+            }kgs-${PackagingMaterials[data?.packaging_material_composition]
+            }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        }
       }
-
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
