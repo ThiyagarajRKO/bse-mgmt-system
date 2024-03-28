@@ -98,7 +98,7 @@ export const Get = ({ id }) => {
       const species = await models.SpeciesMaster.findOne({
         includes: [
           {
-            models: models.ProductMaster,
+            models: models.ProductCategoryMaster,
             where: {
               is_active: true,
             },
@@ -169,7 +169,7 @@ export const GetAll = ({
           },
           {
             required: false,
-            model: models.ProductMaster,
+            model: models.ProductCategoryMaster,
             where: {
               is_active: true,
             },
@@ -230,7 +230,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const product = await models.ProductMaster.count({
+      const product = await models.ProductCategoryMaster.count({
         where: {
           species_master_id: id,
           is_active: true,
