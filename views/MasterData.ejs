@@ -1074,13 +1074,13 @@
 
             <div class="form-group mt-4">
               <label for="product-name">Product Name</label>
-              <input id="product_name" class="form-control" type="text" placeholder="eg. Chennai" name="product-name"
+              <input id="product_name" class="form-control" type="text" placeholder="eg. HEAD" name="product-name"
                 required>
             </div>
 
             <div class="form-group mt-4">
               <label for="product_short_code">Product Short Code</label>
-              <input id="product_short_code" class="form-control" type="text" placeholder="eg. Chennai"
+              <input id="product_short_code" class="form-control" type="text" placeholder="eg. HD"
                 name="product_short_code" required>
             </div>
 
@@ -1485,6 +1485,7 @@
       $(".productTopMenu").removeClass('topMenu-item-active')
       $(".panelClose").click()
 
+      loadDropdowns()
       resetAllInputs()
     })
 
@@ -1498,6 +1499,7 @@
 
       $(".panelClose").click()
 
+      loadDropdowns()
       resetAllInputs()
     })
 
@@ -1600,18 +1602,20 @@
       // $('select.select2-hidden-accessible').select2('destroy');
     }
 
-    // Pre loading dropdown data
-    loadUnitLocations()
-    loadUnitType()
-    loadVendorLocations()
-    loadPackagingType()
-    loadPackagingMaterialComposition()
-    loadPackagingVendor()
-    loadSpeciesDivision()
-    loadInventoryVendors()
-    loadInventoryCategory()
-    loadProductSpecies()
-    loadProductSizes()
+    function loadDropdowns() {
+      // Pre loading dropdown data
+      loadUnitLocations()
+      loadUnitType()
+      loadVendorLocations()
+      loadPackagingType()
+      loadPackagingMaterialComposition()
+      loadPackagingVendor()
+      loadSpeciesDivision()
+      loadInventoryVendors()
+      loadInventoryCategory()
+      loadProductSpecies()
+      loadProductSizes()
+    }
 
     // ---------------------------------------------------------
     // ----------------------- Divisions -----------------------
