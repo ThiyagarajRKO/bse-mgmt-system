@@ -1,5 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
+const { Op } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class ProductMaster extends Model {
     static associate(models) {
@@ -41,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       product_name: {
         type: DataTypes.STRING,
       },
-      product_short_name: {
+      product_short_code: {
         type: DataTypes.STRING,
       },
       product_code: {
@@ -49,6 +51,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       size_master_ids: {
         type: DataTypes.ARRAY(DataTypes.UUID),
+      },
+      size_master_sizes: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
       },
       is_active: {
         type: DataTypes.BOOLEAN,
@@ -78,6 +83,32 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   ProductMaster.beforeCreate(async (data, options) => {
     try {
+      const { species_name } = await sequelize.models.SpeciesMaster.findOne({
+        attribute: "species_name",
+        where: { id: data?.species_master_id, is_active: true },
+      });
+
+      data.product_code = `${species_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${data.product_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}`;
+
+      const size_master = await sequelize.models.SizeMaster.findAll({
+        attribute: "size",
+        where: {
+          id: { [Op.in]: data?.size_master_ids },
+          is_active: true,
+        },
+      });
+
+      let Sizes = [];
+      size_master.forEach(({ size }) => Sizes.push(size));
+
+      data.size_master_sizes = Sizes;
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
@@ -90,6 +121,32 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   ProductMaster.beforeUpdate(async (data, options) => {
     try {
+      const { species_name } = await sequelize.models.SpeciesMaster.findOne({
+        attribute: "species_name",
+        where: { id: data?.species_master_id, is_active: true },
+      });
+
+      data.product_code = `${species_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${data.product_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}`;
+
+      const size_master = await sequelize.models.SizeMaster.findAll({
+        attribute: "size",
+        where: {
+          id: { [Op.in]: data?.size_master_ids },
+          is_active: true,
+        },
+      });
+
+      let Sizes = [];
+      size_master.forEach(({ size }) => Sizes.push(size));
+
+      data.size_master_sizes = Sizes;
+
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {

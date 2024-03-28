@@ -21,9 +21,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      product_short_name: {
+      product_short_code: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       product_code: {
         type: Sequelize.TEXT,
@@ -32,6 +31,10 @@ module.exports = {
       },
       size_master_ids: {
         type: Sequelize.ARRAY(Sequelize.UUID),
+        allowNull: false,
+      },
+      size_master_sizes: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: false,
       },
       is_active: {

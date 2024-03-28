@@ -4,7 +4,7 @@ export const Create = (
   {
     profile_id,
     species_master_id,
-    product_code,
+    product_name,
     product_short_code,
     size_master_ids,
   },
