@@ -39,13 +39,19 @@ export const Insert = async (profile_id, inventory_master_data) => {
         });
       }
 
-      const result = await models.InventoryMaster.create(inventory_master_data, {
-        profile_id,
-      });
+      const result = await models.InventoryMaster.create(
+        inventory_master_data,
+        {
+          profile_id,
+        }
+      );
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "inventory already exists!" });
+        return reject({
+          statusCode: 420,
+          message: "inventory already exists!",
+        });
       }
       reject(err);
     }
@@ -78,13 +84,16 @@ export const Update = async (profile_id, id, inventory_master_data) => {
 
       inventory_master_data.updated_by = profile_id;
 
-      const result = await models.InventoryMaster.update(inventory_master_data, {
-        where: {
-          id,
-          is_active: true,
-        },
-        individualHooks: true,
-      });
+      const result = await models.InventoryMaster.update(
+        inventory_master_data,
+        {
+          where: {
+            id,
+            is_active: true,
+          },
+          individualHooks: true,
+        }
+      );
       resolve(result);
     } catch (err) {
       reject(err);
@@ -102,18 +111,11 @@ export const Get = ({ id, inventory_name }) => {
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (inventory_name) {
-        where.inventory_name = inventory_name;
-      }
-
       const inventory = await models.inventoryMaster.findOne({
-        where,
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(inventory);

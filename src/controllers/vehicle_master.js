@@ -94,7 +94,7 @@ export const Update = async (profile_id, id, vehicle_data) => {
   });
 };
 
-export const Get = ({ id, vehicle_number }) => {
+export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -104,18 +104,11 @@ export const Get = ({ id, vehicle_number }) => {
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (vehicle_number) {
-        where.vehicle_number = vehicle_number;
-      }
-
       const vehicle = await models.VehicleMaster.findOne({
-        where,
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(vehicle);

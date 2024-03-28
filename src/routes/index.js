@@ -3,14 +3,16 @@
 import usersRoute from "./users";
 import profileRoutes from "./profile";
 import roleMasterRoute from "./role_master";
+import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
 import unitMasterRoute from "./unit_master";
 import vendorMasterRoute from "./vendor_master";
-import PackagingMasterRoute from "./packaging_master";
+import packagingMasterRoute from "./packaging_master";
 import inventoryMasterRoute from "./inventory_master";
-import SpeciesMasterRoute from "./species_master";
-import GradeMasterRoute from "./grade_master";
-import SizeMasterRoute from "./size_master";
+import speciesMasterRoute from "./species_master";
+import gradeMasterRoute from "./grade_master";
+import sizeMasterRoute from "./size_master";
+import productMasterRoute from "./product_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
 
@@ -33,21 +35,25 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(profileRoutes, { prefix: "/profile" });
 
+  fastify.register(divisionMasterRoute, { prefix: "/master/division" });
+
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 
   fastify.register(unitMasterRoute, { prefix: "/master/unit" });
 
   fastify.register(vendorMasterRoute, { prefix: "/master/vendor" });
 
-  fastify.register(PackagingMasterRoute, { prefix: "/master/packaging" });
+  fastify.register(packagingMasterRoute, { prefix: "/master/packaging" });
 
   fastify.register(inventoryMasterRoute, { prefix: "/master/inventory" });
 
-  fastify.register(SpeciesMasterRoute, { prefix: "/master/species" });
+  fastify.register(speciesMasterRoute, { prefix: "/master/species" });
 
-  fastify.register(GradeMasterRoute, { prefix: "/master/grade" });
+  fastify.register(gradeMasterRoute, { prefix: "/master/grade" });
 
-  fastify.register(SizeMasterRoute, { prefix: "/master/size" });
+  fastify.register(sizeMasterRoute, { prefix: "/master/size" });
+
+  fastify.register(productMasterRoute, { prefix: "/master/product" });
 
   fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
 

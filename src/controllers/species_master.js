@@ -18,6 +18,13 @@ export const Insert = async (profile_id, species_data) => {
         });
       }
 
+      if (!species_data.division_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Devision master id must not be empty!",
+        });
+      }
+
       if (!species_data?.species_name) {
         return reject({
           statusCode: 420,
@@ -78,7 +85,7 @@ export const Update = async (profile_id, id, species_data) => {
   });
 };
 
-export const Get = ({ id, species_code }) => {
+export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -88,18 +95,19 @@ export const Get = ({ id, species_code }) => {
         });
       }
 
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = id;
-      } else if (species_code) {
-        where.species_code = species_code;
-      }
-
       const species = await models.SpeciesMaster.findOne({
-        where,
+        includes: [
+          {
+            models: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          id,
+          is_active: true,
+        },
       });
 
       resolve(species);
@@ -135,6 +143,14 @@ export const GetAll = ({
       }
 
       const vendors = await models.SpeciesMaster.findAndCountAll({
+        includes: [
+          {
+            models: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where,
         offset: start,
         limit: length,

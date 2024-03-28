@@ -1,13 +1,13 @@
-import { VehicleMaster } from "../../../controllers";
+import { DivisionMaster } from "../../../controllers";
 
-export const Get = ({ vehicle_master_id }, session, fastify) => {
+export const Get = ({ division_master_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let vehicle_master = await VehicleMaster.Get({
-        id: vehicle_master_id,
+      let division_master = await DivisionMaster.Get({
+        id: division_master_id,
       });
 
-      if (!vehicle_master) {
+      if (!division_master) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -15,7 +15,7 @@ export const Get = ({ vehicle_master_id }, session, fastify) => {
       }
 
       resolve({
-        data: vehicle_master,
+        data: division_master,
       });
     } catch (err) {
       fastify.log.error(err);

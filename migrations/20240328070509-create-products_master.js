@@ -1,37 +1,38 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("species_master", {
+    await queryInterface.createTable("product_master", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      division_master_id: {
+      species_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "division_master" },
+          model: { tableName: "species_master" },
           key: "id",
         },
       },
-      species_code: {
+      product_name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
-      species_name: {
+      product_short_name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
       },
-      scientific_name: {
-        type: Sequelize.STRING,
-      },
-      description: {
+      product_code: {
         type: Sequelize.TEXT,
+        allowNull: false,
+        unique: true,
+      },
+      size_master_ids: {
+        type: Sequelize.ARRAY(Sequelize.UUID),
+        allowNull: false,
       },
       is_active: {
         defaultValue: false,
@@ -78,6 +79,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("species_master");
+    await queryInterface.dropTable("product_master");
   },
 };

@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, size_master_data) => {
+export const Insert = async (profile_id, product_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,36 +11,47 @@ export const Insert = async (profile_id, size_master_data) => {
         });
       }
 
-      if (!size_master_data?.size) {
+      if (!product_master_data?.species_master_id) {
         return reject({
           statusCode: 420,
-          message: "Size must not be empty!",
+          message: "Species master id must not be empty!",
         });
       }
 
-      const result = await models.SizeMaster.create(size_master_data, {
+      if (!product_master_data?.product_name) {
+        return reject({
+          statusCode: 420,
+          message: "Product name must not be empty!",
+        });
+      }
+
+      if (product_master_data?.size_master_ids?.length <= 0) {
+        return reject({
+          statusCode: 420,
+          message: "Product size master ids must not be empty!",
+        });
+      }
+
+      const result = await models.ProductMaster.create(product_master_data, {
         profile_id,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({
-          statusCode: 420,
-          message: "Size already exists!",
-        });
+        return reject({ statusCode: 420, message: "Product already exists!" });
       }
       reject(err);
     }
   });
 };
 
-export const Update = async (profile_id, id, size_master_data) => {
+export const Update = async (profile_id, id, product_master_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size master id must not be empty!",
+          message: "Product id must not be empty!",
         });
       }
 
@@ -51,14 +62,14 @@ export const Update = async (profile_id, id, size_master_data) => {
         });
       }
 
-      if (!size_master_data) {
+      if (!product_master_data) {
         return reject({
           statusCode: 420,
-          message: "Size data must not be empty!",
+          message: "Product data must not be empty!",
         });
       }
 
-      const result = await models.SizeMaster.update(size_master_data, {
+      const result = await models.ProductMaster.update(product_master_data, {
         where: {
           id,
           is_active: true,
@@ -79,43 +90,75 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size ID field must not be empty!",
+          message: "Product ID field must not be empty!",
         });
       }
 
-      const unit = await models.SizeMaster.findOne({
+      const product = await models.ProductMaster.findOne({
+        includes: [
+          {
+            models: models.SpeciesMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where: {
-          id,
           is_active: true,
+          id,
         },
       });
 
-      resolve(unit);
+      resolve(product);
     } catch (err) {
       reject(err);
     }
   });
 };
 
-export const GetAll = ({ size, start, length }) => {
+export const GetAll = ({
+  product_short_code,
+  product_name,
+  species_master_name,
+  start,
+  length,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (size) {
-        where.size = { [Op.iLike]: size };
+      if (product_short_code) {
+        where.product_code = { [Op.iLike]: product_code };
       }
 
-      const units = await models.SizeMaster.findAndCountAll({
+      if (product_name) {
+        where.product_name = { [Op.iLike]: product_name };
+      }
+
+      let speciesWhere = {
+        is_active: true,
+      };
+
+      if (species_master_name) {
+        speciesWhere.species_name = { [Op.iLike]: species_master_name };
+      }
+
+      const products = await models.ProductMaster.findAndCountAll({
+        include: [
+          {
+            model: models.SpeciesMaster,
+            where: speciesWhere,
+          },
+        ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(units);
+      resolve(products);
     } catch (err) {
       reject(err);
     }
@@ -128,7 +171,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Size master id field must not be empty!",
+          message: "Product ID field must not be empty!",
         });
       }
 
@@ -139,7 +182,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const unit = await models.SizeMaster.destroy({
+      const product = await models.ProductMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -149,7 +192,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(unit);
+      resolve(product);
     } catch (err) {
       reject(err);
     }
