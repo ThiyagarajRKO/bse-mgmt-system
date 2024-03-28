@@ -25,26 +25,6 @@ export const Insert = async (profile_id, packaging_data) => {
         });
       }
 
-      if (!packaging_data?.packaging_height) {
-        return reject({
-          statusCode: 420,
-          message: "Package height number must not be empty!",
-        });
-      }
-
-      if (!packaging_data?.packaging_width) {
-        return reject({
-          statusCode: 420,
-          message: "Packaging width must not be empty!",
-        });
-      }
-
-      if (!packaging_data?.packaging_length) {
-        return reject({
-          statusCode: 420,
-          message: "Packaging Length must not be empty!",
-        });
-      }
       if (!packaging_data?.packaging_material_composition) {
         return reject({
           statusCode: 420,

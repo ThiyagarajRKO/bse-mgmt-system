@@ -18,19 +18,19 @@ module.exports = {
       },
       packaging_height: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       packaging_width: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       packaging_length: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       packaging_weight: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       packaging_material_composition: {
         type: Sequelize.ENUM("Plastic", "Cardboard", "Thermocol"),

@@ -130,7 +130,7 @@ module.exports = (sequelize, DataTypes) => {
           attribute: "vendor_name",
           where: { id: data?.vendor_master_id, is_active: true },
         });
-        if (packaging_weight = null) {
+        if (packaging_weight = "") {
           data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${data?.packaging_length
             } cm x${data?.packaging_width} cm x ${data?.packaging_height}cm-${PackagingMaterials[data?.packaging_material_composition]
             }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
