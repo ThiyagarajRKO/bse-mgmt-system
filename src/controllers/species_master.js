@@ -224,7 +224,8 @@ export const Delete = ({ profile_id, id }) => {
       if (product > 0) {
         return reject({
           statusCode: 420,
-          message: "This species is being used by a product!",
+          message:
+            "This species cannot be deleted because it is currently in use.",
         });
       }
 
