@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+const sequelize = require("sequelize");
 import models from "../../models";
 
 export const Insert = async (profile_id, vehicle_data) => {
@@ -151,7 +152,11 @@ export const GetAll = ({
           { model_number: { [Op.iLike]: `%${search}%` } },
           { insurance_provider: { [Op.iLike]: `%${search}%` } },
           { insurance_number: { [Op.iLike]: `%${search}%` } },
-          // { insurance_expiring_on: { [Op.iLike]: `%${search}%` } },
+          // {
+          //   [Op.and]: sequelize.literal(
+          //     `CAST("insurance_expiring_on" AS VARCHAR) ILIKE '%${search}%'`
+          //   ),
+          // },
           // { last_fc_date: { [Op.iLike]: `%${search}%` } },
         ];
       }

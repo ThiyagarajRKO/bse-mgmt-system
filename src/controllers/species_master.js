@@ -157,9 +157,8 @@ export const GetAll = ({
           { species_name: { [Op.iLike]: `%${search}%` } },
           { species_code: { [Op.iLike]: `%${search}%` } },
           { scientific_name: { [Op.iLike]: `%${search}%` } },
+          { "$DivisionMaster.division_name$": { [Op.iLike]: `%${search}%` } },
         ];
-
-        // divisionWhere.division_name = { [Op.iLike]: `%${search}%` };
       }
 
       const vendors = await models.SpeciesMaster.findAndCountAll({

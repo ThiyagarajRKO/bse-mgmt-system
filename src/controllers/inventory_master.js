@@ -163,11 +163,9 @@ export const GetAll = ({
           { inventory_name: { [Op.iLike]: `%${search}%` } },
           { inventory_uom: { [Op.iLike]: `%${search}%` } },
           // { inventory_category: { [Op.iLike]: `%${search}%` } },
-        ];
 
-        // vendorWhere.vendor_name = {
-        //   [Op.iLike]: `%${search}%`,
-        // };
+          { "$VendorMaster.vendor_name$": { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const inventories = await models.InventoryMaster.findAndCountAll({

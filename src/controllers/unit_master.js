@@ -149,10 +149,8 @@ export const GetAll = ({
         where[Op.or] = [
           { unit_code: { [Op.iLike]: `%${search}%` } },
           { unit_name: { [Op.iLike]: `%${search}%` } },
-          // { unit_type: { [Op.iLike]: `%${search}%` } },
+          { "$LocationMaster.location_name$": { [Op.iLike]: `%${search}%` } },
         ];
-
-        // locationWhere.location_name = { [Op.iLike]: `%${search}%` };
       }
 
       const units = await models.UnitMaster.findAndCountAll({

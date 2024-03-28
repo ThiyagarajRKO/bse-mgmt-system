@@ -180,14 +180,13 @@ export const GetAll = ({
         where[Op.or] = [
           { packaging_code: { [Op.iLike]: `%${search}%` } },
           // { packaging_type: { [Op.iLike]: `%${search}%` } },
-          { packaging_length: { [Op.iLike]: `%${search}%` } },
-          { packaging_width: { [Op.iLike]: `%${search}%` } },
-          { packaging_height: { [Op.iLike]: `%${search}%` } },
-          { packaging_weight: { [Op.iLike]: `%${search}%` } },
+          // { packaging_length: { [Op.iLike]: `%${search}%` } },
+          // { packaging_width: { [Op.iLike]: `%${search}%` } },
+          // { packaging_height: { [Op.iLike]: `%${search}%` } },
+          // { packaging_weight: { [Op.iLike]: `%${search}%` } },
           // { packaging_material_composition: { [Op.iLike]: `%${search}%` } },
+          { "$VendorMaster.vendor_name$": { [Op.iLike]: `%${search}%` } },
         ];
-
-        // vendorWhere.vendor_name = { [Op.iLike]: `%${search}%` };
       }
 
       const packagings = await models.PackagingMaster.findAndCountAll({

@@ -151,10 +151,9 @@ export const GetAll = ({
           { product_name: { [Op.iLike]: `%${search}%` } },
           { product_short_code: { [Op.iLike]: `%${search}%` } },
           { product_code: { [Op.iLike]: `%${search}%` } },
-          { size_master_sizes: { [Op.iLike]: `%${search}%` } },
+          // { size_master_sizes: { [Op.iLike]: `%${search}%` } },
+          { "$SpeciesMaster.species_name$": { [Op.iLike]: `%${search}%` } },
         ];
-
-        // speciesWhere.species_name = { [Op.iLike]: `%${search}%` };
       }
 
       const products = await models.ProductMaster.findAndCountAll({

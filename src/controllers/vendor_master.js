@@ -138,9 +138,8 @@ export const GetAll = ({
           { representative: { [Op.iLike]: `%${search}%` } },
           { phone: { [Op.iLike]: `%${search}%` } },
           { email: { [Op.iLike]: `%${search}%` } },
+          { "$LocationMaster.location_name$": { [Op.iLike]: `%${search}%` } },
         ];
-
-        // where["LocationMaster"].location_name = { [Op.iLike]: search };
       }
 
       const vendors = await models.VendorMaster.findAndCountAll({
