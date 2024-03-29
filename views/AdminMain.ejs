@@ -113,7 +113,8 @@
             <a id="dashboard" href="" class="nav-link"><i data-feather="package"></i><span>Dashboard</span></a>
           </li>
           <li class="nav-item">
-            <a href="" class="nav-link"><i data-feather="shopping-cart"></i><span>Procurement</span></a>
+            <a id="Procurement" href="" class="nav-link"><i
+                data-feather="shopping-cart"></i><span>Procurement</span></a>
           </li>
           <li class="nav-item">
             <a href="" class="nav-link with-sub"><i data-feather="package"></i><span>Production</span></a>
@@ -230,8 +231,9 @@
 
     // Procurement navigation
     $("#procurement").on("click", function () {
-      loadIframe("/Procurement");
+      loadIframe("/procurement");
     });
+
 
     $("#settings").hover(
       function () {

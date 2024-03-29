@@ -2,6 +2,7 @@
 
 import usersRoute from "./users";
 import profileRoutes from "./profile";
+import ProcurementRoute from "./procurement";
 import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
@@ -15,6 +16,7 @@ import sizeMasterRoute from "./size_master";
 import productMasterRoute from "./product_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
+
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -36,6 +38,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(profileRoutes, { prefix: "/profile" });
 
   fastify.register(divisionMasterRoute, { prefix: "/master/division" });
+
+  fastify.register(ProcurementRoute, { prefix: "/procurement/purchase" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 
