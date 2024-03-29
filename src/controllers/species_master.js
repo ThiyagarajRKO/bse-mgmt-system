@@ -98,7 +98,7 @@ export const Get = ({ id }) => {
       const species = await models.SpeciesMaster.findOne({
         includes: [
           {
-            models: models.ProductMaster,
+            models: models.ProductCategoryMaster,
             where: {
               is_active: true,
             },
@@ -121,8 +121,10 @@ export const GetAll = ({
   species_code,
   species_name,
   scientific_name,
+  division_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -131,28 +133,43 @@ export const GetAll = ({
       };
 
       if (species_name) {
-        where.species_name = { [Op.iLike]: species_name };
+        where.species_name = { [Op.iLike]: `%${species_name}%` };
       }
 
       if (species_code) {
-        where.species_code = { [Op.iLike]: species_code };
+        where.species_code = { [Op.iLike]: `%${species_code}%` };
       }
 
       if (scientific_name) {
-        where.scientific_name = { [Op.iLike]: scientific_name };
+        where.scientific_name = { [Op.iLike]: `%${scientific_name}%` };
+      }
+
+      let divisionWhere = {
+        is_active: true,
+      };
+
+      if (division_name) {
+        divisionWhere.division_name = { [Op.iLike]: `%${division_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { species_name: { [Op.iLike]: `%${search}%` } },
+          { species_code: { [Op.iLike]: `%${search}%` } },
+          { scientific_name: { [Op.iLike]: `%${search}%` } },
+          { "$DivisionMaster.division_name$": { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const vendors = await models.SpeciesMaster.findAndCountAll({
         include: [
           {
             model: models.DivisionMaster,
-            where: {
-              is_active: true,
-            },
+            where: divisionWhere,
           },
           {
             required: false,
-            model: models.ProductMaster,
+            model: models.ProductCategoryMaster,
             where: {
               is_active: true,
             },
@@ -213,7 +230,23 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.SpeciesMaster.destroy({
+      const product = await models.ProductCategoryMaster.count({
+        where: {
+          species_master_id: id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      if (product > 0) {
+        return reject({
+          statusCode: 420,
+          message:
+            "This species cannot be deleted because it is currently in use.",
+        });
+      }
+
+      const species = await models.SpeciesMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -223,7 +256,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(species);
     } catch (err) {
       reject(err);
     }

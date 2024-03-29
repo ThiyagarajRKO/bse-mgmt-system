@@ -140,6 +140,7 @@ export const GetAll = ({
   health_history,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -148,23 +149,36 @@ export const GetAll = ({
       };
 
       if (driver_name) {
-        where.driver_name = { [Op.iLike]: driver_name };
+        where.driver_name = { [Op.iLike]: `%${driver_name}%` };
       }
 
       if (address) {
-        where.address = { [Op.iLike]: address };
+        where.address = { [Op.iLike]: `%${address}%` };
       }
 
       if (phone) {
-        where.phone = { [Op.iLike]: phone };
+        where.phone = { [Op.iLike]: `%${phone}%` };
       }
 
       if (blood_group) {
-        where.blood_group = { [Op.iLike]: blood_group };
+        where.blood_group = { [Op.iLike]: `%${blood_group}%` };
       }
 
       if (health_history) {
-        where.health_history = { [Op.iLike]: health_history };
+        where.health_history = { [Op.iLike]: `%${health_history}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { driver_name: { [Op.iLike]: `%${search}%` } },
+          { address: { [Op.iLike]: `%${search}%` } },
+          { phone: { [Op.iLike]: `%${search}%` } },
+          { health_history: { [Op.iLike]: `%${search}%` } },
+          { license_number: { [Op.iLike]: `%${search}%` } },
+          { aadhar_number: { [Op.iLike]: `%${search}%` } },
+          { emergency_contact: { [Op.iLike]: `%${search}%` } },
+          { blood_group: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const vendors = await models.DriverMaster.findAndCountAll({

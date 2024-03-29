@@ -8,6 +8,7 @@ export const getAllSchema = {
         length: { type: "number" },
         vendor_name: { type: "string" },
         location_master_name: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

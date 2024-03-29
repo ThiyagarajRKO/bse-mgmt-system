@@ -7,35 +7,30 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      species_master_id: {
+      product_name: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+        unique: true,
+      },
+      product_category_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "species_master" },
+          model: { tableName: "product_category_master" },
           key: "id",
         },
       },
-      product_name: {
-        type: Sequelize.STRING,
+      size_master_id: {
+        type: Sequelize.UUID,
         allowNull: false,
-      },
-      product_short_code: {
-        type: Sequelize.STRING,
-      },
-      product_code: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        unique: true,
-      },
-      size_master_ids: {
-        type: Sequelize.ARRAY(Sequelize.UUID),
-        allowNull: false,
-      },
-      size_master_sizes: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "size_master" },
+          key: "id",
+        },
       },
       is_active: {
         defaultValue: false,

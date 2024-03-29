@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+const sequelize = require("sequelize");
 import models from "../../models";
 
 export const Insert = async (profile_id, vehicle_data) => {
@@ -124,6 +125,7 @@ export const GetAll = ({
   vehicle_number,
   vehicle_brand,
   model_number,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -132,15 +134,31 @@ export const GetAll = ({
       };
 
       if (vehicle_number) {
-        where.vehicle_number = { [Op.iLike]: vehicle_number };
+        where.vehicle_number = { [Op.iLike]: `%${vehicle_number}%` };
       }
 
       if (vehicle_brand) {
-        where.vehicle_brand = { [Op.iLike]: vehicle_brand };
+        where.vehicle_brand = { [Op.iLike]: `%${vehicle_brand}%` };
       }
 
       if (model_number) {
-        where.model_number = { [Op.iLike]: model_number };
+        where.model_number = { [Op.iLike]: `%${model_number}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { vehicle_number: { [Op.iLike]: `%${search}%` } },
+          { vehicle_brand: { [Op.iLike]: `%${search}%` } },
+          { model_number: { [Op.iLike]: `%${search}%` } },
+          { insurance_provider: { [Op.iLike]: `%${search}%` } },
+          { insurance_number: { [Op.iLike]: `%${search}%` } },
+          // {
+          //   [Op.and]: sequelize.literal(
+          //     `CAST("insurance_expiring_on" AS VARCHAR) ILIKE '%${search}%'`
+          //   ),
+          // },
+          // { last_fc_date: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const vendors = await models.VehicleMaster.findAndCountAll({

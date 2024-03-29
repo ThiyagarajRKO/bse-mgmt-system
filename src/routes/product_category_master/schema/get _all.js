@@ -4,9 +4,10 @@ export const getAllSchema = {
       type: "object",
       required: [],
       properties: {
-        division_name: { type: "string" },
         start: { type: "number" },
         length: { type: "number" },
+        product_category: { type: "string" },
+        species_master_name: { type: "string" },
         "search[value]": { type: "string" },
       },
     },

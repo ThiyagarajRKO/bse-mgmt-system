@@ -1,7 +1,16 @@
 import { DriverMaster } from "../../../controllers";
 
 export const GetAll = (
-  { driver_name, address, phone, blood_group, health_history },
+  {
+    driver_name,
+    address,
+    phone,
+    blood_group,
+    health_history,
+    start,
+    length,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -13,6 +22,9 @@ export const GetAll = (
         phone,
         blood_group,
         health_history,
+        start,
+        length,
+        search,
       });
 
       if (!driver_master) {

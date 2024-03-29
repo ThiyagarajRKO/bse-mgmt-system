@@ -1073,15 +1073,9 @@
             </div>
 
             <div class="form-group mt-4">
-              <label for="product-name">Product Name</label>
-              <input id="product_name" class="form-control" type="text" placeholder="eg. HEAD" name="product-name"
-                required>
-            </div>
-
-            <div class="form-group mt-4">
-              <label for="product_short_code">Product Short Code</label>
-              <input id="product_short_code" class="form-control" type="text" placeholder="eg. HD"
-                name="product_short_code" required>
+              <label for="product-name">Product Category</label>
+              <input id="product_category" class="form-control" type="text" placeholder="eg. HEAD"
+                name="product_category" required>
             </div>
 
             <div class="form-group mt-4">
@@ -1118,11 +1112,10 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Product Code</span></th>
-                <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Product Name</span></th>
-                <th class="fw-bold"><span>Product Short Code</span></th>
-                <th class="fw-bold"><span>Sizes</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Product Category</span></th>
+                <th class="fw-bold"><span>Size</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
@@ -1588,6 +1581,10 @@
 
       // Changing panel save button attribute
       $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null)
+
+      if (panelType == 'Product') {
+        $("#product_category").attr("product_category_master_id", null)
+      }
     }
 
 
@@ -1661,7 +1658,12 @@
             $("#divisionTable").DataTable().destroy();
             $("#divisionTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -1770,8 +1772,12 @@
                 loadDivisionTableData()
 
                 toastr.success('Division deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Division failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -1875,7 +1881,12 @@
             $("#locationTable").DataTable().destroy();
             $("#locationTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -1984,8 +1995,12 @@
                 loadLocationTableData()
 
                 toastr.success('Location deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Location failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2096,7 +2111,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2215,8 +2235,12 @@
                 loadUnitTableData()
 
                 toastr.success('Unit deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Unit failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2352,6 +2376,7 @@
     // Open panel
     $('#openProductPanelBtn').click(function () {
       openSlidePanel("productSlideInPanel", "productPanelHeading", "Product", "submitProduct", "product_master_id")
+      $('#productSizes').prop('multiple', true).attr('name', 'sub_type[]').select2({ allowClear: true, placeholder: 'Select sizes' })
     });
 
     // Close panel
@@ -2392,7 +2417,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2405,11 +2435,10 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "product_code" },
-          { data: "SpeciesMaster.species_name" },
           { data: "product_name" },
-          { data: "product_short_code" },
-          { data: "size_master_sizes" },
+          { data: "ProductCategoryMaster.SpeciesMaster.species_name" },
+          { data: "ProductCategoryMaster.product_category" },
+          { data: "SizeMaster.size" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -2431,21 +2460,25 @@
             targets: [3],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span species_master_id='${row['SpeciesMaster'].id}'>${data}</span>`
+              return `<span species_master_id='${row['ProductCategoryMaster']['SpeciesMaster'].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span product_category_master_id='${row['ProductCategoryMaster'].id}'>${data}</span>`
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span size_master_id='${row['SizeMaster'].id}'>${data}</span>`
             },
           },
           {
             targets: [6],
-            className: "text-left",
-            render: function (data, type, row) {
-              let htmlContent = `<div class="d-flex flex-column" size_master_ids='${row["size_master_ids"]}'>`
-              data?.forEach((dt) => { htmlContent += `<span>${dt}</span>` })
-              htmlContent += `</div>`
-              return htmlContent
-            },
-          },
-          {
-            targets: [7],
             className: "text-left",
             render: function (data, type, row) {
               const date = new Date(row["created_at"]);
@@ -2473,13 +2506,15 @@
     $(document).on('click', '.editProduct', (e) => {
       // Changing panel input fields data
       $("#productSpecies").val($(e.target).closest('tr').children("td").eq(3).find('span').attr("species_master_id")).trigger('change')
-      $("#product_name").val($(e.target).closest('tr').children("td").eq(4).text())
-      $("#product_short_code").val($(e.target).closest('tr').children("td").eq(5).text())
-      const size_product_ids = $(e.target).closest('tr').children("td").eq(6).find('div').attr("size_master_ids")
-      $("#productSizes").val(size_product_ids?.split(",")).trigger('change')
+      $("#product_category").val($(e.target).closest('tr').children("td").eq(4).text())
+      $("#productSizes").val($(e.target).closest('tr').children("td").eq(5).find('span').attr("size_master_id")).trigger('change')
 
       // Opening Slied Panel
       $("#openProductPanelBtn").click()
+
+      $('#productSizes').prop('multiple', false).attr('name', 'sub_type').select2({ allowClear: true, placeholder: 'Select a size' })
+
+      $("#product_category").attr("product_category_master_id", $(e.target).closest('tr').children("td").eq(4).find("span").attr("product_category_master_id"))
 
       // Changing panel heading
       $("#productPanelHeading").text("Edit Product Data")
@@ -2524,8 +2559,12 @@
                 loadProductTableData()
 
                 toastr.success('Product deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Product failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2617,10 +2656,10 @@
 
       let url = "/api/v1/master/product/create"
       let input_params = {
-        product_name: $("#product_name").val(),
-        product_short_code: $("#product_short_code").val(),
+        product_category: $("#product_category").val(),
         species_master_id: $("#productSpecies").val(),
-        size_master_ids: $("#productSizes").val()
+        size_master_ids: $("#productSizes").val(),
+        product_category_id: $("#product_category").attr("product_category_master_id")
       };
 
       if (product_master_id) {
@@ -2710,7 +2749,12 @@
             $("#vendorTable").DataTable().destroy();
             $("#vendorTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -2834,8 +2878,12 @@
                 loadVendorsTableData()
 
                 toastr.success('Vendor deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Vendor failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -2984,7 +3032,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3111,8 +3164,12 @@
                 loadPackagingTableData()
 
                 toastr.success('Packaging detail deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Packaging detail failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3315,7 +3372,12 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3435,8 +3497,12 @@
                 loadInventoryTableData()
 
                 toastr.success('Inventory deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Inventory failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3611,7 +3677,12 @@
             $("#speciesTable").DataTable().destroy();
             $("#speciesTable").DataTable({ scrollX: true, ordering: false })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3733,8 +3804,12 @@
                 loadSpeciesTableData()
 
                 toastr.success('Species deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Species failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -3882,7 +3957,11 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -3991,8 +4070,12 @@
                 loadGradeTableData()
 
                 toastr.success('Grade deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Grade failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4100,7 +4183,11 @@
               ordering: false,
             })
 
-            toastr.error(xhr.responseJSON.message, 'Error')
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
           },
           "dataSrc": function (json) {
             json.iTotalRecords = json.data?.rows?.length
@@ -4209,8 +4296,12 @@
                 loadSizeTableData()
 
                 toastr.success('Size deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Size failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4317,7 +4408,12 @@
             $("#vehicleTable").DataTable().destroy();
             $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
 
-            toastr.error(xhr.responseJSON.message, "Error");
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           dataSrc: function (json) {
             json.iTotalRecords = json.data?.rows?.length;
@@ -4515,8 +4611,12 @@
                 loadVehicleTableData()
 
                 toastr.success('Vehicle deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Vehicle failed to delete!', 'Error')
+              }).fail(function (err) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },
@@ -4626,7 +4726,12 @@
             $("#driverTable").DataTable().destroy();
             $("#driverTable").DataTable({ scrollX: true, ordering: false });
 
-            toastr.error(xhr.responseJSON.message, "Error");
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+
           },
           dataSrc: function (json) {
             json.iTotalRecords = json.data?.rows?.length;
@@ -4770,8 +4875,12 @@
                 loadDriverTableData()
 
                 toastr.success('Driver deleted successfully', 'Deleted')
-              }).fail(function () {
-                toastr.error('Driver failed to delete!', 'Error')
+              }).fail(function (xhr) {
+                if (err["status"] == 420) {
+                  toastr["warning"](err["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](err["responseJSON"]["message"]);
+                }
               });
             }
           },

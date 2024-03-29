@@ -102,7 +102,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ division_name, start, length }) => {
+export const GetAll = ({ division_name, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -110,7 +110,14 @@ export const GetAll = ({ division_name, start, length }) => {
       };
 
       if (division_name) {
-        where.division_name = { [Op.iLike]: division_name };
+        where.division_name = { [Op.iLike]: `%${division_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { division_name: { [Op.iLike]: `%${search}%` } },
+          { description: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const vendors = await models.DivisionMaster.findAndCountAll({

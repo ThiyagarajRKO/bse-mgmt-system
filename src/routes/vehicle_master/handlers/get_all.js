@@ -1,7 +1,14 @@
 import { VehicleMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, vehicle_number, model_number, vehicle_brand },
+  {
+    start,
+    length,
+    vehicle_number,
+    model_number,
+    vehicle_brand,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -13,6 +20,7 @@ export const GetAll = (
         vehicle_number,
         model_number,
         vehicle_brand,
+        search,
       });
 
       if (!vehicle_master) {

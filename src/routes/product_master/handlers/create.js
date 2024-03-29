@@ -1,11 +1,15 @@
-import { ProductMaster, SpeciesMaster } from "../../../controllers";
+import {
+  ProductMaster,
+  SizeMaster,
+  ProductCategoryMaster,
+} from "../../../controllers";
 
 export const Create = (
   {
     profile_id,
     species_master_id,
-    product_name,
-    product_short_code,
+    product_category_master_id,
+    product_category,
     size_master_ids,
   },
   session,
@@ -13,30 +17,40 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const species_count = await SpeciesMaster.Count({
-        id: species_master_id,
-      });
+      let product_category_data = {};
 
-      if (species_count == 0) {
+      if (!product_category_master_id && !product_category) {
         return reject({
           statusCode: 420,
-          message: "Invalid species master id!",
+          message: "Invalid produt category",
         });
       }
 
-      const product_master = await ProductMaster.Insert(profile_id, {
-        species_master_id,
-        product_name,
-        product_short_code,
-        size_master_ids,
-        is_active: true,
+      if (!product_category_master_id) {
+        if (!species_master_id) {
+          return reject({
+            statusCode: 420,
+            message: "Species master id must not be empty",
+          });
+        }
+        product_category_data = await ProductCategoryMaster.Insert(profile_id, {
+          product_category,
+          species_master_id,
+          is_active: true,
+        });
+      }
+
+      size_master_ids.forEach((size_master_id) => {
+        ProductMaster.Insert(profile_id, {
+          product_category_master_id:
+            product_category_master_id || product_category_data?.id,
+          size_master_id: size_master_id,
+          is_active: true,
+        }).catch(console.log);
       });
 
       resolve({
-        message: "Product master has been inserted successfully",
-        data: {
-          product_master_id: product_master?.id,
-        },
+        message: "Products have been inserted successfully",
       });
     } catch (err) {
       fastify.log.error(err);

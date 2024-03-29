@@ -1,7 +1,15 @@
 import { InventoryMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, inventory_name, inventory_uom, inventory_category, vendor_master_name },
+  {
+    start,
+    length,
+    inventory_name,
+    inventory_uom,
+    inventory_category,
+    vendor_master_name,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -14,6 +22,7 @@ export const GetAll = (
         inventory_uom,
         inventory_category,
         vendor_master_name,
+        search,
       });
 
       if (!inventory_master) {

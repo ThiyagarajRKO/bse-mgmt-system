@@ -1,22 +1,27 @@
-import { VendorMaster } from "../../../controllers";
+import { ProductCategoryMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, vendor_name, location_master_name, "search[value]": search },
+  {
+    start,
+    length,
+    product_category,
+    species_master_name,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Creating User
-      let vendor_master = await VendorMaster.GetAll({
+      let product_master = await ProductCategoryMaster.GetAll({
         start,
         length,
-        vendor_name,
-        location_master_name,
+        product_category,
+        species_master_name,
         search,
       });
 
-      if (!vendor_master) {
+      if (!product_master) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -24,7 +29,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: vendor_master,
+        data: product_master,
       });
     } catch (err) {
       fastify.log.error(err);

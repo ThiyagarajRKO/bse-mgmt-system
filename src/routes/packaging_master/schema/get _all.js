@@ -11,6 +11,7 @@ export const getAllSchema = {
         packaging_length: { type: "string" },
         package_material_composition: { type: "string" },
         package_supplier: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },

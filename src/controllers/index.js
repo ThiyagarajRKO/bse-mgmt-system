@@ -12,6 +12,7 @@ export * as InventoryMaster from "./inventory_master";
 export * as SpeciesMaster from "./species_master";
 export * as GradeMaster from "./grade_master";
 export * as SizeMaster from "./size_master";
+export * as ProductCategoryMaster from "./product_category_master";
 export * as ProductMaster from "./product_master";
 export * as VehicleMaster from "./vehicle_master";
 export * as DriverMaster from "./driver_master";

@@ -97,7 +97,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ grade_name, start, length }) => {
+export const GetAll = ({ grade_name, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -106,6 +106,10 @@ export const GetAll = ({ grade_name, start, length }) => {
 
       if (grade_name) {
         where.grade_name = { [Op.iLike]: grade_name };
+      }
+
+      if (search) {
+        where[Op.or] = [{ grade_name: { [Op.iLike]: `%${search}%` } }];
       }
 
       const units = await models.GradeMaster.findAndCountAll({

@@ -115,6 +115,7 @@ export const GetAll = ({
   location_master_name,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -123,15 +124,15 @@ export const GetAll = ({
       };
 
       if (unit_code) {
-        where.unit_code = { [Op.iLike]: unit_code };
+        where.unit_code = { [Op.iLike]: `%${unit_code}%` };
       }
 
       if (unit_name) {
-        where.unit_name = { [Op.iLike]: unit_name };
+        where.unit_name = { [Op.iLike]: `%${unit_name}%` };
       }
 
       if (unit_type) {
-        where.unit_type = { [Op.iLike]: unit_type };
+        where.unit_type = { [Op.iLike]: `%${unit_type}%` };
       }
 
       let locationWhere = {
@@ -139,7 +140,17 @@ export const GetAll = ({
       };
 
       if (location_master_name) {
-        locationWhere.location_name = { [Op.iLike]: location_master_name };
+        locationWhere.location_name = {
+          [Op.iLike]: `%${location_master_name}%`,
+        };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { unit_code: { [Op.iLike]: `%${search}%` } },
+          { unit_name: { [Op.iLike]: `%${search}%` } },
+          { "$LocationMaster.location_name$": { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const units = await models.UnitMaster.findAndCountAll({
