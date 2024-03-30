@@ -269,3 +269,28 @@ export const Delete = ({ profile_id, id }) => {
     }
   });
 };
+
+export const Count = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Location ID field must not be empty!",
+        });
+      }
+
+      const product = await models.ProductMaster.count({
+        where: {
+          id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

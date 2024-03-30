@@ -31,7 +31,6 @@ export const Insert = async (profile_id, procurement_data) => {
           message: "Product master id must not be empty!",
         });
       }
-
       if (!procurement_data?.procurement_product_type) {
         return reject({
           statusCode: 420,
@@ -151,6 +150,7 @@ export const GetAll = ({
   procurement_product_type,
   procurement_quantity,
   procurement_price,
+  procurement_totalamount,
   vendor_master_name,
   procurement_purchaser,
   start,
@@ -180,6 +180,10 @@ export const GetAll = ({
 
       if (procurement_price) {
         where.procurement_price = { [Op.iLike]: procurement_price };
+      }
+
+      if (procurement_totalamount) {
+        where.procurement_totalamount = { [Op.iLike]: procurement_totalamount };
       }
 
       if (procurement_purchaser) {
@@ -215,11 +219,14 @@ export const GetAll = ({
           {
             model: models.LocationMaster,
             where: locationWhere,
+          },
+          {
             model: models.ProductMaster,
             where: productWhere,
+          },
+          {
             model: models.VendorMaster,
             where: vendorWhere,
-
           },
         ],
         where,

@@ -1,69 +1,43 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("procurement", {
+    await queryInterface.createTable("adjustment", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      procurement_date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      procurement_lot: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        unique: true,
-      },
-      procurement_product_name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      procurement_quantity: {
+      adjustment_adjusted_quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      procurement_price: {
+      adjustment_adjusted_price: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      procurement_purchaser: {
+      adjustment_price_difference: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      adjustment_quantity_difference: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      adjustment_reason: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      procurement_product_type: {
-        type: Sequelize.ENUM("CLEANED", "PEELED", "SOAKED", "RE - GLAZED", "GRADED", "COOKED", "SORTED", "VALUE ADDED", "UNPROCESSED"),
+      adjustment_surveyor: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      vendor_master_id: {
+      procurement_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "vendor_master" },
-          key: "id",
-        },
-      },
-      location_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "location_master" },
-          key: "id",
-        },
-      },
-      product_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "product_master" },
+          model: { tableName: "procurement" },
           key: "id",
         },
       },
@@ -113,6 +87,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("procurement");
+    await queryInterface.dropTable("adjustment");
   },
 };

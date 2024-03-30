@@ -11,18 +11,29 @@ export const Insert = async (profile_id, adjustment_data) => {
         });
       }
 
-
+      if (!adjustment_data?.adjustment_id) {
+        return reject({
+          statusCode: 420,
+          message: "Adjustment id must not be empty!",
+        });
+      }
       if (!adjustment_data?.procurement_id) {
         return reject({
           statusCode: 420,
-          message: "Purchase id must not be empty!",
+          message: "Adjustment id must not be empty!",
         });
       }
 
-      if (!adjustment_data?.adjusted_quantity) {
+      if (!adjustment_data?.adjustment_adjusted_quantity) {
         return reject({
           statusCode: 420,
           message: "Adjusted quantity must not be empty!",
+        });
+      }
+      if (!adjustment_data?.adjustment_adjusted_price) {
+        return reject({
+          statusCode: 420,
+          message: "Adjusted Price must not be empty!",
         });
       }
 
@@ -37,13 +48,6 @@ export const Insert = async (profile_id, adjustment_data) => {
         return reject({
           statusCode: 420,
           message: "Quality Surveyor must not be empty!",
-        });
-      }
-
-      if (!adjustment_data?.adjusted_price) {
-        return reject({
-          statusCode: 420,
-          message: "Purchase Price must not be empty!",
         });
       }
 
@@ -124,12 +128,12 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
-  purchase_lot,
-  purchase_product,
-  purchase_quantity,
-  purchase_price,
-  adjusted_quantity,
-  adjusted_price,
+  procurement_lot,
+  procurement_product,
+  procurement_quantity,
+  procurement_price,
+  adjustment_adjusted_quantity,
+  adjustment_adjusted_price,
   adjustment_reason,
   adjustment_surveyor,
   start,
@@ -141,31 +145,23 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (purchase_lot) {
-        where.purchase_lot = { [Op.iLike]: purchase_lot };
+      if (procurement_product) {
+        where.procurement_product = { [Op.iLike]: procurement_product };
       }
 
-      if (purchase_product) {
-        where.purchase_product = { [Op.iLike]: purchase_product };
+      if (procurement_quantity) {
+        where.procurement_quantity = { [Op.iLike]: procurement_quantity };
       }
 
-      if (purchase_quantity) {
-        where.purchase_quantity = { [Op.iLike]: purchase_quantity };
+      if (adjustment_adjusted_quantity) {
+        where.adjustment_adjusted_quantity = { [Op.iLike]: adjustment_adjusted_quantity };
       }
 
-      if (purchase_quantity) {
-        where.purchase_quantity = { [Op.iLike]: purchase_quantity };
+      if (procurement_price) {
+        where.procurement_price = { [Op.iLike]: procurement_price };
       }
-
-      if (purchase_price) {
-        where.purchase_price = { [Op.iLike]: purchase_price };
-      }
-
-      if (adjusted_quantity) {
-        where.adjusted_quantity = { [Op.iLike]: adjusted_quantity };
-      }
-      if (adjusted_price) {
-        where.adjusted_price = { [Op.iLike]: adjusted_price };
+      if (adjustment_adjusted_price) {
+        where.adjustment_adjusted_price = { [Op.iLike]: adjustment_adjusted_price };
       }
       if (adjustment_reason) {
         where.adjustment_reason = { [Op.iLike]: adjustment_reason };
@@ -174,31 +170,31 @@ export const GetAll = ({
         where.adjustment_surveyor = { [Op.iLike]: adjustment_surveyor };
       }
 
-      let purchaseWhere = {
+      let procurementWhere = {
         is_active: true,
       };
 
-      if (purchase_lot) {
-        purchaseWhere.purchase_lot = { [Op.iLike]: purchase_lot };
+      if (procurement_lot) {
+        procurementWhere.procurement_lot = { [Op.iLike]: procurement_lot };
       }
 
-      if (purchase_product) {
-        purchaseWhere.purchase_product = { [Op.iLike]: purchase_product };
+      if (procurement_product) {
+        procurementWhere.procurement_product = { [Op.iLike]: procurement_quantity };
       }
 
-      if (purchase_quantity) {
-        purchaseWhere.purchase_quantity = { [Op.iLike]: purchase_quantity };
+      if (procurement_quantity) {
+        procurementWhere.procurement_quantity = { [Op.iLike]: procurement_quantity };
       }
 
-      if (purchase_price) {
-        purchaseWhere.purchase_price = { [Op.iLike]: purchase_price };
+      if (procurement_price) {
+        procurementWhere.procurement_price = { [Op.iLike]: procurement_price };
       }
 
       const adjustments = await models.Adjustment.findAndCountAll({
         include: [
           {
             model: models.Procurement,
-            where: purchaseWhere,
+            where: procurementWhere,
           },
         ],
         where,
@@ -208,6 +204,30 @@ export const GetAll = ({
       });
 
       resolve(adjustments);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const Count = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Adjustment ID field must not be empty!",
+        });
+      }
+
+      const adjustment = await models.Adjustment.count({
+        where: {
+          is_active: true,
+          id,
+        },
+      });
+
+      resolve(adjustment);
     } catch (err) {
       reject(err);
     }

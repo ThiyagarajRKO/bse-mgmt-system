@@ -1,13 +1,13 @@
-import { PackagingMaster } from "../../../controllers";
+import { Adjustment } from "../../../controllers";
 
-export const Get = ({ procurement_id }, session, fastify) => {
+export const Get = ({ adjustment_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await Procurement.Get({
-        id: procurement_id,
+      let adjustment = await Adjustment.Get({
+        id: adjustment_id,
       });
 
-      if (!procurement) {
+      if (!adjustment) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -15,7 +15,7 @@ export const Get = ({ procurement_id }, session, fastify) => {
       }
 
       resolve({
-        data: procurement,
+        data: adjustment,
       });
     } catch (err) {
       fastify.log.error(err);

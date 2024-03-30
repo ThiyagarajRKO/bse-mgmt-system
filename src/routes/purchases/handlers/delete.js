@@ -9,7 +9,7 @@ export const Delete = (
     try {
       const procurement = await Procurement.Delete({
         profile_id,
-        id: packaging_master_id,
+        id: procurement_id,
       });
 
       if (procurement > 0) {
@@ -20,7 +20,7 @@ export const Delete = (
 
       resolve({
         statusCode: 420,
-        message: "Procurement was not delete",
+        message: "Procurement was not deleted",
       });
     } catch (err) {
       fastify.log.error(err);

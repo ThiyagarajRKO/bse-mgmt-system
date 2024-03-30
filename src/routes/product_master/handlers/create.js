@@ -22,7 +22,7 @@ export const Create = (
       if (!product_category_master_id && !product_category) {
         return reject({
           statusCode: 420,
-          message: "Invalid produt category",
+          message: "Invalid product category",
         });
       }
 

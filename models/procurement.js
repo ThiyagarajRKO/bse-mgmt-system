@@ -64,6 +64,9 @@ module.exports = (sequelize, DataTypes) => {
       procurement_lot: {
         type: DataTypes.STRING,
       },
+      procurement_product_name: {
+        type: DataTypes.STRING
+      },
       procurement_product_type: {
         type: DataTypes.STRING,
       },
@@ -71,6 +74,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       procurement_price: {
+        type: DataTypes.INTEGER,
+      },
+      procurement_totalamount: {
         type: DataTypes.INTEGER,
       },
       procurement_purchaser: {
@@ -105,25 +111,34 @@ module.exports = (sequelize, DataTypes) => {
     try {
       if (data?.vendor_master_id) {
         const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attribute: "vendor_name",
+          attributes: ["vendor_name"],
           where: { id: data?.vendor_master_id, is_active: true },
         });
         if (data?.location_master_id) {
           const { location_name } = await sequelize.models.LocationMaster.findOne({
-            attribute: "location_name",
+            attributes: ["location_name"],
             where: { id: data?.location_master_id, is_active: true },
           });
           if (data?.product_master_id) {
             const { product_name } = await sequelize.models.ProductMaster.findOne({
-              attribute: "product_name",
-              where: { id: data?.product_master_id_master_id, is_active: true },
+              attributes: ["product_name"],
+              where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
             });
+            // Get year, month, and day from the procurement_date
+            const year = data?.procurement_date.getFullYear();
+            const month = (data?.procurement_date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns zero-based month
+            const day = data?.procurement_date.getDate().toString().padStart(2, '0');
 
-            data.procurement_lot = `${location_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}-${data?.procurement_date}`
+            // Trim the first three letters of location_name and convert to upper case
+            const trimmedLocationName = location_name?.trim()?.substring(3)?.toUpperCase();
+
+            // Construct the procurement_lot in YYYYMMDD format
+            data.procurement_lot = `${location_name?.trim()?.substring(0, 3)?.replace(/\s/g, "")?.toUpperCase()}-${year}${month}${day}`;
+            data.procurement_totalamount = data.procurement_quantity * data.procurement_price;
+            data.procurement_product_name = `${product_name}`
           }
         }
       }
-
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
@@ -138,24 +153,32 @@ module.exports = (sequelize, DataTypes) => {
     try {
       if (data?.vendor_master_id) {
         const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attribute: "vendor_name",
+          attributes: ["vendor_name"],
           where: { id: data?.vendor_master_id, is_active: true },
         });
-
         if (data?.location_master_id) {
           const { location_name } = await sequelize.models.LocationMaster.findOne({
-            attribute: "location_name",
+            attributes: ["location_name"],
             where: { id: data?.location_master_id, is_active: true },
           });
-
           if (data?.product_master_id) {
             const { product_name } = await sequelize.models.ProductMaster.findOne({
-              attribute: "product_name",
-              where: { id: data?.product_master_id_master_id, is_active: true },
+              attributes: ["product_name"],
+              where: { id: data?.product_master_id, is_active: true },
             });
 
+            // Get year, month, and day from the procurement_date
+            const year = data?.procurement_date.getFullYear();
+            const month = (data?.procurement_date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns zero-based month
+            const day = data?.procurement_date.getDate().toString().padStart(2, '0');
 
-            data.procurement_lot = `${location_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}-${data?.procurement_date}`
+            // Trim the first three letters of location_name and convert to upper case
+            const trimmedLocationName = location_name?.trim()?.substring(3)?.toUpperCase();
+
+            // Construct the procurement_lot in YYYYMMDD format
+            data.procurement_lot = `${location_name?.trim()?.substring(0, 3)?.replace(/\s/g, "")?.toUpperCase()}-${year}${month}${day}`;
+            data.procurement_totalamount = data.procurement_quantity * data.procurement_price;
+            data.procurement_product_name = `${product_name}`
           }
         }
       }
