@@ -1319,6 +1319,15 @@
           .closest("tr")
           .find(".adjusted_surveyor")
           .val();
+
+        // $(document).on("keyup", ".adjusted_quantity", function (e) {
+        //   const adj_qty = parseFloat($(e.target).val());
+        //   const adj_price =
+        //     adj_qty *
+        //     parseFloat($(e.target).closest("tr").find("td").eq(4).text());
+
+        //   $(e.target).closest("tr").find(".adjusted_price").val(adj_price);
+        // });
       });
 
       $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
