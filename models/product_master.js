@@ -93,18 +93,24 @@ module.exports = (sequelize, DataTypes) => {
           where: { id: data?.product_category_master_id, is_active: true },
         });
 
-      const { size } = await sequelize.models.SizeMaster.findOne({
-        attribute: "size",
-        where: { id: data?.size_master_id, is_active: true },
-      });
-
       data.product_name = `${product_category?.SpeciesMaster?.species_name
         ?.trim()
         ?.replaceAll(" ", "")
         ?.toUpperCase()}-${product_category.product_category
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${size?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        ?.toUpperCase()}`;
+
+      if (data?.size_master_id) {
+        const { size } = await sequelize.models.SizeMaster.findOne({
+          attribute: "size",
+          where: { id: data?.size_master_id, is_active: true },
+        });
+        data.product_name += `-${size
+          ?.trim()
+          ?.replaceAll(" ", "")
+          ?.toUpperCase()}`;
+      }
 
       data.created_by = options.profile_id;
     } catch (err) {
@@ -135,18 +141,24 @@ module.exports = (sequelize, DataTypes) => {
           where: { id: data?.product_category_master_id, is_active: true },
         });
 
-      const { size } = await sequelize.models.SizeMaster.findOne({
-        attribute: "size",
-        where: { id: data?.size_master_id, is_active: true },
-      });
-
       data.product_name = `${product_category?.SpeciesMaster?.species_name
         ?.trim()
         ?.replaceAll(" ", "")
         ?.toUpperCase()}-${product_category.product_category
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${size?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+        ?.toUpperCase()}`;
+
+      if (data?.size_master_id) {
+        const { size } = await sequelize.models.SizeMaster.findOne({
+          attribute: "size",
+          where: { id: data?.size_master_id, is_active: true },
+        });
+        data.product_name += `-${size
+          ?.trim()
+          ?.replaceAll(" ", "")
+          ?.toUpperCase()}`;
+      }
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

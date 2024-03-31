@@ -2475,7 +2475,7 @@
             targets: [5],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span size_master_id='${row['SizeMaster'].id}'>${data}</span>`
+              return row['SizeMaster']?.id ? `<span size_master_id='${row['SizeMaster']?.id}'>${data}</span>` : null
             },
           },
           {

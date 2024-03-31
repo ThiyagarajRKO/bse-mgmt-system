@@ -1,4 +1,8 @@
-import { SpeciesMaster } from "../../../controllers";
+import {
+  ProductCategoryMaster,
+  ProductMaster,
+  SpeciesMaster,
+} from "../../../controllers";
 
 export const Create = (
   {
@@ -22,6 +26,27 @@ export const Create = (
         description,
         is_active: true,
       });
+
+      if (!species_master?.id) {
+        return reject({
+          message:
+            "Species master data hasn't been inserted. Please try after sometime.",
+        });
+      }
+
+      const product_category_data = await ProductCategoryMaster.Insert(
+        profile_id,
+        {
+          product_category: "Whole",
+          species_master_id: species_master?.id,
+          is_active: true,
+        }
+      );
+
+      await ProductMaster.Insert(profile_id, {
+        product_category_master_id: product_category_data?.id,
+        is_active: true,
+      }).catch(console.log);
 
       resolve({
         message: "Species master has been inserted successfully",

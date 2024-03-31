@@ -14,14 +14,7 @@ export const Insert = async (profile_id, product_master_data) => {
       if (!product_master_data?.product_category_master_id) {
         return reject({
           statusCode: 420,
-          message: "Product master id must not be empty!",
-        });
-      }
-
-      if (!product_master_data?.size_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Size master id must not be empty!",
+          message: "Product category master id must not be empty!",
         });
       }
 
@@ -204,10 +197,8 @@ export const GetAll = ({
       }
 
       const products = await models.ProductMaster.findAndCountAll({
-        required: true,
         include: [
           {
-            required: true,
             model: models.ProductCategoryMaster,
             include: [
               {
@@ -218,7 +209,7 @@ export const GetAll = ({
             where: productCategoryWhere,
           },
           {
-            required: true,
+            required: false,
             model: models.SizeMaster,
             where: sizeWhere,
           },

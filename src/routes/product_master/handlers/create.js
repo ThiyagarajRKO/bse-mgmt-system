@@ -1,8 +1,4 @@
-import {
-  ProductMaster,
-  SizeMaster,
-  ProductCategoryMaster,
-} from "../../../controllers";
+import { ProductMaster, ProductCategoryMaster } from "../../../controllers";
 
 export const Create = (
   {
@@ -40,14 +36,28 @@ export const Create = (
         });
       }
 
-      size_master_ids.forEach((size_master_id) => {
-        ProductMaster.Insert(profile_id, {
+      if (Array.isArray(size_master_ids) && size_master_ids.length > 0) {
+        Promise.all(
+          size_master_ids.forEach((size_master_id) => {
+            ProductMaster.Insert(profile_id, {
+              product_category_master_id:
+                product_category_master_id || product_category_data?.id,
+              size_master_id: size_master_id,
+              is_active: true,
+            }).catch(console.log);
+          })
+        );
+      } else {
+        await ProductMaster.Insert(profile_id, {
           product_category_master_id:
             product_category_master_id || product_category_data?.id,
-          size_master_id: size_master_id,
           is_active: true,
-        }).catch(console.log);
-      });
+        }).catch((err) => {
+          resolve({
+            message: err?.message,
+          });
+        });
+      }
 
       resolve({
         message: "Products have been inserted successfully",
