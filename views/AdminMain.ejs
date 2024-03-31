@@ -132,24 +132,9 @@
               >
             </li>
             <li class="nav-item">
-              <a href="" class="nav-link with-sub"
+              <a id="production" href="" class="nav-link"
                 ><i data-feather="package"></i><span>Production</span></a
               >
-
-              <nav class="nav-sub">
-                <a href="" id="dispatch" class="sub-link"
-                  ><span>Dispatch</span></a
-                >
-                <a href="" id="preprocessing" class="sub-link"
-                  ><span>Preprocessing</span></a
-                >
-                <a href="" id="preprocessingDispatch" class="sub-link"
-                  ><span>Dispatch</span></a
-                >
-                <a href="" id="packing" class="sub-link"
-                  ><span>Packing</span></a
-                >
-              </nav>
             </li>
 
             <li class="nav-item">
@@ -280,9 +265,9 @@
         loadIframe("/MasterData");
       });
 
-      // Dispatch navigation
-      $("#dispatch").on("click", function () {
-        loadIframe("/Dispatch");
+      // Production navigation
+      $("#production").on("click", function () {
+        loadIframe("/Production");
       });
 
       // Audit Logs navigation

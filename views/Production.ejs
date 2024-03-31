@@ -1,0 +1,244 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <!-- Bootstrap 
+<link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+
+  <!-- MDB5  -->
+  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js"></script>
+
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+  <script src="/public/plugins/select2/js/select2.min.js"></script>
+
+  <!-- DataTable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
+  <script src="/public/plugins/dataTables/datatables.min.js"></script>
+  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
+  <!-- Responsive Datatable -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/dataTables/datatables.responsive.min.css"
+  />
+  <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
+
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+  <script src="/public/plugins/Toastr/toastr.min.js"></script>
+
+  <!-- perfect-scrollbar plugin -->
+  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+
+  <!-- jQuery Confirm -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
+  />
+  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
+
+  <!-- Slide-in Panel -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
+  />
+  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
+
+  <!-- Tippy -->
+  <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
+  <script src="/public/plugins/tippy/popper.min.js"></script>
+  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js"></script>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE</title>
+
+    <style type="text/css">
+      @font-face {
+        font-family: "CassandraPersonalUse";
+        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
+          format("truetype");
+      }
+
+      @font-face {
+        font-family: "CerebriSansPro-Regular";
+        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
+          format("truetype");
+      }
+
+      body {
+        font-family: "CerebriSansPro-Regular";
+        background-color: #f7f9fd;
+      }
+
+      .toast {
+        opacity: 1 !important;
+      }
+
+      /* Table Pagination */
+      .page-item.active .page-link {
+        color: #fff !important;
+        background-color: #ea5455 !important;
+        border-color: #ea5455 !important;
+      }
+
+      .page-link {
+        color: #000 !important;
+        background-color: #fff !important;
+        border: 1px solid #dee2e6 !important;
+      }
+
+      .page-link:hover {
+        color: #fff !important;
+        background-color: #f17979 !important;
+        border-color: #ea5455 !important;
+      }
+
+      .active-button {
+        box-shadow: 0 5px 0 0 #ea5455;
+      }
+
+      .status-button {
+        width: 300px;
+        border-radius: 6px !important;
+      }
+
+      .status-button:hover:not(.active-button) {
+        cursor: pointer;
+        box-shadow: 0 5px 0 0 yellow;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row d-flex justify-content-around">
+        <!-- Dispatch Button -->
+        <div
+          class="status-button active-button rounded-2 col-lg-2 bg-dark d-flex jusfity-content-center px-4"
+          style="height: 100px"
+        >
+          <div class="col-lg-3 my-auto">
+            <div
+              class="rounded-2 p-2 text-center"
+              style="background-color: #e0e0e0"
+            >
+              <i class="fa-solid fa-truck" style="color: #ea5455"></i>
+            </div>
+          </div>
+          <div class="col-lg-9 d-flex flex-column justify-content-start ps-4">
+            <div class="mt-3" style="color: #d2d2d2">Dispatch</div>
+            <div id="dispatchCount" class="text-white mt-1 fs-3">8,860</div>
+          </div>
+        </div>
+
+        <!-- Preprocessing Button -->
+        <div
+          class="status-button rounded-2 col-lg-2 bg-dark d-flex jusfity-content-center px-4"
+          style="height: 100px"
+        >
+          <div class="col-lg-3 my-auto">
+            <div
+              class="rounded-2 p-2 text-center"
+              style="background-color: #e0e0e0"
+            >
+              <i class="fa-solid fa-list-check" style="color: #ea5455"></i>
+            </div>
+          </div>
+          <div class="col-lg-9 d-flex flex-column justify-content-start ps-4">
+            <div class="mt-3" style="color: #d2d2d2">Preprocessing</div>
+            <div id="preprocessingCount" class="text-white mt-1 fs-3">
+              4,540
+            </div>
+          </div>
+        </div>
+
+        <!-- Preprocessing Dispatch -->
+        <div
+          class="status-button rounded-2 col-lg-2 bg-dark d-flex jusfity-content-center px-4"
+          style="height: 100px"
+        >
+          <div class="col-lg-3 my-auto">
+            <div
+              class="rounded-2 p-2 text-center"
+              style="background-color: #e0e0e0"
+            >
+              <i class="fa-solid fa-truck-ramp-box" style="color: #ea5455"></i>
+            </div>
+          </div>
+          <div class="col-lg-9 d-flex flex-column justify-content-start ps-4">
+            <div class="mt-3" style="color: #d2d2d2">Dispatch</div>
+            <div id="preprocessingDispatchCount" class="text-white mt-1 fs-3">
+              2,940
+            </div>
+          </div>
+        </div>
+
+        <!-- Packing -->
+        <div
+          class="status-button rounded-2 col-lg-2 bg-dark d-flex jusfity-content-center px-4"
+          style="height: 100px"
+        >
+          <div class="col-lg-3 my-auto">
+            <div
+              class="rounded-2 p-2 text-center"
+              style="background-color: #e0e0e0"
+            >
+              <i class="fa-solid fa-boxes-packing" style="color: #ea5455"></i>
+            </div>
+          </div>
+          <div class="col-lg-9 d-flex flex-column justify-content-start ps-4">
+            <div class="mt-3" style="color: #d2d2d2">Packing</div>
+            <div id="packingCount" class="text-white mt-1 fs-3">1,878</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      // Declarations
+      toastr.options = {
+        closeButton: false,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "5000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      };
+    });
+  </script>
+</html>

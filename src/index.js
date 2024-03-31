@@ -74,8 +74,8 @@ fastify.get("/MasterData", function (req, res) {
   res.view("MasterData.ejs");
 });
 
-fastify.get("/Dispatch", function (req, res) {
-  res.view("Dispatch.ejs");
+fastify.get("/Production", function (req, res) {
+  res.view("Production.ejs");
 });
 
 fastify.get("/AuditLogs", function (req, res) {
