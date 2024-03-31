@@ -147,28 +147,6 @@
         /* font-weight: bold; */
       }
 
-      .topSubMenu-item {
-        /* color: #14274e !important; */
-        width: 100px;
-      }
-
-      .topSubMenu-item:hover:not(.topSubMenu-item-active) {
-        border-bottom: 1px solid #ea5455;
-        color: #ea5455 !important;
-        /* font-weight: bold; */
-        transition: right 0.3s ease;
-        cursor: pointer;
-      }
-
-      .topSubMenu-item-active {
-        border-bottom: 1px solid #ea5455;
-        color: #ea5455 !important;
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
-
       .tippy-box[data-theme~="tomato"] {
         background-color: #4f4f4f;
         color: white;
@@ -196,16 +174,20 @@
 
       /* Input */
       .slideInPanel input {
-        background-color: transparent;
+        background-color: transparent !important;
         border-color: rgba(98, 114, 147, 0.6);
+        color: white;
       }
 
       .slideInPanel input::webkit-calen .slideInPanel input:focus {
-        background-color: transparent;
+        background-color: transparent !important;
+        color: white;
       }
 
       .slideInPanel input:hover {
+        background-color: transparent !important;
         border-color: #627293;
+        color: white;
       }
 
       /* Select */
@@ -227,7 +209,7 @@
       }
 
       .slideInPanel .select:focus {
-        background-color: transparent;
+        background-color: transparent !important;
         border-color: #627293;
       }
 
@@ -237,12 +219,12 @@
 
       /* TextArea */
       .slideInPanel textarea {
-        background-color: transparent;
+        background-color: transparent !important;
         border-color: rgba(98, 114, 147, 0.6);
       }
 
       .slideInPanel textarea:focus {
-        background-color: transparent;
+        background-color: transparent !important;
       }
 
       .slideInPanel textarea:hover {
@@ -312,7 +294,7 @@
           class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
         >
           <div class="fs-6">
-            <i class="fa-solid fa-location-dot"></i>
+            <i class="fa-solid fa-circle-half-stroke"></i>
           </div>
           <div class="pt-2">
             <span>Adjustment</span>
@@ -323,7 +305,7 @@
           class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
         >
           <div class="fs-6">
-            <i class="fa-solid fa-warehouse"></i>
+            <i class="fa-solid fa-hand-holding-dollar"></i>
           </div>
           <div class="pt-2">
             <span>Payments</span>
@@ -360,7 +342,7 @@
                   <label for="procurement_date">Date of Purchase</label>
                   <input
                     type="date"
-                    style="max-width: fit-content"
+                    class="form-control"
                     id="procurement_date"
                     name="procurementDate"
                     required
@@ -376,7 +358,7 @@
                   ></select>
                 </div>
                 <div class="form-group my-2">
-                  <label for="procurement_product"> Product</label>
+                  <label for="procurement_product">Product</label>
                   <select
                     id="procurement_product"
                     class="form-control input-dropdown w-100"
@@ -428,7 +410,6 @@
                   <label for="procurement_purchaser"> Purchaser</label>
                   <input
                     id="procurement_purchaser"
-                    maxlength="10"
                     class="form-control"
                     placeholder="eg. 24"
                     type="text"
@@ -630,8 +611,6 @@
             <table id="adjustmentTable" class="table table-hover nowrap w-100">
               <thead>
                 <tr>
-                  <th></th>
-                  <th></th>
                   <th class="fw-bold"><span>Lot No</span></th>
                   <th class="fw-bold"><span>Product</span></th>
                   <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
@@ -687,26 +666,11 @@
       // Menu navigation
       $(".topMenu-item").click(function () {
         $(".topMenu-item").removeClass("topMenu-item-active");
-        $(".topSubMenu-item").removeClass("topSubMenu-item-active");
 
         $(this).addClass("topMenu-item-active");
         $(".productTopMenu").removeClass("topMenu-item-active");
         $(".panelClose").click();
-        loadDropdowns();
-        resetAllInputs();
-      });
 
-      // Sub Menu navigation
-      $(document).on("click", ".topSubMenu-item", function () {
-        $(".topSubMenu-item").removeClass("topSubMenu-item-active");
-        $(".topMenu-item").removeClass("topMenu-item-active");
-
-        $(".productTopMenu").addClass("topMenu-item-active");
-        $(this).addClass("topSubMenu-item-active");
-
-        $(".panelClose").click();
-
-        loadDropdowns();
         resetAllInputs();
       });
 
@@ -743,10 +707,10 @@
         $("textarea").val("");
 
         // Resetting select field selected option
-        $("#procurementLocation").val(null).trigger("change");
-        $("#procurementProduct").val(null).trigger("change");
-        $("#procurementProductType").val(null).trigger("change");
-        $("#procurementProductSupplier").val(null).trigger("change");
+        $("#procurement_location").val(null).trigger("change");
+        $("#procurement_product").val(null).trigger("change");
+        $("#procurement_product_type").val(null).trigger("change");
+        $("#procurement_product_supplier").val(null).trigger("change");
       }
 
       function openSlidePanel(
@@ -780,13 +744,13 @@
         // $('select.select2-hidden-accessible').select2('destroy');
       }
 
+      loadDropdowns();
+
       function loadDropdowns() {
-        loadProcurementTableData();
         loadProcurementLocations();
         loadProcurementProductType();
         loadProcurementProducts();
         loadProcurementSuppliers();
-        loadAdjustmentTableData();
       }
 
       // ---------------------------------------------------------
@@ -802,8 +766,6 @@
           "submitPurchases",
           "procurement_id"
         );
-        $("#procurementSlideInPanel").css("right", "0");
-        loadDropdowns();
       });
 
       // Close panel
@@ -816,73 +778,12 @@
 
         $(".procurementContainer").removeClass("d-none");
         $(".procurementContainer").addClass("d-block");
+
+        loadProcurementTableData();
       });
 
       $("#submitPurchases").click(function () {
         savePurchases();
-      });
-      $(document).on("click", ".editProcurement", (e) => {
-        // Changing panel input fields data
-        $("#procurementDate")
-          .val($(e.target).closest("tr").children("td").eq(3).text())
-          .trigger("change");
-        $("#procurementLocation")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(4)
-              .find("span")
-              .attr("procurement_id")
-          )
-          .trigger("change");
-        $("#procurementProduct")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("procurement_id")
-          )
-          .trigger("change");
-        $("#procurementProductType")
-          .val($(e.target).closest("tr").children("td").eq(6).text())
-          .trigger("change");
-        $("#procurementQuantity").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
-        $("#procurementPrice").val(
-          $(e.target).closest("tr").children("td").eq(8).text()
-        );
-        $("#procurementSupplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(9)
-              .find("span")
-              .attr("packaging_master_id")
-          )
-          .trigger("change");
-        $("#procurementPurchaser").val(
-          $(e.target).closest("tr").children("td").eq(10).text()
-        );
-
-        // Opening slide panel
-        $("#openProcurementPanelBtn").click();
-
-        // Changing panel heading
-        $("#procurementPanelHeading").text("Edit Procurement Data");
-
-        // Changing panel button label
-        $("#submitPurchases").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPurchases").attr(
-          "procurement_id",
-          $(e.target).attr("procurement_id")
-        );
       });
 
       function loadProcurementTableData() {
@@ -897,7 +798,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/purchases/get/all",
+            url: "/api/v1/procurement/get/all",
             error: function (xhr, error, code) {
               $("#procurementTable").DataTable().destroy();
               $("#procurementTable").DataTable({
@@ -954,37 +855,54 @@
               },
             },
             {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row["procurement_date"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                const locationId = row["LocationMaster"]
-                  ? row["LocationMaster"].id
-                  : "";
-                return `<span procurement_id='${locationId}'>${data}</span>`;
+                return `<span location_master_id='${row["LocationMaster"]?.id}'>${data}</span>`;
               },
             },
             {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                const productId = row["ProductMaster"]
-                  ? row["ProductMaster"].id
-                  : "";
-                return `<span procurement_id='${productId}'>${data}</span>`;
-              },
-            },
-            {
-              targets: [9],
-              className: "text-left",
-              render: function (data, type, row) {
-                const vendorId = row["VendorMaster"]
-                  ? row["VendorMaster"].id
-                  : "";
-                return `<span procurement_id='${vendorId}'>${data}</span>`;
+                return `<span product_master_id='${row["ProductMaster"]?.id}'>${data}</span>`;
               },
             },
             {
               targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span vendor_master_id='${row["VendorMaster"]?.id}'>${data}</span>`;
+              },
+            },
+            {
+              targets: [12],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -1023,6 +941,79 @@
           // }
         });
 
+        $(document).on("click", ".editProcurement", (e) => {
+          // Opening slide panel
+          $("#openProcurementPanelBtn").click();
+
+          // Changing panel input fields data
+          $("#procurement_date")
+            .val(
+              formatDate(
+                new Date($(e.target).closest("tr").children("td").eq(2).text())
+              )
+            )
+            .trigger("change");
+          $("#procurement_location")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(4)
+                .find("span")
+                .attr("location_master_id")
+            )
+            .trigger("change");
+
+          $("#procurement_product")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(5)
+                .find("span")
+                .attr("product_master_id")
+            )
+            .trigger("change");
+
+          $("#procurement_product_type")
+            .val($(e.target).closest("tr").children("td").eq(6).text())
+            .trigger("change");
+
+          $("#procurement_quantity").val(
+            $(e.target).closest("tr").children("td").eq(7).text()
+          );
+          $("#procurement_price").val(
+            $(e.target).closest("tr").children("td").eq(8).text()
+          );
+
+          $("#procurement_product_supplier")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(10)
+                .find("span")
+                .attr("vendor_master_id")
+            )
+            .trigger("change");
+
+          $("#procurement_purchaser").val(
+            $(e.target).closest("tr").children("td").eq(11).text()
+          );
+
+          // Changing panel heading
+          $("#procurementPanelHeading").text("Edit Procurement Data");
+
+          // Changing panel button label
+          $("#submitPurchases").text("Update");
+
+          // Changing panel button attribute
+          $("#submitPurchases").attr(
+            "procurement_id",
+            $(e.target).attr("procurement_id")
+          );
+        });
+
         $(document).on("click", ".delProcurement", (e) => {
           let procurement_id = $(e.target).attr("procurement_id");
           let currentRow = $(e.target).closest("tr");
@@ -1044,7 +1035,7 @@
                 btnClass: "btn-red",
                 action: function () {
                   $.ajax({
-                    url: "/api/v1/procurement/purchases/delete",
+                    url: "/api/v1/procurement/delete",
                     method: "post",
                     dataType: "json",
                     contentType: "application/json",
@@ -1232,7 +1223,7 @@
       function savePurchases() {
         const procurement_id = $("#submitPurchases").attr("procurement_id");
 
-        let url = "/api/v1/procurement/purchases/create";
+        let url = "/api/v1/procurement/create";
         let input_params = {
           procurement_date: $("#procurement_date").val(),
           location_master_id: $("#procurement_location").val(),
@@ -1246,7 +1237,7 @@
         };
 
         if (procurement_id) {
-          url = "/api/v1/procurement/purchases/update";
+          url = "/api/v1/procurement/update";
 
           input_params = {
             procurement_id,
@@ -1298,7 +1289,6 @@
           "adjustmentid"
         );
         $("#adjustmentSlideInPanel").css("right", "0");
-        loadDropdowns();
       });
 
       // Close panel
@@ -1311,75 +1301,12 @@
 
         $(".adjustmentContainer").removeClass("d-none");
         $(".adjustmentContainer").addClass("d-block");
+
+        loadAdjustmentTableData();
       });
 
       $("#submitAdjustment").click(function () {
         saveAdjustment();
-      });
-      $(document).on("click", ".editAdjustment", (e) => {
-        // Changing panel input fields data
-        $("#adjustment_lot")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(3)
-              .find("span")
-              .attr("adjustment_id")
-          )
-          .trigger("change");
-        $("#adjustment_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(4)
-              .find("span")
-              .attr("adjustment_id")
-          )
-          .trigger("change");
-        $("#adjustment_actual_quantity")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("adjustment_id")
-          )
-          .trigger("change");
-        $("#adjustment_adjusted_quantity")
-          .val($(e.target).closest("tr").children("td").eq(6).text())
-          .trigger("change");
-        $("#adjustment_actual_price")
-          .val($(e.target).closest("tr").children("td").eq(7).text())
-          .find("span")
-          .attr("adjustment_id")
-          .trigger("change");
-        $("#adjustment_adjusted_price")
-          .val($(e.target).closest("tr").children("td").eq(8).text())
-          .trigger("change");
-        $("#adjustment_reason")
-          .val($(e.target).closest("tr").children("td").eq(9).text())
-          .trigger("change");
-        $("#adjustment_surveyor")
-          .val($(e.target).closest("tr").children("td").eq(10).text())
-          .trigger("change");
-
-        // Opening slide panel
-        $("#openAdjustmentPanelBtn").click();
-
-        // Changing panel heading
-        $("#adjustmentPanelHeading").text("Edit adjustment Data");
-
-        // Changing panel button label
-        $("#submitAdjustment").text("Update");
-
-        // Changing panel button attribute
-        $("#submitAdjustment").attr(
-          "adjustment_id",
-          $(e.target).attr("adjustment_id")
-        );
       });
 
       function loadAdjustmentTableData() {
@@ -1394,7 +1321,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/adjustment/get/all",
+            url: "/api/v1/procurement/get/all",
             error: function (xhr, error, code) {
               $("#adjustmentTable").DataTable().destroy();
               $("#adjustmentTable").DataTable({
@@ -1413,54 +1340,51 @@
             },
           },
           columns: [
-            { data: null },
-            { data: null },
             { data: "procurement_lot" },
-            { data: "Procurement.procurement_product_name" },
-            { data: "Procurement.procurement_quantity" },
-            { data: "adjustment_adjusted_quantity" },
-            { data: "Procurement.procurement_price" },
-            { data: "adjustment_adjusted_price" },
-            { data: "adjustment_reason" },
-            { data: "adjustment_surveyor" },
+            { data: "procurement_product_name" },
+            { data: "procurement_quantity" },
+            { data: "adjusted_quantity" },
+            { data: "procurement_price" },
+            { data: "adjusted_price" },
+            { data: "adjusted_reason" },
+            { data: "adjusted_surveyor" },
             { data: "created_at" },
           ],
           columnDefs: [
             {
-              targets: [0],
+              targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-pen-to-square edit editAdjustment" adjustment_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Adjustment"></i>'
-                );
+                return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${data}></span>`;
               },
             },
             {
-              targets: [1],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delAdjustment" adjustment_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Adjustment"></i>'
-                );
+                return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${data}></span>`;
               },
             },
             {
-              targets: [4],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                const procurementId = row["Procurement"]
-                  ? row["Procurement"].id
-                  : "";
-                return `<span adjustment_id='${procurementId}'>${data}</span>`;
+                return `<input type="text" style="width:300px" class="form-control adjusted_price" placeholder="Type the reason for adjustment" value=${
+                  data || ""
+                }></span>`;
               },
             },
-
             {
-              targets: [10],
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<input type="text" style="width:200px" class="form-control adjusted_surveyor" placeholder="Type the adjustment servoyer name" value=${
+                  data || ""
+                }></span>`;
+              },
+            },
+            {
+              targets: [8],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -1520,7 +1444,7 @@
                 btnClass: "btn-red",
                 action: function () {
                   $.ajax({
-                    url: "/api/v1/procurement/adjustment/delete",
+                    url: "/api/v1/procurement/delete",
                     method: "post",
                     dataType: "json",
                     contentType: "application/json",
@@ -1556,7 +1480,7 @@
       function loadProcurementData() {
         // Load Lots
         $.ajax({
-          url: "/api/v1/procurement/purchases/get/all",
+          url: "/api/v1/procurement/get/all",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1586,9 +1510,7 @@
 
       function populateProductDropdown(selectedLotNo) {
         $.ajax({
-          url:
-            "/api/v1/procurement/purchases/get/all?procurement_lot=" +
-            selectedLotNo,
+          url: "/api/v1/procurement/get/all?procurement_lot=" + selectedLotNo,
           method: "GET",
           // data: { procurement_lot: selectedLotNo },
           success: function (data) {
@@ -1653,7 +1575,7 @@
       function saveAdjustment() {
         const adjustment_id = $("#submitAdjustment").attr("adjustment_id");
 
-        let url = "/api/v1/procurement/adjustment/create";
+        let url = "/api/v1/procurement/create";
         let input_params = {
           procurement_id: $("#adjustment_product").val(),
           procurement_id: $("#adjustment_actual_quantity").val(),
@@ -1667,7 +1589,7 @@
         };
 
         if (adjustment_id) {
-          url = "/api/v1/procurement/adjustment/update";
+          url = "/api/v1/procurement/update";
 
           input_params = {
             adjustment_id,

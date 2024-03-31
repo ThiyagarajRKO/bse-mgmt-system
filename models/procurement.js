@@ -2,7 +2,6 @@
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   const ProcurementProductTypes = {
-
     CLEANED: "CLEANED",
     PEELED: "PEELED",
     SOAKED: "SOAKED",
@@ -11,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     COOKED: "COOKED",
     SORTED: "SORTED",
     VALUE_ADDED: "VALUE ADDED",
-    UNPROCESSED: "UNPROCESSED"
-  }
+    UNPROCESSED: "UNPROCESSED",
+  };
 
   class Procurement extends Model {
     static associate(models) {
@@ -65,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       procurement_product_name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       procurement_product_type: {
         type: DataTypes.STRING,
@@ -73,11 +72,23 @@ module.exports = (sequelize, DataTypes) => {
       procurement_quantity: {
         type: DataTypes.INTEGER,
       },
-      procurement_price: {
+      adjusted_quantity: {
         type: DataTypes.INTEGER,
       },
+      procurement_price: {
+        type: DataTypes.FLOAT,
+      },
+      adjusted_price: {
+        type: DataTypes.FLOAT,
+      },
+      adjusted_reason: {
+        type: DataTypes.TEXT,
+      },
+      adjusted_surveyor: {
+        type: DataTypes.STRING,
+      },
       procurement_totalamount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
       },
       procurement_purchaser: {
         type: DataTypes.STRING,
@@ -109,36 +120,32 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   Procurement.beforeCreate(async (data, options) => {
     try {
-      if (data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attributes: ["vendor_name"],
-          where: { id: data?.vendor_master_id, is_active: true },
-        });
-        if (data?.location_master_id) {
-          const { location_name } = await sequelize.models.LocationMaster.findOne({
-            attributes: ["location_name"],
-            where: { id: data?.location_master_id, is_active: true },
-          });
-          if (data?.product_master_id) {
-            const { product_name } = await sequelize.models.ProductMaster.findOne({
-              attributes: ["product_name"],
-              where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
-            });
-            // Get year, month, and day from the procurement_date
-            const year = data?.procurement_date.getFullYear();
-            const month = (data?.procurement_date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns zero-based month
-            const day = data?.procurement_date.getDate().toString().padStart(2, '0');
+      const { location_name } = await sequelize.models.LocationMaster.findOne({
+        attributes: ["location_name"],
+        where: { id: data?.location_master_id, is_active: true },
+      });
 
-            // Trim the first three letters of location_name and convert to upper case
-            const trimmedLocationName = location_name?.trim()?.substring(3)?.toUpperCase();
+      const { product_name } = await sequelize.models.ProductMaster.findOne({
+        attributes: ["product_name"],
+        where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
+      });
+      // Get year, month, and day from the procurement_date
+      const year = data?.procurement_date.getFullYear();
+      const month = (data?.procurement_date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0"); // Adding 1 because getMonth() returns zero-based month
+      const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
-            // Construct the procurement_lot in YYYYMMDD format
-            data.procurement_lot = `${location_name?.trim()?.substring(0, 3)?.replace(/\s/g, "")?.toUpperCase()}-${year}${month}${day}`;
-            data.procurement_totalamount = data.procurement_quantity * data.procurement_price;
-            data.procurement_product_name = `${product_name}`
-          }
-        }
-      }
+      // Construct the procurement_lot in YYYYMMDD format
+      data.procurement_lot = `${location_name
+        ?.trim()
+        ?.substring(0, 3)
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${year}${month}${day}`;
+      data.procurement_totalamount =
+        data.procurement_quantity * data.procurement_price;
+      data.procurement_product_name = product_name;
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
@@ -151,41 +158,39 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   Procurement.beforeUpdate(async (data, options) => {
     try {
-      if (data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attributes: ["vendor_name"],
-          where: { id: data?.vendor_master_id, is_active: true },
-        });
-        if (data?.location_master_id) {
-          const { location_name } = await sequelize.models.LocationMaster.findOne({
-            attributes: ["location_name"],
-            where: { id: data?.location_master_id, is_active: true },
-          });
-          if (data?.product_master_id) {
-            const { product_name } = await sequelize.models.ProductMaster.findOne({
-              attributes: ["product_name"],
-              where: { id: data?.product_master_id, is_active: true },
-            });
+      const { location_name } = await sequelize.models.LocationMaster.findOne({
+        attributes: ["location_name"],
+        where: { id: data?.location_master_id, is_active: true },
+      });
 
-            // Get year, month, and day from the procurement_date
-            const year = data?.procurement_date.getFullYear();
-            const month = (data?.procurement_date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because getMonth() returns zero-based month
-            const day = data?.procurement_date.getDate().toString().padStart(2, '0');
+      const { product_name } = await sequelize.models.ProductMaster.findOne({
+        attributes: ["product_name"],
+        where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
+      });
+      // Get year, month, and day from the procurement_date
+      const year = data?.procurement_date.getFullYear();
+      const month = (data?.procurement_date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0"); // Adding 1 because getMonth() returns zero-based month
+      const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
-            // Trim the first three letters of location_name and convert to upper case
-            const trimmedLocationName = location_name?.trim()?.substring(3)?.toUpperCase();
+      // Construct the procurement_lot in YYYYMMDD format
+      data.procurement_lot = `${location_name
+        ?.trim()
+        ?.substring(0, 3)
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${year}${month}${day}`;
+      data.procurement_totalamount =
+        data.procurement_quantity * data.procurement_price;
+      data.procurement_product_name = product_name;
 
-            // Construct the procurement_lot in YYYYMMDD format
-            data.procurement_lot = `${location_name?.trim()?.substring(0, 3)?.replace(/\s/g, "")?.toUpperCase()}-${year}${month}${day}`;
-            data.procurement_totalamount = data.procurement_quantity * data.procurement_price;
-            data.procurement_product_name = `${product_name}`
-          }
-        }
-      }
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a procurement data", err?.message || err);
+      console.log(
+        "Error while updating a procurement data",
+        err?.message || err
+      );
     }
   });
 
@@ -197,7 +202,10 @@ module.exports = (sequelize, DataTypes) => {
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a procurement data", err?.message || err);
+      console.log(
+        "Error while deleting a procurement data",
+        err?.message || err
+      );
     }
   });
 

@@ -4,7 +4,6 @@ export * as RoleMasters from "./role_masters";
 export * as DivisionMaster from "./division_master";
 export * as LocationMaster from "./location_master";
 export * as Procurement from "./purchase";
-export * as Adjustment from "./adjustment";
 export * as UnitMaster from "./unit_master";
 export * as VendorMaster from "./vendor_master";
 export * as PackagingMaster from "./packaging_master";

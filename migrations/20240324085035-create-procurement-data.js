@@ -27,7 +27,6 @@ module.exports = {
       },
       adjusted_quantity: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       procurement_price: {
         type: Sequelize.FLOAT,
@@ -35,11 +34,19 @@ module.exports = {
       },
       adjusted_price: {
         type: Sequelize.FLOAT,
-        allowNull: false,
+      },
+      adjusted_reason: {
+        type: Sequelize.TEXT,
+      },
+      adjusted_surveyor: {
+        type: Sequelize.STRING,
       },
       procurement_purchaser: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      procurement_totalamount: {
+        type: Sequelize.FLOAT,
       },
       procurement_product_type: {
         type: Sequelize.ENUM(
