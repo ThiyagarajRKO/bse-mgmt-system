@@ -14,7 +14,6 @@ module.exports = {
       procurement_lot: {
         type: Sequelize.TEXT,
         allowNull: false,
-        unique: true,
       },
       procurement_product_name: {
         type: Sequelize.STRING,
