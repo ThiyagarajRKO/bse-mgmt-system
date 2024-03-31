@@ -266,10 +266,6 @@
         border-color: rgba(98, 114, 147, 0.6) !important;
         height: 35px !important;
       }
-
-      .select2-dropdown {
-        z-index: 10000 !important;
-      }
     </style>
   </head>
 
@@ -472,142 +468,9 @@
       <!-- ------------------------------------------ Adjustment Container ------------------------------------------------ -->
       <!-- ------------------------------------------------------------------------------------------------------------- -->
       <div class="menu-container adjustmentContainer d-none">
-        <!-- Slide-in Panel -->
-        <div
-          id="adjustmentSlideInPanel"
-          class="slideInPanel px-4 overflow-auto"
-        >
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="adjustmentPanelHeading" class="fw-bold fs-5"
-                  >Add Adjustment Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeAdjustmentPanelBtn"
-                  ></i>
-                </div>
-              </div>
-              <hr />
-              <div class="">
-                <div class="form-group my-2">
-                  <label for="adjustment_lot">Lot</label>
-                  <select
-                    id="adjustment_lot"
-                    class="form-control input-dropdown w-100"
-                    name="adjustmentLot"
-                    required
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_product"> Product</label>
-                  <select
-                    id="adjustment_product"
-                    class="form-control input-dropdown w-100"
-                    name="adjustmentProduct"
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_actual_quantity">
-                    Actual Quantity (kg)</label
-                  >
-                  <input
-                    id="adjustment_actual_quantity"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="adjustmentActualQuantity"
-                  />
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_adjusted_quantity"
-                    >Adjusted Quantity (kg)</label
-                  >
-                  <input
-                    id="adjustment_adjusted_quantity"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="adjustmentAdjustedQuantity"
-                  />
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_actual_price">Price (USD)</label>
-                  <input
-                    id="adjustment_actual_price"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="adjustmentActualPrice"
-                  />
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_adjusted_price">Price (USD)</label>
-                  <input
-                    id="adjustment_adjusted_price"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="adjustmentAdjustedPrice"
-                  />
-                </div>
-                <div class="form-group my-3">
-                  <label for="adjustment_reason">Reason for adjustment</label>
-                  <textarea
-                    row="3"
-                    id="adjustment_reason"
-                    class="form-control"
-                    placeholder="eg. Invalid quantity"
-                    type="text"
-                    name="adjustment_reason"
-                  ></textarea>
-                </div>
-                <div class="form-group my-2">
-                  <label for="adjustment_surveyor"> Surveyor</label>
-                  <input
-                    id="adjustment_surveyor"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="text"
-                    name="adjustment_surveyor"
-                  />
-                </div>
-                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                  <div id="submitAdjustment" class="col-lg-5 btn btn-danger">
-                    Save
-                  </div>
-                  <div
-                    id="resetProcurementDataBtn"
-                    class="col-lg-5 btn btn-outline-danger"
-                  >
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         <!-- Table Content -->
         <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
           <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openAdjustmentPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
             <table id="adjustmentTable" class="table table-hover nowrap w-100">
               <thead>
                 <tr>
@@ -1275,9 +1138,9 @@
 
       $("#resetProcurementDataBtn").on("click", resetAllInputs);
 
-      // ---------------------------------------------------------
+      // ----------------------------------------------------------
       // ----------------------- Adjustment -----------------------
-      // ---------------------------------------------------------
+      // ----------------------------------------------------------
 
       // Open panel
       $("#openAdjustmentPanelBtn").click(function () {
@@ -1288,7 +1151,6 @@
           "submitAdjustment",
           "adjustmentid"
         );
-        $("#adjustmentSlideInPanel").css("right", "0");
       });
 
       // Close panel
@@ -1303,10 +1165,6 @@
         $(".adjustmentContainer").addClass("d-block");
 
         loadAdjustmentTableData();
-      });
-
-      $("#submitAdjustment").click(function () {
-        saveAdjustment();
       });
 
       function loadAdjustmentTableData() {
@@ -1355,21 +1213,25 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${data}></span>`;
+                return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${
+                  data || 0
+                }></span>`;
               },
             },
             {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${data}></span>`;
+                return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${
+                  data || 0
+                }></span>`;
               },
             },
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return `<input type="text" style="width:300px" class="form-control adjusted_price" placeholder="Type the reason for adjustment" value=${
+                return `<input type="text" style="width:300px" class="form-control adjusted_reason" placeholder="Type the reason for adjustment" value=${
                   data || ""
                 }></span>`;
               },
@@ -1422,155 +1284,13 @@
           //   return start + " to " + end;
           // }
         });
-
-        $(document).on("click", ".delAdjustment", (e) => {
-          let adjustment_id = $(e.target).attr("adjustment_id");
-          let currentRow = $(e.target).closest("tr");
-          $.confirm({
-            title: "Delete Adjustent Detail?",
-            content: "Are you sure, do you want to remove this Adjustment?",
-            backgroundDismiss: false,
-            backgroundDismissAnimation: "glow",
-            type: "red",
-            closeIcon: true,
-            closeIconClass: "fa fa-close",
-            typeAnimated: true,
-            boxWidth: "30%",
-            useBootstrap: false,
-            autoClose: "no|5000",
-            buttons: {
-              delete: {
-                text: "Delete",
-                btnClass: "btn-red",
-                action: function () {
-                  $.ajax({
-                    url: "/api/v1/procurement/delete",
-                    method: "post",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                      adjustment_id,
-                    }),
-                  })
-                    .done(function (response) {
-                      //loading data to table
-                      loadAdjustmentTableData();
-
-                      toastr.success(
-                        "Adjustment detail deleted successfully",
-                        "Deleted"
-                      );
-                    })
-                    .fail(function () {
-                      toastr.error(
-                        "Adjustment detail failed to delete!",
-                        "Error"
-                      );
-                    });
-                },
-              },
-              no: function () {
-                toastr.info("Adjustment detail is safe now", "Info");
-              },
-            },
-          });
-        });
       }
 
-      function loadProcurementData() {
-        // Load Lots
-        $.ajax({
-          url: "/api/v1/procurement/get/all",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: function (data) {
-            // Populate Lot dropdown
-            $("#adjustment_lot").select2({
-              placeholder: "Choose a Lot",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.procurement_lot,
-                  text: item.procurement_lot,
-                };
-              }),
-            });
-
-            // Clear selected value
-            $("#adjustment_lot").val(null).trigger("change");
-          },
-          error: function (xhr, status, error) {
-            console.error("Error fetching lots:", error);
-          },
-        });
-      }
-
-      function populateProductDropdown(selectedLotNo) {
-        $.ajax({
-          url: "/api/v1/procurement/get/all?procurement_lot=" + selectedLotNo,
-          method: "GET",
-          // data: { procurement_lot: selectedLotNo },
-          success: function (data) {
-            // console.log("Procurement data:", data); // Log the received data
-
-            $("#adjustment_product").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.procurement_product_name,
-                };
-              }),
-            });
-
-            // Assuming procurement contains the product ID directly
-
-            // Use the fetched product ID to fetch the product name from the product master table
-
-            // Clear existing options
-            // $("#adjustment_product").empty();
-
-            // // Populate product dropdown with fetched product name
-            // $("#adjustment_product").append(
-            //   $("<option>", {
-            //     value: procurement.procurement_product_id,
-            //     text: procurement.procurement_product_name,
-            //   })
-            // );
-
-            // Trigger change event to update Select2 dropdown
-            $("#adjustment_product").val(null).trigger("change");
-          },
-          error: function (xhr, status, error) {
-            console.error("Error fetching product data:", error);
-          },
-        });
-      }
-
-      // Handle change event for LotNo dropdown
-      $(document).on("change", "#adjustment_lot", function () {
-        var selectedLotNo = $(this).val();
-        $("#adjustment_product").empty();
-        populateProductDropdown(selectedLotNo);
+      $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
+        if ($(e.target).closest("tr").find(".adjusted_price").val() == "") {
+          $(e.target).closest("tr").find(".adjusted_price").focusin();
+        }
       });
-
-      // // Initialize Select2 for Product dropdown
-      // $("#adjustment_product").select2({
-      //   placeholder: "Choose a Product",
-      //   allowClear: true,
-      // });
-
-      // // Clear selected value for adjustment_product
-      // $("#adjustment_product").val(null).trigger("change");
-
-      // Call the function to load procurement data when the page is ready
-      // $(document).ready(function () {
-      loadProcurementData();
-      // });
 
       function saveAdjustment() {
         const adjustment_id = $("#submitAdjustment").attr("adjustment_id");
