@@ -1,4 +1,10 @@
-import { Adjustment, LocationMaster, Procurement, ProductMaster, VendorMaster } from "../../../controllers";
+import {
+  Adjustment,
+  LocationMaster,
+  Procurement,
+  ProductMaster,
+  VendorMaster,
+} from "../../../controllers";
 
 export const Create = (
   {

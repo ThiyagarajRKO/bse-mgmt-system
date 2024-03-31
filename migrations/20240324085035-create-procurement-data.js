@@ -25,8 +25,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      procurement_price: {
+      adjusted_quantity: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      procurement_price: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      adjusted_price: {
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
       procurement_purchaser: {
@@ -34,7 +42,17 @@ module.exports = {
         allowNull: false,
       },
       procurement_product_type: {
-        type: Sequelize.ENUM("CLEANED", "PEELED", "SOAKED", "RE - GLAZED", "GRADED", "COOKED", "SORTED", "VALUE ADDED", "UNPROCESSED"),
+        type: Sequelize.ENUM(
+          "CLEANED",
+          "PEELED",
+          "SOAKED",
+          "RE-GLAZED",
+          "GRADED",
+          "COOKED",
+          "SORTED",
+          "VALUE ADDED",
+          "UNPROCESSED"
+        ),
         allowNull: false,
       },
       vendor_master_id: {

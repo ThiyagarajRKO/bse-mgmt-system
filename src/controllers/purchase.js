@@ -171,7 +171,9 @@ export const GetAll = ({
       }
 
       if (procurement_product_type) {
-        where.procurement_product_type = { [Op.iLike]: procurement_product_type };
+        where.procurement_product_type = {
+          [Op.iLike]: procurement_product_type,
+        };
       }
 
       if (procurement_quantity) {
@@ -236,6 +238,31 @@ export const GetAll = ({
       });
 
       resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const Count = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Purchase ID field must not be empty!",
+        });
+      }
+
+      const unit = await models.Procurement.count({
+        where: {
+          id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      resolve(unit);
     } catch (err) {
       reject(err);
     }

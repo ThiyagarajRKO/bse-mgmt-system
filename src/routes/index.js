@@ -3,7 +3,7 @@
 import usersRoute from "./users";
 import profileRoutes from "./profile";
 import procurementRoute from "./purchases";
-import adjustmentRoute from "./purchases";
+import adjustmentRoute from "./adjustment";
 import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
@@ -18,10 +18,13 @@ import productCategoryMasterRoute from "./product_category_master";
 import productMasterRoute from "./product_master";
 import vehicleMasterRoute from "./vehicle_master";
 import driverMasterRoute from "./driver_master";
-
+import auditLogsRoute from "./audit_logs";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
+
+// Controllers
+import { AuditLogs, ModuleMasters } from "../controllers";
 
 //Public Routes
 export const PublicRouters = (fastify, opts, done) => {
@@ -36,6 +39,41 @@ export const PublicRouters = (fastify, opts, done) => {
 export const PrivateRouters = (fastify, opts, done) => {
   // Validating session
   fastify.addHook("onRequest", ValidateUser);
+
+  fastify.addHook("onRequest", async (req, res) => {
+    try {
+      let module_master_ids = {};
+      const module_master = await ModuleMasters.GetAll({});
+
+      module_master?.rows?.forEach((module) => {
+        module_master_ids[
+          module?.module_name?.replace(" ", "_")?.toLowerCase()
+        ] = module?.id;
+      });
+
+      const url_path = req.url?.replace("/api/v1/", "");
+      const module_name = url_path.split("/")[0];
+      const module_master_id =
+        module_master_ids[
+          module_name == "master" ? "master_data" : module_name
+        ];
+
+      if (!module_master_id) {
+        return;
+      }
+
+      AuditLogs.Insert(req.token_profile_id, {
+        module_master_id,
+        action_name: req.method,
+        request_params: req?.query || req.body,
+        source_ip_address: req.socket.remoteAddress,
+        user_agent: req.headers["user-agent"],
+        platform: req.headers["sec-ch-ua-platform"]?.replaceAll('"', ""),
+      }).catch(console.log);
+    } catch (err) {
+      console.log("Error while inserting audit log", err?.message);
+    }
+  });
 
   fastify.register(profileRoutes, { prefix: "/profile" });
 
@@ -70,6 +108,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
 
   fastify.register(driverMasterRoute, { prefix: "/master/driver" });
+
+  fastify.register(auditLogsRoute, { prefix: "/logs" });
 
   done();
 };
