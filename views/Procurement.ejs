@@ -1210,6 +1210,13 @@
           ],
           columnDefs: [
             {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_id=${row["id"]}>${data}</span>`;
+              },
+            },
+            {
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
@@ -1286,40 +1293,106 @@
         });
       }
 
+      let original_adjusted_quantity = "";
+      let original_adjusted_price = "";
+      let original_adjusted_reason = "";
+      let original_adjusted_surveyor = "";
+
+      $(document).on("focus", "#adjustmentTable > tbody > tr", function (e) {
+        original_adjusted_quantity = $(e.target)
+          .closest("tr")
+          .find(".adjusted_quantity")
+          .val();
+        original_adjusted_price = $(e.target)
+          .closest("tr")
+          .find(".adjusted_price")
+          .val();
+        original_adjusted_reason = $(e.target)
+          .closest("tr")
+          .find(".adjusted_reason")
+          .val();
+        original_adjusted_surveyor = $(e.target)
+          .closest("tr")
+          .find(".adjusted_surveyor")
+          .val();
+      });
+
       $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
-        if ($(e.target).closest("tr").find(".adjusted_price").val() == "") {
-          $(e.target).closest("tr").find(".adjusted_price").focusin();
+        const adjusted_quantity = $(e.target)
+          .closest("tr")
+          .find(".adjusted_quantity");
+        const adjusted_price = $(e.target)
+          .closest("tr")
+          .find(".adjusted_price");
+        const adjusted_reason = $(e.target)
+          .closest("tr")
+          .find(".adjusted_reason");
+        const adjusted_surveyor = $(e.target)
+          .closest("tr")
+          .find(".adjusted_surveyor");
+
+        if (
+          adjusted_quantity.val() == 0 ||
+          adjusted_price.val() == 0 ||
+          !adjusted_reason.val() ||
+          !adjusted_surveyor.val()
+        ) {
+          // toastr["warning"]("Fill all the required fields");
+          // if (adjusted_quantity.val() == 0) {
+          //   adjusted_quantity.focus();
+          // } else if (adjusted_price.val() == 0) {
+          //   adjusted_price.focus();
+          // } else if (!adjusted_reason.val()) {
+          //   adjusted_reason.focus();
+          // } else if (!adjusted_surveyor.val()) {
+          //   adjusted_surveyor.focus();
+          // }
+        } else {
+          if (
+            original_adjusted_quantity != adjusted_quantity.val() ||
+            original_adjusted_price != adjusted_price.val() ||
+            original_adjusted_reason != adjusted_reason.val() ||
+            original_adjusted_surveyor != adjusted_surveyor.val()
+          ) {
+            saveAdjustment(
+              $(e.target)
+                .closest("tr")
+                .eq(0)
+                .find("span")
+                .attr("procurement_id"),
+              adjusted_quantity.val(),
+              adjusted_price.val(),
+              adjusted_reason.val(),
+              adjusted_surveyor.val()
+            );
+          }
         }
       });
 
-      function saveAdjustment() {
-        const adjustment_id = $("#submitAdjustment").attr("adjustment_id");
+      function saveAdjustment(
+        procurement_id,
+        adjusted_quantity,
+        adjusted_price,
+        adjusted_reason,
+        adjusted_surveyor
+      ) {
+        if (!procurement_id) {
+          toastr["warning"]("Procurement id must not be empty");
+          return;
+        }
 
-        let url = "/api/v1/procurement/create";
-        let input_params = {
-          procurement_id: $("#adjustment_product").val(),
-          procurement_id: $("#adjustment_actual_quantity").val(),
-          adjustment_adjusted_quantity: $(
-            "#adjustment_adjusted_quantity"
-          ).val(),
-          procurement_id: $("#adjustment_actual_price").val(),
-          adjustment_adjusted_price: $("#adjustment_adjusted_price").val(),
-          adjustment_reason: $("#adjustment_reason").val(),
-          adjustment_surveyor: $("#adjustment_surveyor").val(),
+        const input_params = {
+          procurement_id,
+          procurement_data: {
+            adjusted_quantity,
+            adjusted_price,
+            adjusted_reason,
+            adjusted_surveyor,
+          },
         };
 
-        if (adjustment_id) {
-          url = "/api/v1/procurement/update";
-
-          input_params = {
-            adjustment_id,
-            adjustment_data: {
-              ...input_params,
-            },
-          };
-        }
         $.ajax({
-          url,
+          url: "/api/v1/procurement/update",
           method: "POST",
           dataType: "json",
           contentType: "application/json",
@@ -1327,13 +1400,8 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            toastr["success"](data?.message);
-
-            $("#closeAdjustmentPanelBtn").click();
-
-            loadAdjustmentTableData();
-
-            resetAllInputs();
+            // toastr["success"](data?.message);
+            // loadAdjustmentTableData();
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
