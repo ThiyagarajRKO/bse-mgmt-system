@@ -66,7 +66,7 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      const result = await models.Procurement.create(procurement_data, {
+      const result = await models.Procurements.create(procurement_data, {
         profile_id,
       });
       resolve(result);
@@ -103,7 +103,7 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
-      const result = await models.Procurement.update(procurement_data, {
+      const result = await models.Procurements.update(procurement_data, {
         where: {
           id,
           is_active: true,
@@ -128,7 +128,7 @@ export const Get = ({ id }) => {
         });
       }
 
-      const unit = await models.Procurement.findOne({
+      const unit = await models.Procurements.findOne({
         where: {
           id,
           is_active: true,
@@ -216,7 +216,7 @@ export const GetAll = ({
         vendorWhere.vendor_name = { [Op.iLike]: vendor_master_name };
       }
 
-      const procurements = await models.Procurement.findAndCountAll({
+      const procurements = await models.Procurements.findAndCountAll({
         include: [
           {
             model: models.LocationMaster,
@@ -229,6 +229,13 @@ export const GetAll = ({
           {
             model: models.VendorMaster,
             where: vendorWhere,
+          },
+          {
+            required: false,
+            model: models.Dispatches,
+            where: {
+              is_active: true,
+            },
           },
         ],
         where,
@@ -254,7 +261,7 @@ export const Count = ({ id }) => {
         });
       }
 
-      const unit = await models.Procurement.count({
+      const unit = await models.Procurements.count({
         where: {
           id,
           is_active: true,
@@ -286,7 +293,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const procurement = await models.Procurement.destroy({
+      const procurement = await models.Procurements.destroy({
         where: {
           id,
           is_active: true,

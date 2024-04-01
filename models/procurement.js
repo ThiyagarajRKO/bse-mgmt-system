@@ -1,56 +1,50 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  const ProcurementProductTypes = {
-    CLEANED: "CLEANED",
-    PEELED: "PEELED",
-    SOAKED: "SOAKED",
-    RE_GLAZED: "RE - GLAZED",
-    GRADED: "GRADED",
-    COOKED: "COOKED",
-    SORTED: "SORTED",
-    VALUE_ADDED: "VALUE ADDED",
-    UNPROCESSED: "UNPROCESSED",
-  };
-
-  class Procurement extends Model {
+  class Procurements extends Model {
     static associate(models) {
-      Procurement.belongsTo(models.UserProfiles, {
+      Procurements.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurement.belongsTo(models.UserProfiles, {
+      Procurements.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurement.belongsTo(models.UserProfiles, {
+      Procurements.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurement.belongsTo(models.LocationMaster, {
+      Procurements.belongsTo(models.LocationMaster, {
         foreignKey: "location_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurement.belongsTo(models.ProductMaster, {
+      Procurements.belongsTo(models.ProductMaster, {
         foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurement.belongsTo(models.VendorMaster, {
+      Procurements.belongsTo(models.VendorMaster, {
         foreignKey: "vendor_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      Procurements.hasOne(models.Dispatches, {
+        foreignKey: "procurement_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  Procurement.init(
+  Procurements.init(
     {
       id: {
         primaryKey: true,
@@ -108,8 +102,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Procurement",
-      tableName: "procurement",
+      modelName: "Procurements",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -118,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   // Create Hook
-  Procurement.beforeCreate(async (data, options) => {
+  Procurements.beforeCreate(async (data, options) => {
     try {
       const { location_name } = await sequelize.models.LocationMaster.findOne({
         attributes: ["location_name"],
@@ -142,6 +135,7 @@ module.exports = (sequelize, DataTypes) => {
         ?.substring(0, 3)
         ?.replaceAll(" ", "")
         ?.toUpperCase()}-${year}${month}${day}`;
+
       data.procurement_totalamount =
         data.procurement_quantity * data.procurement_price;
       data.procurement_product_name = product_name;
@@ -149,14 +143,14 @@ module.exports = (sequelize, DataTypes) => {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a procurement data",
+        "Error while inserting a procurements data",
         err?.message || err
       );
     }
   });
 
   // Update Hook
-  Procurement.beforeUpdate(async (data, options) => {
+  Procurements.beforeUpdate(async (data, options) => {
     try {
       const { location_name } = await sequelize.models.LocationMaster.findOne({
         attributes: ["location_name"],
@@ -188,14 +182,14 @@ module.exports = (sequelize, DataTypes) => {
       data.updated_by = options?.profile_id;
     } catch (err) {
       console.log(
-        "Error while updating a procurement data",
+        "Error while updating a procurements data",
         err?.message || err
       );
     }
   });
 
   // Delete Hook
-  Procurement.afterDestroy(async (data, options) => {
+  Procurements.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
@@ -203,11 +197,11 @@ module.exports = (sequelize, DataTypes) => {
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
       console.log(
-        "Error while deleting a procurement data",
+        "Error while deleting a procurements data",
         err?.message || err
       );
     }
   });
 
-  return Procurement;
+  return Procurements;
 };

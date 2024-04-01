@@ -1,100 +1,79 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("procurement", {
+    await queryInterface.createTable("dispatches", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      procurement_date: {
-        type: Sequelize.DATE,
+      procurement_id: {
+        type: Sequelize.UUID,
         allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "procurements" },
+          key: "id",
+        },
       },
-      procurement_lot: {
-        type: Sequelize.TEXT,
+      source_unit_master_id: {
+        type: Sequelize.UUID,
         allowNull: false,
-        unique: true,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "unit_master" },
+          key: "id",
+        },
       },
-      procurement_product_name: {
-        type: Sequelize.STRING,
+      destination_unit_master_id: {
+        type: Sequelize.UUID,
         allowNull: false,
-        unique: true,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "unit_master" },
+          key: "id",
+        },
       },
-      procurement_quantity: {
+      dispatch_quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      adjusted_quantity: {
-        type: Sequelize.INTEGER,
-      },
-      procurement_price: {
+      temperature: {
         type: Sequelize.FLOAT,
+      },
+      vehicle_master_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "vehicle_master" },
+          key: "id",
+        },
+      },
+      driver_master_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "driver_master" },
+          key: "id",
+        },
+      },
+      delivery_status: {
+        type: Sequelize.ENUM("In Transit", "Delivered"),
         allowNull: false,
       },
-      adjusted_price: {
-        type: Sequelize.FLOAT,
-      },
-      adjusted_reason: {
+      delivery_notes: {
         type: Sequelize.TEXT,
-      },
-      adjusted_surveyor: {
-        type: Sequelize.STRING,
-      },
-      procurement_purchaser: {
-        type: Sequelize.STRING,
         allowNull: false,
       },
-      procurement_totalamount: {
-        type: Sequelize.FLOAT,
-      },
-      procurement_product_type: {
-        type: Sequelize.ENUM(
-          "CLEANED",
-          "PEELED",
-          "SOAKED",
-          "RE-GLAZED",
-          "GRADED",
-          "COOKED",
-          "SORTED",
-          "VALUE ADDED",
-          "UNPROCESSED"
-        ),
-        allowNull: false,
-      },
-      vendor_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "vendor_master" },
-          key: "id",
-        },
-      },
-      location_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "location_master" },
-          key: "id",
-        },
-      },
-      product_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "product_master" },
-          key: "id",
-        },
-      },
-
       is_active: {
-        defaultValue: false,
+        defaultValue: true,
         type: Sequelize.BOOLEAN,
       },
       created_at: {
@@ -138,6 +117,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("procurement");
+    await queryInterface.dropTable("dispatches");
   },
 };

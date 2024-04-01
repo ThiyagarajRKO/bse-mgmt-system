@@ -3,6 +3,7 @@
 import usersRoute from "./users";
 import profileRoutes from "./profile";
 import procurementRoute from "./procurement";
+import dispatchRoute from "./dispatches";
 import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
@@ -79,6 +80,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(divisionMasterRoute, { prefix: "/master/division" });
 
   fastify.register(procurementRoute, { prefix: "/procurement" });
+
+  fastify.register(dispatchRoute, { prefix: "/dispatch" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 

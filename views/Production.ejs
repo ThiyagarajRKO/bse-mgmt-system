@@ -11,8 +11,8 @@
   />
 
   <!-- Bootstrap 
-<link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-<script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+  <link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
 
   <!-- MDB5  -->
   <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
@@ -156,22 +156,109 @@
       }
 
       svg.radial-progress text {
-        fill: #f60101;
+        fill: #1f2d3e;
         text-anchor: middle;
       }
 
-      .menu-button {
+      .topMenu-item {
         cursor: pointer;
       }
 
-      .active-menu-button {
+      .topMenu-item-active {
         /* box-shadow: 0 -2px 0 0 #ea5455; */
         color: #ea5455;
       }
 
-      .menu-button:hover:not(.active-menu-button) {
+      .topMenu-item:hover:not(.active-topMenu-item) {
         /* box-shadow: 0 -2px 0 0 #ea5455; */
         color: #ea5455;
+      }
+
+      #dispatchTable_wrapper {
+        margin-top: 60px !important;
+      }
+
+      .slideInPanel {
+        z-index: 9999;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -600px;
+        width: 400px;
+        background-color: #1f2d3e;
+        color: #e3e3e3;
+        height: 90vh;
+        /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+        transition: right 0.3s ease;
+        border-radius: 8px;
+      }
+
+      /* Input */
+      .slideInPanel input {
+        background-color: transparent;
+        border-color: rgba(98, 114, 147, 0.6);
+      }
+
+      .slideInPanel input:focus {
+        background-color: transparent;
+      }
+
+      .slideInPanel input:hover {
+        border-color: #627293;
+      }
+
+      /* Select */
+      .slideInPanel .select2-container {
+        background-color: transparent !important;
+        border-color: rgba(98, 114, 147, 0.6) !important;
+        color: 627293 !important;
+      }
+
+      .select2-container {
+        width: 100% !important;
+      }
+
+      .select2-selection__rendered,
+      .select2-selection__clear,
+      .select2-selection__arrow {
+        color: white !important;
+        margin-top: 0.25rem !important;
+      }
+
+      .slideInPanel .select:focus {
+        background-color: transparent;
+        border-color: #627293;
+      }
+
+      .slideInPanel .select2-container:hover {
+        border-color: #627293;
+      }
+
+      /* TextArea */
+      .slideInPanel textarea {
+        background-color: transparent;
+        border-color: rgba(98, 114, 147, 0.6);
+      }
+
+      .slideInPanel textarea:focus {
+        background-color: transparent;
+      }
+
+      .slideInPanel textarea:hover {
+        border-color: #627293;
+      }
+
+      /* Form Control */
+      .slideInPanel .form-control {
+        color: #f7f9fc;
+      }
+
+      .slideInPanel .form-control::placeholder {
+        color: #627293;
+      }
+
+      .select2-selection::placeholder {
+        color: #627293;
       }
     </style>
   </head>
@@ -179,7 +266,9 @@
   <body>
     <div class="container-fluid">
       <div class="row d-flex justify-content-center">
-        <div class="menu-button col-lg-1 d-flex justify-content-center">
+        <div
+          class="topMenu-item topMenu-item-active dispatchMenu col-lg-1 d-flex justify-content-center"
+        >
           <div class="d-flex flex-column text-center">
             <svg
               class="radial-progress"
@@ -222,7 +311,9 @@
           />
         </div>
 
-        <div class="menu-button col-lg-1 d-flex justify-content-center">
+        <div
+          class="topMenu-item preprocessingMenu col-lg-1 d-flex justify-content-center"
+        >
           <div class="d-flex flex-column text-center">
             <svg
               class="radial-progress"
@@ -265,7 +356,9 @@
           />
         </div>
 
-        <div class="menu-button col-lg-1 d-flex justify-content-center">
+        <div
+          class="topMenu-item preprocessingDispatchMenu col-lg-1 d-flex justify-content-center"
+        >
           <div class="d-flex flex-column text-center">
             <svg
               class="radial-progress"
@@ -308,7 +401,9 @@
           />
         </div>
 
-        <div class="menu-button col-lg-1 d-flex justify-content-center">
+        <div
+          class="topMenu-item packingMenu col-lg-1 d-flex justify-content-center"
+        >
           <div class="d-flex flex-column text-center">
             <svg
               class="radial-progress"
@@ -343,6 +438,173 @@
             >
           </div>
         </div>
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Dispatch Container ---------------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container dispatchContainer d-none">
+          <!-- Slide-in Panel -->
+          <div
+            id="dispatchSlideInPanel"
+            class="slideInPanel px-4 overflow-auto"
+          >
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="dispatchPanelHeading" class="fw-bold fs-5"
+                    >Add Dispatch Data</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closeDispatchPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group mt-4">
+                  <label for="dispatch-lot-no">Lot No</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="lotNumbers"
+                    name="lotNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="dispatch-lot-no">Source</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="sourceLocation"
+                    name="sourceLocation"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="destination-lot-no">Destination</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="destinationLocation"
+                    name="destinationLocation"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product-name">Product Name</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="productNames"
+                    name="productNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="unit-name">Quantity</label>
+                  <input
+                    id="product_quantity"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. Chennai"
+                    name="product_quantity"
+                    required
+                  />
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product_temperature">Temperature</label>
+                  <input
+                    id="product_temperature"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. Chennai"
+                    name="product_temperature"
+                    required
+                  />
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="vehicleNumbers">Vehicle Number</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="vehicleNumbers"
+                    name="vehicleNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="driverNames">Driver Name</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="driverNames"
+                    name="driverNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="delivery_notes">Delivery Notes</label>
+                  <textarea
+                    row="3"
+                    class="form-control input-dropdown w-100"
+                    id="delivery_notes"
+                    name="delivery_notes"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitDispatch" class="col-lg-5 btn btn-danger">
+                    Save
+                  </div>
+                  <div
+                    id="resetDispatchDataBtn"
+                    class="col-lg-5 btn btn-outline-danger"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openDispatchPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 100px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Add</span
+                  >
+                </div>
+              </div>
+
+              <table id="dispatchTable" class="table table-hover nowrap w-100">
+                <thead>
+                  <tr>
+                    <th class="fw-bold"><span>Dispatch Date</span></th>
+                    <th class="fw-bold"><span>Dispatch Lot</span></th>
+                    <th class="fw-bold"><span>Dispatch Source</span></th>
+                    <th class="fw-bold"><span>Dispatch Destination</span></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold"><span>Quantity</span></th>
+                    <th class="fw-bold"><span>Temperature</span></th>
+                    <th class="fw-bold"><span>Vehicle Number</span></th>
+                    <th class="fw-bold"><span>Driver Name</span></th>
+                    <th class="fw-bold"><span>Delivery Status</span></th>
+                    <th class="fw-bold"><span>Delivery Notes</span></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Dispatch Container Ends -->
       </div>
     </div>
   </body>
@@ -368,6 +630,82 @@
         hideMethod: "fadeOut",
       };
 
+      // Global Functions
+      // Function to format date as YYYY-MM-DD
+      function formatDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        // Ensure 2-digit formatting
+        if (day < 10) {
+          day = "0" + day;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        return year + "-" + month + "-" + day;
+      }
+
+      function resetAllInputs() {
+        $("input").val("");
+
+        // Reset all date inputs
+        var dateInputs = document.querySelectorAll('input[type="date"]');
+        // looping all the date inputs
+        dateInputs.forEach(function (input) {
+          input.value = formatDate(new Date());
+        });
+
+        // Resetting textarea
+        $("textarea").val("");
+
+        // Resetting select field selected option
+        $("#lotNumbers").val(null).trigger("change");
+        $("#sourceLocation").val(null).trigger("change");
+        $("#destinationLocation").val(null).trigger("change");
+        $("#productNames").val(null).trigger("change");
+        $("#vehicleNumbers").val(null).trigger("change");
+        $("#driverNames").val(null).trigger("change");
+      }
+
+      function openSlidePanel(
+        panelId,
+        panelHeadingId,
+        panelType,
+        panelSubmitButton,
+        panelBtnAttrName
+      ) {
+        // Opening Slide Panel
+        $(`#${panelId}`).css("right", "0");
+
+        // Changing panel Heading label
+        $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+
+        // Changing panel save button label
+        $(`#${panelSubmitButton}`).text("Save");
+
+        // Changing panel save button attribute
+        $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+      }
+
+      function closeSlidePanel(panelId) {
+        // Opening Slide Panel
+        $(`#${panelId}`).css("right", "-600px");
+
+        // Resetting all the input fields' data
+        resetAllInputs();
+
+        // Destroying select2 all the dropdowns
+        // $('select.select2-hidden-accessible').select2('destroy');
+      }
+
+      function loadDropdowns() {
+        // Pre loading dropdown data
+      }
+
+      // Progress Bar function
       changePercentage("dispatchCircle", "dispatchPercentage", null, 0);
       changePercentage(
         "preprocessingCircle",
@@ -382,6 +720,340 @@
         0
       );
       changePercentage("packingCircle", "packingPercentage", "packingHR", 0);
+
+      // Open Location on load (default)
+      $(".menu-container").addClass("d-none");
+
+      $(".dispatchContainer").removeClass("d-none");
+      $(".dispatchContainer").addClass("d-block");
+
+      loadDispatchTableData();
+
+      // ---------------------------------------------------------
+      // ----------------------- Dispatchs -----------------------
+      // ---------------------------------------------------------
+
+      // Open panel
+      $("#openDispatchPanelBtn").click(function () {
+        openSlidePanel(
+          "dispatchSlideInPanel",
+          "dispatchPanelHeading",
+          "Dispatch",
+          "submitDispatch",
+          "dispatch_master_id"
+        );
+      });
+
+      // Close panel
+      $("#closeDispatchPanelBtn").click(function () {
+        closeSlidePanel("dispatchSlideInPanel");
+      });
+
+      $(".dispatchMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".dispatchContainer").removeClass("d-none");
+        $(".dispatchContainer").addClass("d-block");
+
+        loadDispatchTableData();
+      });
+
+      $("#submitDispatch").click(function () {
+        saveDispatch();
+      });
+
+      function loadDispatchTableData() {
+        $("#dispatchTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/procurement/get/all",
+            error: function (xhr, error, code) {
+              $("#dispatchTable").DataTable().destroy();
+              $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "procurement_lot" },
+            { data: null },
+            { data: null },
+            { data: "procurement_product_name" },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (!row["Dispatches"]?.["created_at"]) {
+                  return `<input class="form-control" type="date" />`;
+                }
+
+                const date = new Date(row["Dispatches"]?.["created_at"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span source_unit_master_id='${
+                  row["Dispatches"]?.["source_unit"]?.id
+                }'>${row["Dispatches"]?.["source_unit"]?.unit_name || ""}</i>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span destination_unit_master_id='${
+                  row["Dispatches"]?.["destination_unit"]?.id
+                }'>${
+                  row["Dispatches"]?.["destination_unit"]?.unit_name || ""
+                }</i>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<input type="number" class="form-control" value="${
+                  row["Dispatches"]?.dispatch_quantity || ""
+                }"/>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<input type="number" class="form-control" value="${
+                  row["Dispatches"]?.temperature || ""
+                }"/>`;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span driver_master_id='${
+                  row["Dispatches"]?.["VehicleMaster"]?.id
+                }'>${
+                  row["Dispatches"]?.["VehicleMaster"]?.vehicle_name || ""
+                }</i>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span driver_master_id='${
+                  row["Dispatches"]?.["DriverMaster"]?.id
+                }'>${
+                  row["Dispatches"]?.["DriverMaster"]?.driver_name || ""
+                }</i>`;
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row["Dispatches"]?.delivery_status || "";
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<textarea width="100px" row="2" type="number" class="form-control">${
+                  row["Dispatches"]?.delivery_notes || ""
+                }</textarea>`;
+              },
+            },
+          ],
+          // "infoCallback": function (settings, start, end, max, total, pre) {
+          //   return start + " to " + end;
+          // }
+        });
+      }
+
+      $(document).on("click", ".editDispatch", (e) => {
+        // Changing panel input fields data
+        $("#dispatch_name").val(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+        $("#description").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        // Opening Slied Panel
+        $("#openDispatchPanelBtn").click();
+
+        // Changing panel heading
+        $("#dispatchPanelHeading").text("Edit Dispatch Data");
+
+        // Changing panel button label
+        $("#submitDispatch").text("Update");
+
+        // Changing panel button attribute
+        $("#submitDispatch").attr(
+          "dispatch_master_id",
+          $(e.target).attr("dispatch_master_id")
+        );
+      });
+
+      $(document).on("click", ".delDispatch", (e) => {
+        let dispatch_master_id = $(e.target).attr("dispatch_master_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Dispatch?",
+          content: "Are you sure, do you want to remove this dispatch?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/v1/master/dispatch/delete",
+                  method: "post",
+                  dataType: "json",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                    dispatch_master_id,
+                  }),
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadDispatchTableData();
+
+                    toastr.success("Dispatch deleted successfully", "Deleted");
+                  })
+                  .fail(function (err) {
+                    if (err["status"] == 420) {
+                      toastr["warning"](err["responseJSON"]["message"]);
+                    } else {
+                      toastr["error"](err["responseJSON"]["message"]);
+                    }
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Dispatch is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      function saveDispatch() {
+        const dispatch_master_id =
+          $("#submitDispatch").attr("dispatch_master_id");
+
+        let url = "/api/v1/master/dispatch/create";
+        let input_params = {
+          dispatch_name: $("#dispatch_name").val(),
+          description: $("#description").val(),
+        };
+
+        if (dispatch_master_id) {
+          url = "/api/v1/master/dispatch/update";
+
+          input_params = {
+            dispatch_master_id,
+            dispatch_master_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url,
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closeDispatchPanelBtn").click();
+
+            loadDispatchTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetDispatchDataBtn").on("click", resetAllInputs);
+      // -------------------- End of Dispatch -----------------
 
       function changePercentage(circle_id, percentage_id, hr_id, percent) {
         $(`#${circle_id}`).attr("data-percentage", percent);
