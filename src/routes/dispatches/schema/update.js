@@ -2,10 +2,10 @@ export const updateSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["dispatch_master_id", "dispatch_master_data"],
+      required: ["dispatch_id", "dispatch_data"],
       properties: {
-        dispatch_master_id: { type: "string" },
-        dispatch_master_data: { type: "object" },
+        dispatch_id: { type: "string" },
+        dispatch_data: { type: "object" },
       },
     },
   },

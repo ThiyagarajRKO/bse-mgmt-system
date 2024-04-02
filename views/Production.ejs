@@ -111,6 +111,19 @@
         opacity: 1 !important;
       }
 
+      .edit,
+      .del {
+        cursor: pointer;
+      }
+
+      .panelClose {
+        cursor: pointer;
+      }
+
+      .select2-dropdown {
+        z-index: 10000 !important;
+      }
+
       /* Table Pagination */
       .page-item.active .page-link {
         color: #fff !important;
@@ -175,7 +188,7 @@
       }
 
       #dispatchTable_wrapper {
-        margin-top: 60px !important;
+        /* margin-top: 60px !important; */
       }
 
       .slideInPanel {
@@ -465,25 +478,17 @@
                 <hr />
 
                 <div class="form-group mt-4">
-                  <label for="dispatch-lot-no">Lot No</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="lotNumbers"
-                    name="lotNumbers"
-                  ></select>
+                  <label for="dispatch-lot-no">Lot No:</label>
+                  <span class="fw-bold" id="lot_no"></span>
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="dispatch-lot-no">Source</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="sourceLocation"
-                    name="sourceLocation"
-                  ></select>
+                  <label for="product_name">Product Name:</label>
+                  <span class="fw-bold" id="product_name"></span>
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="destination-lot-no">Destination</label>
+                  <label for="dispatch_destination">Destination</label>
                   <select
                     class="form-control input-dropdown w-100"
                     id="destinationLocation"
@@ -492,34 +497,25 @@
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="product-name">Product Name</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="productNames"
-                    name="productNames"
-                  ></select>
-                </div>
-
-                <div class="form-group mt-4">
                   <label for="unit-name">Quantity</label>
                   <input
-                    id="product_quantity"
+                    id="dispatch_quantity"
                     class="form-control"
                     type="number"
-                    placeholder="eg. Chennai"
-                    name="product_quantity"
+                    placeholder="eg. 10"
+                    name="dispatch_quantity"
                     required
                   />
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="product_temperature">Temperature</label>
+                  <label for="dispatch_temperature">Temperature</label>
                   <input
-                    id="product_temperature"
+                    id="dispatch_temperature"
                     class="form-control"
                     type="number"
-                    placeholder="eg. Chennai"
-                    name="product_temperature"
+                    placeholder="eg. 12.9"
+                    name="dispatch_temperature"
                     required
                   />
                 </div>
@@ -571,7 +567,7 @@
           <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
             <div class="border p-4 w-100">
               <!-- Add Button -->
-              <div class="d-flex rounded-2 justify-content-end pb-4">
+              <!-- <div class="d-flex rounded-2 justify-content-end pb-4">
                 <div
                   id="openDispatchPanelBtn"
                   class="btn btn-outline-danger d-flex justify-content-around"
@@ -582,11 +578,12 @@
                     >Add</span
                   >
                 </div>
-              </div>
+              </div> -->
 
               <table id="dispatchTable" class="table table-hover nowrap w-100">
                 <thead>
                   <tr>
+                    <th></th>
                     <th class="fw-bold"><span>Dispatch Date</span></th>
                     <th class="fw-bold"><span>Dispatch Lot</span></th>
                     <th class="fw-bold"><span>Dispatch Source</span></th>
@@ -662,10 +659,7 @@
         $("textarea").val("");
 
         // Resetting select field selected option
-        $("#lotNumbers").val(null).trigger("change");
-        $("#sourceLocation").val(null).trigger("change");
         $("#destinationLocation").val(null).trigger("change");
-        $("#productNames").val(null).trigger("change");
         $("#vehicleNumbers").val(null).trigger("change");
         $("#driverNames").val(null).trigger("change");
       }
@@ -737,16 +731,16 @@
       // ----------------------- Dispatchs -----------------------
       // ---------------------------------------------------------
 
-      // Open panel
-      $("#openDispatchPanelBtn").click(function () {
-        openSlidePanel(
-          "dispatchSlideInPanel",
-          "dispatchPanelHeading",
-          "Dispatch",
-          "submitDispatch",
-          "dispatch_master_id"
-        );
-      });
+      // // Open panel
+      // $("#openDispatchPanelBtn").click(function () {
+      //   openSlidePanel(
+      //     "dispatchSlideInPanel",
+      //     "dispatchPanelHeading",
+      //     "Dispatch",
+      //     "submitDispatch",
+      //     "dispatch_id"
+      //   );
+      // });
 
       // Close panel
       $("#closeDispatchPanelBtn").click(function () {
@@ -759,7 +753,7 @@
         $(".dispatchContainer").removeClass("d-none");
         $(".dispatchContainer").addClass("d-block");
 
-        await loadDropdowns();
+        loadDropdowns();
         loadDispatchTableData();
       });
 
@@ -800,6 +794,7 @@
           },
           columns: [
             { data: null },
+            { data: null },
             { data: "procurement_lot" },
             { data: "UnitMaster.unit_code" },
             { data: null },
@@ -816,11 +811,22 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                if (!row["Dispatches"]?.["created_at"]) {
-                  return `<input class="form-control" type="date" />`;
+                return `<i class="fa fa-pen-to-square edit editDispatch" dispatch_id=${
+                  row["Dispatch"]?.id || null
+                } procurement_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (!row["Dispatch"]?.["created_at"]) {
+                  return "";
                 }
 
-                const date = new Date(row["Dispatches"]?.["created_at"]);
+                const date = new Date(row["Dispatch"]?.["created_at"]);
 
                 var months = [
                   "Jan",
@@ -851,7 +857,7 @@
               },
             },
             {
-              targets: [2],
+              targets: [3],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span source_unit_master_id='${
@@ -860,131 +866,137 @@
               },
             },
             {
-              targets: [3],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return `<select class="destinationUnit-table form-control input-dropdown w-100"
-                    name="destinationUnit" destination_unit_master_id='${
-                      row["Dispatches"]?.["destination_unit"]?.id
-                    }' value=${
-                  row["Dispatches"]?.["destination_unit"]?.unit_name || ""
-                }></select>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="number" class="form-control" value="${
-                  row["Dispatches"]?.dispatch_quantity || ""
-                }"/>`;
+                return `<span destination_unit_master_id='${
+                  row["Dispatch"]?.["UnitMaster"]?.id
+                }'>${row["Dispatch"]?.["UnitMaster"]?.unit_code || ""}</i>`;
               },
             },
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return `<input type="number" class="form-control" value="${
-                  row["Dispatches"]?.temperature || ""
-                }"/>`;
+                return `<span>${
+                  row["Dispatch"]?.dispatch_quantity || ""
+                }</span>`;
               },
             },
             {
               targets: [7],
               className: "text-left",
               render: function (data, type, row) {
-                return `<select class="destinationVehicle-table form-control input-dropdown w-100"
-                    name="destinationVehicle" value=${
-                      row["Dispatches"]?.["VehicleMaster"]?.vehicle_name || ""
-                    }></select>`;
+                return `<span>${row["Dispatch"]?.temperature || ""}</span>`;
               },
             },
             {
               targets: [8],
               className: "text-left",
               render: function (data, type, row) {
-                return `<select class="destinationDriver-table form-control input-dropdown w-100"
-                    name="destinationDriver" value=${
-                      row["Dispatches"]?.["DriverMaster"]?.driver_name || ""
-                    }></select>`;
+                return `<span vehicle_master_id='${
+                  row["Dispatch"]?.["VehicleMaster"]?.id
+                }'>${
+                  row["Dispatch"]?.["VehicleMaster"]?.vehicle_number || ""
+                }</i>`;
               },
             },
             {
               targets: [9],
               className: "text-left",
               render: function (data, type, row) {
-                return row["Dispatches"]?.delivery_status || "";
+                return `<span driver_master_id='${
+                  row["Dispatch"]?.["DriverMaster"]?.id
+                }'>${row["Dispatch"]?.["DriverMaster"]?.driver_name || ""}</i>`;
               },
             },
             {
               targets: [10],
               className: "text-left",
               render: function (data, type, row) {
-                return `<textarea width="100px" row="2" type="number" class="form-control">${
-                  row["Dispatches"]?.delivery_notes || ""
-                }</textarea>`;
+                return row["Dispatch"]?.delivery_status || "";
+              },
+            },
+            {
+              targets: [11],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span>${row["Dispatch"]?.delivery_notes || ""}</span>`;
               },
             },
           ],
-          drawCallback: () => {
-            // Loading Units
-            $(".destinationUnit-table").select2({
-              placeholder: "Choose a destination",
-              allowClear: "true",
-              data: $.map(tableUnits, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
-            });
-
-            $(".destinationUnit-table").val(null).trigger("change");
-
-            // Loading Vehicles
-            $(".destinationVehicle-table").select2({
-              placeholder: "Choose a vehicle",
-              allowClear: "true",
-              data: $.map(tableVehicles, function (item) {
-                return {
-                  id: item.id,
-                  text: item.vehicle_number,
-                };
-              }),
-            });
-
-            $(".destinationVehicle-table").val(null).trigger("change");
-
-            // Loading Vehicles
-            $(".destinationDriver-table").select2({
-              placeholder: "Choose a driver",
-              allowClear: "true",
-              data: $.map(tableDrivers, function (item) {
-                return {
-                  id: item.id,
-                  text: item.driver_name,
-                };
-              }),
-            });
-
-            $(".destinationDriver-table").val(null).trigger("change");
-
-            $(document).on("change", ".destinationUnit-table", () => {});
-          },
+          drawCallback: () => {},
         });
       }
 
       $(document).on("click", ".editDispatch", (e) => {
         // Changing panel input fields data
-        $("#dispatch_name").val(
+
+        $("#lot_no").text(
           $(e.target).closest("tr").children("td").eq(2).text()
         );
-        $("#description").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
+
+        $("#lot_no").attr("procurement_id", $(e.target).attr("procurement_id"));
+
+        $("#destinationLocation")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(4)
+              .find("span")
+              .attr("destination_unit_master_id")
+          )
+          .trigger("change");
+
+        $("#product_name").text(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#dispatch_quantity").val(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        $("#dispatch_temperature").val(
+          $(e.target).closest("tr").children("td").eq(7).text()
+        );
+
+        $("#vehicleNumbers")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(8)
+              .find("span")
+              .attr("vehicle_master_id")
+          )
+          .trigger("change");
+
+        $("#driverNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(9)
+              .find("span")
+              .attr("driver_master_id")
+          )
+          .trigger("change");
+
+        $("#delivery_notes").val(
+          $(e.target).closest("tr").children("td").eq(11).text()
         );
 
         // Opening Slied Panel
-        $("#openDispatchPanelBtn").click();
+        // $("#openDispatchPanelBtn").click();
+
+        openSlidePanel(
+          "dispatchSlideInPanel",
+          "dispatchPanelHeading",
+          "Dispatch",
+          "submitDispatch",
+          "dispatch_id"
+        );
 
         // Changing panel heading
         $("#dispatchPanelHeading").text("Edit Dispatch Data");
@@ -994,63 +1006,11 @@
 
         // Changing panel button attribute
         $("#submitDispatch").attr(
-          "dispatch_master_id",
-          $(e.target).attr("dispatch_master_id")
+          "dispatch_id",
+          $(e.target).attr("dispatch_id")
         );
       });
 
-      $(document).on("click", ".delDispatch", (e) => {
-        let dispatch_master_id = $(e.target).attr("dispatch_master_id");
-        let currentRow = $(e.target).closest("tr");
-        $.confirm({
-          title: "Delete Dispatch?",
-          content: "Are you sure, do you want to remove this dispatch?",
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
-          type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
-          buttons: {
-            delete: {
-              text: "Delete",
-              btnClass: "btn-red",
-              action: function () {
-                $.ajax({
-                  url: "/api/v1/master/dispatch/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    dispatch_master_id,
-                  }),
-                })
-                  .done(function (response) {
-                    //loading data to table
-                    loadDispatchTableData();
-
-                    toastr.success("Dispatch deleted successfully", "Deleted");
-                  })
-                  .fail(function (err) {
-                    if (err["status"] == 420) {
-                      toastr["warning"](err["responseJSON"]["message"]);
-                    } else {
-                      toastr["error"](err["responseJSON"]["message"]);
-                    }
-                  });
-              },
-            },
-            no: function () {
-              toastr.info("Dispatch is safe now", "Info");
-            },
-          },
-        });
-      });
-
-      let tableUnits = [];
       function loadUnits() {
         $.ajax({
           url: "/api/v1/master/unit/get/all",
@@ -1060,7 +1020,18 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            tableUnits = data?.data?.rows;
+            $("#destinationLocation").select2({
+              placeholder: "Choose a destination",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            $("#destinationLocation").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -1072,7 +1043,6 @@
         });
       }
 
-      let tableVehicles = [];
       function loadVehicles() {
         $.ajax({
           url: "/api/v1/master/vehicle/get/all",
@@ -1082,7 +1052,18 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            tableVehicles = data?.data?.rows;
+            $("#vehicleNumbers").select2({
+              placeholder: "Choose a vehicle",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.vehicle_number,
+                };
+              }),
+            });
+
+            $("#vehicleNumbers").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -1094,7 +1075,6 @@
         });
       }
 
-      let tableDrivers = [];
       function loadDrivers() {
         $.ajax({
           url: "/api/v1/master/driver/get/all",
@@ -1104,7 +1084,18 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            tableDrivers = data?.data?.rows;
+            $("#driverNames").select2({
+              placeholder: "Choose a driver",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.driver_name,
+                };
+              }),
+            });
+
+            $("#driverNames").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -1117,21 +1108,25 @@
       }
 
       function saveDispatch() {
-        const dispatch_master_id =
-          $("#submitDispatch").attr("dispatch_master_id");
+        const dispatch_id = $("#submitDispatch").attr("dispatch_id");
 
-        let url = "/api/v1/master/dispatch/create";
+        let url = "/api/v1/dispatch/create";
         let input_params = {
-          dispatch_name: $("#dispatch_name").val(),
-          description: $("#description").val(),
+          procurement_id: $("#lot_no").attr("procurement_id"),
+          unit_master_id: $("#destinationLocation").val(),
+          dispatch_quantity: $("#dispatch_quantity").val(),
+          temperature: $("#dispatch_temperature").val(),
+          delivery_notes: $("#delivery_notes").val(),
+          vehicle_master_id: $("#vehicleNumbers").val(),
+          driver_master_id: $("#driverNames").val(),
         };
 
-        if (dispatch_master_id) {
-          url = "/api/v1/master/dispatch/update";
+        if (dispatch_id && dispatch_id != "null") {
+          url = "/api/v1/dispatch/update";
 
           input_params = {
-            dispatch_master_id,
-            dispatch_master_data: {
+            dispatch_id,
+            dispatch_data: {
               ...input_params,
             },
           };

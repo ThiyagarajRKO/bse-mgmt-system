@@ -233,6 +233,26 @@ export const GetAll = ({
           {
             required: false,
             model: models.Dispatches,
+            include: [
+              {
+                model: models.UnitMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                model: models.VehicleMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                model: models.DriverMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
             where: {
               is_active: true,
             },

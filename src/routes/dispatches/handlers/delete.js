@@ -1,14 +1,14 @@
 import { Dispatches } from "../../../controllers";
 
-export const Delete = ({ profile_id, unit_master_id }, session, fastify) => {
+export const Delete = ({ profile_id, dispatch_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const unit_master = await Dispatches.Delete({
+      const dispatch = await Dispatches.Delete({
         profile_id,
-        id: unit_master_id,
+        id: dispatch_id,
       });
 
-      if (unit_master > 0) {
+      if (dispatch > 0) {
         return resolve({
           message: "Dispatch data has been deleted successfully",
         });

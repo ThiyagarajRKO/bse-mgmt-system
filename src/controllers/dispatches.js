@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, dispatch_master_data) => {
+export const Insert = async (profile_id, dispatch_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,42 +11,35 @@ export const Insert = async (profile_id, dispatch_master_data) => {
         });
       }
 
-      if (!dispatch_master_data?.procurement_id) {
+      if (!dispatch_data?.procurement_id) {
         return reject({
           statusCode: 420,
           message: "Procurement data must not be empty!",
         });
       }
 
-      if (!dispatch_master_data?.source_unit_master_id) {
+      if (!dispatch_data?.unit_master_id) {
         return reject({
           statusCode: 420,
-          message: "Source location must not be empty!",
+          message: "Unit data must not be empty!",
         });
       }
 
-      if (!dispatch_master_data?.destination_unit_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Destination location must not be empty!",
-        });
-      }
-
-      if (!dispatch_master_data?.vehicle_master_id) {
+      if (!dispatch_data?.vehicle_master_id) {
         return reject({
           statusCode: 420,
           message: "Vehicle details must not be empty!",
         });
       }
 
-      if (!dispatch_master_data?.driver_master_id) {
+      if (!dispatch_data?.driver_master_id) {
         return reject({
           statusCode: 420,
           message: "Driver details must not be empty!",
         });
       }
 
-      const result = await models.Dispatches.create(dispatch_master_data, {
+      const result = await models.Dispatches.create(dispatch_data, {
         profile_id,
       });
       resolve(result);
@@ -59,7 +52,7 @@ export const Insert = async (profile_id, dispatch_master_data) => {
   });
 };
 
-export const Update = async (profile_id, id, dispatch_master_data) => {
+export const Update = async (profile_id, id, dispatch_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -76,14 +69,14 @@ export const Update = async (profile_id, id, dispatch_master_data) => {
         });
       }
 
-      if (!dispatch_master_data) {
+      if (!dispatch_data) {
         return reject({
           statusCode: 420,
           message: "Dispatch data must not be empty!",
         });
       }
 
-      const result = await models.Dispatches.update(dispatch_master_data, {
+      const result = await models.Dispatches.update(dispatch_data, {
         where: {
           id,
           is_active: true,

@@ -17,17 +17,7 @@ module.exports = {
           key: "id",
         },
       },
-      source_unit_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "unit_master" },
-          key: "id",
-        },
-      },
-      destination_unit_master_id: {
+      unit_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",

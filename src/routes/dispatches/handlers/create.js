@@ -4,8 +4,7 @@ export const Create = (
   {
     profile_id,
     procurement_id,
-    source_unit_master_id,
-    destination_unit_master_id,
+    dispatch_id,
     dispatch_quantity,
     temperature,
     delivery_notes,
@@ -17,24 +16,13 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const location_count = await LocationMaster.Count({
-        id: location_master_id,
-      });
-
-      if (location_count == 0) {
-        return reject({
-          statusCode: 420,
-          message: "Invalid location master id!",
-        });
-      }
-
-      const unit_master = await Dispatches.Insert(profile_id, {
+      const dispatch = await Dispatches.Insert(profile_id, {
         procurement_id,
-        source_unit_master_id,
-        destination_unit_master_id,
+        unit_master_id,
         dispatch_quantity,
         temperature,
         delivery_notes,
+        delivery_status: "In Transit",
         vehicle_master_id,
         driver_master_id,
         is_active: true,
@@ -43,7 +31,7 @@ export const Create = (
       resolve({
         message: "Dispatch data has been inserted successfully",
         data: {
-          unit_master_id: unit_master?.id,
+          dispatch_id: dispatch?.id,
         },
       });
     } catch (err) {

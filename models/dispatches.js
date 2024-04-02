@@ -32,15 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Dispatches.belongsTo(models.UnitMaster, {
-        as: "source_unit",
-        foreignKey: "source_unit_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      Dispatches.belongsTo(models.UnitMaster, {
-        as: "destination_unit",
-        foreignKey: "destination_unit_master_id",
+        foreignKey: "unit_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });

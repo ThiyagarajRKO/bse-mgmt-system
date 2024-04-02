@@ -1,13 +1,13 @@
 import { Dispatches } from "../../../controllers";
 
-export const Get = ({ unit_master_id }, session, fastify) => {
+export const Get = ({ dispatch_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let unit_master = await Dispatches.Get({
-        id: unit_master_id,
+      let dispatch = await Dispatches.Get({
+        id: dispatch_id,
       });
 
-      if (!unit_master) {
+      if (!dispatch) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -15,7 +15,7 @@ export const Get = ({ unit_master_id }, session, fastify) => {
       }
 
       resolve({
-        data: unit_master,
+        data: dispatch,
       });
     } catch (err) {
       fastify.log.error(err);

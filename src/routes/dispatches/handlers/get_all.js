@@ -15,7 +15,7 @@ export const GetAll = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let unit_master = await Dispatches.GetAll({
+      let dispatch = await Dispatches.GetAll({
         start,
         length,
         unit_code,
@@ -25,7 +25,7 @@ export const GetAll = (
         search,
       });
 
-      if (!unit_master) {
+      if (!dispatch) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -33,7 +33,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: unit_master,
+        data: dispatch,
       });
     } catch (err) {
       fastify.log.error(err);
