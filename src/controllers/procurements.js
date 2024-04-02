@@ -296,6 +296,31 @@ export const Count = ({ id }) => {
   });
 };
 
+export const CountAll = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const procurement_count = await models.Procurements.count({
+        where: {
+          is_active: true,
+        },
+      });
+
+      const dispatch_count = await models.Dispatches.count({
+        where: {
+          is_active: true,
+        },
+      });
+
+      resolve({
+        procurement_count,
+        dispatch_count,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {

@@ -4,7 +4,7 @@ export const Create = (
   {
     profile_id,
     procurement_id,
-    dispatch_id,
+    unit_master_id,
     dispatch_quantity,
     temperature,
     delivery_notes,

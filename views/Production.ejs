@@ -187,9 +187,9 @@
         color: #ea5455;
       }
 
-      #dispatchTable_wrapper {
-        /* margin-top: 60px !important; */
-      }
+      /* #dispatchTable_wrapper {
+        margin-top: 60px !important;
+      } */
 
       .slideInPanel {
         z-index: 9999;
@@ -295,7 +295,7 @@
                 cx="40"
                 cy="40"
                 r="35"
-                style="stroke-dashoffset: 39.58406743523136"
+                style="stroke-dashoffset: 0"
               ></circle>
               <text
                 id="dispatchPercentage"
@@ -304,7 +304,7 @@
                 y="57%"
                 transform="matrix(0, 1, -1, 0, 80, 0)"
               >
-                82%
+                0%
               </text>
             </svg>
             <span class="fs-6 fw-bold">Dispatch</span>
@@ -340,7 +340,7 @@
                 cx="40"
                 cy="40"
                 r="35"
-                style="stroke-dashoffset: 39.58406743523136"
+                style="stroke-dashoffset: 0"
               ></circle>
               <text
                 id="preprocessingPercentage"
@@ -349,7 +349,7 @@
                 y="57%"
                 transform="matrix(0, 1, -1, 0, 80, 0)"
               >
-                82%
+                0%
               </text>
             </svg>
             <span class="fs-6 fw-bold">Peeling</span>
@@ -385,7 +385,7 @@
                 cx="40"
                 cy="40"
                 r="35"
-                style="stroke-dashoffset: 39.58406743523136"
+                style="stroke-dashoffset: 0"
               ></circle>
               <text
                 id="preprocessingDispatchPercentage"
@@ -394,7 +394,7 @@
                 y="57%"
                 transform="matrix(0, 1, -1, 0, 80, 0)"
               >
-                82%
+                0%
               </text>
             </svg>
             <span class="fs-6 fw-bold">Dispatch</span>
@@ -430,7 +430,7 @@
                 cx="40"
                 cy="40"
                 r="35"
-                style="stroke-dashoffset: 39.58406743523136"
+                style="stroke-dashoffset: 0"
               ></circle>
               <text
                 id="packingPercentage"
@@ -439,7 +439,7 @@
                 y="57%"
                 transform="matrix(0, 1, -1, 0, 80, 0)"
               >
-                82%
+                0%
               </text>
             </svg>
             <span class="fs-6 fw-bold">Packing</span>
@@ -702,21 +702,57 @@
         loadDrivers();
       }
 
-      // Progress Bar function
-      changePercentage("dispatchCircle", "dispatchPercentage", null, 0);
-      changePercentage(
-        "preprocessingCircle",
-        "preprocessingPercentage",
-        "preprocessingHR",
-        0
-      );
-      changePercentage(
-        "preprocessingDispatchCircle",
-        "preprocessingDispatchPercentage",
-        "preprocessingDispatchHR",
-        0
-      );
-      changePercentage("packingCircle", "packingPercentage", "packingHR", 0);
+      // Getting data for progress bars
+      loadPercentages();
+      function loadPercentages() {
+        $.ajax({
+          url: "/api/v1/procurement/count/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            // Progress Bar function
+
+            // Calculating Dispatch Percentage
+            const procurement_percentage = data?.data?.procurement_count || 0;
+            const dispatch_percentage = data?.data?.dispatch_count || 0;
+
+            changePercentage(
+              "dispatchCircle",
+              "dispatchPercentage",
+              null,
+              parseInt((dispatch_percentage / procurement_percentage) * 100)
+            );
+            changePercentage(
+              "preprocessingCircle",
+              "preprocessingPercentage",
+              "preprocessingHR",
+              0
+            );
+            changePercentage(
+              "preprocessingDispatchCircle",
+              "preprocessingDispatchPercentage",
+              "preprocessingDispatchHR",
+              0
+            );
+            changePercentage(
+              "packingCircle",
+              "packingPercentage",
+              "packingHR",
+              0
+            );
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
 
       // Open Location on load (default)
       $(".menu-container").addClass("d-none");
@@ -1144,6 +1180,8 @@
             toastr["success"](data?.message);
 
             $("#closeDispatchPanelBtn").click();
+
+            loadPercentages();
 
             loadDispatchTableData();
 
