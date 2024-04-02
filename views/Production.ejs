@@ -182,7 +182,7 @@
         color: #ea5455;
       }
 
-      .topMenu-item:hover:not(.active-topMenu-item) {
+      .topMenu-item:hover:not(.topMenu-item-active) {
         /* box-shadow: 0 -2px 0 0 #ea5455; */
         color: #ea5455;
       }
@@ -342,10 +342,10 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6">Dispatch</span>
+            <span class="heading fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6"
+              class="fs-6 weight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -387,10 +387,10 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6">Peeling</span>
+            <span class="heading fs-6">Peeling</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6"
+              class="fs-6 weight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -432,10 +432,10 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6">Dispatch</span>
+            <span class="heading fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6"
+              class="fs-6 weight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -477,10 +477,10 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6">Packing</span>
+            <span class="heading fs-6">Packing</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6"
+              class="fs-6 weight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -760,24 +760,28 @@
             const dispatch_percentage = data?.data?.dispatch_count || 0;
 
             changePercentage(
+              "dispatchMenu",
               "dispatchCircle",
               "dispatchPercentage",
               null,
               parseInt((dispatch_percentage / procurement_percentage) * 100)
             );
             changePercentage(
+              "preprocessingMenu",
               "preprocessingCircle",
               "preprocessingPercentage",
               "preprocessingHR",
               0
             );
             changePercentage(
+              "preprocessingDispatchMenu",
               "preprocessingDispatchCircle",
               "preprocessingDispatchPercentage",
               "preprocessingDispatchHR",
               0
             );
             changePercentage(
+              "packingMenu",
               "packingCircle",
               "packingPercentage",
               "packingHR",
@@ -829,6 +833,7 @@
         $(".dispatchContainer").removeClass("d-none");
         $(".dispatchContainer").addClass("d-block");
 
+        loadPercentages();
         loadDropdowns();
         loadDispatchTableData();
       });
@@ -1241,7 +1246,13 @@
       $("#resetDispatchDataBtn").on("click", resetAllInputs);
       // -------------------- End of Dispatch -----------------
 
-      function changePercentage(circle_id, percentage_id, hr_id, percent) {
+      function changePercentage(
+        main_id,
+        circle_id,
+        percentage_id,
+        hr_id,
+        percent
+      ) {
         $(`#${circle_id}`).attr("data-percentage", percent);
         $(`#${percentage_id}`).text(`${percent}%`);
         // Get radius of the svg's circle.complete
@@ -1257,6 +1268,31 @@
 
         if (percent > 0) {
           $(`#${hr_id}`).css({ opacity: "0.8" });
+
+          if (percent == 100) {
+            $(`.${main_id}`)
+              .find($("circle.complete"))
+              .css({ stroke: "green" });
+            $(`.${main_id}`).find("text").css({ fill: "green" });
+            $(`.${main_id}`).find(".heading").css({ color: "green" });
+            $(`.${main_id}`).find(".weight").css({ color: "green" });
+          } else {
+            if ($(`.${main_id}`).hasClass("topMenu-item-active")) {
+              $(`.${main_id}`)
+                .find($("circle.complete"))
+                .css({ stroke: "#1f2d3e" });
+              $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
+              $(`.${main_id}`).find(".heading").css({ color: "#ea5455" });
+              $(`.${main_id}`).find(".weight").css({ color: "#ea5455" });
+            } else {
+              $(`.${main_id}`)
+                .find($("circle.complete"))
+                .css({ stroke: "#1f2d3e" });
+              $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
+              $(`.${main_id}`).find(".heading").css({ color: "#1f2d3e" });
+              $(`.${main_id}`).find(".weight").css({ color: "#1f2d3e" });
+            }
+          }
         } else {
           $(`#${hr_id}`).css({ opacity: "0.2" });
         }
