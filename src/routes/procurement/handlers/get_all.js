@@ -9,10 +9,10 @@ export const GetAll = (
     procurement_price,
     procurement_totalamount,
     procurement_purchaser,
-    location_master_name,
     product_master_name,
     species_master_name,
     vendor_master_name,
+    unit_master_name,
   },
   session,
   fastify
@@ -27,10 +27,10 @@ export const GetAll = (
         procurement_price,
         procurement_totalamount,
         procurement_purchaser,
-        location_master_name,
         product_master_name,
         species_master_name,
         vendor_master_name,
+        unit_master_name,
       });
 
       if (!procurement) {

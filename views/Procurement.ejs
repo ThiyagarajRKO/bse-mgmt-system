@@ -348,12 +348,13 @@
                     required
                   />
                 </div>
+
                 <div class="form-group my-2">
-                  <label for="procurement_location">Location</label>
+                  <label for="procurement_unit">Purchase Source</label>
                   <select
-                    id="procurement_location"
+                    id="procurement_unit"
                     class="form-control input-dropdown w-100"
-                    name="procurementLocation"
+                    name="procurement_unit"
                     required
                   ></select>
                 </div>
@@ -452,7 +453,7 @@
                   <th></th>
                   <th class="fw-bold"><span>Purchase Date</span></th>
                   <th class="fw-bold"><span>Lot no</span></th>
-                  <th class="fw-bold"><span>Location</span></th>
+                  <th class="fw-bold"><span>Purchase Source</span></th>
                   <th class="fw-bold"><span>Product</span></th>
                   <th class="fw-bold"><span>Product Type</span></th>
                   <th class="fw-bold"><span>Quantity(kgs)</span></th>
@@ -575,6 +576,7 @@
 
         // Resetting select field selected option
         $("#procurement_location").val(null).trigger("change");
+        $("#procurement_unit").val(null).trigger("change");
         $("#procurement_product").val(null).trigger("change");
         $("#procurement_product_type").val(null).trigger("change");
         $("#procurement_product_supplier").val(null).trigger("change");
@@ -614,10 +616,10 @@
       loadDropdowns();
 
       function loadDropdowns() {
-        loadProcurementLocations();
         loadProcurementProductType();
         loadProcurementProducts();
         loadProcurementSuppliers();
+        loadProcurementUnits();
       }
 
       // ---------------------------------------------------------
@@ -688,7 +690,7 @@
             { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "LocationMaster.location_name" },
+            { data: "UnitMaster.unit_name" },
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
@@ -751,7 +753,9 @@
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span location_master_id='${row["LocationMaster"]?.id}'>${data}</span>`;
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${
+                  row["UnitMaster"]?.unit_code || ""
+                }</span>`;
               },
             },
             {
@@ -820,14 +824,15 @@
               )
             )
             .trigger("change");
-          $("#procurement_location")
+
+          $("#procurement_unit")
             .val(
               $(e.target)
                 .closest("tr")
                 .children("td")
                 .eq(4)
                 .find("span")
-                .attr("location_master_id")
+                .attr("unit_master_id")
             )
             .trigger("change");
 
@@ -983,41 +988,6 @@
         $("#procurement_product_type").val(null).trigger("change");
       }
 
-      function loadProcurementLocations() {
-        // Load Locations
-        $.ajax({
-          url: "/api/v1/master/location/get/all",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_location").select2({
-              placeholder: "Choose a location",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.location_name,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_location").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
       function loadProcurementProducts() {
         // Load Products
         $.ajax({
@@ -1042,6 +1012,41 @@
 
             // Clearing selected value
             $("#procurement_product").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadProcurementUnits() {
+        // Load Products
+        $.ajax({
+          url: `/api/v1/master/unit/get/all?unit_type=Collection Center`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            // Loading data
+            $("#procurement_unit").select2({
+              placeholder: "Choose an unit",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            // Clearing selected value
+            $("#procurement_unit").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -1093,7 +1098,7 @@
         let url = "/api/v1/procurement/create";
         let input_params = {
           procurement_date: $("#procurement_date").val(),
-          location_master_id: $("#procurement_location").val(),
+          unit_master_id: $("#procurement_unit").val(),
           product_master_id: $("#procurement_product").val(),
           product_master_name: $("#procurementProduct").val(),
           procurement_product_type: $("#procurement_product_type").val(),

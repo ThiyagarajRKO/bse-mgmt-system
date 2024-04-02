@@ -1,10 +1,15 @@
-import { LocationMaster, Procurement, ProductMaster, VendorMaster } from "../../../controllers";
+import {
+  LocationMaster,
+  Procurement,
+  ProductMaster,
+  VendorMaster,
+} from "../../../controllers";
 
 export const Create = (
   {
     profile_id,
     procurement_date,
-    location_master_id,
+    unit_master_id,
     procurement_lot,
     procurement_product_name,
     procurement_product_type,
@@ -13,7 +18,7 @@ export const Create = (
     procurement_totalamount,
     procurement_purchaser,
     vendor_master_id,
-    product_master_id
+    product_master_id,
   },
   session,
   fastify
@@ -30,16 +35,7 @@ export const Create = (
           message: "Invalid vendor master id!",
         });
       }
-      const location_count = await LocationMaster.Count({
-        id: location_master_id,
-      });
 
-      if (location_count == 0) {
-        return reject({
-          statusCode: 420,
-          message: "Invalid location master id!",
-        });
-      }
       const product_count = await ProductMaster.Count({
         id: product_master_id,
       });
@@ -54,7 +50,7 @@ export const Create = (
       const purchase = await Procurement.Insert(profile_id, {
         procurement_date,
         procurement_lot,
-        location_master_id,
+        unit_master_id,
         procurement_product_name,
         procurement_product_type,
         procurement_quantity,
@@ -69,7 +65,7 @@ export const Create = (
       resolve({
         message: "Procurement has been inserted successfully",
         data: {
-          procurement_id: Procurement?.id,
+          procurement_id: purchase?.id,
         },
       });
     } catch (err) {

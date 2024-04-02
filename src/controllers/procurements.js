@@ -18,10 +18,10 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.location_master_id) {
+      if (!procurement_data?.unit_master_id) {
         return reject({
           statusCode: 420,
-          message: "Purchase location id must not be empty!",
+          message: "Purchase unit id must not be empty!",
         });
       }
 
@@ -145,13 +145,13 @@ export const Get = ({ id }) => {
 export const GetAll = ({
   procurement_date,
   procurement_lot,
-  location_master_name,
   product_master_name,
   procurement_product_type,
   procurement_quantity,
   procurement_price,
   procurement_totalamount,
   vendor_master_name,
+  unit_master_name,
   procurement_purchaser,
   start,
   length,
@@ -192,14 +192,6 @@ export const GetAll = ({
         where.procurement_purchaser = { [Op.iLike]: procurement_purchaser };
       }
 
-      let locationWhere = {
-        is_active: true,
-      };
-
-      if (location_master_name) {
-        locationWhere.location_name = { [Op.iLike]: location_master_name };
-      }
-
       let productWhere = {
         is_active: true,
       };
@@ -216,11 +208,19 @@ export const GetAll = ({
         vendorWhere.vendor_name = { [Op.iLike]: vendor_master_name };
       }
 
+      let unitWhere = {
+        is_active: true,
+      };
+
+      if (unit_master_name) {
+        unitWhere.unit_name = { [Op.iLike]: unit_master_name };
+      }
+
       const procurements = await models.Procurements.findAndCountAll({
         include: [
           {
-            model: models.LocationMaster,
-            where: locationWhere,
+            model: models.UnitMaster,
+            where: unitWhere,
           },
           {
             model: models.ProductMaster,

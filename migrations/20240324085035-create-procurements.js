@@ -72,13 +72,13 @@ module.exports = {
           key: "id",
         },
       },
-      location_master_id: {
+      unit_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "location_master" },
+          model: { tableName: "unit_master" },
           key: "id",
         },
       },

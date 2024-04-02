@@ -21,8 +21,9 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurements.belongsTo(models.LocationMaster, {
-        foreignKey: "location_master_id",
+
+      Procurements.belongsTo(models.UnitMaster, {
+        foreignKey: "unit_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -113,9 +114,9 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   Procurements.beforeCreate(async (data, options) => {
     try {
-      const { location_name } = await sequelize.models.LocationMaster.findOne({
-        attributes: ["location_name"],
-        where: { id: data?.location_master_id, is_active: true },
+      const { unit_name } = await sequelize.models.UnitMaster.findOne({
+        attributes: ["unit_name"],
+        where: { id: data?.unit_master_id, is_active: true },
       });
 
       const { product_name } = await sequelize.models.ProductMaster.findOne({
@@ -130,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
       const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
       // Construct the procurement_lot in YYYYMMDD format
-      data.procurement_lot = `${location_name
+      data.procurement_lot = `${unit_name
         ?.trim()
         ?.substring(0, 3)
         ?.replaceAll(" ", "")
@@ -152,9 +153,9 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   Procurements.beforeUpdate(async (data, options) => {
     try {
-      const { location_name } = await sequelize.models.LocationMaster.findOne({
-        attributes: ["location_name"],
-        where: { id: data?.location_master_id, is_active: true },
+      const { unit_name } = await sequelize.models.UnitMaster.findOne({
+        attributes: ["unit_name"],
+        where: { id: data?.unit_master_id, is_active: true },
       });
 
       const { product_name } = await sequelize.models.ProductMaster.findOne({
@@ -169,7 +170,7 @@ module.exports = (sequelize, DataTypes) => {
       const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
       // Construct the procurement_lot in YYYYMMDD format
-      data.procurement_lot = `${location_name
+      data.procurement_lot = `${unit_name
         ?.trim()
         ?.substring(0, 3)
         ?.replaceAll(" ", "")

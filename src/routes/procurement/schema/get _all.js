@@ -6,7 +6,7 @@ export const getAllSchema = {
       properties: {
         procurement_date: { type: "string", format: "date" },
         procurement_lot: { type: "string" },
-        procurement_location: { type: "string" },
+        procurement_unit: { type: "string" },
         procurement_species: { type: "string" },
         procurement_product: { type: "string" },
         procurement_product_type: { type: "string" },

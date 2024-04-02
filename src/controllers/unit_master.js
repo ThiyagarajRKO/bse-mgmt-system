@@ -132,7 +132,7 @@ export const GetAll = ({
       }
 
       if (unit_type) {
-        where.unit_type = { [Op.iLike]: `%${unit_type}%` };
+        where.unit_type = unit_type;
       }
 
       let locationWhere = {

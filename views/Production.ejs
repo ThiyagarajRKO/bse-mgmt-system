@@ -218,12 +218,12 @@
         width: 100% !important;
       }
 
-      .select2-selection__rendered,
+      /* .select2-selection__rendered,
       .select2-selection__clear,
       .select2-selection__arrow {
         color: white !important;
         margin-top: 0.25rem !important;
-      }
+      } */
 
       .slideInPanel .select:focus {
         background-color: transparent;
@@ -610,7 +610,7 @@
   </body>
 
   <script type="text/javascript">
-    jQuery(document).ready(function ($) {
+    jQuery(document).ready(async function ($) {
       // Declarations
       toastr.options = {
         closeButton: false,
@@ -703,6 +703,9 @@
 
       function loadDropdowns() {
         // Pre loading dropdown data
+        loadUnits();
+        loadVehicles();
+        loadDrivers();
       }
 
       // Progress Bar function
@@ -727,6 +730,7 @@
       $(".dispatchContainer").removeClass("d-none");
       $(".dispatchContainer").addClass("d-block");
 
+      await loadDropdowns();
       loadDispatchTableData();
 
       // ---------------------------------------------------------
@@ -749,12 +753,13 @@
         closeSlidePanel("dispatchSlideInPanel");
       });
 
-      $(".dispatchMenu").click(function () {
+      $(".dispatchMenu").click(async function () {
         $(".menu-container").addClass("d-none");
 
         $(".dispatchContainer").removeClass("d-none");
         $(".dispatchContainer").addClass("d-block");
 
+        await loadDropdowns();
         loadDispatchTableData();
       });
 
@@ -796,7 +801,7 @@
           columns: [
             { data: null },
             { data: "procurement_lot" },
-            { data: null },
+            { data: "UnitMaster.unit_code" },
             { data: null },
             { data: "procurement_product_name" },
             { data: null },
@@ -850,19 +855,20 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span source_unit_master_id='${
-                  row["Dispatches"]?.["source_unit"]?.id
-                }'>${row["Dispatches"]?.["source_unit"]?.unit_name || ""}</i>`;
+                  row["UnitMaster"]?.id
+                }'>${row["UnitMaster"]?.unit_code || ""}</i>`;
               },
             },
             {
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span destination_unit_master_id='${
-                  row["Dispatches"]?.["destination_unit"]?.id
-                }'>${
+                return `<select class="destinationUnit-table form-control input-dropdown w-100"
+                    name="destinationUnit" destination_unit_master_id='${
+                      row["Dispatches"]?.["destination_unit"]?.id
+                    }' value=${
                   row["Dispatches"]?.["destination_unit"]?.unit_name || ""
-                }</i>`;
+                }></select>`;
               },
             },
             {
@@ -887,22 +893,20 @@
               targets: [7],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span driver_master_id='${
-                  row["Dispatches"]?.["VehicleMaster"]?.id
-                }'>${
-                  row["Dispatches"]?.["VehicleMaster"]?.vehicle_name || ""
-                }</i>`;
+                return `<select class="destinationVehicle-table form-control input-dropdown w-100"
+                    name="destinationVehicle" value=${
+                      row["Dispatches"]?.["VehicleMaster"]?.vehicle_name || ""
+                    }></select>`;
               },
             },
             {
               targets: [8],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span driver_master_id='${
-                  row["Dispatches"]?.["DriverMaster"]?.id
-                }'>${
-                  row["Dispatches"]?.["DriverMaster"]?.driver_name || ""
-                }</i>`;
+                return `<select class="destinationDriver-table form-control input-dropdown w-100"
+                    name="destinationDriver" value=${
+                      row["Dispatches"]?.["DriverMaster"]?.driver_name || ""
+                    }></select>`;
               },
             },
             {
@@ -922,9 +926,51 @@
               },
             },
           ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
+          drawCallback: () => {
+            // Loading Units
+            $(".destinationUnit-table").select2({
+              placeholder: "Choose a destination",
+              allowClear: "true",
+              data: $.map(tableUnits, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            $(".destinationUnit-table").val(null).trigger("change");
+
+            // Loading Vehicles
+            $(".destinationVehicle-table").select2({
+              placeholder: "Choose a vehicle",
+              allowClear: "true",
+              data: $.map(tableVehicles, function (item) {
+                return {
+                  id: item.id,
+                  text: item.vehicle_number,
+                };
+              }),
+            });
+
+            $(".destinationVehicle-table").val(null).trigger("change");
+
+            // Loading Vehicles
+            $(".destinationDriver-table").select2({
+              placeholder: "Choose a driver",
+              allowClear: "true",
+              data: $.map(tableDrivers, function (item) {
+                return {
+                  id: item.id,
+                  text: item.driver_name,
+                };
+              }),
+            });
+
+            $(".destinationDriver-table").val(null).trigger("change");
+
+            $(document).on("change", ".destinationUnit-table", () => {});
+          },
         });
       }
 
@@ -1003,6 +1049,72 @@
           },
         });
       });
+
+      let tableUnits = [];
+      function loadUnits() {
+        $.ajax({
+          url: "/api/v1/master/unit/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            tableUnits = data?.data?.rows;
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      let tableVehicles = [];
+      function loadVehicles() {
+        $.ajax({
+          url: "/api/v1/master/vehicle/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            tableVehicles = data?.data?.rows;
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      let tableDrivers = [];
+      function loadDrivers() {
+        $.ajax({
+          url: "/api/v1/master/driver/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            tableDrivers = data?.data?.rows;
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
 
       function saveDispatch() {
         const dispatch_master_id =
