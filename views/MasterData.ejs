@@ -276,6 +276,21 @@
     .select2-dropdown {
       z-index: 10000 !important;
     }
+
+     /* Table */
+      table.dataTable thead tr {
+        background-color: #1f2d3e;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      table.dataTable thead tr th {
+        color: rgb(228, 228, 255);
+      }
+
+      table.dataTable tbody tr:hover:not(.dt-empty) {
+        background-color: #ffe3e3;
+      }
   </style>
 </head>
 
@@ -429,14 +444,14 @@
             </div>
           </div>
 
-          <table id="divisionTable" class="table table-hover nowrap w-100">
+          <table id="divisionTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Division Name</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Division Name</span></th>
+                <th class=""><span>Description</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -500,14 +515,14 @@
             </div>
           </div>
 
-          <table id="locationTable" class="table table-hover nowrap w-100">
+          <table id="locationTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Location Name</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Location Name</span></th>
+                <th class=""><span>Description</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -578,16 +593,16 @@
             </div>
           </div>
 
-          <table id="unitTable" class="table table-hover nowrap w-100">
+          <table id="unitTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Unit Code</span></th>
-                <th class="fw-bold"><span>Unit Name</span></th>
-                <th class="fw-bold"><span>Unit Type</span></th>
-                <th class="fw-bold"><span>Location Name</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Unit Code</span></th>
+                <th class=""><span>Unit Name</span></th>
+                <th class=""><span>Unit Type</span></th>
+                <th class=""><span>Location Name</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -676,18 +691,18 @@
             </div>
           </div>
 
-          <table id="vendorTable" class="table table-hover nowrap w-100">
+          <table id="vendorTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Vendor Name</span></th>
-                <th class="fw-bold"><span>Location</span></th>
-                <th class="fw-bold"><span>Representative</span></th>
-                <th class="fw-bold"><span>Phone</span></th>
-                <th class="fw-bold"><span>Email</span></th>
-                <th class="fw-bold"><span>Address</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Vendor Name</span></th>
+                <th class=""><span>Location</span></th>
+                <th class=""><span>Representative</span></th>
+                <th class=""><span>Phone</span></th>
+                <th class=""><span>Email</span></th>
+                <th class=""><span>Address</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -788,20 +803,20 @@
             </div>
           </div>
 
-          <table id="packagingTable" class="table table-hover nowrap w-100">
+          <table id="packagingTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Code</span></th>
-                <th class="fw-bold"><span>Type</span></th>
-                <th class="fw-bold"><span>Length (cms)</span></th>
-                <th class="fw-bold"><span>Width (cms)</span></th>
-                <th class="fw-bold"><span>Height (cms)</span></th>
-                <th class="fw-bold"><span>Weight (kgs)</span></th>
-                <th class="fw-bold"><span>Material Composition</span></th>
-                <th class="fw-bold"><span>Supplier</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Code</span></th>
+                <th class=""><span>Type</span></th>
+                <th class=""><span>Length (cms)</span></th>
+                <th class=""><span>Width (cms)</span></th>
+                <th class=""><span>Height (cms)</span></th>
+                <th class=""><span>Weight (kgs)</span></th>
+                <th class=""><span>Material Composition</span></th>
+                <th class=""><span>Supplier</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -885,17 +900,17 @@
             </div>
           </div>
 
-          <table id="speciesTable" class="table table-hover nowrap w-100">
+          <table id="speciesTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Species Code</span></th>
-                <th class="fw-bold"><span>Division Name</span></th>
-                <th class="fw-bold"><span>Species Name</span></th>
-                <th class="fw-bold"><span>Scientific Name</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Species Code</span></th>
+                <th class=""><span>Division Name</span></th>
+                <th class=""><span>Species Name</span></th>
+                <th class=""><span>Scientific Name</span></th>
+                <th class=""><span>Description</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -959,14 +974,14 @@
             </div>
           </div>
 
-          <table id="gradeTable" class="table table-hover nowrap w-100">
+          <table id="gradeTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Grade Name</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Grade Name</span></th>
+                <th class=""><span>Description</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -1030,14 +1045,14 @@
             </div>
           </div>
 
-          <table id="sizeTable" class="table table-hover nowrap w-100">
+          <table id="sizeTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Size</span></th>
-                <th class="fw-bold"><span>Description</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Size</span></th>
+                <th class=""><span>Description</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -1108,16 +1123,16 @@
             </div>
           </div>
 
-          <table id="productTable" class="table table-hover nowrap w-100">
+          <table id="productTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Product Name</span></th>
-                <th class="fw-bold"><span>Species Name</span></th>
-                <th class="fw-bold"><span>Product Category</span></th>
-                <th class="fw-bold"><span>Size</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Product Name</span></th>
+                <th class=""><span>Species Name</span></th>
+                <th class=""><span>Product Category</span></th>
+                <th class=""><span>Size</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -1194,16 +1209,16 @@
             </div>
           </div>
 
-          <table id="inventoryTable" class="table table-hover nowrap w-100">
+          <table id="inventoryTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Inventory Name</span></th>
-                <th class="fw-bold"><span>Unit of Measure</span></th>
-                <th class="fw-bold"><span>Category</span></th>
-                <th class="fw-bold"><span>Supplier</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Inventory Name</span></th>
+                <th class=""><span>Unit of Measure</span></th>
+                <th class=""><span>Category</span></th>
+                <th class=""><span>Supplier</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -1295,19 +1310,19 @@
             </div>
           </div>
 
-          <table id="vehicleTable" class="table table-hover nowrap w-100">
+          <table id="vehicleTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Vehicle Number</span></th>
-                <th class="fw-bold"><span>Vehicle Brand</span></th>
-                <th class="fw-bold"><span>Model Number</span></th>
-                <th class="fw-bold"><span>Insurance Provider</span></th>
-                <th class="fw-bold"><span>Insurance Number</span></th>
-                <th class="fw-bold"><span>Insurance Expiring On</span></th>
-                <th class="fw-bold"><span>Last FC Date</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Vehicle Number</span></th>
+                <th class=""><span>Vehicle Brand</span></th>
+                <th class=""><span>Model Number</span></th>
+                <th class=""><span>Insurance Provider</span></th>
+                <th class=""><span>Insurance Number</span></th>
+                <th class=""><span>Insurance Expiring On</span></th>
+                <th class=""><span>Last FC Date</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
@@ -1411,20 +1426,20 @@
             </div>
           </div>
 
-          <table id="driverTable" class="table table-hover nowrap w-100">
+          <table id="driverTable" class="table table-hover nowrap w-100 my-2">
             <thead>
               <tr>
+                <th style="border-radius: 4px 0 0 0"></th>
                 <th></th>
-                <th></th>
-                <th class="fw-bold"><span>Driver Name</span></th>
-                <th class="fw-bold"><span>License Number</span></th>
-                <th class="fw-bold"><span>Phone</span></th>
-                <th class="fw-bold"><span>Emergency Contact</span></th>
-                <th class="fw-bold"><span>Aadhar Number</span></th>
-                <th class="fw-bold"><span>Blood Group</span></th>
-                <th class="fw-bold"><span>Health History</span></th>
-                <th class="fw-bold"><span>Address</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th class=""><span>Driver Name</span></th>
+                <th class=""><span>License Number</span></th>
+                <th class=""><span>Phone</span></th>
+                <th class=""><span>Emergency Contact</span></th>
+                <th class=""><span>Aadhar Number</span></th>
+                <th class=""><span>Blood Group</span></th>
+                <th class=""><span>Health History</span></th>
+                <th class=""><span>Address</span></th>
+                <th style="border-radius: 0 4px 0 0" class=""><span>Created At</span></th>
               </tr>
             </thead>
           </table>
