@@ -275,7 +275,7 @@
       }
 
       /* Table */
-      table.dataTable thead tr {
+      /* table.dataTable thead tr {  
         background-color: #1f2d3e;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -287,7 +287,7 @@
 
       table.dataTable tbody tr:hover:not(.dt-empty) {
         background-color: #ffe3e3;
-      }
+      } */
 
       /* table.dataTable tbody tr:hover td {
         color: rgb(228, 228, 255);
@@ -622,17 +622,19 @@
                 <thead>
                   <tr>
                     <th style="border-radius: 4px 0 0 0"></th>
-                    <th class=""><span>Dispatch Date</span></th>
-                    <th class=""><span>Dispatch Lot</span></th>
-                    <th class=""><span>Dispatch Source</span></th>
-                    <th class=""><span>Dispatch Destination</span></th>
-                    <th class=""><span>Product Name</span></th>
-                    <th class=""><span>Quantity</span></th>
-                    <th class=""><span>Temperature</span></th>
-                    <th class=""><span>Vehicle Number</span></th>
-                    <th class=""><span>Driver Name</span></th>
-                    <th class=""><span>Delivery Status</span></th>
-                    <th style="border-radius: 0 4px 0 0" class="">
+                    <th class="fw-bold"><span>Dispatch Date</span></th>
+                    <th class="fw-bold"><span>Dispatch Lot</span></th>
+                    <th class="fw-bold"><span>Dispatch Source</span></th>
+                    <th class="fw-bold"><span>Dispatch Destination</span></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold"><span>Purchased Quantity</span></th>
+                    <th class="fw-bold"><span>Balance Quantity</span></th>
+                    <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                    <th class="fw-bold"><span>Temperature</span></th>
+                    <th class="fw-bold"><span>Vehicle Number</span></th>
+                    <th class="fw-bold"><span>Driver Name</span></th>
+                    <th class="fw-bold"><span>Delivery Status</span></th>
+                    <th style="border-radius: 0 4px 0 0" class="fw-bold">
                       <span>Delivery Notes</span>
                     </th>
                   </tr>
@@ -881,6 +883,8 @@
             { data: "UnitMaster.unit_code" },
             { data: null },
             { data: "procurement_product_name" },
+            { data: "procurement_quantity" },
+            { data: null },
             { data: null },
             { data: null },
             { data: null },
@@ -960,20 +964,38 @@
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span>${
-                  row["Dispatch"]?.dispatch_quantity || ""
-                }</span>`;
+                return row?.adjusted_quantity || row?.procurement_quantity;
               },
             },
             {
               targets: [7],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span>${row["Dispatch"]?.temperature || ""}</span>`;
+                return (
+                  parseFloat(
+                    row?.adjusted_quantity || row?.procurement_quantity
+                  ) - parseFloat(row["Dispatch"]?.dispatch_quantity || 0)
+                );
               },
             },
             {
               targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span>${
+                  row["Dispatch"]?.dispatch_quantity || ""
+                }</span>`;
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span>${row["Dispatch"]?.temperature || ""}</span>`;
+              },
+            },
+            {
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span vehicle_master_id='${
@@ -984,7 +1006,7 @@
               },
             },
             {
-              targets: [9],
+              targets: [11],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span driver_master_id='${
@@ -993,14 +1015,14 @@
               },
             },
             {
-              targets: [10],
+              targets: [12],
               className: "text-left",
               render: function (data, type, row) {
                 return row["Dispatch"]?.delivery_status || "";
               },
             },
             {
-              targets: [11],
+              targets: [13],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span>${row["Dispatch"]?.delivery_notes || ""}</span>`;
@@ -1036,11 +1058,11 @@
         );
 
         $("#dispatch_quantity").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(8).text()
         );
 
         $("#dispatch_temperature").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
+          $(e.target).closest("tr").children("td").eq(9).text()
         );
 
         $("#vehicleNumbers")
@@ -1048,7 +1070,7 @@
             $(e.target)
               .closest("tr")
               .children("td")
-              .eq(8)
+              .eq(10)
               .find("span")
               .attr("vehicle_master_id")
           )
@@ -1059,14 +1081,14 @@
             $(e.target)
               .closest("tr")
               .children("td")
-              .eq(9)
+              .eq(11)
               .find("span")
               .attr("driver_master_id")
           )
           .trigger("change");
 
         $("#delivery_notes").val(
-          $(e.target).closest("tr").children("td").eq(11).text()
+          $(e.target).closest("tr").children("td").eq(13).text()
         );
 
         // Opening Slied Panel
