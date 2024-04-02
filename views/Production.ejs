@@ -273,6 +273,41 @@
       .select2-selection::placeholder {
         color: #627293;
       }
+
+      /* Table */
+      table.dataTable thead tr {
+        background-color: #1f2d3e;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      table.dataTable thead tr th {
+        color: rgb(228, 228, 255);
+      }
+
+      table.dataTable tbody tr:hover:not(.dt-empty) {
+        background-color: #ffe3e3;
+      }
+
+      /* table.dataTable tbody tr:hover td {
+        color: rgb(228, 228, 255);
+      } */
+
+      /* table.dataTable tbody tr:hover > .sorting_1 {
+        background-color: #ffa;
+      } */
+      /* 
+      table.dataTable tbody tr:nth-child(odd) td {
+        background-color: white;
+      }
+
+      table.dataTable tbody tr:nth-child(even) {
+        background-color: #ffcdd2;
+      } */
+
+      /* table.dataTable tbody tr:nth-child(even) td {
+        color: white;
+      } */
     </style>
   </head>
 
@@ -307,7 +342,7 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6 fw-bold">Dispatch</span>
+            <span class="fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
               class="fs-6"
@@ -352,7 +387,7 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6 fw-bold">Peeling</span>
+            <span class="fs-6">Peeling</span>
             <span
               style="font-family: sans-serif"
               class="fs-6"
@@ -397,7 +432,7 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6 fw-bold">Dispatch</span>
+            <span class="fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
               class="fs-6"
@@ -442,7 +477,7 @@
                 0%
               </text>
             </svg>
-            <span class="fs-6 fw-bold">Packing</span>
+            <span class="fs-6">Packing</span>
             <span
               style="font-family: sans-serif"
               class="fs-6"
@@ -478,7 +513,7 @@
                 <hr />
 
                 <div class="form-group mt-4">
-                  <label for="dispatch-lot-no">Lot No:</label>
+                  <label for="lot_no">Lot No:</label>
                   <span class="fw-bold" id="lot_no"></span>
                 </div>
 
@@ -488,7 +523,7 @@
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="dispatch_destination">Destination</label>
+                  <label for="destinationLocation">Destination</label>
                   <select
                     class="form-control input-dropdown w-100"
                     id="destinationLocation"
@@ -497,7 +532,7 @@
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="unit-name">Quantity</label>
+                  <label for="dispatch_quantity">Quantity</label>
                   <input
                     id="dispatch_quantity"
                     class="form-control"
@@ -580,21 +615,26 @@
                 </div>
               </div> -->
 
-              <table id="dispatchTable" class="table table-hover nowrap w-100">
+              <table
+                id="dispatchTable"
+                class="rounded table table-hover nowrap w-100 my-2"
+              >
                 <thead>
                   <tr>
-                    <th></th>
-                    <th class="fw-bold"><span>Dispatch Date</span></th>
-                    <th class="fw-bold"><span>Dispatch Lot</span></th>
-                    <th class="fw-bold"><span>Dispatch Source</span></th>
-                    <th class="fw-bold"><span>Dispatch Destination</span></th>
-                    <th class="fw-bold"><span>Product Name</span></th>
-                    <th class="fw-bold"><span>Quantity</span></th>
-                    <th class="fw-bold"><span>Temperature</span></th>
-                    <th class="fw-bold"><span>Vehicle Number</span></th>
-                    <th class="fw-bold"><span>Driver Name</span></th>
-                    <th class="fw-bold"><span>Delivery Status</span></th>
-                    <th class="fw-bold"><span>Delivery Notes</span></th>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class=""><span>Dispatch Date</span></th>
+                    <th class=""><span>Dispatch Lot</span></th>
+                    <th class=""><span>Dispatch Source</span></th>
+                    <th class=""><span>Dispatch Destination</span></th>
+                    <th class=""><span>Product Name</span></th>
+                    <th class=""><span>Quantity</span></th>
+                    <th class=""><span>Temperature</span></th>
+                    <th class=""><span>Vehicle Number</span></th>
+                    <th class=""><span>Driver Name</span></th>
+                    <th class=""><span>Delivery Status</span></th>
+                    <th style="border-radius: 0 4px 0 0" class="">
+                      <span>Delivery Notes</span>
+                    </th>
                   </tr>
                 </thead>
               </table>
@@ -805,6 +845,7 @@
           processing: true,
           serverSide: true,
           scrollX: true,
+          scrollCollapse: true,
           scrollY: "40vh",
           ordering: false,
           ajax: {
