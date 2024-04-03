@@ -460,12 +460,6 @@
                   <th class="fw-bold"><span>Total Product Count</span></th>
                   <th class="fw-bold"><span>Total Purchased Quantity</span></th>
                   <th class="fw-bold"><span>Total Purchased Price</span></th>
-                  <th class="fw-bold"><span>Total Dispatched Count</span></th>
-                  <th class="fw-bold">
-                    <span>Total Dispatched Quantity</span>
-                  </th>
-                  <th class="fw-bold"><span>Total Adjusted Quantity</span></th>
-                  <th class="fw-bold"><span>Total Adjusted Price</span></th>
                 </tr>
               </thead>
             </table>
@@ -778,21 +772,13 @@
             { data: "total_product_count" },
             { data: "total_purchased_quantity" },
             { data: "total_purchased_price" },
-            { data: "total_dispatched_count" },
-            { data: "total_dispatched_quantity" },
-            { data: "total_adjusted_quantity" },
-            { data: "total_adjusted_price" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=' +
-                  row?.id +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>'
-                );
+                return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
               },
             },
             {
@@ -853,38 +839,59 @@
                 return data || 0;
               },
             },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [8],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [9],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [10],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
           ],
           // "infoCallback": function (settings, start, end, max, total, pre) {
           //   return start + " to " + end;
           // }
+        });
+
+        $(document).on("click", ".viewProcurementProducts", (e) => {
+          // Changing panel input fields data
+          $("#closeProcurementPanelBtn").click();
+
+          const view_lot_no = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(3)
+            .text();
+
+          const view_total_products = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(4)
+            .text();
+
+          const view_total_weight = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(5)
+            .text();
+
+          $("#view_lot_no").text(view_lot_no);
+
+          $("#view_lot_no").attr(
+            "procurement_lot_id",
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("procurement_lot_id")
+          );
+
+          $("#view_lot_no").attr(
+            "procurement_date",
+            $(e.target).closest("tr").children("td").eq(2).text()
+          );
+
+          $("#view_total_products").text(view_total_products);
+
+          $("#view_total_weight").text(view_total_weight);
+
+          // Opening Slied Panel
+          $("#procurementProductModal").modal("show");
+
+          loadProcurementProductTableData(view_lot_no);
         });
 
         $(document).on("click", ".delProcurement", (e) => {
@@ -941,47 +948,6 @@
         });
       }
 
-      $(document).on("click", ".viewProcurementProducts", (e) => {
-        // Changing panel input fields data
-
-        const view_lot_no = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(3)
-          .text();
-        const view_total_weight = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(4)
-          .text();
-        const view_total_products = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(4)
-          .text();
-
-        $("#view_lot_no").text(view_lot_no);
-
-        $("#view_lot_no").attr(
-          "procurement_lot_id",
-          $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(0)
-            .find("i")
-            .attr("procurement_lot_id")
-        );
-
-        $("#view_total_products").text(view_total_products);
-
-        $("#view_total_weight").text(view_total_weight);
-
-        // Opening Slied Panel
-        $("#procurementProductModal").modal("show");
-
-        loadProcurementProductTableData(view_lot_no);
-      });
-
       function loadProcurementProductTableData(lot_no) {
         if (!lot_no) {
           toastr["warning"]("Lot no should not be empty!");
@@ -1033,13 +999,97 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editDispatch" procurement_product_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
           ],
           drawCallback: () => {},
         });
       }
+
+      $(document).on("click", ".editProcurementProducts", (e) => {
+        // Changing panel input fields data
+
+        $("#procurement_date").val(
+          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+        );
+
+        $("#procurement_unit")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_product")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(1)
+              .find("span")
+              .attr("product_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_product_type")
+          .val($(e.target).closest("tr").children("td").eq(2).text())
+          .trigger("change");
+
+        $("#procurement_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#procurement_price").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#procurement_product_supplier")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("vendor_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_purchaser").val(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        // Opening Slied Panel
+        $("#openProcurementPanelBtn").click();
+
+        // Changing panel heading
+        $("#procurementPanelHeading").text("Edit Procurement Data");
+
+        // Changing panel button label
+        $("#submitPurchases").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPurchases").attr(
+          "procurement_product_id",
+          $(e.target).attr("procurement_product_id")
+        );
+
+        $("#submitPurchases").attr(
+          "procurement_lot_id",
+          $("#view_lot_no").attr("procurement_lot_id")
+        );
+      });
 
       function loadProcurementProductType() {
         $("#procurement_product_type").select2({
@@ -1193,6 +1243,7 @@
           },
         });
       }
+
       function savePurchases() {
         const procurement_lot_id =
           $("#submitPurchases").attr("procurement_lot_id");
@@ -1260,22 +1311,6 @@
       // ----------------------------------------------------------
       // ----------------------- Adjustment -----------------------
       // ----------------------------------------------------------
-
-      // Open panel
-      $("#openAdjustmentPanelBtn").click(function () {
-        openSlidePanel(
-          "adjustmentSlideInPanel",
-          "adjustmentPanelHeading",
-          "Adjustment",
-          "submitAdjustment",
-          "adjustmentid"
-        );
-      });
-
-      // Close panel
-      $("#closeAdjustmentPanelBtn").click(function () {
-        closeSlidePanel("adjustmentSlideInPanel");
-      });
 
       $(".adjustmentMenu").click(function () {
         $(".menu-container").addClass("d-none");

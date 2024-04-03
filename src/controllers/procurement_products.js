@@ -223,6 +223,20 @@ export const GetAll = ({
         include: [
           {
             model: models.ProcurementLots,
+            include: [
+              {
+                model: models.UnitMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                model: models.VendorMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
             where: procurementWhere,
           },
           {
