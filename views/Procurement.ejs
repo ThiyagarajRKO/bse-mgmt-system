@@ -157,6 +157,7 @@
 
       .edit,
       .view,
+      .close,
       .del {
         cursor: pointer;
       }
@@ -472,10 +473,10 @@
       <div
         id="procurementProductModal"
         class="modal hide fade modal-xl"
-        tabindex="-1"
         role="dialog"
         aria-labelledby="myModalLabel"
-        aria-hidden="true"
+        data-keyboard="false"
+        data-backdrop="static"
       >
         <div class="modal-dialog modal-dialog-scrollable">
           <!-- Modal content-->
@@ -727,6 +728,10 @@
         $(".procurementContainer").addClass("d-block");
 
         loadProcurementTableData();
+      });
+
+      $(document).on("click", ".modal-header .close", () => {
+        $("#procurementProductModal").modal("hide");
       });
 
       $("#submitPurchases").click(function () {
@@ -1089,6 +1094,8 @@
           "procurement_lot_id",
           $("#view_lot_no").attr("procurement_lot_id")
         );
+
+        $("#procurementProductModal").modal("hide");
       });
 
       function loadProcurementProductType() {
