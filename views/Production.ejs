@@ -348,7 +348,7 @@
             <span class="heading fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight"
+              class="fs-6 weight dispatchWeight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -848,34 +848,52 @@
               data?.data?.total_purchased_weight || 0;
             const dispatch_percentage =
               data?.data?.total_dispatched_weight || 0;
+            const peeling_percentage = data?.data?.total_peeing_weight || 0;
+            const peeling_dispatch_percentage =
+              data?.data?.total_peeling_dispatched_weight || 0;
+            const packing_percentage = data?.data?.total_packing_weight || 0;
 
             changePercentage(
               "dispatchMenu",
               "dispatchCircle",
               "dispatchPercentage",
               null,
-              parseInt((dispatch_percentage / procurement_percentage) * 100)
+              "dispatchWeight",
+              parseInt((dispatch_percentage / procurement_percentage) * 100) ||
+                0,
+              dispatch_percentage
             );
             changePercentage(
               "preprocessingMenu",
               "preprocessingCircle",
               "preprocessingPercentage",
               "preprocessingHR",
-              0
+              "preprocessingWeight",
+              parseInt((peeling_percentage / dispatch_percentage) * 100) || 0,
+              peeling_percentage
             );
             changePercentage(
               "preprocessingDispatchMenu",
               "preprocessingDispatchCircle",
               "preprocessingDispatchPercentage",
               "preprocessingDispatchHR",
-              0
+              "preprocessingDispatchWeight",
+              parseInt(
+                (peeling_dispatch_percentage / peeling_percentage) * 100
+              ) || 0,
+              peeling_dispatch_percentage
             );
+
             changePercentage(
               "packingMenu",
               "packingCircle",
               "packingPercentage",
               "packingHR",
-              0
+              "packingWeight",
+              parseInt(
+                (packing_percentage / peeling_dispatch_percentage) * 100
+              ) || 0,
+              packing_percentage
             );
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -1012,6 +1030,34 @@
                 return day + "-" + month + "-" + date.getFullYear();
               },
             },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
           ],
           drawCallback: () => {},
         });
@@ -1064,7 +1110,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/get/all?procurement_lot=${lot_no}`,
+            url: `/api/v1/procurement/lot/get/all?procurement_lot=${lot_no}`,
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
@@ -1367,10 +1413,16 @@
         circle_id,
         percentage_id,
         hr_id,
-        percent
+        weight_id,
+        percent,
+        weight
       ) {
         $(`#${circle_id}`).attr("data-percentage", percent);
+
         $(`#${percentage_id}`).text(`${percent}%`);
+
+        $(`.${weight_id}`).text(weight);
+
         // Get radius of the svg's circle.complete
         radius = $(`#${circle_id}`).find($("circle.complete")).attr("r");
         // Get circumference (2πr)
