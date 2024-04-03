@@ -164,6 +164,7 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
+  procurement_lot,
   product_master_name,
   procurement_product_type,
   procurement_quantity,
@@ -210,13 +211,19 @@ export const GetAll = ({
         productWhere.product_name = { [Op.iLike]: product_master_name };
       }
 
+      let procurementWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot) {
+        procurementWhere.procurement_lot = procurement_lot;
+      }
+
       const procurements = await models.ProcurementProducts.findAndCountAll({
         include: [
           {
             model: models.ProcurementLots,
-            where: {
-              is_active: true,
-            },
+            where: procurementWhere,
           },
           {
             model: models.ProductMaster,

@@ -988,7 +988,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product/get/all?procurement_lot_id=${lot_no}`,
+            url: `/api/v1/procurement/product/get/all?procurement_lot=${lot_no}`,
             error: function (xhr, error, code) {
               $("#procurementProductTable").DataTable().destroy();
               $("#procurementProductTable").DataTable({
@@ -1215,8 +1215,8 @@
           url = "/api/v1/procurement/product/update";
 
           input_params = {
-            procurement_log_id,
-            procurement_lot_data: {
+            procurement_product_id,
+            procurement_product_data: {
               ...input_params,
             },
           };

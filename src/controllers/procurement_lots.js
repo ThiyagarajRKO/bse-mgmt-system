@@ -280,48 +280,35 @@ export const GetStats = ({
             "total_dispatched_quantity",
           ],
           [
-            Sequelize.fn(
-              "SUM",
-              Sequelize.col("ProcurementProduct.procurement_quantity")
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
             "total_purchased_quantity",
           ],
           [
-            Sequelize.fn(
-              "SUM",
-              Sequelize.col("ProcurementProduct.procurement_price")
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.procurement_price) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
             "total_purchased_price",
           ],
           [
-            Sequelize.fn(
-              "SUM",
-              Sequelize.col("ProcurementProduct.adjusted_quantity")
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
             "total_adjusted_quantity",
           ],
           [
-            Sequelize.fn(
-              "SUM",
-              Sequelize.col("ProcurementProduct.adjusted_price")
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.adjusted_price) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
             "total_adjusted_price",
           ],
-        ],
-        include: [
-          {
-            required: false,
-            model: models.ProcurementProducts,
-            where: {
-              is_active: true,
-            },
-          },
         ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
-        group: ["ProcurementLots.id", "ProcurementProduct.id"],
+        group: ["ProcurementLots.id"],
       });
 
       const output = {
