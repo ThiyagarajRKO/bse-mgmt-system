@@ -13,6 +13,7 @@ export const GetAll = (
     species_master_name,
     vendor_master_name,
     unit_master_name,
+    "search[value]": search,
   },
   session,
   fastify
@@ -31,6 +32,7 @@ export const GetAll = (
         species_master_name,
         vendor_master_name,
         unit_master_name,
+        search,
       });
 
       if (!procurement) {
