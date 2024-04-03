@@ -11,8 +11,11 @@
   />
 
   <!-- Bootstrap -->
-  <!-- <link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+  <link
+    href="/public/plugins/bootstrap/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
   <!-- MDB5  -->
   <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
@@ -153,6 +156,7 @@
       }
 
       .edit,
+      .view,
       .del {
         cursor: pointer;
       }
@@ -399,7 +403,7 @@
                   />
                 </div>
                 <div class="form-group my-3">
-                  <label for="procurement_product_supplier">Supplier</label>
+                  <label for="procurement_product_supplier">Vendor</label>
                   <select
                     id="procurement_product_supplier"
                     class="form-control input-dropdown w-100"
@@ -453,24 +457,104 @@
                   <th></th>
                   <th class="fw-bold"><span>Purchase Date</span></th>
                   <th class="fw-bold"><span>Lot no</span></th>
-                  <th class="fw-bold"><span>Purchase Source</span></th>
-                  <th class="fw-bold"><span>Product</span></th>
-                  <th class="fw-bold"><span>Product Type</span></th>
-                  <th class="fw-bold"><span>Quantity(kgs)</span></th>
-                  <th class="fw-bold"><span>Price (USD)</span></th>
-                  <th class="fw-bold"><span>Total Amount (USD)</span></th>
-                  <th class="fw-bold"><span>Supplier</span></th>
-                  <th class="fw-bold"><span>Purchaser</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
+                  <th class="fw-bold"><span>Total Product Count</span></th>
+                  <th class="fw-bold"><span>Total Purchased Quantity</span></th>
+                  <th class="fw-bold"><span>Total Purchased Price</span></th>
+                  <th class="fw-bold"><span>Total Dispatched Count</span></th>
+                  <th class="fw-bold">
+                    <span>Total Dispatched Quantity</span>
+                  </th>
+                  <th class="fw-bold"><span>Total Adjusted Quantity</span></th>
+                  <th class="fw-bold"><span>Total Adjusted Price</span></th>
                 </tr>
               </thead>
             </table>
           </div>
         </div>
       </div>
+
+      <!-- modal-dialog-centered modal-dialog-scrollable -->
+      <!-- Modal -->
+      <div
+        id="procurementProductModal"
+        class="modal hide fade modal-xl"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-scrollable">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Procurement Products</h4>
+              <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+              </i>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex justify-content-between">
+                <div class="form-group">
+                  <label class="fw-bold" for="lot_no">Lot No:</label>
+                  <span id="view_lot_no"></span>
+                </div>
+
+                <div class="form-group">
+                  <label class="fw-bold" for="total_products"
+                    >Total Products:</label
+                  >
+                  <span id="view_total_products"></span>
+                </div>
+
+                <div class="form-group">
+                  <label class="fw-bold" for="total_weight"
+                    >Total Weight:</label
+                  >
+                  <span id="view_total_weight"></span>
+                </div>
+              </div>
+
+              <hr class="mb-4" />
+
+              <table
+                id="procurementProductTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold">
+                      <span>Purchased Type</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchased Quantity</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchased Price</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchaser</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Purchases Container Ends -->
+
       <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Adjustment Container ------------------------------------------------ -->
+      <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
       <!-- ------------------------------------------------------------------------------------------------------------- -->
       <div class="menu-container adjustmentContainer d-none">
         <!-- Table Content -->
@@ -668,7 +752,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/get/all",
+            url: "/api/v1/procurement/lot/get/stats",
             error: function (xhr, error, code) {
               $("#procurementTable").DataTable().destroy();
               $("#procurementTable").DataTable({
@@ -691,15 +775,13 @@
             { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "UnitMaster.unit_name" },
-            { data: "ProductMaster.product_name" },
-            { data: "procurement_product_type" },
-            { data: "procurement_quantity" },
-            { data: "procurement_price" },
-            { data: "procurement_totalamount" },
-            { data: "VendorMaster.vendor_name" },
-            { data: "procurement_purchaser" },
-            { data: "created_at" },
+            { data: "total_product_count" },
+            { data: "total_purchased_quantity" },
+            { data: "total_purchased_price" },
+            { data: "total_dispatched_count" },
+            { data: "total_dispatched_quantity" },
+            { data: "total_adjusted_quantity" },
+            { data: "total_adjusted_price" },
           ],
           columnDefs: [
             {
@@ -707,7 +789,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-pen-to-square edit editProcurement" procurement_id=' +
+                  '<i class="fa-solid fa-eye view viewProcurementProducts" procurement_id=' +
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>'
                 );
@@ -754,137 +836,55 @@
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${
-                  row["UnitMaster"]?.unit_code || ""
-                }</span>`;
+                return data || 0;
               },
             },
             {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span product_master_id='${row["ProductMaster"]?.id}'>${data}</span>`;
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
               },
             },
             {
               targets: [10],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span vendor_master_id='${row["VendorMaster"]?.id}'>${data}</span>`;
-              },
-            },
-            {
-              targets: [12],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
+                return data || 0;
               },
             },
           ],
           // "infoCallback": function (settings, start, end, max, total, pre) {
           //   return start + " to " + end;
           // }
-        });
-
-        $(document).on("click", ".editProcurement", (e) => {
-          // Opening slide panel
-          $("#openProcurementPanelBtn").click();
-
-          // Changing panel input fields data
-          $("#procurement_date")
-            .val(
-              formatDate(
-                new Date($(e.target).closest("tr").children("td").eq(2).text())
-              )
-            )
-            .trigger("change");
-
-          $("#procurement_unit")
-            .val(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(4)
-                .find("span")
-                .attr("unit_master_id")
-            )
-            .trigger("change");
-
-          $("#procurement_product")
-            .val(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(5)
-                .find("span")
-                .attr("product_master_id")
-            )
-            .trigger("change");
-
-          $("#procurement_product_type")
-            .val($(e.target).closest("tr").children("td").eq(6).text())
-            .trigger("change");
-
-          $("#procurement_quantity").val(
-            $(e.target).closest("tr").children("td").eq(7).text()
-          );
-          $("#procurement_price").val(
-            $(e.target).closest("tr").children("td").eq(8).text()
-          );
-
-          $("#procurement_product_supplier")
-            .val(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(10)
-                .find("span")
-                .attr("vendor_master_id")
-            )
-            .trigger("change");
-
-          $("#procurement_purchaser").val(
-            $(e.target).closest("tr").children("td").eq(11).text()
-          );
-
-          // Changing panel heading
-          $("#procurementPanelHeading").text("Edit Procurement Data");
-
-          // Changing panel button label
-          $("#submitPurchases").text("Update");
-
-          // Changing panel button attribute
-          $("#submitPurchases").attr(
-            "procurement_id",
-            $(e.target).attr("procurement_id")
-          );
         });
 
         $(document).on("click", ".delProcurement", (e) => {
@@ -908,7 +908,7 @@
                 btnClass: "btn-red",
                 action: function () {
                   $.ajax({
-                    url: "/api/v1/procurement/delete",
+                    url: "/api/v1/procurement/product/delete",
                     method: "post",
                     dataType: "json",
                     contentType: "application/json",
@@ -938,6 +938,100 @@
               },
             },
           });
+        });
+      }
+
+      $(document).on("click", ".viewProcurementProducts", (e) => {
+        // Changing panel input fields data
+
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
+
+        // Opening Slied Panel
+        $("#procurementProductModal").modal("show");
+
+        loadProcurementProductTableData(view_lot_no);
+      });
+
+      function loadProcurementProductTableData(lot_no) {
+        if (!lot_no) {
+          toastr["warning"]("Lot no should not be empty!");
+        }
+        $("#procurementProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/procurement/product/get/all?procurement_lot_id=${lot_no}`,
+            error: function (xhr, error, code) {
+              $("#procurementProductTable").DataTable().destroy();
+              $("#procurementProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "ProductMaster.product_name" },
+            { data: "procurement_product_type" },
+            { data: "procurement_quantity" },
+            { data: "procurement_price" },
+            { data: "procurement_purchaser" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editDispatch" dispatch_id=${
+                  row["Dispatch"]?.id || null
+                } procurement_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+          ],
+          drawCallback: () => {},
         });
       }
 
@@ -1071,7 +1165,7 @@
           success: (data) => {
             // Loading data
             $("#procurement_product_supplier").select2({
-              placeholder: "Choose a Supplier",
+              placeholder: "Choose a vendor",
               allowClear: true,
               data: $.map(data?.data?.rows, function (item) {
                 return {
@@ -1094,14 +1188,17 @@
         });
       }
       function savePurchases() {
-        const procurement_id = $("#submitPurchases").attr("procurement_id");
+        const procurement_lot_id =
+          $("#submitPurchases").attr("procurement_lot_id");
+        const procurement_product_id = $("#submitPurchases").attr(
+          "procurement_product_id"
+        );
 
-        let url = "/api/v1/procurement/create";
+        let url = "/api/v1/procurement/product/create";
         let input_params = {
           procurement_date: $("#procurement_date").val(),
           unit_master_id: $("#procurement_unit").val(),
           product_master_id: $("#procurement_product").val(),
-          product_master_name: $("#procurementProduct").val(),
           procurement_product_type: $("#procurement_product_type").val(),
           procurement_quantity: $("#procurement_quantity").val(),
           procurement_price: $("#procurement_price").val(),
@@ -1109,16 +1206,22 @@
           procurement_purchaser: $("#procurement_purchaser").val(),
         };
 
-        if (procurement_id) {
-          url = "/api/v1/procurement/update";
+        if (procurement_product_id) {
+          if (!procurement_lot_id) {
+            toastr["warning"]("Procurement lot id must not be empty");
+            return;
+          }
+
+          url = "/api/v1/procurement/product/update";
 
           input_params = {
-            procurement_id,
-            procurement_data: {
+            procurement_log_id,
+            procurement_lot_data: {
               ...input_params,
             },
           };
         }
+
         $.ajax({
           url,
           method: "POST",
@@ -1190,7 +1293,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/get/all",
+            url: "/api/v1/procurement/product/get/all",
             error: function (xhr, error, code) {
               $("#adjustmentTable").DataTable().destroy();
               $("#adjustmentTable").DataTable({
@@ -1403,7 +1506,7 @@
         };
 
         $.ajax({
-          url: "/api/v1/procurement/update",
+          url: "/api/v1/procurement/product/update",
           method: "POST",
           dataType: "json",
           contentType: "application/json",

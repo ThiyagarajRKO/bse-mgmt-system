@@ -18,6 +18,18 @@ export const Create = (
         });
       }
 
+      const procurement_lot = await ProcurementLots.Count({
+        procurement_date: new Date(procurement_date),
+        vendor_master_id,
+        unit_master_id,
+      });
+
+      if (procurement_lot > 0) {
+        return reject({
+          message: "Procurement lot already exist!",
+        });
+      }
+
       const purchase = await ProcurementLots.Insert(profile_id, {
         procurement_date,
         unit_master_id,

@@ -14,7 +14,6 @@ module.exports = {
       procurement_lot: {
         type: Sequelize.TEXT,
         allowNull: false,
-        unique: true,
       },
       vendor_master_id: {
         type: Sequelize.UUID,

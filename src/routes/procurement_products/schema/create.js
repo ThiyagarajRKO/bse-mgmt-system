@@ -3,7 +3,6 @@ export const createSchema = {
     body: {
       type: "object",
       required: [
-        "procurement_lot_id",
         "product_master_id",
         "procurement_product_type",
         "procurement_quantity",
@@ -11,6 +10,9 @@ export const createSchema = {
         "procurement_purchaser",
       ],
       properties: {
+        procurement_date: { type: "string" },
+        vendor_master_id: { type: "string" },
+        unit_master_id: { type: "string" },
         procurement_lot_id: { type: "string" },
         product_master_id: { type: "string" },
         procurement_product_type: { type: "string" },
