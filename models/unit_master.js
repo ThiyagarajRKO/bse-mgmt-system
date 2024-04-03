@@ -2,10 +2,10 @@
 const { Model } = require("sequelize");
 
 const UnitTypes = {
-  "Collection Center": "clc",
-  "Peeling Center": "pc",
-  "Cooking Center": "coc",
-  "Distribution Center": "dc",
+  "Collection Center": "CLC",
+  "Peeling Center": "PC",
+  "Cooking Center": "COC",
+  "Distribution Center": "DC",
 };
 
 module.exports = (sequelize, DataTypes) => {

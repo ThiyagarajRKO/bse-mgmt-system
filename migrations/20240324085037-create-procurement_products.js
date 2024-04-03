@@ -1,69 +1,75 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("dispatches", {
+    await queryInterface.createTable("procurement_products", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      procurement_product_id: {
+      procurement_lot_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "procurement_products" },
+          model: { tableName: "procurement_lots" },
           key: "id",
         },
       },
-      unit_master_id: {
+      product_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "unit_master" },
+          model: { tableName: "product_master" },
           key: "id",
         },
       },
-      dispatch_quantity: {
-        type: Sequelize.INTEGER,
+      procurement_product_type: {
+        allowNull: false,
+        type: Sequelize.ENUM(
+          "CLEANED",
+          "PEELED",
+          "SOAKED",
+          "RE-GLAZED",
+          "GRADED",
+          "COOKED",
+          "SORTED",
+          "VALUE ADDED",
+          "UNPROCESSED"
+        ),
+      },
+      procurement_quantity: {
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
-      temperature: {
+      adjusted_quantity: {
         type: Sequelize.FLOAT,
       },
-      vehicle_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "vehicle_master" },
-          key: "id",
-        },
-      },
-      driver_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "driver_master" },
-          key: "id",
-        },
-      },
-      delivery_status: {
-        type: Sequelize.ENUM("In Transit", "Delivered"),
+      procurement_price: {
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
-      delivery_notes: {
+      adjusted_price: {
+        type: Sequelize.FLOAT,
+      },
+      adjusted_reason: {
         type: Sequelize.TEXT,
+      },
+      adjusted_surveyor: {
+        type: Sequelize.STRING,
+      },
+      procurement_purchaser: {
+        type: Sequelize.STRING,
         allowNull: false,
+      },
+      procurement_totalamount: {
+        type: Sequelize.FLOAT,
       },
       is_active: {
-        defaultValue: true,
+        defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
       created_at: {
@@ -107,6 +113,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("dispatches");
+    await queryInterface.dropTable("procurement_products");
   },
 };

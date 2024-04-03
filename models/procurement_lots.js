@@ -1,51 +1,44 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Procurements extends Model {
+  class ProcurementLots extends Model {
     static associate(models) {
-      Procurements.belongsTo(models.UserProfiles, {
+      ProcurementLots.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurements.belongsTo(models.UserProfiles, {
+      ProcurementLots.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurements.belongsTo(models.UserProfiles, {
+      ProcurementLots.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-
-      Procurements.belongsTo(models.UnitMaster, {
+      ProcurementLots.belongsTo(models.UnitMaster, {
         foreignKey: "unit_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      Procurements.belongsTo(models.ProductMaster, {
-        foreignKey: "product_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-      Procurements.belongsTo(models.VendorMaster, {
+      ProcurementLots.belongsTo(models.VendorMaster, {
         foreignKey: "vendor_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-
-      Procurements.hasOne(models.Dispatches, {
-        foreignKey: "procurement_id",
+      ProcurementLots.hasOne(models.ProcurementProducts, {
+        foreignKey: "procurement_lot_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  Procurements.init(
+  ProcurementLots.init(
     {
       id: {
         primaryKey: true,
@@ -56,36 +49,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       procurement_lot: {
-        type: DataTypes.STRING,
-      },
-      procurement_product_name: {
-        type: DataTypes.STRING,
-      },
-      procurement_product_type: {
-        type: DataTypes.STRING,
-      },
-      procurement_quantity: {
-        type: DataTypes.INTEGER,
-      },
-      adjusted_quantity: {
-        type: DataTypes.INTEGER,
-      },
-      procurement_price: {
-        type: DataTypes.FLOAT,
-      },
-      adjusted_price: {
-        type: DataTypes.FLOAT,
-      },
-      adjusted_reason: {
-        type: DataTypes.TEXT,
-      },
-      adjusted_surveyor: {
-        type: DataTypes.STRING,
-      },
-      procurement_totalamount: {
-        type: DataTypes.FLOAT,
-      },
-      procurement_purchaser: {
         type: DataTypes.STRING,
       },
       is_active: {
@@ -103,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Procurements",
+      modelName: "ProcurementLots",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -112,17 +75,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   // Create Hook
-  Procurements.beforeCreate(async (data, options) => {
+  ProcurementLots.beforeCreate(async (data, options) => {
     try {
-      const { unit_name } = await sequelize.models.UnitMaster.findOne({
-        attributes: ["unit_name"],
+      const unit_data = await sequelize.models.UnitMaster.findOne({
+        attributes: ["unit_code"],
+        include: [
+          {
+            model: sequelize.models.LocationMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where: { id: data?.unit_master_id, is_active: true },
       });
 
-      const { product_name } = await sequelize.models.ProductMaster.findOne({
-        attributes: ["product_name"],
-        where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
+      const { vendor_name } = await sequelize.models.VendorMaster.findOne({
+        attributes: ["vendor_name"],
+        where: { id: data?.vendor_master_id, is_active: true }, // Fixed variable name
       });
+
       // Get year, month, and day from the procurement_date
       const year = data?.procurement_date.getFullYear();
       const month = (data?.procurement_date.getMonth() + 1)
@@ -131,15 +103,14 @@ module.exports = (sequelize, DataTypes) => {
       const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
       // Construct the procurement_lot in YYYYMMDD format
-      data.procurement_lot = `${unit_name
+      data.procurement_lot = `${unit_data["LocationMaster"]?.location_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${year}${month}${day}-${vendor_name
         ?.trim()
         ?.substring(0, 3)
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${year}${month}${day}`;
-
-      data.procurement_totalamount =
-        data.procurement_quantity * data.procurement_price;
-      data.procurement_product_name = product_name;
+        ?.toUpperCase()}`;
 
       data.created_by = options.profile_id;
     } catch (err) {
@@ -151,17 +122,26 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Update Hook
-  Procurements.beforeUpdate(async (data, options) => {
+  ProcurementLots.beforeUpdate(async (data, options) => {
     try {
-      const { unit_name } = await sequelize.models.UnitMaster.findOne({
-        attributes: ["unit_name"],
+      const unit_data = await sequelize.models.UnitMaster.findOne({
+        attributes: ["unit_code"],
+        include: [
+          {
+            model: sequelize.models.LocationMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where: { id: data?.unit_master_id, is_active: true },
       });
 
-      const { product_name } = await sequelize.models.ProductMaster.findOne({
-        attributes: ["product_name"],
-        where: { id: data?.product_master_id, is_active: true }, // Fixed variable name
+      const { vendor_name } = await sequelize.models.VendorMaster.findOne({
+        attributes: ["vendor_name"],
+        where: { id: data?.vendor_master_id, is_active: true }, // Fixed variable name
       });
+
       // Get year, month, and day from the procurement_date
       const year = data?.procurement_date.getFullYear();
       const month = (data?.procurement_date.getMonth() + 1)
@@ -170,14 +150,14 @@ module.exports = (sequelize, DataTypes) => {
       const day = data?.procurement_date.getDate().toString().padStart(2, "0");
 
       // Construct the procurement_lot in YYYYMMDD format
-      data.procurement_lot = `${unit_name
+      data.procurement_lot = `${unit_data["LocationMaster"]?.location_name
+        ?.trim()
+        ?.replaceAll(" ", "")
+        ?.toUpperCase()}-${year}${month}${day}-${vendor_name
         ?.trim()
         ?.substring(0, 3)
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${year}${month}${day}`;
-      data.procurement_totalamount =
-        data.procurement_quantity * data.procurement_price;
-      data.procurement_product_name = product_name;
+        ?.toUpperCase()}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
@@ -190,7 +170,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Delete Hook
-  Procurements.afterDestroy(async (data, options) => {
+  ProcurementLots.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
@@ -204,5 +184,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  return Procurements;
+  return ProcurementLots;
 };

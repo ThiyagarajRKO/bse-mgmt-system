@@ -3,7 +3,7 @@ import { Dispatches, LocationMaster } from "../../../controllers";
 export const Create = (
   {
     profile_id,
-    procurement_id,
+    procurement_product_id,
     unit_master_id,
     dispatch_quantity,
     temperature,
@@ -17,7 +17,7 @@ export const Create = (
   return new Promise(async (resolve, reject) => {
     try {
       const dispatch = await Dispatches.Insert(profile_id, {
-        procurement_id,
+        procurement_product_id,
         unit_master_id,
         dispatch_quantity,
         temperature,

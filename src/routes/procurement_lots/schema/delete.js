@@ -2,9 +2,9 @@ export const deleteSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["procurement_id"],
+      required: ["procurement_lot_id"],
       properties: {
-        procurement_id: { type: "string" },
+        procurement_lot_id: { type: "string" },
       },
     },
   },

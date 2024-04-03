@@ -11,7 +11,7 @@ export const Insert = async (profile_id, dispatch_data) => {
         });
       }
 
-      if (!dispatch_data?.procurement_id) {
+      if (!dispatch_data?.procurement_product_id) {
         return reject({
           statusCode: 420,
           message: "Procurement data must not be empty!",

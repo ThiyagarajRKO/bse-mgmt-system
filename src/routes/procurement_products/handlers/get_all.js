@@ -1,8 +1,7 @@
-import { Procurement } from "../../../controllers";
+import { ProcurementProducts } from "../../../controllers";
 
 export const GetAll = (
   {
-    procurement_date,
     procurement_lot,
     procurement_product_type,
     procurement_quantity,
@@ -19,8 +18,7 @@ export const GetAll = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await Procurement.GetAll({
-        procurement_date,
+      let procurement = await ProcurementProducts.GetAll({
         procurement_lot,
         procurement_product_type,
         procurement_quantity,

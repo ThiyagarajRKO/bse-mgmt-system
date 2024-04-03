@@ -1,7 +1,7 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("procurements", {
+    await queryInterface.createTable("procurement_lots", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
@@ -15,52 +15,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
         unique: true,
-      },
-      procurement_product_name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      procurement_quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      adjusted_quantity: {
-        type: Sequelize.INTEGER,
-      },
-      procurement_price: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-      },
-      adjusted_price: {
-        type: Sequelize.FLOAT,
-      },
-      adjusted_reason: {
-        type: Sequelize.TEXT,
-      },
-      adjusted_surveyor: {
-        type: Sequelize.STRING,
-      },
-      procurement_purchaser: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      procurement_totalamount: {
-        type: Sequelize.FLOAT,
-      },
-      procurement_product_type: {
-        type: Sequelize.ENUM(
-          "CLEANED",
-          "PEELED",
-          "SOAKED",
-          "RE-GLAZED",
-          "GRADED",
-          "COOKED",
-          "SORTED",
-          "VALUE ADDED",
-          "UNPROCESSED"
-        ),
-        allowNull: false,
       },
       vendor_master_id: {
         type: Sequelize.UUID,
@@ -82,17 +36,6 @@ module.exports = {
           key: "id",
         },
       },
-      product_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "product_master" },
-          key: "id",
-        },
-      },
-
       is_active: {
         defaultValue: false,
         type: Sequelize.BOOLEAN,
@@ -138,6 +81,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("procurements");
+    await queryInterface.dropTable("procurement_lots");
   },
 };

@@ -1,20 +1,20 @@
-import { PackagingMaster, Procurement } from "../../../controllers";
+import { ProcurementProducts } from "../../../controllers";
 
 export const Delete = (
-  { profile_id, procurement_id },
+  { profile_id, procurement_product_id },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const procurement = await Procurement.Delete({
+      const procurement = await ProcurementProducts.Delete({
         profile_id,
-        id: procurement_id,
+        id: procurement_product_id,
       });
 
       if (procurement > 0) {
         return resolve({
-          message: "Procurement has been deleted successfully",
+          message: "Procurement product has been deleted successfully",
         });
       }
 

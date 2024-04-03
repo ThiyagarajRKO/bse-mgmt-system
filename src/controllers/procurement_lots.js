@@ -25,33 +25,6 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.product_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Product master id must not be empty!",
-        });
-      }
-      if (!procurement_data?.procurement_product_type) {
-        return reject({
-          statusCode: 420,
-          message: "Purchase Type must not be empty!",
-        });
-      }
-
-      if (!procurement_data?.procurement_quantity) {
-        return reject({
-          statusCode: 420,
-          message: "Purchase Quantity must not be empty!",
-        });
-      }
-
-      if (!procurement_data?.procurement_price) {
-        return reject({
-          statusCode: 420,
-          message: "Purchase Price must not be empty!",
-        });
-      }
-
       if (!procurement_data?.vendor_master_id) {
         return reject({
           statusCode: 420,
@@ -59,14 +32,7 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.procurement_purchaser) {
-        return reject({
-          statusCode: 420,
-          message: "Purchaser must not be empty!",
-        });
-      }
-
-      const result = await models.Procurements.create(procurement_data, {
+      const result = await models.ProcurementLots.create(procurement_data, {
         profile_id,
       });
       resolve(result);
@@ -103,7 +69,7 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
-      const result = await models.Procurements.update(procurement_data, {
+      const result = await models.ProcurementLots.update(procurement_data, {
         where: {
           id,
           is_active: true,
@@ -128,7 +94,23 @@ export const Get = ({ id }) => {
         });
       }
 
-      const unit = await models.Procurements.findOne({
+      const unit = await models.ProcurementLots.findOne({
+        include: [
+          {
+            model: models.UnitMaster,
+            where: unitWhere,
+          },
+          {
+            model: models.VendorMaster,
+            where: vendorWhere,
+          },
+          {
+            model: models.ProcurementProducts,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where: {
           id,
           is_active: true,
@@ -145,14 +127,8 @@ export const Get = ({ id }) => {
 export const GetAll = ({
   procurement_date,
   procurement_lot,
-  product_master_name,
-  procurement_product_type,
-  procurement_quantity,
-  procurement_price,
-  procurement_totalamount,
   vendor_master_name,
   unit_master_name,
-  procurement_purchaser,
   start,
   length,
 }) => {
@@ -168,36 +144,6 @@ export const GetAll = ({
 
       if (procurement_lot) {
         where.procurement_lot = { [Op.iLike]: procurement_lot };
-      }
-
-      if (procurement_product_type) {
-        where.procurement_product_type = {
-          [Op.iLike]: procurement_product_type,
-        };
-      }
-
-      if (procurement_quantity) {
-        where.procurement_quantity = { [Op.iLike]: procurement_quantity };
-      }
-
-      if (procurement_price) {
-        where.procurement_price = { [Op.iLike]: procurement_price };
-      }
-
-      if (procurement_totalamount) {
-        where.procurement_totalamount = { [Op.iLike]: procurement_totalamount };
-      }
-
-      if (procurement_purchaser) {
-        where.procurement_purchaser = { [Op.iLike]: procurement_purchaser };
-      }
-
-      let productWhere = {
-        is_active: true,
-      };
-
-      if (product_master_name) {
-        productWhere.product_name = { [Op.iLike]: product_master_name };
       }
 
       let vendorWhere = {
@@ -216,43 +162,18 @@ export const GetAll = ({
         unitWhere.unit_name = { [Op.iLike]: unit_master_name };
       }
 
-      const procurements = await models.Procurements.findAndCountAll({
+      const procurements = await models.ProcurementLots.findAndCountAll({
         include: [
           {
             model: models.UnitMaster,
             where: unitWhere,
           },
           {
-            model: models.ProductMaster,
-            where: productWhere,
-          },
-          {
             model: models.VendorMaster,
             where: vendorWhere,
           },
           {
-            required: false,
-            model: models.Dispatches,
-            include: [
-              {
-                model: models.UnitMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                model: models.VehicleMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                model: models.DriverMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
+            model: models.ProcurementProducts,
             where: {
               is_active: true,
             },
@@ -281,7 +202,7 @@ export const Count = ({ id }) => {
         });
       }
 
-      const unit = await models.Procurements.count({
+      const unit = await models.ProcurementLots.count({
         where: {
           id,
           is_active: true,
@@ -290,31 +211,6 @@ export const Count = ({ id }) => {
       });
 
       resolve(unit);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const CountAll = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const procurement_count = await models.Procurements.count({
-        where: {
-          is_active: true,
-        },
-      });
-
-      const dispatch_count = await models.Dispatches.count({
-        where: {
-          is_active: true,
-        },
-      });
-
-      resolve({
-        procurement_count,
-        dispatch_count,
-      });
     } catch (err) {
       reject(err);
     }
@@ -338,7 +234,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const procurement = await models.Procurements.destroy({
+      const procurement = await models.ProcurementLots.destroy({
         where: {
           id,
           is_active: true,
