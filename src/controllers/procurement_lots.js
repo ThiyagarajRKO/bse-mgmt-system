@@ -364,6 +364,33 @@ export const Count = ({
   });
 };
 
+export const CheckLot = ({
+  id,
+  procurement_date,
+  vendor_master_id,
+  unit_master_id,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const lot = await models.ProcurementLots.count({
+        where: {
+          procurement_date: new Date(procurement_date),
+          vendor_master_id,
+          unit_master_id,
+          id: {
+            [Op.ne]: id,
+          },
+        },
+        raw: true,
+      });
+
+      resolve(lot);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {

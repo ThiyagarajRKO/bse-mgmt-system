@@ -1274,6 +1274,7 @@
           input_params = {
             procurement_product_id,
             procurement_product_data: {
+              procurement_lot_id,
               ...input_params,
             },
           };
@@ -1291,6 +1292,8 @@
             toastr["success"](data?.message);
 
             $("#closeProcurementPanelBtn").click();
+
+            loadProcurementProductTableData($("#view_lot_no").text());
 
             loadProcurementTableData();
 
