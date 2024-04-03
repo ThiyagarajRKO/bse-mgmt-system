@@ -10,9 +10,12 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   />
 
-  <!-- Bootstrap 
-  <link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
+  <!-- Bootstrap  -->
+  <link
+    href="/public/plugins/bootstrap/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
   <!-- MDB5  -->
   <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
@@ -111,7 +114,7 @@
         opacity: 1 !important;
       }
 
-      .edit,
+      .view,
       .del {
         cursor: pointer;
       }
@@ -187,9 +190,9 @@
         color: #ea5455;
       }
 
-      /* #dispatchTable_wrapper {
+      #dispatchProductTable_wrapper {
         margin-top: 60px !important;
-      } */
+      }
 
       .slideInPanel {
         z-index: 9999;
@@ -514,12 +517,20 @@
 
                 <div class="form-group mt-4">
                   <label for="lot_no">Lot No:</label>
-                  <span class="fw-bold" id="lot_no"></span>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="destinationLocation"
+                    name="destinationLocation"
+                  ></select>
                 </div>
 
                 <div class="form-group mt-4">
                   <label for="product_name">Product Name:</label>
-                  <span class="fw-bold" id="product_name"></span>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="destinationLocation"
+                    name="destinationLocation"
+                  ></select>
                 </div>
 
                 <div class="form-group mt-4">
@@ -602,40 +613,35 @@
           <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
             <div class="border p-4 w-100">
               <!-- Add Button -->
-              <!-- <div class="d-flex rounded-2 justify-content-end pb-4">
+              <div class="d-flex rounded-2 justify-content-end pb-4">
                 <div
                   id="openDispatchPanelBtn"
                   class="btn btn-outline-danger d-flex justify-content-around"
-                  style="width: 100px"
+                  style="width: 150px"
                 >
                   <i class="fa-solid fa-circle-plus my-auto"></i>
                   <span style="margin-top: 4px" class="fw-bold my-auto"
-                    >Add</span
+                    >Dispatch</span
                   >
                 </div>
-              </div> -->
+              </div>
 
               <table
                 id="dispatchTable"
-                class="rounded table table-hover nowrap w-100 my-2"
+                class="rounded table table-hover nowrap w-100"
               >
                 <thead>
                   <tr>
                     <th style="border-radius: 4px 0 0 0"></th>
-                    <th class="fw-bold"><span>Dispatch Date</span></th>
-                    <th class="fw-bold"><span>Dispatch Lot</span></th>
-                    <th class="fw-bold"><span>Dispatch Source</span></th>
-                    <th class="fw-bold"><span>Dispatch Destination</span></th>
-                    <th class="fw-bold"><span>Product Name</span></th>
-                    <th class="fw-bold"><span>Purchased Quantity</span></th>
-                    <th class="fw-bold"><span>Balance Quantity</span></th>
-                    <th class="fw-bold"><span>Dispatched Quantity</span></th>
-                    <th class="fw-bold"><span>Temperature</span></th>
-                    <th class="fw-bold"><span>Vehicle Number</span></th>
-                    <th class="fw-bold"><span>Driver Name</span></th>
-                    <th class="fw-bold"><span>Delivery Status</span></th>
-                    <th style="border-radius: 0 4px 0 0" class="fw-bold">
-                      <span>Delivery Notes</span>
+                    <th class="fw-bold"><span>Procurement Date</span></th>
+                    <th class="fw-bold"><span>Procurement Lot</span></th>
+                    <th class="fw-bold"><span>Total Products</span></th>
+                    <th class="fw-bold"><span>Total Purchased Weight</span></th>
+                    <th class="fw-bold">
+                      <span>Total Products Dispatched</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Dispatched Weight</span>
                     </th>
                   </tr>
                 </thead>
@@ -643,6 +649,86 @@
             </div>
           </div>
         </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="dispatchModal"
+          class="modal hide fade modal-xl"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Dispatched Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_products"
+                      >Total Products:</label
+                    >
+                    <span id="view_total_products"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="dispatchProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Dispatch Date</span></th>
+                      <th class="fw-bold"><span>Dispatch Destination</span></th>
+                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                      <th class="fw-bold">
+                        <span>Dispatched Temperature</span>
+                      </th>
+                      <th class="fw-bold"><span>Vehicle Number</span></th>
+                      <th class="fw-bold"><span>Driver Name</span></th>
+                      <th class="fw-bold"><span>Delivery Status</span></th>
+                      <th style="border-radius: 0 4px 0 0" class="fw-bold">
+                        <span>Delivery Notes</span>
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Dispatch Container Ends -->
       </div>
     </div>
@@ -814,15 +900,16 @@
       // ---------------------------------------------------------
 
       // // Open panel
-      // $("#openDispatchPanelBtn").click(function () {
-      //   openSlidePanel(
-      //     "dispatchSlideInPanel",
-      //     "dispatchPanelHeading",
-      //     "Dispatch",
-      //     "submitDispatch",
-      //     "dispatch_id"
-      //   );
-      // });
+      $("#openDispatchPanelBtn").click(function () {
+        // $("#dispatchModal").modal("show");
+        openSlidePanel(
+          "dispatchSlideInPanel",
+          "dispatchPanelHeading",
+          "Dispatch",
+          "submitDispatch",
+          "dispatch_id"
+        );
+      });
 
       // Close panel
       $("#closeDispatchPanelBtn").click(function () {
@@ -857,7 +944,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/get/all",
+            url: "/api/v1/procurement/get/lot/stats",
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
@@ -878,12 +965,126 @@
           },
           columns: [
             { data: null },
-            { data: null },
+            { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "UnitMaster.unit_code" },
+            { data: "total_product_count" },
+            { data: "total_purchased_quantity" },
+            { data: "total_dispatched_count" },
+            { data: "total_dispatched_quantity" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewDispatches" dispatch_id=${
+                  row["Dispatch"]?.id || null
+                } procurement_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.procurement_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewDispatches", (e) => {
+        // Changing panel input fields data
+
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .text();
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
+
+        // Opening Slied Panel
+        $("#dispatchModal").modal("show");
+
+        loadDispatchProductTableData(view_lot_no);
+      });
+
+      function loadDispatchProductTableData(lot_no) {
+        if (!lot_no) {
+          toastr["warning"]("Lot no should not be empty!");
+        }
+        $("#dispatchProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/procurement/get/all?procurement_lot=${lot_no}`,
+            error: function (xhr, error, code) {
+              $("#dispatchTable").DataTable().destroy();
+              $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
             { data: null },
             { data: "procurement_product_name" },
-            { data: "procurement_quantity" },
+            { data: null },
             { data: null },
             { data: null },
             { data: null },
@@ -905,7 +1106,7 @@
               },
             },
             {
-              targets: [1],
+              targets: [2],
               className: "text-left",
               render: function (data, type, row) {
                 if (!row["Dispatch"]?.["created_at"]) {
@@ -946,40 +1147,13 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span source_unit_master_id='${
-                  row["UnitMaster"]?.id
-                }'>${row["UnitMaster"]?.unit_code || ""}</i>`;
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
                 return `<span destination_unit_master_id='${
                   row["Dispatch"]?.["UnitMaster"]?.id
                 }'>${row["Dispatch"]?.["UnitMaster"]?.unit_code || ""}</i>`;
               },
             },
             {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return row?.adjusted_quantity || row?.procurement_quantity;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  parseFloat(
-                    row?.adjusted_quantity || row?.procurement_quantity
-                  ) - parseFloat(row["Dispatch"]?.dispatch_quantity || 0)
-                );
-              },
-            },
-            {
-              targets: [8],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span>${
@@ -988,14 +1162,14 @@
               },
             },
             {
-              targets: [9],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span>${row["Dispatch"]?.temperature || ""}</span>`;
               },
             },
             {
-              targets: [10],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span vehicle_master_id='${
@@ -1006,7 +1180,7 @@
               },
             },
             {
-              targets: [11],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span driver_master_id='${
@@ -1015,14 +1189,14 @@
               },
             },
             {
-              targets: [12],
+              targets: [8],
               className: "text-left",
               render: function (data, type, row) {
                 return row["Dispatch"]?.delivery_status || "";
               },
             },
             {
-              targets: [13],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span>${row["Dispatch"]?.delivery_notes || ""}</span>`;
@@ -1032,88 +1206,6 @@
           drawCallback: () => {},
         });
       }
-
-      $(document).on("click", ".editDispatch", (e) => {
-        // Changing panel input fields data
-
-        $("#lot_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-
-        $("#lot_no").attr("procurement_id", $(e.target).attr("procurement_id"));
-
-        $("#destinationLocation")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(4)
-              .find("span")
-              .attr("destination_unit_master_id")
-          )
-          .trigger("change");
-
-        $("#product_name").text(
-          $(e.target).closest("tr").children("td").eq(5).text()
-        );
-
-        $("#dispatch_quantity").val(
-          $(e.target).closest("tr").children("td").eq(8).text()
-        );
-
-        $("#dispatch_temperature").val(
-          $(e.target).closest("tr").children("td").eq(9).text()
-        );
-
-        $("#vehicleNumbers")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(10)
-              .find("span")
-              .attr("vehicle_master_id")
-          )
-          .trigger("change");
-
-        $("#driverNames")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(11)
-              .find("span")
-              .attr("driver_master_id")
-          )
-          .trigger("change");
-
-        $("#delivery_notes").val(
-          $(e.target).closest("tr").children("td").eq(13).text()
-        );
-
-        // Opening Slied Panel
-        // $("#openDispatchPanelBtn").click();
-
-        openSlidePanel(
-          "dispatchSlideInPanel",
-          "dispatchPanelHeading",
-          "Dispatch",
-          "submitDispatch",
-          "dispatch_id"
-        );
-
-        // Changing panel heading
-        $("#dispatchPanelHeading").text("Edit Dispatch Data");
-
-        // Changing panel button label
-        $("#submitDispatch").text("Update");
-
-        // Changing panel button attribute
-        $("#submitDispatch").attr(
-          "dispatch_id",
-          $(e.target).attr("dispatch_id")
-        );
-      });
 
       function loadUnits() {
         $.ajax({

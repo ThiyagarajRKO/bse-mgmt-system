@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { Sequelize, sequelize } from "../../models";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -172,6 +172,7 @@ export const GetAll = ({
   procurement_purchaser,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -256,6 +257,102 @@ export const GetAll = ({
       });
 
       resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetLotStats = ({ procurement_lot, start, length, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (procurement_lot) {
+        where.procurement_lot = { [Op.iLike]: procurement_lot };
+      }
+
+      const procurementsCount = await models.Procurements.count({
+        where,
+      });
+
+      const procurements = await models.Procurements.findAll({
+        subQuery: false,
+        attributes: [
+          "procurement_date",
+          "procurement_lot",
+          [
+            sequelize.literal(
+              `(SELECT COUNT(product_master.id) FROM product_master WHERE product_master.id = "Procurements".product_master_id and product_master.is_active = true)`
+            ),
+            "total_product_count",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(dispatches.id) FROM dispatches WHERE dispatches.procurement_id = "Procurements".id and dispatches.is_active = true)`
+            ),
+            "total_dispatched_count",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("Dispatch.dispatch_quantity")),
+            "total_dispatched_quantity",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("procurement_quantity")),
+            "total_purchased_quantity",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("procurement_price")),
+            "total_purchased_price",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("adjusted_quantity")),
+            "total_adjusted_quantity",
+          ],
+          [
+            Sequelize.fn("SUM", Sequelize.col("adjusted_price")),
+            "total_adjusted_price",
+          ],
+        ],
+        include: [
+          {
+            attributes: [],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: [],
+            required: false,
+            model: models.Dispatches,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        // order: [["created_at", "desc"]],
+        group: [
+          "Procurements.id",
+          "procurement_lot",
+          "product_master_id",
+          "procurement_date",
+          // "ProductMaster.id",
+          // "Dispatch.id",
+        ],
+      });
+
+      const output = {
+        count: procurementsCount,
+        rows: procurements,
+      };
+
+      resolve(output);
     } catch (err) {
       reject(err);
     }

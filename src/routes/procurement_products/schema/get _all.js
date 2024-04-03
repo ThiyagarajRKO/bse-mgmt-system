@@ -14,6 +14,7 @@ export const getAllSchema = {
         procurement_totalamount: { type: "integer" },
         procurement_purchaser: { type: "string" },
         procurement_supplier: { type: "string" },
+        "search[value]": { type: "string" },
       },
     },
   },
