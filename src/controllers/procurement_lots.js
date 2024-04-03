@@ -259,6 +259,7 @@ export const GetStats = ({
       const procurementRows = await models.ProcurementLots.findAll({
         subQuery: false,
         attributes: [
+          "id",
           "procurement_date",
           "procurement_lot",
           [

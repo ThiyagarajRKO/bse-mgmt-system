@@ -789,8 +789,8 @@
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa-solid fa-eye view viewProcurementProducts" procurement_id=' +
-                  row["id"] +
+                  '<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=' +
+                  row?.id +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>'
                 );
               },
@@ -962,6 +962,16 @@
 
         $("#view_lot_no").text(view_lot_no);
 
+        $("#view_lot_no").attr(
+          "procurement_lot_id",
+          $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(0)
+            .find("i")
+            .attr("procurement_lot_id")
+        );
+
         $("#view_total_products").text(view_total_products);
 
         $("#view_total_weight").text(view_total_weight);
@@ -1023,11 +1033,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editDispatch" dispatch_id=${
-                  row["Dispatch"]?.id || null
-                } procurement_id=${
-                  row?.id
-                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa fa-pen-to-square edit editDispatch" procurement_product_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
           ],
