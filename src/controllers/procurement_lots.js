@@ -181,7 +181,6 @@ export const GetAll = ({
 export const GetStats = ({
   procurement_date,
   procurement_lot,
-  unit_master_name,
   start,
   length,
 }) => {
@@ -266,6 +265,43 @@ export const GetStats = ({
       };
 
       resolve(output);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const CountStats = ({ procurement_lot, start, length }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (procurement_lot) {
+        where.procurement_lot = { [Op.iLike]: procurement_lot };
+      }
+
+      const procurement = await models.ProcurementLots.findOne({
+        subQuery: false,
+        attributes: [
+          [
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+            ),
+            "total_purchased_weight",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id=dispatches.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+            ),
+            "total_dispatched_weight",
+          ],
+        ],
+        where,
+      });
+
+      resolve(procurement);
     } catch (err) {
       reject(err);
     }

@@ -834,7 +834,7 @@
       loadPercentages();
       function loadPercentages() {
         $.ajax({
-          url: "/api/v1/procurement/count/all",
+          url: "/api/v1/procurement/lot/count/stats",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -844,8 +844,10 @@
             // Progress Bar function
 
             // Calculating Dispatch Percentage
-            const procurement_percentage = data?.data?.procurement_count || 0;
-            const dispatch_percentage = data?.data?.dispatch_count || 0;
+            const procurement_percentage =
+              data?.data?.total_purchased_weight || 0;
+            const dispatch_percentage =
+              data?.data?.total_dispatched_weight || 0;
 
             changePercentage(
               "dispatchMenu",
@@ -944,7 +946,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/get/lot/stats",
+            url: "/api/v1/procurement/lot/get/stats",
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
