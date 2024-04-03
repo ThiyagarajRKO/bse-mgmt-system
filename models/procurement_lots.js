@@ -26,11 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      ProcurementLots.belongsTo(models.VendorMaster, {
-        foreignKey: "vendor_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
+
       ProcurementLots.hasOne(models.ProcurementProducts, {
         foreignKey: "procurement_lot_id",
         onUpdate: "CASCADE",
@@ -90,11 +86,6 @@ module.exports = (sequelize, DataTypes) => {
         where: { id: data?.unit_master_id, is_active: true },
       });
 
-      const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-        attributes: ["vendor_name"],
-        where: { id: data?.vendor_master_id, is_active: true }, // Fixed variable name
-      });
-
       // Get year, month, and day from the procurement_date
       const year = data?.procurement_date.getFullYear();
       const month = (data?.procurement_date.getMonth() + 1)
@@ -106,11 +97,7 @@ module.exports = (sequelize, DataTypes) => {
       data.procurement_lot = `${unit_data["LocationMaster"]?.location_name
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${year}${month}${day}-${vendor_name
-        ?.trim()
-        ?.substring(0, 3)
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
+        ?.toUpperCase()}-${year}${month}${day}`;
 
       data.created_by = options.profile_id;
     } catch (err) {
@@ -137,11 +124,6 @@ module.exports = (sequelize, DataTypes) => {
         where: { id: data?.unit_master_id, is_active: true },
       });
 
-      const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-        attributes: ["vendor_name"],
-        where: { id: data?.vendor_master_id, is_active: true }, // Fixed variable name
-      });
-
       // Get year, month, and day from the procurement_date
       const year = data?.procurement_date.getFullYear();
       const month = (data?.procurement_date.getMonth() + 1)
@@ -153,11 +135,7 @@ module.exports = (sequelize, DataTypes) => {
       data.procurement_lot = `${unit_data["LocationMaster"]?.location_name
         ?.trim()
         ?.replaceAll(" ", "")
-        ?.toUpperCase()}-${year}${month}${day}-${vendor_name
-        ?.trim()
-        ?.substring(0, 3)
-        ?.replaceAll(" ", "")
-        ?.toUpperCase()}`;
+        ?.toUpperCase()}-${year}${month}${day}`;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

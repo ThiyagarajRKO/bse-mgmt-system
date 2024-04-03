@@ -1,7 +1,7 @@
 import { ProcurementLots } from "../../../controllers";
 
 export const GetAll = (
-  { procurement_date, procurement_lot, vendor_master_name, unit_master_name },
+  { procurement_date, procurement_lot, unit_master_name },
   session,
   fastify
 ) => {
@@ -10,7 +10,6 @@ export const GetAll = (
       let procurement = await ProcurementLots.GetAll({
         procurement_date,
         procurement_lot,
-        vendor_master_name,
         unit_master_name,
       });
 

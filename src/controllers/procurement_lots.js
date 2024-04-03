@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models, { Sequelize, sequelize } from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -22,13 +22,6 @@ export const Insert = async (profile_id, procurement_data) => {
         return reject({
           statusCode: 420,
           message: "Purchase unit id must not be empty!",
-        });
-      }
-
-      if (!procurement_data?.vendor_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Vendor master id must not be empty!",
         });
       }
 
@@ -84,12 +77,7 @@ export const Update = async (profile_id, id, procurement_data) => {
   });
 };
 
-export const Get = ({
-  id,
-  procurement_date,
-  vendor_master_id,
-  unit_master_id,
-}) => {
+export const Get = ({ id, procurement_date, unit_master_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -104,10 +92,6 @@ export const Get = ({
         where.procurement_date = new Date(procurement_date);
       }
 
-      if (vendor_master_id) {
-        where.vendor_master_id = vendor_master_id;
-      }
-
       if (unit_master_id) {
         where.unit_master_id = unit_master_id;
       }
@@ -116,12 +100,6 @@ export const Get = ({
         include: [
           {
             model: models.UnitMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            model: models.VendorMaster,
             where: {
               is_active: true,
             },
@@ -147,7 +125,6 @@ export const Get = ({
 export const GetAll = ({
   procurement_date,
   procurement_lot,
-  vendor_master_name,
   unit_master_name,
   start,
   length,
@@ -166,14 +143,6 @@ export const GetAll = ({
         where.procurement_lot = { [Op.iLike]: procurement_lot };
       }
 
-      let vendorWhere = {
-        is_active: true,
-      };
-
-      if (vendor_master_name) {
-        vendorWhere.vendor_name = { [Op.iLike]: vendor_master_name };
-      }
-
       let unitWhere = {
         is_active: true,
       };
@@ -187,10 +156,6 @@ export const GetAll = ({
           {
             model: models.UnitMaster,
             where: unitWhere,
-          },
-          {
-            model: models.VendorMaster,
-            where: vendorWhere,
           },
           {
             required: false,
@@ -216,7 +181,6 @@ export const GetAll = ({
 export const GetStats = ({
   procurement_date,
   procurement_lot,
-  vendor_master_name,
   unit_master_name,
   start,
   length,
@@ -233,22 +197,6 @@ export const GetStats = ({
 
       if (procurement_lot) {
         where.procurement_lot = { [Op.iLike]: procurement_lot };
-      }
-
-      let vendorWhere = {
-        is_active: true,
-      };
-
-      if (vendor_master_name) {
-        vendorWhere.vendor_name = { [Op.iLike]: vendor_master_name };
-      }
-
-      let unitWhere = {
-        is_active: true,
-      };
-
-      if (unit_master_name) {
-        unitWhere.unit_name = { [Op.iLike]: unit_master_name };
       }
 
       const procurementCount = await models.ProcurementLots.count({
@@ -324,12 +272,7 @@ export const GetStats = ({
   });
 };
 
-export const Count = ({
-  id,
-  procurement_date,
-  vendor_master_id,
-  unit_master_id,
-}) => {
+export const Count = ({ id, procurement_date, unit_master_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -342,10 +285,6 @@ export const Count = ({
 
       if (procurement_date) {
         where.procurement_date = procurement_date;
-      }
-
-      if (vendor_master_id) {
-        where.vendor_master_id = vendor_master_id;
       }
 
       if (unit_master_id) {
@@ -364,18 +303,12 @@ export const Count = ({
   });
 };
 
-export const CheckLot = ({
-  id,
-  procurement_date,
-  vendor_master_id,
-  unit_master_id,
-}) => {
+export const CheckLot = ({ id, procurement_date, unit_master_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const lot = await models.ProcurementLots.count({
         where: {
           procurement_date: new Date(procurement_date),
-          vendor_master_id,
           unit_master_id,
           id: {
             [Op.ne]: id,

@@ -4,6 +4,7 @@ export const createSchema = {
       type: "object",
       required: [
         "product_master_id",
+        "vendor_master_id",
         "procurement_product_type",
         "procurement_quantity",
         "procurement_price",

@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+      ProcurementProducts.belongsTo(models.VendorMaster, {
+        foreignKey: "vendor_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
 
       // has Many
       ProcurementProducts.hasMany(models.Dispatches, {

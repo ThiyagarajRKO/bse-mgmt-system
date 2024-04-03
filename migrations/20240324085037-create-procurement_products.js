@@ -17,6 +17,16 @@ module.exports = {
           key: "id",
         },
       },
+      vendor_master_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "vendor_master" },
+          key: "id",
+        },
+      },
       product_master_id: {
         type: Sequelize.UUID,
         allowNull: false,

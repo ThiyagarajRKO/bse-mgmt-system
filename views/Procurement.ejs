@@ -404,7 +404,7 @@
                   />
                 </div>
                 <div class="form-group my-3">
-                  <label for="procurement_product_supplier">Vendor</label>
+                  <label for="procurement_product_supplier">Vendor Name</label>
                   <select
                     id="procurement_product_supplier"
                     class="form-control input-dropdown w-100"
@@ -526,6 +526,9 @@
                     </th>
                     <th class="fw-bold">
                       <span>Purchased Price</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Vendor Name</span>
                     </th>
                     <th class="fw-bold">
                       <span>Purchaser</span>
@@ -712,8 +715,11 @@
           "procurementPanelHeading",
           "Procurement",
           "submitPurchases",
-          "procurement_id"
+          "procurement_product_id"
         );
+
+        // Changing panel save button attribute
+        $(`#submitPurchases`).attr("procurement_lot_id", null);
       });
 
       // Close panel
@@ -997,6 +1003,7 @@
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
             { data: "procurement_price" },
+            { data: "VendorMaster.vendor_name" },
             { data: "procurement_purchaser" },
           ],
           columnDefs: [
@@ -1012,6 +1019,13 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
               },
             },
           ],
@@ -1065,14 +1079,14 @@
             $(e.target)
               .closest("tr")
               .children("td")
-              .eq(0)
-              .find("i")
+              .eq(5)
+              .find("span")
               .attr("vendor_master_id")
           )
           .trigger("change");
 
         $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
+          $(e.target).closest("tr").children("td").eq(6).text()
         );
 
         // Opening Slied Panel
@@ -1300,7 +1314,9 @@
 
             $("#closeProcurementPanelBtn").click();
 
-            loadProcurementProductTableData($("#view_lot_no").text());
+            if (!$("#view_lot_no").text()) {
+              loadProcurementProductTableData($("#view_lot_no").text());
+            }
 
             loadProcurementTableData();
 

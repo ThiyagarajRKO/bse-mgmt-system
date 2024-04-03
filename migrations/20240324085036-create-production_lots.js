@@ -15,16 +15,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      vendor_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "vendor_master" },
-          key: "id",
-        },
-      },
       unit_master_id: {
         type: Sequelize.UUID,
         allowNull: false,

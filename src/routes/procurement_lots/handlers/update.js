@@ -7,6 +7,19 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const procurement_lot = await ProcurementLots.CheckLot({
+        id: procurement_lot_id,
+        procurement_date: procurement_lot_data?.procurement_date,
+        unit_master_id: procurement_lot_data?.unit_master_id,
+      });
+
+      if (procurement_lot > 0) {
+        return reject({
+          statusCode: 420,
+          message: "Purchase lot combination already exist!",
+        });
+      }
+
       const updated_data = await ProcurementLots.Update(
         profile_id,
         procurement_lot_id,

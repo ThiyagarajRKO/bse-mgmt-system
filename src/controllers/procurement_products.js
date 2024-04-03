@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models, { Sequelize, sequelize } from "../../models";
+import models from "../../models";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -8,6 +8,13 @@ export const Insert = async (profile_id, procurement_data) => {
         return reject({
           statusCode: 420,
           message: "user id must not be empty!",
+        });
+      }
+
+      if (!procurement_data?.vendor_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Vendor master id must not be empty!",
         });
       }
 
@@ -112,6 +119,12 @@ export const Get = ({ id }) => {
         include: [
           {
             model: models.ProcurementLots,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.VendorMaster,
             where: {
               is_active: true,
             },
@@ -230,14 +243,14 @@ export const GetAll = ({
                   is_active: true,
                 },
               },
-              {
-                model: models.VendorMaster,
-                where: {
-                  is_active: true,
-                },
-              },
             ],
             where: procurementWhere,
+          },
+          {
+            model: models.VendorMaster,
+            where: {
+              is_active: true,
+            },
           },
           {
             model: models.ProductMaster,
@@ -284,25 +297,74 @@ export const GetAll = ({
   });
 };
 
-export const Count = ({ id }) => {
+export const Count = ({
+  id,
+  procurement_lot_id,
+  product_master_id,
+  vendor_master_id,
+  procurement_product_type,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Purchase ID field must not be empty!",
-        });
+      let where = {
+        is_active: true,
+      };
+
+      if (id) {
+        where.id = id;
+      }
+
+      if (procurement_lot_id) {
+        where.procurement_lot_id = procurement_lot_id;
+      }
+
+      if (vendor_master_id) {
+        where.vendor_master_id = vendor_master_id;
+      }
+
+      if (product_master_id) {
+        where.product_master_id = product_master_id;
+      }
+
+      if (procurement_product_type) {
+        where.procurement_product_type = procurement_product_type;
       }
 
       const unit = await models.ProcurementProducts.count({
-        where: {
-          id,
-          is_active: true,
-        },
+        where,
         raw: true,
       });
 
       resolve(unit);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const CheckLot = ({
+  id,
+  procurement_lot_id,
+  product_master_id,
+  procurement_product_type,
+  vendor_master_id,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const lot = await models.ProcurementProducts.count({
+        where: {
+          product_master_id,
+          procurement_product_type,
+          vendor_master_id,
+          procurement_lot_id,
+          id: {
+            [Op.ne]: id,
+          },
+        },
+        raw: true,
+      });
+
+      resolve(lot);
     } catch (err) {
       reject(err);
     }

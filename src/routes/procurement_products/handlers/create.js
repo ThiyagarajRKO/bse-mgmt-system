@@ -22,44 +22,53 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const product_count = await ProductMaster.Count({
-        id: product_master_id,
+      // Getting
+      let procurement_lot = await ProcurementLots.Get({
+        procurement_date,
+        unit_master_id,
       });
 
-      if (product_count == 0) {
-        return reject({
-          statusCode: 420,
-          message: "Invalid product master id!",
+      if (procurement_lot?.id) {
+        const procurement_product = await ProcurementProducts.Count({
+          procurement_lot_id: procurement_lot?.id,
+          product_master_id,
+          vendor_master_id,
+          procurement_product_type,
         });
-      }
 
-      let procurement_lot = {};
-
-      if (!procurement_lot_id) {
-        if (!procurement_date || !vendor_master_id || !unit_master_id) {
+        if (procurement_product > 0) {
           return reject({
             statusCode: 420,
-            message: "Invalid product lot details",
-          });
-        }
-
-        procurement_lot = await ProcurementLots.Get({
-          procurement_date,
-          vendor_master_id,
-          unit_master_id,
-        });
-
-        if (!procurement_lot?.id) {
-          procurement_lot = await ProcurementLots.Insert(profile_id, {
-            procurement_date,
-            vendor_master_id,
-            unit_master_id,
-            is_active: true,
+            message: "Procurement product already exist!",
           });
         }
       }
 
-      if (!procurement_lot?.id && !procurement_lot_id) {
+      if (!procurement_lot?.id) {
+        procurement_lot = await ProcurementLots.Insert(profile_id, {
+          procurement_date,
+          unit_master_id,
+          is_active: true,
+        });
+      }
+      // }
+
+      procurement_lot_id = procurement_lot_id || procurement_lot?.id;
+
+      const procurement_product = await ProcurementProducts.Count({
+        procurement_lot_id,
+        product_master_id,
+        vendor_master_id,
+        procurement_product_type,
+      });
+
+      if (procurement_product > 0) {
+        return reject({
+          message: "Procurement product already exist!",
+        });
+      }
+
+      if (!procurement_lot_id) {
         return reject({
           statusCode: 420,
           message: "Invalid procurement lot id!",
@@ -67,8 +76,9 @@ export const Create = (
       }
 
       const purchase = await ProcurementProducts.Insert(profile_id, {
-        procurement_lot_id: procurement_lot?.id || procurement_lot_id,
+        procurement_lot_id,
         product_master_id,
+        vendor_master_id,
         procurement_product_type,
         procurement_quantity,
         procurement_price,
