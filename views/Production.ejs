@@ -664,7 +664,7 @@
             <!-- Modal content-->
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">Dispatch</h4>
+                <h4 class="modal-title">Dispatched Products</h4>
                 <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
                 </i>
               </div>
@@ -1018,13 +1018,32 @@
       $(document).on("click", ".viewDispatches", (e) => {
         // Changing panel input fields data
 
-        const lot_no = $(e.target).closest("tr").children("td").eq(2).text();
-        $("#view_lot_no").text(lot_no);
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .text();
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
 
         // Opening Slied Panel
         $("#dispatchModal").modal("show");
 
-        loadDispatchProductTableData(lot_no);
+        loadDispatchProductTableData(view_lot_no);
       });
 
       function loadDispatchProductTableData(lot_no) {
