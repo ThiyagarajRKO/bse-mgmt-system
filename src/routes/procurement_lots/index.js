@@ -5,6 +5,7 @@ import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetStats } from "./handlers/get_lot_stats";
 import { CountStats } from "./handlers/count_stats";
+import { GetLots } from "./handlers/get_lots";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -78,6 +79,25 @@ export const procurementLotsRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await GetAll(params, req?.session, fastify);
+
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/get/all/lots", getStatsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetLots(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,

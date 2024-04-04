@@ -519,8 +519,8 @@
                   <label for="lot_no">Lot No:</label>
                   <select
                     class="form-control input-dropdown w-100"
-                    id="destinationLocation"
-                    name="destinationLocation"
+                    id="lotNumbers"
+                    name="lotNumbers"
                   ></select>
                 </div>
 
@@ -528,8 +528,8 @@
                   <label for="product_name">Product Name:</label>
                   <select
                     class="form-control input-dropdown w-100"
-                    id="destinationLocation"
-                    name="destinationLocation"
+                    id="productNames"
+                    name="productNames"
                   ></select>
                 </div>
 
@@ -552,6 +552,10 @@
                     name="dispatch_quantity"
                     required
                   />
+                  <span
+                    >Balance Purchased Quantity :
+                    <span class="fw-bold" id="balance_procure_quantity"></span
+                  ></span>
                 </div>
 
                 <div class="form-group mt-4">
@@ -787,6 +791,8 @@
         $("textarea").val("");
 
         // Resetting select field selected option
+        $("#lotNumbers").val(null).trigger("change");
+        $("#productNames").val(null).trigger("change");
         $("#destinationLocation").val(null).trigger("change");
         $("#vehicleNumbers").val(null).trigger("change");
         $("#driverNames").val(null).trigger("change");
@@ -825,13 +831,13 @@
 
       function loadDropdowns() {
         // Pre loading dropdown data
+        loadLotNumber();
         loadUnits();
         loadVehicles();
         loadDrivers();
       }
 
       // Getting data for progress bars
-      loadPercentages();
       function loadPercentages() {
         $.ajax({
           url: "/api/v1/procurement/lot/count/stats",
@@ -912,7 +918,8 @@
       $(".dispatchContainer").removeClass("d-none");
       $(".dispatchContainer").addClass("d-block");
 
-      await loadDropdowns();
+      loadPercentages();
+      loadDropdowns();
       loadDispatchTableData();
 
       // ---------------------------------------------------------
@@ -1255,6 +1262,129 @@
         });
       }
 
+      function loadLotNumber() {
+        $.ajax({
+          url: `/api/v1/procurement/lot/get/all/lots`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#lotNumbers").select2({
+              placeholder: "Choose a lot",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.procurement_lot,
+                };
+              }),
+            });
+
+            $("#lotNumbers").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#lotNumbers", () => {
+        let lot_no = $("#lotNumbers").val();
+
+        $("#productNames").empty();
+
+        if (lot_no) {
+          loadProducts(lot_no);
+        }
+      });
+
+      let balance_procure_quantity = 0;
+      $(document).on("change", "#productNames", () => {
+        balance_procure_quantity =
+          $("#productNames").select2("data")[0]?.quantity;
+
+        if (!isNaN(balance_procure_quantity)) {
+          $("#balance_procure_quantity").text(
+            parseFloat(balance_procure_quantity)
+          );
+
+          $("#balance_procure_quantity").css({ color: "white" });
+        }
+      });
+
+      $(document).on("keyup", "#dispatch_quantity", (e) => {
+        const currentDispatchedQuantity = $(e.target).val();
+        const procurementQuantity = parseFloat(
+          $("#productNames").select2("data")[0]?.quantity
+        );
+
+        if (!currentDispatchedQuantity) {
+          $("#balance_procure_quantity").text(balance_procure_quantity);
+          $("#balance_procure_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balanceQuantity = procurementQuantity - currentDispatchedQuantity;
+
+        $("#balance_procure_quantity").text(
+          !isNaN(balanceQuantity) ? balanceQuantity : currentDispatchedQuantity
+        );
+
+        if (balanceQuantity > 0) {
+          $("#balance_procure_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_procure_quantity").css({ color: "red" });
+        }
+      });
+
+      function loadProducts(lot_no) {
+        $("#productNames").empty();
+
+        if (!lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/get/all/names?procurement_lot_id=${lot_no}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#productNames").select2({
+              placeholder: "Choose a product",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  quantity: item?.procurement_quantity,
+                  text: `${item?.ProductMaster?.product_name}-${
+                    item?.procurement_product_type
+                  }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
+                };
+              }),
+            });
+
+            $("#productNames").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
       function loadUnits() {
         $.ajax({
           url: "/api/v1/master/unit/get/all",
@@ -1353,10 +1483,16 @@
 
       function saveDispatch() {
         const dispatch_id = $("#submitDispatch").attr("dispatch_id");
+        const current_weight_balance = $("#balance_procure_quantity").text();
+
+        if (parseFloat(current_weight_balance) <= -1) {
+          toastr["warning"]("Invalid dispatch quantity");
+          return;
+        }
 
         let url = "/api/v1/dispatch/create";
         let input_params = {
-          procurement_id: $("#lot_no").attr("procurement_id"),
+          procurement_product_id: $("#productNames").val(),
           unit_master_id: $("#destinationLocation").val(),
           dispatch_quantity: $("#dispatch_quantity").val(),
           temperature: $("#dispatch_temperature").val(),

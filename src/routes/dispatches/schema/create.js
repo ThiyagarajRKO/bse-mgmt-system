@@ -6,6 +6,8 @@ export const createSchema = {
         "procurement_product_id",
         "unit_master_id",
         "dispatch_quantity",
+        "temperature",
+        "delivery_notes",
         "vehicle_master_id",
         "driver_master_id",
       ],

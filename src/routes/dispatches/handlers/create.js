@@ -1,4 +1,8 @@
-import { Dispatches, LocationMaster } from "../../../controllers";
+import {
+  Dispatches,
+  LocationMaster,
+  ProcurementProducts,
+} from "../../../controllers";
 
 export const Create = (
   {
@@ -16,6 +20,22 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const { procurement_quantity } = await ProcurementProducts.GetQuantity({
+        id: procurement_product_id,
+      });
+
+      if (!procurement_quantity) {
+        return reject({
+          statusCode: 420,
+          message: "Invalid product quantity",
+        });
+      } else if (procurement_quantity < dispatch_quantity) {
+        return reject({
+          statusCode: 420,
+          message: "Dispatched quantity is grater than Procurement quantity",
+        });
+      }
+
       const dispatch = await Dispatches.Insert(profile_id, {
         procurement_product_id,
         unit_master_id,

@@ -4,7 +4,7 @@ export const countStatsSchema = {
       type: "object",
       required: [],
       properties: {
-        procurement_lot: { type: "string" },
+        procurement_lot_id: { type: "string" },
         "search[value]": { type: "string" },
       },
     },

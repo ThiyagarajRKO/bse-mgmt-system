@@ -1,4 +1,4 @@
-export const getStatsSchema = {
+export const getNamesSchema = {
   schema: {
     query: {
       type: "object",

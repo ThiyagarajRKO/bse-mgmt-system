@@ -1,10 +1,17 @@
-import { ProcurementLots } from "../../../controllers";
+import { ProcurementProducts } from "../../../controllers";
 
-export const CountStats = ({ procurement_lot_id }, session, fastify) => {
+export const GetNames = (
+  { procurement_lot_id, start, length, "search[value]": search },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementLots.CountStats({
+      let procurement = await ProcurementProducts.GetNames({
         procurement_lot_id,
+        start,
+        length,
+        search,
       });
 
       if (!procurement) {

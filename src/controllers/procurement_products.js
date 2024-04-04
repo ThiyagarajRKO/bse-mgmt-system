@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
+import procurementLotsRoute from "../routes/procurement_lots";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -176,6 +177,31 @@ export const Get = ({ id }) => {
   });
 };
 
+export const GetQuantity = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Procurement product ID field must not be empty!",
+        });
+      }
+
+      const product = await models.ProcurementProducts.findOne({
+        attributes: ["procurement_quantity"],
+        where: {
+          id,
+          is_active: true,
+        },
+      });
+
+      resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const GetAll = ({
   procurement_lot,
   product_master_name,
@@ -288,6 +314,71 @@ export const GetAll = ({
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetNames = ({ procurement_lot_id, start, length, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
+      // where[Op.and] = [sequelize.literal(`(SELECT "sumA" > "sumB")`)];
+
+      const procurements = await models.ProcurementProducts.findAll({
+        attributes: ["id", "procurement_product_type", "procurement_quantity"],
+        include: [
+          {
+            attributes: [],
+            model: models.ProcurementLots,
+            where: procurementLotsWhere,
+          },
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "vendor_name"],
+            model: models.VendorMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: false,
+            model: models.Dispatches,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: [
+          "ProcurementProducts.id",
+          "ProductMaster.id",
+          "VendorMaster.id",
+          "Dispatches.id",
+        ],
       });
 
       resolve(procurements);
