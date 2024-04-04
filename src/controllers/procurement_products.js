@@ -340,7 +340,16 @@ export const GetNames = ({ procurement_lot_id, start, length, search }) => {
       // where[Op.and] = [sequelize.literal(`(SELECT "sumA" > "sumB")`)];
 
       const procurements = await models.ProcurementProducts.findAll({
-        attributes: ["id", "procurement_product_type", "procurement_quantity"],
+        attributes: [
+          "id",
+          "procurement_product_type",
+          [
+            sequelize.literal(
+              `(SELECT CASE WHEN procurement_quantity-SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE procurement_quantity-SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and dispatches.is_active = true)`
+            ),
+            "current_quantity",
+          ],
+        ],
         include: [
           {
             attributes: [],

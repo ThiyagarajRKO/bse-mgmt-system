@@ -234,12 +234,18 @@
         width: 100% !important;
       }
 
-      /* .select2-selection__rendered,
+      .select2-selection__rendered,
       .select2-selection__clear,
       .select2-selection__arrow {
         color: white !important;
         margin-top: 0.25rem !important;
-      } */
+      }
+
+      .select2-selection {
+        background-color: transparent !important;
+        border-color: rgba(98, 114, 147, 0.6) !important;
+        height: 35px !important;
+      }
 
       .slideInPanel .select:focus {
         background-color: transparent;
@@ -552,7 +558,7 @@
                     name="dispatch_quantity"
                     required
                   />
-                  <span
+                  <span style="font-size: 12px"
                     >Balance Purchased Quantity :
                     <span class="fw-bold" id="balance_procure_quantity"></span
                   ></span>
@@ -936,6 +942,8 @@
           "submitDispatch",
           "dispatch_id"
         );
+
+        $("#balance_procure_quantity").text("").css({ color: "white" });
       });
 
       // Close panel
@@ -1365,7 +1373,7 @@
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
-                  quantity: item?.procurement_quantity,
+                  quantity: item?.current_quantity,
                   text: `${item?.ProductMaster?.product_name}-${
                     item?.procurement_product_type
                   }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
