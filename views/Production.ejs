@@ -712,18 +712,15 @@
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
                       <th class="fw-bold"><span>Product Name</span></th>
-                      <th class="fw-bold"><span>Dispatch Date</span></th>
-                      <th class="fw-bold"><span>Dispatch Destination</span></th>
+                      <th class="fw-bold"><span>Purchased Quantity</span></th>
                       <th class="fw-bold"><span>Dispatched Quantity</span></th>
-                      <th class="fw-bold">
-                        <span>Dispatched Temperature</span>
-                      </th>
-                      <th class="fw-bold"><span>Vehicle Number</span></th>
+                      <th class="fw-bold"><span>Temperature</span></th>
+                      <th class="fw-bold"><span>Destination</span></th>
+                      <th class="fw-bold"><span>Vehicle Name</span></th>
                       <th class="fw-bold"><span>Driver Name</span></th>
+                      <th class="fw-bold"><span>Delivery Notes</span></th>
                       <th class="fw-bold"><span>Delivery Status</span></th>
-                      <th style="border-radius: 0 4px 0 0" class="fw-bold">
-                        <span>Delivery Notes</span>
-                      </th>
+                      <th class="fw-bold"><span>Dispatched Date</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -1133,8 +1130,11 @@
             type: "GET",
             url: `/api/v1/dispatch/get/all?procurement_lot=${lot_no}`,
             error: function (xhr, error, code) {
-              $("#dispatchTable").DataTable().destroy();
-              $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
+              $("#dispatchProductTable").DataTable().destroy();
+              $("#dispatchProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
 
               if (xhr["status"] == 420) {
                 toastr["warning"](xhr["responseJSON"]["message"]);
@@ -1152,15 +1152,16 @@
           },
           columns: [
             { data: null },
-            { data: "procurement_product_name" },
             { data: null },
-            { data: null },
-            { data: null },
-            { data: null },
-            { data: null },
-            { data: null },
-            { data: null },
-            { data: null },
+            { data: "ProcurementProduct.procurement_quantity" },
+            { data: "dispatch_quantity" },
+            { data: "temperature" },
+            { data: "UnitMaster.unit_code" },
+            { data: "VehicleMaster.vehicle_number" },
+            { data: "DriverMaster.driver_name" },
+            { data: "delivery_notes" },
+            { data: "delivery_status" },
+            { data: "created_at" },
           ],
           columnDefs: [
             {
@@ -1175,14 +1176,50 @@
               },
             },
             {
-              targets: [2],
+              targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                if (!row["Dispatch"]?.["created_at"]) {
-                  return "";
-                }
-
-                const date = new Date(row["Dispatch"]?.["created_at"]);
+                return `<span procurement_product_id='${
+                  row["ProcurementProduct"]?.id
+                }'>${
+                  row["ProcurementProduct"]?.["ProductMaster"]?.product_name
+                }-${row["ProcurementProduct"]?.procurement_product_type}-${row[
+                  "ProcurementProduct"
+                ]?.["VendorMaster"]?.vendor_name?.replaceAll(" ", "")}</i>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<a href="tel:${
+                  row["DriverMaster"]?.phone?.startsWith("91")
+                    ? `+${row["DriverMaster"]?.phone}`
+                    : row["DriverMaster"]?.phone?.startsWith("+91")
+                    ? row["DriverMaster"]?.phone
+                    : `+91${row["DriverMaster"]?.phone}`
+                }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
 
                 var months = [
                   "Jan",
@@ -1210,65 +1247,6 @@
                 return (
                   day + "-" + month + "-" + date.getFullYear() + " " + strTime
                 );
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span destination_unit_master_id='${
-                  row["Dispatch"]?.["UnitMaster"]?.id
-                }'>${row["Dispatch"]?.["UnitMaster"]?.unit_code || ""}</i>`;
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span>${
-                  row["Dispatch"]?.dispatch_quantity || ""
-                }</span>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span>${row["Dispatch"]?.temperature || ""}</span>`;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span vehicle_master_id='${
-                  row["Dispatch"]?.["VehicleMaster"]?.id
-                }'>${
-                  row["Dispatch"]?.["VehicleMaster"]?.vehicle_number || ""
-                }</i>`;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span driver_master_id='${
-                  row["Dispatch"]?.["DriverMaster"]?.id
-                }'>${row["Dispatch"]?.["DriverMaster"]?.driver_name || ""}</i>`;
-              },
-            },
-            {
-              targets: [8],
-              className: "text-left",
-              render: function (data, type, row) {
-                return row["Dispatch"]?.delivery_status || "";
-              },
-            },
-            {
-              targets: [9],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span>${row["Dispatch"]?.delivery_notes || ""}</span>`;
               },
             },
           ],

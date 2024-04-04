@@ -155,6 +155,18 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
                 model: models.ProcurementLots,
                 where: procurementLotsWhere,
               },
+              {
+                model: models.ProductMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                model: models.VendorMaster,
+                where: {
+                  is_active: true,
+                },
+              },
             ],
             where: {
               is_active: true,
