@@ -343,11 +343,12 @@ export const GetNames = ({ procurement_lot_id, start, length, search }) => {
         attributes: [
           "id",
           "procurement_product_type",
+          "procurement_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN procurement_quantity-SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE procurement_quantity-SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and dispatches.is_active = true)`
+              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and dispatches.is_active = true)`
             ),
-            "current_quantity",
+            "dispatched_quantity",
           ],
         ],
         include: [

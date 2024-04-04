@@ -1381,6 +1381,8 @@
       }
 
       $(document).on("change", "#lotNumbers", () => {
+        $("#balance_procure_quantity").text("");
+
         let lot_no = $("#lotNumbers").val();
 
         $("#productNames").empty();
@@ -1392,6 +1394,8 @@
 
       let balance_procure_quantity = 0;
       $(document).on("change", "#productNames", () => {
+        $("#balance_procure_quantity").text("");
+
         if ($("#productNames").val()) {
           balance_procure_quantity =
             $("#productNames").select2("data")[0]?.quantity;
@@ -1453,7 +1457,9 @@
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
-                  quantity: item?.current_quantity,
+                  quantity:
+                    (parseFloat(item?.procurement_quantity) || 0) -
+                    (parseFloat(item?.dispatched_quantity) || 0),
                   text: `${item?.ProductMaster?.product_name}-${
                     item?.procurement_product_type
                   }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
