@@ -1314,7 +1314,7 @@
 
             $("#closeProcurementPanelBtn").click();
 
-            if (!$("#view_lot_no").text()) {
+            if ($("#view_lot_no").text()) {
               loadProcurementProductTableData($("#view_lot_no").text());
             }
 
