@@ -115,28 +115,30 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ lot_no, start, length, search }) => {
+export const GetAll = ({ procurement_lot_id, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      let procurementWhere = {
+      let procurementLotsWhere = {
         is_active: true,
       };
 
-      if (lot_no) {
-        procurementWhere.procurement_lot = {
-          [Op.iLike]: `%${lot_no}%`,
-        };
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
       }
 
       if (search) {
         where[Op.or] = [
           { dispatch_code: { [Op.iLike]: `%${search}%` } },
           { dispatch_name: { [Op.iLike]: `%${search}%` } },
-          { "$Procurements.procurement_lot$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$ProcurementProducts.ProcurementLots.procurement_lot$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
           { "$source_unit.unit_name$": { [Op.iLike]: `%${search}%` } },
           { "$destination_unit.unit_name$": { [Op.iLike]: `%${search}%` } },
           { "$VehicleMaster.vehicle_number$": { [Op.iLike]: `%${search}%` } },
@@ -147,18 +149,18 @@ export const GetAll = ({ lot_no, start, length, search }) => {
       const dispatchs = await models.Dispatches.findAndCountAll({
         include: [
           {
-            model: models.Procurements,
-            where: procurementWhere,
-          },
-          {
-            as: "source_unit",
-            model: models.UnitMaster,
+            model: models.ProcurementProducts,
+            include: [
+              {
+                model: models.ProcurementLots,
+                where: procurementLotsWhere,
+              },
+            ],
             where: {
               is_active: true,
             },
           },
           {
-            as: "destination_unit",
             model: models.UnitMaster,
             where: {
               is_active: true,

@@ -114,7 +114,9 @@
         opacity: 1 !important;
       }
 
+      .edit,
       .view,
+      .close,
       .del {
         cursor: pointer;
       }
@@ -687,16 +689,16 @@
 
                   <div class="form-group">
                     <label class="fw-bold" for="total_products"
-                      >Total Products:</label
+                      >Total Dispatches:</label
                     >
-                    <span id="view_total_products"></span>
+                    <span id="view_total_dispatches"></span>
                   </div>
 
                   <div class="form-group">
                     <label class="fw-bold" for="total_weight"
                       >Total Weight:</label
                     >
-                    <span id="view_total_weight"></span>
+                    <span id="view_total_dispatch_weight"></span>
                   </div>
                 </div>
 
@@ -962,6 +964,10 @@
         loadDispatchTableData();
       });
 
+      $(document).on("click", ".modal-header .close", () => {
+        $("#dispatchModal").modal("hide");
+      });
+
       $("#submitDispatch").click(function () {
         saveDispatch();
       });
@@ -1086,22 +1092,22 @@
           .children("td")
           .eq(2)
           .text();
-        const view_total_products = $(e.target)
+        const view_total_dispatches = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(3)
+          .eq(5)
           .text();
-        const view_total_weight = $(e.target)
+        const view_total_dispatch_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(4)
+          .eq(6)
           .text();
 
         $("#view_lot_no").text(view_lot_no);
 
-        $("#view_total_products").text(view_total_products);
+        $("#view_total_dispatches").text(view_total_dispatches);
 
-        $("#view_total_weight").text(view_total_weight);
+        $("#view_total_dispatch_weight").text(view_total_dispatch_weight);
 
         // Opening Slied Panel
         $("#dispatchModal").modal("show");
@@ -1125,7 +1131,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/lot/get/all?procurement_lot=${lot_no}`,
+            url: `/api/v1/dispatch/get/all?procurement_lot=${lot_no}`,
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });

@@ -1,4 +1,4 @@
-import { Dispatches, LocationMaster } from "../../../controllers";
+import { Dispatches, ProcurementProducts } from "../../../controllers";
 
 export const Update = (
   { profile_id, dispatch_id, dispatch_data },
@@ -7,6 +7,30 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (dispatch_data?.dispatch_quantity) {
+        if (!dispatch_data?.procurement_product_id) {
+          return reject({
+            statusCode: 420,
+            message: "procurement product id must not be empty",
+          });
+        }
+        const { procurement_quantity } = await ProcurementProducts.GetQuantity({
+          id: dispatch_data?.procurement_product_id,
+        });
+
+        if (!procurement_quantity) {
+          return reject({
+            statusCode: 420,
+            message: "Invalid product quantity",
+          });
+        } else if (procurement_quantity < dispatch_data?.dispatch_quantity) {
+          return reject({
+            statusCode: 420,
+            message: "Dispatched quantity is grater than Procurement quantity",
+          });
+        }
+      }
+
       const updated_data = await Dispatches.Update(
         profile_id,
         dispatch_id,

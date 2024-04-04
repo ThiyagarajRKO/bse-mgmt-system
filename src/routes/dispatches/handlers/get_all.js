@@ -2,6 +2,7 @@ import { Dispatches } from "../../../controllers";
 
 export const GetAll = (
   {
+    procurement_lot_id,
     start,
     length,
     unit_code,
@@ -16,6 +17,7 @@ export const GetAll = (
   return new Promise(async (resolve, reject) => {
     try {
       let dispatch = await Dispatches.GetAll({
+        procurement_lot_id,
         start,
         length,
         unit_code,
