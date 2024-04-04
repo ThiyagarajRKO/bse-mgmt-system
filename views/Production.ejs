@@ -948,6 +948,8 @@
       // Close panel
       $("#closeDispatchPanelBtn").click(function () {
         closeSlidePanel("dispatchSlideInPanel");
+
+        view_procurement_product_id = "";
       });
 
       $(".dispatchMenu").click(async function () {
@@ -1015,11 +1017,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewDispatches" dispatch_id=${
-                  row["Dispatch"]?.id || null
-                } procurement_id=${
-                  row?.id
-                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa-solid fa-eye view viewDispatches" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
             {
@@ -1046,6 +1044,13 @@
                 var month = months[date.getMonth()];
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
                 return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
               },
             },
             {
@@ -1083,12 +1088,16 @@
 
       $(document).on("click", ".viewDispatches", (e) => {
         // Changing panel input fields data
+        $("#closeDispatchPanelBtn").click();
 
+        // Changing panel input fields data
         const view_lot_no = $(e.target)
           .closest("tr")
           .children("td")
           .eq(2)
-          .text();
+          .find("span")
+          .attr("procurement_lot_id");
+
         const view_total_dispatches = $(e.target)
           .closest("tr")
           .children("td")
@@ -1100,7 +1109,11 @@
           .eq(6)
           .text();
 
-        $("#view_lot_no").text(view_lot_no);
+        $("#view_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_lot_no").attr("procurement_lot_id", view_lot_no);
 
         $("#view_total_dispatches").text(view_total_dispatches);
 
@@ -1128,7 +1141,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/dispatch/get/all?procurement_lot=${lot_no}`,
+            url: `/api/v1/dispatch/get/all?procurement_lot_id=${lot_no}`,
             error: function (xhr, error, code) {
               $("#dispatchProductTable").DataTable().destroy();
               $("#dispatchProductTable").DataTable({
@@ -1169,7 +1182,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<i class="fa fa-pen-to-square edit editDispatch" dispatch_id=${
-                  row["Dispatch"]?.id || null
+                  row?.id || null
                 } procurement_id=${
                   row?.id
                 } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
@@ -1254,6 +1267,86 @@
         });
       }
 
+      let view_procurement_product_id = "";
+      $(document).on("click", ".editDispatch", (e) => {
+        // Changing panel input fields data
+
+        $("#lotNumbers")
+          .val($("#view_lot_no").attr("procurement_lot_id"))
+          .trigger("change");
+
+        view_procurement_product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(1)
+          .find("span")
+          .attr("procurement_product_id");
+
+        $("#productNames").val(view_procurement_product_id).trigger("change");
+
+        $("#dispatch_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#dispatch_temperature").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#destinationLocation")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#vehicleNumbers")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("vehicle_master_id")
+          )
+          .trigger("change");
+
+        $("#driverNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(7)
+              .find("a")
+              .attr("driver_master_id")
+          )
+          .trigger("change");
+
+        $("#delivery_notes").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening Slied Panel
+        $("#openDispatchPanelBtn").click();
+
+        // Changing panel heading
+        $("#dispatchPanelHeading").text("Edit Dispatch Data");
+
+        // Changing panel button label
+        $("#submitPurchases").text("Update");
+
+        // Changing panel button attribute
+        $("#submitDispatch").attr(
+          "dispatch_id",
+          $(e.target).attr("dispatch_id")
+        );
+
+        $("#dispatchModal").modal("hide");
+      });
+
       function loadLotNumber() {
         $.ajax({
           url: `/api/v1/procurement/lot/get/all/lots`,
@@ -1298,15 +1391,17 @@
 
       let balance_procure_quantity = 0;
       $(document).on("change", "#productNames", () => {
-        balance_procure_quantity =
-          $("#productNames").select2("data")[0]?.quantity;
+        if ($("#productNames").val()) {
+          balance_procure_quantity =
+            $("#productNames").select2("data")[0]?.quantity;
 
-        if (!isNaN(balance_procure_quantity)) {
-          $("#balance_procure_quantity").text(
-            parseFloat(balance_procure_quantity)
-          );
+          if (!isNaN(balance_procure_quantity)) {
+            $("#balance_procure_quantity").text(
+              parseFloat(balance_procure_quantity)
+            );
 
-          $("#balance_procure_quantity").css({ color: "white" });
+            $("#balance_procure_quantity").css({ color: "white" });
+          }
         }
       });
 
@@ -1365,7 +1460,19 @@
               }),
             });
 
+            // if (view_procurement_product_id) {
+            //   $("#productNames")
+            //     .val(view_procurement_product_id)
+            //     .trigger("change");
+            // } else {
             $("#productNames").val(null).trigger("change");
+            // }
+
+            if (view_procurement_product_id) {
+              $("#productNames")
+                .val(view_procurement_product_id)
+                .trigger("change");
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
