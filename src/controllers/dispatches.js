@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (profile_id, dispatch_data) => {
   return new Promise(async (resolve, reject) => {
@@ -132,15 +132,45 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
 
       if (search) {
         where[Op.or] = [
-          { dispatch_code: { [Op.iLike]: `%${search}%` } },
-          { dispatch_name: { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(sequelize.col("dispatch_quantity"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          sequelize.where(
+            sequelize.cast(sequelize.col("temperature"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { delivery_notes: { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(sequelize.col("delivery_status"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           {
-            "$ProcurementProducts.ProcurementLots.procurement_lot$": {
+            "$ProcurementProduct->ProductMaster.product_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
-          { "$source_unit.unit_name$": { [Op.iLike]: `%${search}%` } },
-          { "$destination_unit.unit_name$": { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col("ProcurementProduct.procurement_product_type"),
+              "varchar"
+            ),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          {
+            "$ProcurementProduct->VendorMaster.vendor_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
           { "$VehicleMaster.vehicle_number$": { [Op.iLike]: `%${search}%` } },
           { "$DriverMaster.driver_name$": { [Op.iLike]: `%${search}%` } },
         ];

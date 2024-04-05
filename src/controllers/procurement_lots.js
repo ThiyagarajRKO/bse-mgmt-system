@@ -198,7 +198,7 @@ export const GetLots = ({ start, length }) => {
   });
 };
 
-export const GetStats = ({ procurement_lot_id, start, length }) => {
+export const GetStats = ({ procurement_lot_id, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -207,6 +207,18 @@ export const GetStats = ({ procurement_lot_id, start, length }) => {
 
       if (procurement_lot_id) {
         where.id = procurement_lot_id;
+      }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("procurement_date"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { procurement_lot: { [Op.iLike]: `%${search}%` } },
+        ];
       }
 
       const procurementCount = await models.ProcurementLots.count({
