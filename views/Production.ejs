@@ -286,6 +286,10 @@
         color: #627293;
       }
 
+      table.dataTable th {
+        text-align: left !important;
+      }
+
       /* Table */
       /* table.dataTable thead tr {  
         background-color: #1f2d3e;
@@ -354,10 +358,10 @@
                 0%
               </text>
             </svg>
-            <span class="heading fs-6">Dispatch</span>
+            <span class="heading fw-bold fs-6">Dispatch (kg)</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight dispatchWeight"
+              class="fs-6 weight fw-bold dispatchWeight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -399,10 +403,10 @@
                 0%
               </text>
             </svg>
-            <span class="heading fs-6">Peeling</span>
+            <span class="heading fw-bold fs-6">Peeling (kg)</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight"
+              class="fs-6 weight fw-bold"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -444,10 +448,10 @@
                 0%
               </text>
             </svg>
-            <span class="heading fs-6">Dispatch</span>
+            <span class="heading fw-bold fs-6">Dispatch (kg)</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight"
+              class="fs-6 weight fw-bold"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -489,10 +493,10 @@
                 0%
               </text>
             </svg>
-            <span class="heading fs-6">Packing</span>
+            <span class="heading fw-bold fs-6">Packing (kg)</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight"
+              class="fs-6 weight fw-bold"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -1675,6 +1679,38 @@
         $(`#${circle_id}`)
           .find($("circle.complete"))
           .animate({ "stroke-dashoffset": strokeDashOffset }, 1250);
+
+        $(`#${percentage_id}`)
+          .prop("Counter", 0)
+          .animate(
+            {
+              Counter: $(`#${percentage_id}`).text(),
+            },
+            {
+              duration: 2000,
+              easing: "swing",
+              step: function (now) {
+                now = Number(Math.ceil(parseFloat(now))).toLocaleString("en");
+                $(`#${percentage_id}`).text(`${now}%`);
+              },
+            }
+          );
+
+        $(`.${weight_id}`)
+          .prop("Counter", 0)
+          .animate(
+            {
+              Counter: $(`.${weight_id}`).text(),
+            },
+            {
+              duration: 2000,
+              easing: "swing",
+              step: function (now) {
+                now = Number(Math.ceil(parseFloat(now))).toLocaleString("en");
+                $(`.${weight_id}`).text(now);
+              },
+            }
+          );
 
         if (percent > 0) {
           $(`#${hr_id}`).css({ opacity: "0.8" });
