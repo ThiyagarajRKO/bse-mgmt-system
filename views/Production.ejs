@@ -378,7 +378,7 @@
         </div>
 
         <div
-          class="topMenu-item preprocessingMenu col-lg-1 d-flex justify-content-center"
+          class="topMenu-item peelingMenu col-lg-1 d-flex justify-content-center"
         >
           <div class="d-flex flex-column text-center align-items-center">
             <svg
@@ -746,6 +746,245 @@
         </div>
 
         <!-- Dispatch Container Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Peeling Container ---------------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container peelingContainer d-none">
+          <!-- Slide-in Panel -->
+          <div id="peelingSlideInPanel" class="slideInPanel px-4 overflow-auto">
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="peelingPanelHeading" class="fw-bold fs-5"
+                    >Add Peeling Data</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closePeelingPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group mt-4">
+                  <label for="lot_no">Lot No:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="lotNumbers"
+                    name="lotNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product_name">Product Name:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="productNames"
+                    name="productNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="destinationLocation">Destination</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="destinationLocation"
+                    name="destinationLocation"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="peeling_quantity">Quantity</label>
+                  <input
+                    id="peeling_quantity"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 10"
+                    name="peeling_quantity"
+                    required
+                  />
+                  <span style="font-size: 12px"
+                    >Balance Purchased Quantity :
+                    <span class="fw-bold" id="balance_procure_quantity"></span
+                  ></span>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="peeling_temperature">Temperature</label>
+                  <input
+                    id="peeling_temperature"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 12.9"
+                    name="peeling_temperature"
+                    required
+                  />
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="vehicleNumbers">Vehicle Number</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="vehicleNumbers"
+                    name="vehicleNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="driverNames">Driver Name</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="driverNames"
+                    name="driverNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="delivery_notes">Delivery Notes</label>
+                  <textarea
+                    row="3"
+                    class="form-control input-dropdown w-100"
+                    id="delivery_notes"
+                    name="delivery_notes"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitPeeling" class="col-lg-5 btn btn-danger">
+                    Save
+                  </div>
+                  <div
+                    id="resetPeelingDataBtn"
+                    class="col-lg-5 btn btn-outline-danger"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openPeelingPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Peeling</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="peelingTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Procurement Date</span></th>
+                    <th class="fw-bold"><span>Procurement Lot</span></th>
+                    <th class="fw-bold"><span>Total Products</span></th>
+                    <th class="fw-bold"><span>Total Purchased Weight</span></th>
+                    <th class="fw-bold">
+                      <span>Total Products Peelinged</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Peelinged Weight</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="peelingModal"
+          class="modal hide fade modal-xl"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Peelinged Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_products"
+                      >Total Peelinges:</label
+                    >
+                    <span id="view_total_peelinges"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_peeling_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="peelingProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Purchased Quantity</span></th>
+                      <th class="fw-bold"><span>Peelinged Quantity</span></th>
+                      <th class="fw-bold"><span>Temperature</span></th>
+                      <th class="fw-bold"><span>Destination</span></th>
+                      <th class="fw-bold"><span>Vehicle Name</span></th>
+                      <th class="fw-bold"><span>Driver Name</span></th>
+                      <th class="fw-bold"><span>Delivery Notes</span></th>
+                      <th class="fw-bold"><span>Delivery Status</span></th>
+                      <th class="fw-bold"><span>Peelinged Date</span></th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Peeling Container Ends -->
       </div>
     </div>
   </body>
@@ -770,6 +1009,17 @@
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
       };
+
+      // Menu navigation
+      $(".topMenu-item").click(function () {
+        $(".topMenu-item").removeClass("topMenu-item-active");
+
+        $(this).addClass("topMenu-item-active");
+
+        $(".panelClose").click();
+
+        resetAllInputs();
+      });
 
       // Global Functions
       // Function to format date as YYYY-MM-DD
@@ -1656,6 +1906,723 @@
       $("#resetDispatchDataBtn").on("click", resetAllInputs);
       // -------------------- End of Dispatch -----------------
 
+      // ---------------------------------------------------------
+      // ----------------------- Peelings ------------------------
+      // ---------------------------------------------------------
+
+      // // Open panel
+      $("#openPeelingPanelBtn").click(function () {
+        // $("#peelingModal").modal("show");
+        openSlidePanel(
+          "peelingSlideInPanel",
+          "peelingPanelHeading",
+          "Peeling",
+          "submitPeeling",
+          "peeling_id"
+        );
+
+        $("#balance_procure_quantity").text("").css({ color: "white" });
+      });
+
+      // Close panel
+      $("#closePeelingPanelBtn").click(function () {
+        closeSlidePanel("peelingSlideInPanel");
+
+        view_procurement_product_id = "";
+      });
+
+      $(".peelingMenu").click(async function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".peelingContainer").removeClass("d-none");
+        $(".peelingContainer").addClass("d-block");
+
+        loadPercentages();
+        loadDropdowns();
+        loadPeelingTableData();
+      });
+
+      $(document).on("click", ".modal-header .close", () => {
+        $("#peelingModal").modal("hide");
+      });
+
+      $("#submitPeeling").click(function () {
+        savePeeling();
+      });
+
+      function loadPeelingTableData() {
+        $("#peelingTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/procurement/lot/get/stats",
+            error: function (xhr, error, code) {
+              $("#peelingTable").DataTable().destroy();
+              $("#peelingTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "procurement_date" },
+            { data: "procurement_lot" },
+            { data: "total_product_count" },
+            { data: "total_purchased_quantity" },
+            { data: "total_peelinged_count" },
+            { data: "total_peelinged_quantity" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewPeelinges" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.procurement_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewPeelinges", (e) => {
+        // Changing panel input fields data
+        $("#closePeelingPanelBtn").click();
+
+        // Changing panel input fields data
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("procurement_lot_id");
+
+        const view_total_peelinges = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+        const view_total_peeling_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .text();
+
+        $("#view_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_lot_no").attr("procurement_lot_id", view_lot_no);
+
+        $("#view_total_peelinges").text(view_total_peelinges);
+
+        $("#view_total_peeling_weight").text(view_total_peeling_weight);
+
+        // Opening Slied Panel
+        $("#peelingModal").modal("show");
+
+        loadPeelingProductTableData(view_lot_no);
+      });
+
+      function loadPeelingProductTableData(lot_no) {
+        if (!lot_no) {
+          toastr["warning"]("Lot no should not be empty!");
+        }
+        $("#peelingProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/peeling/get/all?procurement_lot_id=${lot_no}`,
+            error: function (xhr, error, code) {
+              $("#peelingProductTable").DataTable().destroy();
+              $("#peelingProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "ProcurementProduct.procurement_quantity" },
+            { data: "peeling_quantity" },
+            { data: "temperature" },
+            { data: "UnitMaster.unit_code" },
+            { data: "VehicleMaster.vehicle_number" },
+            { data: "DriverMaster.driver_name" },
+            { data: "delivery_notes" },
+            { data: "delivery_status" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editPeeling" peeling_id=${
+                  row?.id || null
+                } procurement_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_product_id='${
+                  row["ProcurementProduct"]?.id
+                }'>${
+                  row["ProcurementProduct"]?.["ProductMaster"]?.product_name
+                }-${row["ProcurementProduct"]?.procurement_product_type}-${row[
+                  "ProcurementProduct"
+                ]?.["VendorMaster"]?.vendor_name?.replaceAll(" ", "")}</i>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<a href="tel:${
+                  row["DriverMaster"]?.phone?.startsWith("91")
+                    ? `+${row["DriverMaster"]?.phone}`
+                    : row["DriverMaster"]?.phone?.startsWith("+91")
+                    ? row["DriverMaster"]?.phone
+                    : `+91${row["DriverMaster"]?.phone}`
+                }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".editPeeling", (e) => {
+        // Changing panel input fields data
+
+        $("#lotNumbers")
+          .val($("#view_lot_no").attr("procurement_lot_id"))
+          .trigger("change");
+
+        view_procurement_product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(1)
+          .find("span")
+          .attr("procurement_product_id");
+
+        $("#productNames").val(view_procurement_product_id).trigger("change");
+
+        $("#peeling_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#peeling_temperature").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#destinationLocation")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#vehicleNumbers")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("vehicle_master_id")
+          )
+          .trigger("change");
+
+        $("#driverNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(7)
+              .find("a")
+              .attr("driver_master_id")
+          )
+          .trigger("change");
+
+        $("#delivery_notes").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening Slied Panel
+        $("#openPeelingPanelBtn").click();
+
+        // Changing panel heading
+        $("#peelingPanelHeading").text("Edit Peeling Data");
+
+        // Changing panel button label
+        $("#submitPeeling").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPeeling").attr("peeling_id", $(e.target).attr("peeling_id"));
+
+        $("#peelingModal").modal("hide");
+      });
+
+      function loadLotNumber() {
+        $.ajax({
+          url: `/api/v1/procurement/lot/get/all/lots`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#lotNumbers").select2({
+              placeholder: "Choose a lot",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.procurement_lot,
+                };
+              }),
+            });
+
+            $("#lotNumbers").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#lotNumbers", () => {
+        $("#balance_procure_quantity").text("");
+
+        let lot_no = $("#lotNumbers").val();
+
+        $("#productNames").empty();
+
+        if (lot_no) {
+          loadProducts(lot_no);
+        }
+      });
+
+      $(document).on("change", "#productNames", () => {
+        $("#balance_procure_quantity").text("");
+
+        if ($("#productNames").val()) {
+          balance_procure_quantity =
+            $("#productNames").select2("data")[0]?.quantity;
+
+          if (!isNaN(balance_procure_quantity)) {
+            $("#balance_procure_quantity").text(
+              parseFloat(balance_procure_quantity)
+            );
+
+            $("#balance_procure_quantity").css({ color: "white" });
+          }
+        }
+      });
+
+      $(document).on("keyup", "#peeling_quantity", (e) => {
+        const currentPeelingedQuantity = $(e.target).val();
+        const procurementQuantity = parseFloat(
+          $("#productNames").select2("data")[0]?.quantity
+        );
+
+        if (!currentPeelingedQuantity) {
+          $("#balance_procure_quantity").text(balance_procure_quantity);
+          $("#balance_procure_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balanceQuantity = procurementQuantity - currentPeelingedQuantity;
+
+        $("#balance_procure_quantity").text(
+          !isNaN(balanceQuantity) ? balanceQuantity : currentPeelingedQuantity
+        );
+
+        if (balanceQuantity > 0) {
+          $("#balance_procure_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_procure_quantity").css({ color: "red" });
+        }
+      });
+
+      function loadProducts(lot_no) {
+        $("#productNames").empty();
+
+        if (!lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/get/all/names?procurement_lot_id=${lot_no}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#productNames").select2({
+              placeholder: "Choose a product",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  quantity:
+                    (parseFloat(item?.procurement_quantity) || 0) -
+                    (parseFloat(item?.peelinged_quantity) || 0),
+                  text: `${item?.ProductMaster?.product_name}-${
+                    item?.procurement_product_type
+                  }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
+                };
+              }),
+            });
+
+            // if (view_procurement_product_id) {
+            //   $("#productNames")
+            //     .val(view_procurement_product_id)
+            //     .trigger("change");
+            // } else {
+            $("#productNames").val(null).trigger("change");
+            // }
+
+            if (view_procurement_product_id) {
+              $("#productNames")
+                .val(view_procurement_product_id)
+                .trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadUnits() {
+        $.ajax({
+          url: "/api/v1/master/unit/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#destinationLocation").select2({
+              placeholder: "Choose a destination",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            $("#destinationLocation").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadVehicles() {
+        $.ajax({
+          url: "/api/v1/master/vehicle/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#vehicleNumbers").select2({
+              placeholder: "Choose a vehicle",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.vehicle_number,
+                };
+              }),
+            });
+
+            $("#vehicleNumbers").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadDrivers() {
+        $.ajax({
+          url: "/api/v1/master/driver/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#driverNames").select2({
+              placeholder: "Choose a driver",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.driver_name,
+                };
+              }),
+            });
+
+            $("#driverNames").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function savePeeling() {
+        const peeling_id = $("#submitPeeling").attr("peeling_id");
+        const current_weight_balance = $("#balance_procure_quantity").text();
+
+        if (parseFloat(current_weight_balance) <= -1) {
+          toastr["warning"]("Invalid peeling quantity");
+          return;
+        }
+
+        let url = "/api/v1/peeling/create";
+        let input_params = {
+          procurement_product_id: $("#productNames").val(),
+          unit_master_id: $("#destinationLocation").val(),
+          peeling_quantity: $("#peeling_quantity").val(),
+          temperature: $("#peeling_temperature").val(),
+          delivery_notes: $("#delivery_notes").val(),
+          vehicle_master_id: $("#vehicleNumbers").val(),
+          driver_master_id: $("#driverNames").val(),
+        };
+
+        if (peeling_id && peeling_id != "null") {
+          url = "/api/v1/peeling/update";
+
+          input_params = {
+            peeling_id,
+            peeling_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url,
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closePeelingPanelBtn").click();
+
+            loadPercentages();
+
+            loadPeelingTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetPeelingDataBtn").on("click", resetAllInputs);
+      // -------------------- End of Peeling -----------------
+
       function changePercentage(
         main_id,
         circle_id,
@@ -1730,8 +2697,8 @@
                 .find($("circle.complete"))
                 .css({ stroke: "#1f2d3e" });
               $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
-              $(`.${main_id}`).find(".heading").css({ color: "#ea5455" });
-              $(`.${main_id}`).find(".weight").css({ color: "#ea5455" });
+              // $(`.${main_id}`).find(".heading").css({ color: "#ea5455" });
+              // $(`.${main_id}`).find(".weight").css({ color: "#ea5455" });
             } else {
               $(`.${main_id}`)
                 .find($("circle.complete"))
