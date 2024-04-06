@@ -152,11 +152,11 @@
       svg.radial-progress {
         height: auto;
         max-width: 100px;
-        padding: 1em;
+        margin: 10px;
         transform: rotate(-90deg);
         width: 100%;
-        padding-left: 0px;
-        padding-right: 0px;
+        /* padding-left: 0px; */
+        /* padding-right: 0px; */
       }
 
       svg.radial-progress circle {
@@ -333,7 +333,7 @@
         <div
           class="topMenu-item topMenu-item-active dispatchMenu col-lg-1 d-flex justify-content-center"
         >
-          <div class="d-flex flex-column text-center">
+          <div class="d-flex flex-column text-center align-items-center">
             <svg
               class="radial-progress"
               id="dispatchCircle"
@@ -358,13 +358,15 @@
                 0%
               </text>
             </svg>
-            <span class="heading fw-bold fs-6">Dispatch (kg)</span>
-            <span
-              style="font-family: sans-serif"
-              class="fs-6 weight fw-bold dispatchWeight"
-              style="font-weight: RedditMono-Regular"
-              >0</span
-            >
+            <div class="d-flex flex-column">
+              <span class="heading fw-bold fs-6">Dispatch</span>
+              <span
+                style="font-family: sans-serif"
+                class="fs-6 weight fw-bold dispatchWeight"
+                style="font-weight: RedditMono-Regular"
+                >0</span
+              >
+            </div>
           </div>
         </div>
 
@@ -378,7 +380,7 @@
         <div
           class="topMenu-item preprocessingMenu col-lg-1 d-flex justify-content-center"
         >
-          <div class="d-flex flex-column text-center">
+          <div class="d-flex flex-column text-center align-items-center">
             <svg
               class="radial-progress"
               id="preprocessingCircle"
@@ -403,7 +405,7 @@
                 0%
               </text>
             </svg>
-            <span class="heading fw-bold fs-6">Peeling (kg)</span>
+            <span class="heading fw-bold fs-6">Peeling</span>
             <span
               style="font-family: sans-serif"
               class="fs-6 weight fw-bold"
@@ -423,7 +425,7 @@
         <div
           class="topMenu-item preprocessingDispatchMenu col-lg-1 d-flex justify-content-center"
         >
-          <div class="d-flex flex-column text-center">
+          <div class="d-flex flex-column text-center align-items-center">
             <svg
               class="radial-progress"
               id="preprocessingDispatchCircle"
@@ -448,7 +450,7 @@
                 0%
               </text>
             </svg>
-            <span class="heading fw-bold fs-6">Dispatch (kg)</span>
+            <span class="heading fw-bold fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
               class="fs-6 weight fw-bold"
@@ -468,7 +470,7 @@
         <div
           class="topMenu-item packingMenu col-lg-1 d-flex justify-content-center"
         >
-          <div class="d-flex flex-column text-center">
+          <div class="d-flex flex-column text-center align-items-center">
             <svg
               class="radial-progress"
               id="packingCircle"
@@ -493,7 +495,7 @@
                 0%
               </text>
             </svg>
-            <span class="heading fw-bold fs-6">Packing (kg)</span>
+            <span class="heading fw-bold fs-6">Packing</span>
             <span
               style="font-family: sans-serif"
               class="fs-6 weight fw-bold"
