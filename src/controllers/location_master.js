@@ -102,7 +102,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ location_name, start, length, search }) => {
+export const GetAll = ({ location_name, start = 0, length = 10, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {

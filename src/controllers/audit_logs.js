@@ -48,7 +48,7 @@ export const Insert = async (profile_id, audit_logs_data) => {
   });
 };
 
-export const GetAll = ({ start, length, search }) => {
+export const GetAll = ({ start = 0, length = 10, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {

@@ -97,7 +97,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ size, start, length, search }) => {
+export const GetAll = ({ size, start = 0, length = 10, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {

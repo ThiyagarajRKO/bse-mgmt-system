@@ -8,7 +8,7 @@ export const GetLots = ({ start, length }, session, fastify) => {
       if (!procurement) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No rows found!",
         });
       }
 

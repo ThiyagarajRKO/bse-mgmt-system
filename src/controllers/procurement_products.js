@@ -323,7 +323,12 @@ export const GetAll = ({
   });
 };
 
-export const GetNames = ({ procurement_lot_id, start, length, search }) => {
+export const GetNames = ({
+  procurement_lot_id,
+  start = 0,
+  length = 10,
+  search,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -353,6 +358,7 @@ export const GetNames = ({ procurement_lot_id, start, length, search }) => {
         ],
         include: [
           {
+            required: true,
             attributes: [],
             model: models.ProcurementLots,
             where: procurementLotsWhere,
@@ -371,13 +377,6 @@ export const GetNames = ({ procurement_lot_id, start, length, search }) => {
               is_active: true,
             },
           },
-          {
-            required: false,
-            model: models.Dispatches,
-            where: {
-              is_active: true,
-            },
-          },
         ],
         where,
         offset: start,
@@ -387,7 +386,6 @@ export const GetNames = ({ procurement_lot_id, start, length, search }) => {
           "ProcurementProducts.id",
           "ProductMaster.id",
           "VendorMaster.id",
-          "Dispatches.id",
         ],
       });
 

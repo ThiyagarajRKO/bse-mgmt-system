@@ -23,7 +23,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length }) => {
+export const GetAll = ({ start = 0, length = 10 }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await models.RoleMaster.findAll({

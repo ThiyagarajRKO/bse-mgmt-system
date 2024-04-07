@@ -111,12 +111,22 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ procurement_lot_id, start, length, search }) => {
+export const GetAll = ({
+  procurement_lot_id,
+  procurement_product_id,
+  start,
+  length,
+  search,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
+
+      if (procurement_product_id) {
+        where.id = procurement_product_id;
+      }
 
       let procurementLotsWhere = {
         is_active: true,
@@ -147,6 +157,17 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
               [Op.iLike]: `%${search}%`,
             }
           ),
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col(
+                "Dispatches.ProcurementProduct.ProductMaster.product_name"
+              ),
+              "varchar"
+            ),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           {
             "$ProductMaster.product_name$": {
               [Op.iLike]: `%${search}%`,
@@ -159,7 +180,31 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
       const peelings = await models.Peeling.findAndCountAll({
         include: [
           {
+            attributes: ["dispatch_quantity"],
             model: models.Dispatches,
+            include: [
+              {
+                attributes: ["id"],
+                model: models.ProcurementProducts,
+                include: [
+                  {
+                    attributes: ["id", "procurement_lot"],
+                    model: models.ProcurementLots,
+                    where: procurementLotsWhere,
+                  },
+                  {
+                    attributes: ["product_name"],
+                    model: models.ProductMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
             where: {
               is_active: true,
             },

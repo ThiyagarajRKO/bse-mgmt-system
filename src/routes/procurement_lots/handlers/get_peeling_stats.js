@@ -1,13 +1,13 @@
 import { ProcurementLots } from "../../../controllers";
 
-export const GetStats = (
+export const GetPeelingStats = (
   { procurement_lot_id, "search[value]": search },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementLots.GetStats({
+      let procurement = await ProcurementLots.GetPeelingStats({
         procurement_lot_id,
         search,
       });

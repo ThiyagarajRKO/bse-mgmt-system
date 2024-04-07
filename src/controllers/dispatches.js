@@ -115,7 +115,12 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ procurement_lot_id, start, length, search }) => {
+export const GetAll = ({
+  procurement_lot_id,
+  start = 0,
+  length = 10,
+  search,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {

@@ -963,15 +963,13 @@
                       <th style="border-radius: 4px 0 0 0"></th>
                       <th class="fw-bold"><span>Product Name</span></th>
                       <th class="fw-bold"><span>Raw Material</span></th>
-                      <th class="fw-bold"><span>Purchased Quantity</span></th>
-                      <th class="fw-bold"><span>Peelinged Quantity</span></th>
-                      <th class="fw-bold"><span>Temperature</span></th>
-                      <th class="fw-bold"><span>Destination</span></th>
-                      <th class="fw-bold"><span>Vehicle Name</span></th>
-                      <th class="fw-bold"><span>Driver Name</span></th>
-                      <th class="fw-bold"><span>Delivery Notes</span></th>
-                      <th class="fw-bold"><span>Delivery Status</span></th>
-                      <th class="fw-bold"><span>Peelinged Date</span></th>
+                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                      <th class="fw-bold"><span>Peeled Quantity</span></th>
+                      <th class="fw-bold"><span>Peeling Method</span></th>
+                      <th class="fw-bold"><span>Peeling Status</span></th>
+                      <th class="fw-bold"><span>Peeling Notes</span></th>
+                      <th class="fw-bold"><span>Peeling Center</span></th>
+                      <th class="fw-bold"><span>Peeling Date</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -1246,7 +1244,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats",
+            url: "/api/v1/procurement/lot/get/stats/dispatch",
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
@@ -1754,7 +1752,7 @@
 
       function loadUnits() {
         $.ajax({
-          url: "/api/v1/master/unit/get/all",
+          url: "/api/v1/master/unit/get/all?unit_type=Peeling Center",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1968,7 +1966,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats",
+            url: "/api/v1/procurement/lot/get/stats/peeling",
             error: function (xhr, error, code) {
               $("#peelingTable").DataTable().destroy();
               $("#peelingTable").DataTable({ scrollX: true, ordering: false });
@@ -1992,8 +1990,8 @@
             { data: "procurement_date" },
             { data: "procurement_lot" },
             { data: "total_dispatched_quantity" },
-            { data: null },
-            { data: null },
+            { data: "total_peeled_count" },
+            { data: "total_peeled_quantity" },
             { data: null },
           ],
           columnDefs: [
@@ -2075,12 +2073,12 @@
         $("#closePeelingPanelBtn").click();
 
         // Changing panel input fields data
-        const view_lot_no = $(e.target)
+        const view_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(2)
           .find("span")
-          .attr("procurement_lot_id");
+          .attr("procurement_product_id");
 
         const view_total_peelinges = $(e.target)
           .closest("tr")
@@ -2106,13 +2104,14 @@
         // Opening Slied Panel
         $("#peelingModal").modal("show");
 
-        loadPeelingProductTableData(view_lot_no);
+        loadPeelingProductTableData(view_product_id);
       });
 
-      function loadPeelingProductTableData(lot_no) {
-        if (!lot_no) {
-          toastr["warning"]("Lot no should not be empty!");
+      function loadPeelingProductTableData(procurement_product_id) {
+        if (!procurement_product_id) {
+          toastr["warning"]("Product data should not be empty!");
         }
+
         $("#peelingProductTable").DataTable({
           // searching: true,
           destroy: true,
@@ -2125,7 +2124,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/peeling/get/all?procurement_lot_id=${lot_no}`,
+            url: `/api/v1/peeling/get/all?procurement_product_id=${procurement_product_id}`,
             error: function (xhr, error, code) {
               $("#peelingProductTable").DataTable().destroy();
               $("#peelingProductTable").DataTable({
@@ -2149,15 +2148,16 @@
           },
           columns: [
             { data: null },
-            { data: null },
-            { data: "ProcurementProduct.procurement_quantity" },
+            {
+              data: "Dispatches.ProcurementProduct.ProductMaster.product_name",
+            },
+            { data: "ProductMaster.product_name" },
+            { data: "dispatched_quantity" },
             { data: "peeling_quantity" },
-            { data: "temperature" },
+            { data: "peeling_method" },
+            { data: "peeling_status" },
+            { data: "peeling_notes" },
             { data: "UnitMaster.unit_code" },
-            { data: "VehicleMaster.vehicle_number" },
-            { data: "DriverMaster.driver_name" },
-            { data: "delivery_notes" },
-            { data: "delivery_status" },
             { data: "created_at" },
           ],
           columnDefs: [
@@ -2471,7 +2471,7 @@
 
       function loadUnits() {
         $.ajax({
-          url: "/api/v1/master/unit/get/all",
+          url: "/api/v1/master/unit/get/all?unit_type=Peeling Center",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
