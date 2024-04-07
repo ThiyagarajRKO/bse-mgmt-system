@@ -115,12 +115,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({
-  procurement_lot_id,
-  start = 0,
-  length = 10,
-  search,
-}) => {
+export const GetAll = ({ procurement_lot_id, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -239,25 +234,63 @@ export const GetAll = ({
   });
 };
 
-export const GetQuantity = ({ id }) => {
+export const GetDestinations = ({
+  procurement_lot_id,
+  start,
+  length,
+  search,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Dispatch ID field must not be empty!",
-        });
+      let where = {
+        is_active: true,
+      };
+
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
       }
 
-      const dispatch = await models.Dispatches.findOne({
-        attributes: ["dispatch_quantity"],
-        where: {
-          id,
-          is_active: true,
-        },
+      const dispatchs = await models.Dispatches.findAll({
+        subQuery: false,
+        attributes: ["id"],
+        include: [
+          {
+            required: true,
+            attributes: [],
+            model: models.ProcurementProducts,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.ProcurementLots,
+                where: procurementLotsWhere,
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "unit_code"],
+            model: models.UnitMaster,
+            where: {
+              is_active: true,
+              unit_type: "Peeling Center",
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: ["Dispatches.id", "UnitMaster.id"],
       });
 
-      resolve(dispatch);
+      resolve(dispatchs);
     } catch (err) {
       reject(err);
     }

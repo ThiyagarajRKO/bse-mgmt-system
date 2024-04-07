@@ -180,7 +180,7 @@ export const GetAll = ({
       const peelings = await models.Peeling.findAndCountAll({
         include: [
           {
-            attributes: ["dispatch_quantity"],
+            attributes: ["id", "dispatch_quantity"],
             model: models.Dispatches,
             include: [
               {

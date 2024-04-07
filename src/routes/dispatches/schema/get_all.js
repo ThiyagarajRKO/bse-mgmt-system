@@ -6,7 +6,7 @@ export const getAllSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
-        lot_no: { type: "string" },
+        procurement_lot_id: { type: "string" },
         "search[value]": { type: "string" },
       },
     },

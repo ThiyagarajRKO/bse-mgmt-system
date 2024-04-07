@@ -15,6 +15,7 @@ export const createSchema = {
         unit_master_id: { type: "string" },
         product_master_id: { type: "string" },
         peeling_quantity: { type: "string" },
+        yield_quantity: { type: "string" },
         peeling_method: { type: "string" },
         peeling_notes: { type: "string" },
       },

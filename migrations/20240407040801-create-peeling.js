@@ -41,6 +41,9 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
+      yield_quantity: {
+        type: Sequelize.FLOAT,
+      },
       peeling_method: {
         type: Sequelize.ENUM("Manual", "Chemical"),
         allowNull: false,

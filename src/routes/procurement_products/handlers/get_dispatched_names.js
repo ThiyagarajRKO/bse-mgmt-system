@@ -1,20 +1,27 @@
-import { Dispatches } from "../../../controllers";
+import { ProcurementProducts } from "../../../controllers";
 
-export const GetAll = (
-  { procurement_lot_id, start, length, "search[value]": search },
+export const GetDispatchedNames = (
+  {
+    procurement_lot_id,
+    unit_master_id,
+    start,
+    length,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let dispatch = await Dispatches.GetAll({
+      let procurement = await ProcurementProducts.GetDispatchedProductNames({
         procurement_lot_id,
+        unit_master_id,
         start,
         length,
         search,
       });
 
-      if (!dispatch) {
+      if (!procurement) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -22,7 +29,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: dispatch,
+        data: procurement,
       });
     } catch (err) {
       fastify.log.error(err);

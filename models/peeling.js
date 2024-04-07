@@ -53,11 +53,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       peeling_quantity: {
         type: DataTypes.FLOAT,
-        allowNull: false,
+      },
+      yield_quantity: {
+        type: DataTypes.FLOAT,
       },
       peeling_method: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       peeling_status: {
         type: DataTypes.STRING,

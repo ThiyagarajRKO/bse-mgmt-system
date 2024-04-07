@@ -1,13 +1,13 @@
 import { Dispatches } from "../../../controllers";
 
-export const GetAll = (
+export const GetDestinations = (
   { procurement_lot_id, start, length, "search[value]": search },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let dispatch = await Dispatches.GetAll({
+      let dispatch = await Dispatches.GetDestinations({
         procurement_lot_id,
         start,
         length,

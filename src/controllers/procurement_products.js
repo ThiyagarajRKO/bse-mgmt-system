@@ -323,6 +323,7 @@ export const GetAll = ({
   });
 };
 
+// Retrive Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,
   start = 0,
@@ -342,7 +343,6 @@ export const GetNames = ({
       if (procurement_lot_id) {
         procurementLotsWhere.id = procurement_lot_id;
       }
-      // where[Op.and] = [sequelize.literal(`(SELECT "sumA" > "sumB")`)];
 
       const procurements = await models.ProcurementProducts.findAll({
         attributes: [
@@ -362,6 +362,104 @@ export const GetNames = ({
             attributes: [],
             model: models.ProcurementLots,
             where: procurementLotsWhere,
+          },
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "vendor_name"],
+            model: models.VendorMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: [
+          "ProcurementProducts.id",
+          "ProductMaster.id",
+          "VendorMaster.id",
+        ],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// Retrive Dispatched Products names, along with quantity
+export const GetDispatchedProductNames = ({
+  procurement_lot_id,
+  unit_master_id,
+  start = 0,
+  length = 10,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
+
+      let unitWhere = {
+        is_active: true,
+      };
+
+      if (unit_master_id) {
+        unitWhere.id = unit_master_id;
+      }
+
+      const procurements = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "procurement_product_type",
+          [
+            sequelize.literal(
+              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and dispatches.is_active = true)`
+            ),
+            "dispatched_quantity",
+          ],
+        ],
+        include: [
+          {
+            required: true,
+            attributes: [],
+            model: models.ProcurementLots,
+            where: procurementLotsWhere,
+          },
+          {
+            required: true,
+            attributes: [],
+            model: models.Dispatches,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.UnitMaster,
+                where: unitWhere,
+              },
+            ],
+            where: {
+              is_active: true,
+            },
           },
           {
             attributes: ["id", "product_name"],
