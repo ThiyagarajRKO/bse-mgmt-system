@@ -19,3 +19,4 @@ export * as DriverMaster from "./driver_master";
 export * as ModuleMasters from "./module_master";
 export * as AuditLogs from "./audit_logs";
 export * as Dispatches from "./dispatches";
+export * as Peeling from "./peeling";

@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      peeled_quantity: {
+      peeling_quantity: {
         type: DataTypes.FLOAT,
         allowNull: false,
       },

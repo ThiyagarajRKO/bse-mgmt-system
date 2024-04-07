@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
 
-export const Insert = async (profile_id, dispatch_data) => {
+export const Insert = async (profile_id, peeling_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,57 +11,53 @@ export const Insert = async (profile_id, dispatch_data) => {
         });
       }
 
-      if (!dispatch_data?.procurement_product_id) {
-        return reject({
-          statusCode: 420,
-          message: "Procurement data must not be empty!",
-        });
-      }
-
-      if (!dispatch_data?.unit_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Unit data must not be empty!",
-        });
-      }
-
-      if (!dispatch_data?.vehicle_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Vehicle details must not be empty!",
-        });
-      }
-
-      if (!dispatch_data?.driver_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Driver details must not be empty!",
-        });
-      }
-
-      const result = await models.Dispatches.create(dispatch_data, {
-        profile_id,
-      });
-      resolve(result);
-    } catch (err) {
-      if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Dispatch already exists!" });
-      }
-      reject(err);
-    }
-  });
-};
-
-export const Update = async (profile_id, id, dispatch_data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
+      if (!peeling_data?.dispatch_id) {
         return reject({
           statusCode: 420,
           message: "Dispatch id must not be empty!",
         });
       }
 
+      if (!peeling_data?.unit_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Unit data must not be empty!",
+        });
+      }
+
+      if (!peeling_data?.product_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Product data must not be empty!",
+        });
+      }
+
+      const result = await models.Peeling.create(peeling_data, {
+        profile_id,
+      });
+      resolve(result);
+    } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "Peeling data already exists!",
+        });
+      }
+      reject(err);
+    }
+  });
+};
+
+export const Update = async (profile_id, id, peeling_data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Peeling id must not be empty!",
+        });
+      }
+
       if (!profile_id) {
         return reject({
           statusCode: 420,
@@ -69,14 +65,14 @@ export const Update = async (profile_id, id, dispatch_data) => {
         });
       }
 
-      if (!dispatch_data) {
+      if (!peeling_data) {
         return reject({
           statusCode: 420,
-          message: "Dispatch data must not be empty!",
+          message: "Peeling data must not be empty!",
         });
       }
 
-      const result = await models.Dispatches.update(dispatch_data, {
+      const result = await models.Peeling.update(peeling_data, {
         where: {
           id,
           is_active: true,
@@ -97,18 +93,18 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Dispatch ID field must not be empty!",
+          message: "Peeling ID field must not be empty!",
         });
       }
 
-      const dispatch = await models.Dispatches.findOne({
+      const peeling = await models.Peeling.findOne({
         where: {
           id,
           is_active: true,
         },
       });
 
-      resolve(dispatch);
+      resolve(peeling);
     } catch (err) {
       reject(err);
     }
@@ -133,89 +129,49 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
       if (search) {
         where[Op.or] = [
           sequelize.where(
-            sequelize.cast(sequelize.col("dispatch_quantity"), "varchar"),
+            sequelize.cast(sequelize.col("peeling_quantity"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
             }
           ),
           sequelize.where(
-            sequelize.cast(sequelize.col("temperature"), "varchar"),
+            sequelize.cast(sequelize.col("peeling_method"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
             }
           ),
-          { delivery_notes: { [Op.iLike]: `%${search}%` } },
+          { peeling_notes: { [Op.iLike]: `%${search}%` } },
           sequelize.where(
-            sequelize.cast(sequelize.col("delivery_status"), "varchar"),
+            sequelize.cast(sequelize.col("peeling_status"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
             }
           ),
           {
-            "$ProcurementProduct->ProductMaster.product_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          sequelize.where(
-            sequelize.cast(
-              sequelize.col("ProcurementProduct.procurement_product_type"),
-              "varchar"
-            ),
-            {
-              [Op.iLike]: `%${search}%`,
-            }
-          ),
-          {
-            "$ProcurementProduct->VendorMaster.vendor_name$": {
+            "$ProductMaster.product_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
           { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
-          { "$VehicleMaster.vehicle_number$": { [Op.iLike]: `%${search}%` } },
-          { "$DriverMaster.driver_name$": { [Op.iLike]: `%${search}%` } },
         ];
       }
 
-      const dispatchs = await models.Dispatches.findAndCountAll({
+      const peelings = await models.Peeling.findAndCountAll({
         include: [
           {
-            model: models.ProcurementProducts,
-            include: [
-              {
-                model: models.ProcurementLots,
-                where: procurementLotsWhere,
-              },
-              {
-                model: models.ProductMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                model: models.VendorMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
+            model: models.Dispatches,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.ProductMaster,
             where: {
               is_active: true,
             },
           },
           {
             model: models.UnitMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            model: models.VehicleMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            model: models.DriverMaster,
             where: {
               is_active: true,
             },
@@ -227,32 +183,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
         order: [["created_at", "desc"]],
       });
 
-      resolve(dispatchs);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const GetQuantity = ({ id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Dispatch ID field must not be empty!",
-        });
-      }
-
-      const dispatch = await models.Dispatches.findOne({
-        attributes: ["dispatch_quantity"],
-        where: {
-          id,
-          is_active: true,
-        },
-      });
-
-      resolve(dispatch);
+      resolve(peelings);
     } catch (err) {
       reject(err);
     }
@@ -265,7 +196,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Dispatch ID field must not be empty!",
+          message: "Peeing ID field must not be empty!",
         });
       }
 
@@ -276,7 +207,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const dispatch = await models.Dispatches.destroy({
+      const peeling = await models.Peeling.destroy({
         where: {
           id,
           is_active: true,
@@ -286,7 +217,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(dispatch);
+      resolve(peeling);
     } catch (err) {
       reject(err);
     }

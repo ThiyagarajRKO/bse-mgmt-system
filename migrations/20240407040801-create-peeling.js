@@ -37,7 +37,7 @@ module.exports = {
           key: "id",
         },
       },
-      peeled_quantity: {
+      peeling_quantity: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
