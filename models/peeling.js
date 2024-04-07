@@ -2,71 +2,68 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Dispatches extends Model {
+  class Peeling extends Model {
     static associate(models) {
-      Dispatches.belongsTo(models.UserProfiles, {
+      Peeling.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Dispatches.belongsTo(models.UserProfiles, {
+      Peeling.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Dispatches.belongsTo(models.UserProfiles, {
+      Peeling.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Dispatches.belongsTo(models.ProcurementProducts, {
-        foreignKey: "procurement_product_id",
+      Peeling.belongsTo(models.Dispatches, {
+        foreignKey: "dispatch_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Dispatches.belongsTo(models.UnitMaster, {
+      Peeling.belongsTo(models.ProductMaster, {
+        foreignKey: "product_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      Peeling.belongsTo(models.UnitMaster, {
         foreignKey: "unit_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      Dispatches.belongsTo(models.VehicleMaster, {
-        foreignKey: "vehicle_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      Dispatches.belongsTo(models.DriverMaster, {
-        foreignKey: "driver_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  Dispatches.init(
+  Peeling.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      dispatch_quantity: {
+      peeled_quantity: {
         type: DataTypes.FLOAT,
+        allowNull: false,
       },
-      temperature: {
-        type: DataTypes.FLOAT,
-      },
-      delivery_status: {
+      peeling_method: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
-      delivery_notes: {
+      peeling_status: {
+        type: DataTypes.STRING,
+        defaultValue: "In Progress",
+      },
+      peeling_notes: {
         type: DataTypes.TEXT,
       },
       is_active: {
@@ -84,7 +81,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Dispatches",
+      modelName: "Peeling",
+      tableName: "peeling",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -94,38 +92,35 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Create Hook
-  Dispatches.beforeCreate(async (data, options) => {
+  Peeling.beforeCreate(async (data, options) => {
     try {
       data.created_by = options.profile_id;
     } catch (err) {
-      console.log(
-        "Error while appending an dispatch data",
-        err?.message || err
-      );
+      console.log("Error while appending an peeling data", err?.message || err);
     }
   });
 
   // Update Hook
-  Dispatches.beforeUpdate(async (data, options) => {
+  Peeling.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
     } catch (err) {
-      console.log("Error while updating an dispatch data", err?.message || err);
+      console.log("Error while updating an peeling data", err?.message || err);
     }
   });
 
   // Delete Hook
-  Dispatches.afterDestroy(async (data, options) => {
+  Peeling.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting an dispatch data", err?.message || err);
+      console.log("Error while deleting an peeling data", err?.message || err);
     }
   });
 
-  return Dispatches;
+  return Peeling;
 };

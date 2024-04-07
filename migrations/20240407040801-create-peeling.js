@@ -1,19 +1,29 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("dispatches", {
+    await queryInterface.createTable("peeling", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      procurement_product_id: {
+      dispatch_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "procurement_products" },
+          model: { tableName: "dispatches" },
+          key: "id",
+        },
+      },
+      product_master_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "product_master" },
           key: "id",
         },
       },
@@ -27,38 +37,19 @@ module.exports = {
           key: "id",
         },
       },
-      dispatch_quantity: {
+      peeled_quantity: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      temperature: {
-        type: Sequelize.FLOAT,
-      },
-      vehicle_master_id: {
-        type: Sequelize.UUID,
+      peeling_method: {
+        type: Sequelize.ENUM("Manual", "Chemical"),
         allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "vehicle_master" },
-          key: "id",
-        },
       },
-      driver_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "driver_master" },
-          key: "id",
-        },
+      peeling_status: {
+        type: Sequelize.ENUM("In Progress", "Completed"),
+        defaultValue: "In Progress",
       },
-      delivery_status: {
-        type: Sequelize.ENUM("In Transit", "Delivered"),
-        defaultValue: "In Transit",
-      },
-      delivery_notes: {
+      peeling_notes: {
         type: Sequelize.TEXT,
       },
       is_active: {
@@ -106,6 +97,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("dispatches");
+    await queryInterface.dropTable("peeling");
   },
 };

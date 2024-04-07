@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
       is_active: {
-        defaultValue: true,
+        defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
       created_at: {

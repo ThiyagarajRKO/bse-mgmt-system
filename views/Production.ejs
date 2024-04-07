@@ -654,10 +654,10 @@
                     <th style="border-radius: 4px 0 0 0"></th>
                     <th class="fw-bold"><span>Procurement Date</span></th>
                     <th class="fw-bold"><span>Procurement Lot</span></th>
-                    <th class="fw-bold"><span>Total Products</span></th>
+                    <th class="fw-bold"><span>Total Products Items</span></th>
                     <th class="fw-bold"><span>Total Purchased Weight</span></th>
                     <th class="fw-bold">
-                      <span>Total Products Dispatched</span>
+                      <span>Total Dispatched Items</span>
                     </th>
                     <th class="fw-bold">
                       <span>Total Dispatched Weight</span>
@@ -893,13 +893,17 @@
                     <th style="border-radius: 4px 0 0 0"></th>
                     <th class="fw-bold"><span>Procurement Date</span></th>
                     <th class="fw-bold"><span>Procurement Lot</span></th>
-                    <th class="fw-bold"><span>Total Products</span></th>
-                    <th class="fw-bold"><span>Total Purchased Weight</span></th>
                     <th class="fw-bold">
-                      <span>Total Products Peelinged</span>
+                      <span>Total Dispatched Weight</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Total Peelinged Weight</span>
+                      <span>Total Peeled Items</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Yield</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Wastage</span>
                     </th>
                   </tr>
                 </thead>
@@ -958,6 +962,7 @@
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
                       <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Raw Material</span></th>
                       <th class="fw-bold"><span>Purchased Quantity</span></th>
                       <th class="fw-bold"><span>Peelinged Quantity</span></th>
                       <th class="fw-bold"><span>Temperature</span></th>
@@ -1986,10 +1991,10 @@
             { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "total_product_count" },
-            { data: "total_purchased_quantity" },
-            { data: "total_peelinged_count" },
-            { data: "total_peelinged_quantity" },
+            { data: "total_dispatched_quantity" },
+            { data: null },
+            { data: null },
+            { data: null },
           ],
           columnDefs: [
             {
@@ -2704,8 +2709,8 @@
                 .find($("circle.complete"))
                 .css({ stroke: "#1f2d3e" });
               $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
-              $(`.${main_id}`).find(".heading").css({ color: "#1f2d3e" });
-              $(`.${main_id}`).find(".weight").css({ color: "#1f2d3e" });
+              // $(`.${main_id}`).find(".heading").css({ color: "#1f2d3e" });
+              // $(`.${main_id}`).find(".weight").css({ color: "#1f2d3e" });
             }
           }
         } else {
