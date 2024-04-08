@@ -21,12 +21,24 @@ export const Update = (
         if (!dispatch_quantity) {
           return reject({
             statusCode: 420,
-            message: "Invalid dispatch quantity",
+            message: "Invalid peeling quantity",
           });
-        } else if (dispatch_quantity < peeling_data?.peeling_quantity) {
+        }
+
+        const { old_peeling_quantity } =
+          await Peeling.GetSumQuantityByDispatchId({
+            id: peeling_id,
+            dispatch_id: peeling_data?.dispatch_id,
+          });
+
+        const total_peeling_quantity =
+          (parseFloat(old_peeling_quantity) || 0) +
+          parseFloat(peeling_data?.peeling_quantity);
+
+        if (dispatch_quantity < total_peeling_quantity) {
           return reject({
             statusCode: 420,
-            message: "Peeling quantity is grater than Procurement quantity",
+            message: "Peeling quantity is grater than Dipatched quantity",
           });
         }
       }

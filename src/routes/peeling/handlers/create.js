@@ -25,10 +25,21 @@ export const Create = (
           statusCode: 420,
           message: "Invalid peeling quantity",
         });
-      } else if (dispatch_quantity < peeling_quantity) {
+      }
+
+      const { old_peeling_quantity } = await Peeling.GetSumQuantityByDispatchId(
+        {
+          dispatch_id,
+        }
+      );
+
+      const total_peeling_quantity =
+        (parseFloat(old_peeling_quantity) || 0) + parseFloat(peeling_quantity);
+
+      if (dispatch_quantity < total_peeling_quantity) {
         return reject({
           statusCode: 420,
-          message: "Peeling quantity is grater than Procurement quantity",
+          message: "Peeling quantity is grater than Dipatched quantity",
         });
       }
 

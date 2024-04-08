@@ -242,6 +242,45 @@ export const GetAll = ({
   });
 };
 
+export const GetSumQuantityByDispatchId = ({ id, dispatch_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!dispatch_id) {
+        return reject({
+          statusCode: 420,
+          message: "Dispatch ID field must not be empty!",
+        });
+      }
+
+      let where = {
+        dispatch_id,
+        is_active: true,
+      };
+
+      if (id) {
+        where.id = {
+          [Op.ne]: id,
+        };
+      }
+
+      const peeling = await models.Peeling.findOne({
+        attributes: [
+          [
+            sequelize.fn("sum", sequelize.col("peeling_quantity")),
+            "old_peeling_quantity",
+          ],
+        ],
+        where,
+        raw: true,
+      });
+
+      resolve(peeling);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {
