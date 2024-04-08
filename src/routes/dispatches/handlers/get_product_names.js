@@ -3,6 +3,7 @@ import { Dispatches } from "../../../controllers";
 export const GetProductNames = (
   {
     procurement_lot_id,
+    peeling_id,
     unit_master_id,
     start,
     length,
@@ -15,6 +16,7 @@ export const GetProductNames = (
     try {
       let dispatch = await Dispatches.GetProductNames({
         procurement_lot_id,
+        peeling_id,
         unit_master_id,
         start,
         length,

@@ -816,7 +816,7 @@
                   class="form-group border p-3"
                   style="
                     border-color: rgba(129, 145, 179, 0.6) !important;
-                    margin-top: 2.4rem !important;
+                    margin-top: 2.2rem !important;
                   "
                 >
                   <legend class="mb-2 w-auto px-2">
@@ -2506,7 +2506,9 @@
         }
 
         $.ajax({
-          url: `/api/v1/dispatch/get/product/names/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}`,
+          url: `/api/v1/dispatch/get/product/names/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${
+            $("#submitPeeling").attr("peeling_id") || null
+          }`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",

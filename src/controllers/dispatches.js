@@ -325,6 +325,7 @@ export const GetDestinations = ({
 // Retrive Dispatched Products names, along with quantity
 export const GetProductNames = ({
   procurement_lot_id,
+  peeling_id,
   unit_master_id,
   start = 0,
   length = 10,
@@ -359,7 +360,9 @@ export const GetProductNames = ({
           "dispatch_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeling_quantity) IS NULL THEN 0 ELSE SUM(peeling_quantity) END FROM peeling WHERE dispatch_id = "Dispatches".id and peeling.is_active = true)`
+              `(SELECT CASE WHEN SUM(peeling_quantity) IS NULL THEN 0 ELSE SUM(peeling_quantity) END FROM peeling WHERE ${
+                peeling_id != "null" ? "id != '" + peeling_id + "' and" : ""
+              } dispatch_id = "Dispatches".id and peeling.is_active = true)`
             ),
             "peeling_quantity",
           ],
