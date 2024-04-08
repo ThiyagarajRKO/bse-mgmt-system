@@ -5,7 +5,7 @@ export const Create = (
     profile_id,
     dispatch_id,
     unit_master_id,
-    product_master_id,
+    product_master_id = null,
     peeling_quantity,
     yield_quantity,
     peeling_method,
@@ -46,13 +46,18 @@ export const Create = (
       const peeling = await Peeling.Insert(profile_id, {
         dispatch_id,
         unit_master_id,
-        product_master_id,
+        product_master_id: product_master_id || null,
         peeling_quantity,
         yield_quantity,
         peeling_method,
-        peeling_status: "In Progress",
+        peeling_status:
+          product_master_id && yield_quantity ? "Completed" : "In Progress",
         peeling_notes,
         is_active: true,
+      });
+
+      await Dispatches.Update(profile_id, dispatch_id, {
+        delivery_status: "Delivered",
       });
 
       resolve({

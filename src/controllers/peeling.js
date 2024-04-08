@@ -25,13 +25,6 @@ export const Insert = async (profile_id, peeling_data) => {
         });
       }
 
-      if (!peeling_data?.product_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Product data must not be empty!",
-        });
-      }
-
       const result = await models.Peeling.create(peeling_data, {
         profile_id,
       });
@@ -217,6 +210,7 @@ export const GetAll = ({
             },
           },
           {
+            required: false,
             model: models.ProductMaster,
             where: {
               is_active: true,

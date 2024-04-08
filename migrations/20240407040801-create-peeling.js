@@ -19,7 +19,6 @@ module.exports = {
       },
       product_master_id: {
         type: Sequelize.UUID,
-        allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
