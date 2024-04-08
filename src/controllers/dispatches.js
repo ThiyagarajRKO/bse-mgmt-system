@@ -322,6 +322,118 @@ export const GetDestinations = ({
   });
 };
 
+// Retrive Dispatched Products names, along with quantity
+export const GetProductNames = ({
+  procurement_lot_id,
+  unit_master_id,
+  start = 0,
+  length = 10,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
+
+      let unitWhere = {
+        is_active: true,
+      };
+
+      if (unit_master_id) {
+        unitWhere.id = unit_master_id;
+      }
+
+      const procurements = await models.Dispatches.findAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "dispatch_quantity",
+          [
+            sequelize.literal(
+              `(SELECT CASE WHEN SUM(peeling_quantity) IS NULL THEN 0 ELSE SUM(peeling_quantity) END FROM peeling WHERE dispatch_id = "Dispatches".id and peeling.is_active = true)`
+            ),
+            "peeling_quantity",
+          ],
+        ],
+        include: [
+          {
+            required: true,
+            attributes: ["procurement_product_type"],
+            model: models.ProcurementProducts,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.ProcurementLots,
+                where: procurementLotsWhere,
+              },
+              {
+                requried: true,
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                include: [
+                  {
+                    required: true,
+                    // attributes: ["id", "species_master_id"],
+                    model: models.ProductCategoryMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                attributes: ["id", "vendor_name"],
+                model: models.VendorMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: true,
+            attributes: [],
+            model: models.UnitMaster,
+            where: unitWhere,
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: [
+          "Dispatches.id",
+          "ProcurementProduct.id",
+          "ProcurementProduct->ProductMaster.id",
+          "ProcurementProduct->ProductMaster->ProductCategoryMaster.id",
+          // "ProcurementProduct->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
+          "ProcurementProduct->VendorMaster.id",
+        ],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {

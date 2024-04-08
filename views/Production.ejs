@@ -788,20 +788,20 @@
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="product_name">Product Name:</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="peelingProductNames"
-                    name="peelingProductNames"
-                  ></select>
-                </div>
-
-                <div class="form-group mt-4">
                   <label for="rawMaterials">Raw Materials</label>
                   <select
                     class="form-control input-dropdown w-100"
                     id="rawMaterials"
                     name="rawMaterials"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product_name">Product Name:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="peelingProductNames"
+                    name="peelingProductNames"
                   ></select>
                 </div>
 
@@ -969,8 +969,8 @@
                   <thead>
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
-                      <th class="fw-bold"><span>Product Name</span></th>
                       <th class="fw-bold"><span>Raw Material</span></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
                       <th class="fw-bold"><span>Dispatched Quantity</span></th>
                       <th class="fw-bold"><span>Peeled Quantity</span></th>
                       <th class="fw-bold"><span>Yield Quantity</span></th>
@@ -1080,19 +1080,19 @@
         // Peeling
         $("#peelingLotNumbers").val(null).trigger("change");
         $("#peelingCenters").val(null).trigger("change");
-        $("#peelingProductNames").val(null).trigger("change");
         $("#rawMaterials").val(null).trigger("change");
+        $("#peelingProductNames").val(null).trigger("change");
         $("#peelingMethods").val(null).trigger("change");
 
         $("#peelingCenters").select2({
           placeholder: "Choose a peeling center",
           allowClear: true,
         });
-        $("#peelingProductNames").select2({
-          placeholder: "Choose a dispatched product",
+        $("#rawMaterials").select2({
+          placeholder: "Choose a raw material",
           allowClear: true,
         });
-        $("#rawMaterials").select2({
+        $("#peelingProductNames").select2({
           placeholder: "Choose a product",
           allowClear: true,
         });
@@ -1984,7 +1984,9 @@
       $("#closePeelingPanelBtn").click(function () {
         closeSlidePanel("peelingSlideInPanel");
 
-        view_dispatched_product_id = "";
+        view_peeling_product_id = "";
+        view_peeling_center_id = "";
+        view_raw_material_id = "";
       });
 
       $(".peelingMenu").click(async function () {
@@ -2226,9 +2228,7 @@
           },
           columns: [
             { data: null },
-            {
-              data: null,
-            },
+            { data: null },
             { data: "ProductMaster.product_name" },
             { data: "Dispatch.dispatch_quantity" },
             { data: "peeling_quantity" },
@@ -2350,25 +2350,19 @@
           .find("span")
           .attr("unit_master_id");
 
-        // $("#peelingCenters").val(view_peeling_center_id).trigger("change");
-
-        view_peeling_product_id = $(e.target)
+        view_raw_material_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(1)
           .find("span")
           .attr("dispatch_id");
 
-        view_raw_material_id = $(e.target)
+        view_peeling_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(2)
           .find("span")
           .attr("product_master_id");
-
-        // $("#peelingCenters").val(view_peeling_product_id).trigger("change");
-
-        // $("#rawMaterials").val(view_raw_material_id).trigger("change");
 
         $("#peeling_quantity").val(
           $(e.target).closest("tr").children("td").eq(4).text()
@@ -2431,21 +2425,21 @@
             }
           },
         });
-
-        $(document).on("change", "#peelingLotNumbers", () => {
-          $("#balance_dispatched_quantity").text("");
-
-          let lot_no = $("#peelingLotNumbers").val();
-
-          $("#peelingCenters").empty();
-          $("#peelingProductNames").empty();
-          $("#rawMaterials").empty();
-
-          if (lot_no) {
-            loadPeelingCenters(lot_no);
-          }
-        });
       }
+
+      $(document).on("change", "#peelingLotNumbers", () => {
+        $("#balance_dispatched_quantity").text("");
+
+        let lot_no = $("#peelingLotNumbers").val();
+
+        $("#peelingCenters").empty();
+        $("#rawMaterials").empty();
+        $("#peelingProductNames").empty();
+
+        if (lot_no) {
+          loadPeelingCenters(lot_no);
+        }
+      });
 
       function loadPeelingCenters(procurement_lot_id) {
         if (!procurement_lot_id) {
@@ -2473,12 +2467,12 @@
               }),
             });
 
-            $("#peelingCenters").val(null).trigger("change");
-
             if (view_peeling_center_id) {
               $("#peelingCenters")
                 .val(view_peeling_center_id)
                 .trigger("change");
+            } else {
+              $("#peelingCenters").val(null).trigger("change");
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2489,25 +2483,23 @@
             }
           },
         });
-
-        $(document).on("change", "#peelingCenters", () => {
-          $("#balance_dispatched_quantity").text("");
-
-          let lot_no = $("#peelingLotNumbers").val();
-          let unit_master_id = $("#peelingCenters").val();
-
-          $("#peelingProductNames").empty();
-          $("#rawMaterials").empty();
-
-          if (lot_no && unit_master_id) {
-            loadPeelingProducts(lot_no, unit_master_id);
-          }
-        });
       }
 
-      function loadPeelingProducts(lot_no, unit_master_id) {
+      $(document).on("change", "#peelingCenters", () => {
+        $("#balance_dispatched_quantity").text("");
+
+        let lot_no = $("#peelingLotNumbers").val();
+        let unit_master_id = $("#peelingCenters").val();
+
+        $("#rawMaterials").empty();
         $("#peelingProductNames").empty();
 
+        if (lot_no && unit_master_id) {
+          loadPeelingRawMaterials(lot_no, unit_master_id);
+        }
+      });
+
+      function loadPeelingRawMaterials(lot_no, unit_master_id) {
         if (!lot_no) {
           toastr["warning"]("Invalid lot number!");
           return;
@@ -2519,23 +2511,25 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/get/names/dispatched/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}`,
+          url: `/api/v1/dispatch/get/product/names/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: false,
           success: (data) => {
-            $("#peelingProductNames").select2({
-              placeholder: "Choose a product",
+            $("#rawMaterials").select2({
+              placeholder: "Choose a raw material",
               allowClear: "true",
               data: $.map(data?.data, function (item) {
                 return {
                   id: item?.id,
-                  product_categoty_master_id:
+                  species_id:
                     item?.ProcurementProduct?.ProductMaster
-                      .ProductCategoryMaster.id,
-                  quantity: item?.dispatch_quantity || 0,
+                      .ProductCategoryMaster.species_,
+                  quantity:
+                    (parseFloat(item?.dispatch_quantity) || 0) -
+                    (parseFloat(item?.peeling_quantity) || 0),
                   text: `${
                     item?.ProcurementProduct?.ProductMaster?.product_name
                   }-${
@@ -2548,12 +2542,10 @@
               }),
             });
 
-            $("#peelingProductNames").val(null).trigger("change");
-
-            if (view_peeling_product_id) {
-              $("#peelingProductNames")
-                .val(view_peeling_product_id)
-                .trigger("change");
+            if (view_raw_material_id) {
+              $("#rawMaterials").val(view_raw_material_id).trigger("change");
+            } else {
+              $("#rawMaterials").val(null).trigger("change");
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2564,37 +2556,80 @@
             }
           },
         });
+      }
 
-        $(document).on("change", "#peelingProductNames", (e) => {
+      $(document).on("change", "#rawMaterials", () => {
+        if ($("#rawMaterials").val()) {
           $("#balance_dispatched_quantity").text("");
 
-          $("#rawMaterials").empty();
+          $("#peelingProductNames").empty();
 
-          if ($("#peelingProductNames").val()) {
-            balance_dispatched_quantity = $("#peelingProductNames").select2(
-              "data"
-            )[0]?.quantity;
+          balance_dispatched_quantity =
+            $("#rawMaterials").select2("data")[0]?.quantity;
 
-            if (!isNaN(balance_dispatched_quantity)) {
-              $("#balance_dispatched_quantity").text(
-                parseFloat(balance_dispatched_quantity)
-              );
+          if (!isNaN(balance_dispatched_quantity)) {
+            $("#balance_dispatched_quantity").text(
+              parseFloat(balance_dispatched_quantity)
+            );
 
-              $("#balance_dispatched_quantity").css({ color: "white" });
-            }
-
-            let product_categoty_master_id = $("#peelingProductNames").select2(
-              "data"
-            )[0]?.product_categoty_master_id;
-            loadPeelingRawMaterials(product_categoty_master_id);
+            $("#balance_dispatched_quantity").css({ color: "white" });
           }
+
+          const species_id = $("#rawMaterials").select2("data")[0]?.species_id;
+          loadPeelingProducts(species_id);
+        }
+      });
+
+      function loadPeelingProducts(species_id) {
+        $("#peelingProductNames").empty();
+
+        if (!species_id) {
+          toastr["warning"]("Product data must not be empty");
+        }
+
+        $.ajax({
+          url: "/api/v1/master/product/get/all?species_id=" + species_id,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#peelingProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.product_name,
+                };
+              }),
+            });
+
+            if (view_peeling_product_id) {
+              $("#peelingProductNames")
+                .val(view_peeling_product_id)
+                .trigger("change");
+            } else {
+              $("#peelingProductNames").val(null).trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
         });
       }
 
       $(document).on("keyup", "#peeling_quantity", (e) => {
+        e.preventDefault();
+
         const currentPeelingedQuantity = $(e.target).val();
         const procurementQuantity = parseFloat(
-          $("#peelingProductNames").select2("data")[0]?.quantity
+          $("#rawMaterials").select2("data")[0]?.quantity
         );
 
         if (!currentPeelingedQuantity) {
@@ -2615,50 +2650,6 @@
           $("#balance_dispatched_quantity").css({ color: "red" });
         }
       });
-
-      function loadPeelingRawMaterials(product_category_master_id) {
-        $("#rawMaterials").empty();
-
-        if (!product_category_master_id) {
-          toastr["warning"]("Product data must not be empty");
-        }
-
-        $.ajax({
-          url:
-            "/api/v1/master/product/get/all?product_category_master_id=" +
-            product_category_master_id,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#rawMaterials").select2({
-              placeholder: "Choose a product",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.product_name,
-                };
-              }),
-            });
-
-            $("#rawMaterials").val(null).trigger("change");
-
-            if (view_raw_material_id) {
-              $("#rawMaterials").val(view_raw_material_id).trigger("change");
-            }
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
 
       function loadPeelingMethods() {
         $("#peelingMethods").select2({
@@ -2692,8 +2683,8 @@
 
         let url = "/api/v1/peeling/create";
         let input_params = {
-          dispatch_id: $("#peelingProductNames").val(),
-          product_master_id: $("#rawMaterials").val(),
+          dispatch_id: $("#rawMaterials").val(),
+          product_master_id: $("#peelingProductNames").val(),
           unit_master_id: $("#peelingCenters").val(),
           peeling_quantity,
           yield_quantity,

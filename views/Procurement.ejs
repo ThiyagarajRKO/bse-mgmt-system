@@ -761,7 +761,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats",
+            url: "/api/v1/procurement/lot/get/stats/all",
             error: function (xhr, error, code) {
               $("#procurementTable").DataTable().destroy();
               $("#procurementTable").DataTable({
