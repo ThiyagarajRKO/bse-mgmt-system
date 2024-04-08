@@ -2227,7 +2227,7 @@
           columns: [
             { data: null },
             {
-              data: "Dispatch.ProcurementProduct.ProductMaster.product_name",
+              data: null,
             },
             { data: "ProductMaster.product_name" },
             { data: "Dispatch.dispatch_quantity" },
@@ -2246,9 +2246,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<i class="fa fa-pen-to-square edit editPeeling" peeling_id=${
-                  row?.["Dispatch"]?.id || null
-                } dispatch_id=${
-                  row?.id
+                  row?.id || null
                 } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
@@ -2256,7 +2254,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span procurement_product_id='${row["Dispatch"]?.["ProcurementProduct"]?.id}'>${data}</i>`;
+                return `<span dispatch_id='${row["Dispatch"]?.id}'>${row?.["Dispatch"]?.["ProcurementProduct"]?.["ProductMaster"]?.product_name}-${row?.["Dispatch"]?.["ProcurementProduct"]?.procurement_product_type}-${row?.["Dispatch"]?.["ProcurementProduct"]?.["VendorMaster"]?.vendor_name}-${row?.["Dispatch"]?.dispatch_quantity}</i>`;
               },
             },
             {
@@ -2290,7 +2288,7 @@
               },
             },
             {
-              targets: [9],
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
@@ -2336,6 +2334,8 @@
       }
 
       let view_peeling_product_id = "";
+      let view_peeling_center_id = "";
+      let view_raw_material_id = "";
       $(document).on("click", ".editPeeling", (e) => {
         // Changing panel input fields data
 
@@ -2343,36 +2343,32 @@
           .val($("#view_lot_no").attr("procurement_lot_id"))
           .trigger("change");
 
-        $("#destinationLocation")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
+        view_peeling_center_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(10)
+          .find("span")
+          .attr("unit_master_id");
+
+        // $("#peelingCenters").val(view_peeling_center_id).trigger("change");
 
         view_peeling_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(1)
           .find("span")
-          .attr("procurement_product_id");
+          .attr("dispatch_id");
 
-        $("#peelingCenters").val(view_peeling_product_id).trigger("change");
+        view_raw_material_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("product_master_id");
 
-        $("#rawMaterials")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(2)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
+        // $("#peelingCenters").val(view_peeling_product_id).trigger("change");
+
+        // $("#rawMaterials").val(view_raw_material_id).trigger("change");
 
         $("#peeling_quantity").val(
           $(e.target).closest("tr").children("td").eq(4).text()
@@ -2383,7 +2379,7 @@
         );
 
         $("#peelingMethods")
-          .val($(e.target).closest("tr").children("td").eq(6).text())
+          .val($(e.target).closest("tr").children("td").eq(7).text())
           .trigger("change");
 
         $("#peeling_notes").val(
@@ -2478,6 +2474,12 @@
             });
 
             $("#peelingCenters").val(null).trigger("change");
+
+            if (view_peeling_center_id) {
+              $("#peelingCenters")
+                .val(view_peeling_center_id)
+                .trigger("change");
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -2643,6 +2645,10 @@
             });
 
             $("#rawMaterials").val(null).trigger("change");
+
+            if (view_raw_material_id) {
+              $("#rawMaterials").val(view_raw_material_id).trigger("change");
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {

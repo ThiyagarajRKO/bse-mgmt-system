@@ -184,7 +184,7 @@ export const GetAll = ({
             model: models.Dispatches,
             include: [
               {
-                attributes: ["id"],
+                attributes: ["id", "procurement_product_type"],
                 model: models.ProcurementProducts,
                 include: [
                   {
@@ -195,6 +195,13 @@ export const GetAll = ({
                   {
                     attributes: ["product_name"],
                     model: models.ProductMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                  {
+                    attributes: ["vendor_name"],
+                    model: models.VendorMaster,
                     where: {
                       is_active: true,
                     },
