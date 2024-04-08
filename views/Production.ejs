@@ -929,7 +929,7 @@
                 <div class="d-flex justify-content-between">
                   <div class="form-group">
                     <label class="fw-bold" for="lot_no">Lot No:</label>
-                    <span id="view_lot_no"></span>
+                    <span id="view_peeling_lot_no"></span>
                   </div>
 
                   <div class="form-group">
@@ -2159,12 +2159,15 @@
           .eq(5)
           .text();
 
-        $("#view_lot_no").text(
+        $("#view_peeling_lot_no").text(
           $(e.target).closest("tr").children("td").eq(2).text()
         );
 
         // Top Header
-        $("#view_lot_no").attr("procurement_lot_id", view_procurement_lot_id);
+        $("#view_peeling_lot_no").attr(
+          "procurement_lot_id",
+          view_procurement_lot_id
+        );
 
         $("#view_total_peelinges").text(view_total_peeling);
 
@@ -2335,7 +2338,7 @@
         // Changing panel input fields data
 
         $("#peelingLotNumbers")
-          .val($("#view_lot_no").attr("procurement_lot_id"))
+          .val($("#view_peeling_lot_no").attr("procurement_lot_id"))
           .trigger("change");
 
         view_peeling_center_id = $(e.target)
