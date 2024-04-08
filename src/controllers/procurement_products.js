@@ -250,12 +250,12 @@ export const GetAll = ({
         productWhere.product_name = { [Op.iLike]: product_master_name };
       }
 
-      let procurementWhere = {
+      let procurementLotsWhere = {
         is_active: true,
       };
 
       if (procurement_lot) {
-        procurementWhere.procurement_lot = procurement_lot;
+        procurementLotsWhere.procurement_lot = procurement_lot;
       }
 
       const procurements = await models.ProcurementProducts.findAndCountAll({
@@ -270,7 +270,7 @@ export const GetAll = ({
                 },
               },
             ],
-            where: procurementWhere,
+            where: procurementLotsWhere,
           },
           {
             model: models.VendorMaster,
@@ -426,35 +426,54 @@ export const GetDispatchedProductNames = ({
         unitWhere.id = unit_master_id;
       }
 
-      const procurements = await models.ProcurementProducts.findAll({
+      const procurements = await models.Dispatches.findAll({
         subQuery: false,
         attributes: [
           "id",
-          "procurement_product_type",
-          [
-            sequelize.literal(
-              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and dispatches.is_active = true)`
-            ),
-            "dispatched_quantity",
-          ],
+          "dispatch_quantity",
+          // [
+          //   sequelize.literal(
+          //     `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and dispatches.is_active = true)`
+          //   ),
+          //   "dispatched_quantity",
+          // ],
         ],
         include: [
           {
             required: true,
-            attributes: [],
-            model: models.ProcurementLots,
-            where: procurementLotsWhere,
-          },
-          {
-            required: true,
-            attributes: [],
-            model: models.Dispatches,
+            attributes: ["procurement_product_type"],
+            model: models.ProcurementProducts,
             include: [
               {
                 required: true,
                 attributes: [],
-                model: models.UnitMaster,
-                where: unitWhere,
+                model: models.ProcurementLots,
+                where: procurementLotsWhere,
+              },
+              {
+                requried: true,
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                include: [
+                  {
+                    required: true,
+                    attributes: ["id"],
+                    model: models.ProductCategoryMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                attributes: ["id", "vendor_name"],
+                model: models.VendorMaster,
+                where: {
+                  is_active: true,
+                },
               },
             ],
             where: {
@@ -462,18 +481,10 @@ export const GetDispatchedProductNames = ({
             },
           },
           {
-            attributes: ["id", "product_name"],
-            model: models.ProductMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            attributes: ["id", "vendor_name"],
-            model: models.VendorMaster,
-            where: {
-              is_active: true,
-            },
+            required: true,
+            attributes: [],
+            model: models.UnitMaster,
+            where: unitWhere,
           },
         ],
         where,
@@ -481,9 +492,11 @@ export const GetDispatchedProductNames = ({
         limit: length,
         order: [["created_at", "desc"]],
         group: [
-          "ProcurementProducts.id",
-          "ProductMaster.id",
-          "VendorMaster.id",
+          "Dispatches.id",
+          "ProcurementProduct.id",
+          "ProcurementProduct->ProductMaster.id",
+          "ProcurementProduct->ProductMaster->ProductCategoryMaster.id",
+          "ProcurementProduct->VendorMaster.id",
         ],
       });
 

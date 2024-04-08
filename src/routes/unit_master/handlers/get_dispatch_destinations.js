@@ -1,20 +1,19 @@
-import { Dispatches } from "../../../controllers";
+import { UnitMaster } from "../../../controllers";
 
-export const GetDestinations = (
-  { procurement_lot_id, start, length, "search[value]": search },
+export const GetDispatches = (
+  { procurement_lot_id, start, length },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let dispatch = await Dispatches.GetDestinations({
+      let procurement = await UnitMaster.GetDispatches({
         procurement_lot_id,
         start,
         length,
-        search,
       });
 
-      if (!dispatch) {
+      if (!procurement) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -22,7 +21,7 @@ export const GetDestinations = (
       }
 
       resolve({
-        data: dispatch,
+        data: procurement,
       });
     } catch (err) {
       fastify.log.error(err);

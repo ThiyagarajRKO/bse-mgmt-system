@@ -4,6 +4,7 @@ export const GetAll = (
   {
     start,
     length,
+    product_category_master_id,
     product_name,
     species_master_name,
     product_category_name,
@@ -18,6 +19,7 @@ export const GetAll = (
       let product_master = await ProductMaster.GetAll({
         start,
         length,
+        product_category_master_id,
         product_name,
         species_master_name,
         product_category_name,

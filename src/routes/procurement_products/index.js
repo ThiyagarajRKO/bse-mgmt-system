@@ -92,7 +92,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/all/names", getNamesSchema, async (req, reply) => {
+  fastify.get("/get/names/all", getNamesSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -112,7 +112,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
   });
 
   fastify.get(
-    "/get/all/names/dispatched",
+    "/get/names/dispatched/all",
     getDispatchedNamesSchema,
     async (req, reply) => {
       try {

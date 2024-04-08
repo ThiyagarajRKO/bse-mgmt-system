@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      UnitMaster.hasMany(models.Dispatches, {
+        foreignKey: "unit_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   UnitMaster.init(

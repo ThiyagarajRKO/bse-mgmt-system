@@ -115,6 +115,31 @@ export const Get = ({ id }) => {
   });
 };
 
+export const GetQuantity = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Dispatch ID field must not be empty!",
+        });
+      }
+
+      const product = await models.Dispatches.findOne({
+        attributes: ["dispatch_quantity"],
+        where: {
+          id,
+          is_active: true,
+        },
+      });
+
+      resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const GetAll = ({ procurement_lot_id, start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {

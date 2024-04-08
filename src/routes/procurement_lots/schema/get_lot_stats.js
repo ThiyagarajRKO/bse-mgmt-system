@@ -5,6 +5,8 @@ export const getStatsSchema = {
       required: [],
       properties: {
         procurement_lot_id: { type: "string" },
+        start: { type: "number" },
+        length: { type: "number" },
         "search[value]": { type: "string" },
       },
     },

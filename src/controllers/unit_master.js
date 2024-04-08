@@ -206,3 +206,65 @@ export const Delete = ({ profile_id, id }) => {
     }
   });
 };
+
+export const GetDispatches = ({
+  procurement_lot_id,
+  start = 0,
+  length = 10,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
+
+      const procurements = await models.UnitMaster.findAll({
+        subQuery: false,
+        attributes: ["id", "unit_code"],
+        include: [
+          {
+            required: true,
+            attributes: [],
+            model: models.Dispatches,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.ProcurementProducts,
+                include: [
+                  {
+                    required: true,
+                    attributes: [],
+                    model: models.ProcurementLots,
+                    where: procurementLotsWhere,
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          is_active: true,
+          unit_type: "Peeling Center",
+        },
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

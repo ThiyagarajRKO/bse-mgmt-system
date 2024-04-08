@@ -1071,6 +1071,31 @@
         $("#destinationLocation").val(null).trigger("change");
         $("#vehicleNumbers").val(null).trigger("change");
         $("#driverNames").val(null).trigger("change");
+
+        $("#productNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
+
+        // Peeling
+        $("#peelingLotNumbers").val(null).trigger("change");
+        $("#peelingCenters").val(null).trigger("change");
+        $("#peelingProductNames").val(null).trigger("change");
+        $("#rawMaterials").val(null).trigger("change");
+        $("#peelingMethods").val(null).trigger("change");
+
+        $("#peelingCenters").select2({
+          placeholder: "Choose a peeling center",
+          allowClear: true,
+        });
+        $("#peelingProductNames").select2({
+          placeholder: "Choose a dispatched product",
+          allowClear: true,
+        });
+        $("#rawMaterials").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
       }
 
       function openSlidePanel(
@@ -1185,6 +1210,7 @@
       $(".dispatchContainer").removeClass("d-none");
       $(".dispatchContainer").addClass("d-block");
 
+      resetAllInputs();
       loadPercentages();
       loadDropdowns();
       loadDispatchTableData();
@@ -1636,7 +1662,7 @@
 
       function loadLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/all/lots`,
+          url: `/api/v1/procurement/lot/get/lots/all`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1730,7 +1756,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/get/all/names?procurement_lot_id=${lot_no}`,
+          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2159,9 +2185,9 @@
         loadPeelingProductTableData(view_procurement_lot_id);
       });
 
-      function loadPeelingProductTableData(procurement_product_id) {
-        if (!procurement_product_id) {
-          toastr["warning"]("Product data should not be empty!");
+      function loadPeelingProductTableData(procurement_lot_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Procurement lot data should not be empty!");
         }
 
         $("#peelingProductTable").DataTable({
@@ -2176,7 +2202,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/peeling/get/all?procurement_product_id=${procurement_product_id}`,
+            url: `/api/v1/peeling/get/all?procurement_lot_id=${procurement_lot_id}`,
             error: function (xhr, error, code) {
               $("#peelingProductTable").DataTable().destroy();
               $("#peelingProductTable").DataTable({
@@ -2381,7 +2407,7 @@
 
       function loadPeelingLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/all/lots`,
+          url: `/api/v1/procurement/lot/get/lots/dispatch/all`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2432,7 +2458,7 @@
 
         $.ajax({
           url:
-            "/api/v1/dispatch/get/destinations?procurement_lot_id=" +
+            "/api/v1/master/unit/get/dispatch/destination/all?procurement_lot_id=" +
             procurement_lot_id,
           method: "GET",
           dataType: "json",
@@ -2445,8 +2471,8 @@
               allowClear: "true",
               data: $.map(data?.data, function (item) {
                 return {
-                  id: item.UnitMaster.id,
-                  text: item.UnitMaster.unit_code,
+                  id: item.id,
+                  text: item.unit_code,
                 };
               }),
             });
@@ -2465,12 +2491,13 @@
         $(document).on("change", "#peelingCenters", () => {
           $("#balance_dispatched_quantity").text("");
 
+          let lot_no = $("#peelingLotNumbers").val();
           let unit_master_id = $("#peelingCenters").val();
 
           $("#peelingProductNames").empty();
           $("#rawMaterials").empty();
 
-          if (unit_master_id) {
+          if (lot_no && unit_master_id) {
             loadPeelingProducts(lot_no, unit_master_id);
           }
         });
@@ -2490,7 +2517,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/dispatch/get/all/names/dispatched?procurement_lot_id=${lot_no}&unit_master_id=${lot_no}`,
+          url: `/api/v1/procurement/product/get/names/dispatched/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2502,25 +2529,24 @@
               allowClear: "true",
               data: $.map(data?.data, function (item) {
                 return {
-                  id: item.id,
-                  species_id: item.species_id,
-                  quantity:
-                    (parseFloat(item?.procurement_quantity) || 0) -
-                    (parseFloat(item?.peelinged_quantity) || 0),
-                  text: `${item?.ProductMaster?.product_name}-${
-                    item?.procurement_product_type
-                  }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
+                  id: item?.id,
+                  product_categoty_master_id:
+                    item?.ProcurementProduct?.ProductMaster
+                      .ProductCategoryMaster.id,
+                  quantity: item?.dispatch_quantity || 0,
+                  text: `${
+                    item?.ProcurementProduct?.ProductMaster?.product_name
+                  }-${
+                    item?.ProcurementProduct?.procurement_product_type
+                  }-${item?.ProcurementProduct?.VendorMaster?.vendor_name?.replaceAll(
+                    " ",
+                    ""
+                  )}-${item?.dispatch_quantity || 0}`,
                 };
               }),
             });
 
-            // if (view_procurement_product_id) {
-            //   $("#productNames")
-            //     .val(view_procurement_product_id)
-            //     .trigger("change");
-            // } else {
             $("#peelingProductNames").val(null).trigger("change");
-            // }
 
             if (view_peeling_product_id) {
               $("#peelingProductNames")
@@ -2555,9 +2581,10 @@
               $("#balance_dispatched_quantity").css({ color: "white" });
             }
 
-            let species_id = $("#peelingProductNames").select2("data")[0]
-              ?.species_id;
-            loadPeelingRawMaterials(species_id);
+            let product_categoty_master_id = $("#peelingProductNames").select2(
+              "data"
+            )[0]?.product_categoty_master_id;
+            loadPeelingRawMaterials(product_categoty_master_id);
           }
         });
       }
@@ -2565,12 +2592,12 @@
       $(document).on("keyup", "#peeling_quantity", (e) => {
         const currentPeelingedQuantity = $(e.target).val();
         const procurementQuantity = parseFloat(
-          $("#productNames").select2("data")[0]?.quantity
+          $("#peelingProductNames").select2("data")[0]?.quantity
         );
 
         if (!currentPeelingedQuantity) {
-          $("#balance_procure_quantity").text(balance_dispatched_quantity);
-          $("#balance_procure_quantity").css({ color: "white" });
+          $("#balance_dispatched_quantity").text(balance_dispatched_quantity);
+          $("#balance_dispatched_quantity").css({ color: "white" });
           return;
         }
 
@@ -2587,15 +2614,17 @@
         }
       });
 
-      function loadPeelingRawMaterials(species_id) {
+      function loadPeelingRawMaterials(product_category_master_id) {
         $("#rawMaterials").empty();
 
-        if (!species_id) {
-          toastr["warning"]("Species id must not be empty");
+        if (!product_category_master_id) {
+          toastr["warning"]("Product data must not be empty");
         }
 
         $.ajax({
-          url: "/api/v1/master/species/get/all?species_id=" + species_id,
+          url:
+            "/api/v1/master/product/get/all?product_category_master_id=" +
+            product_category_master_id,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2603,12 +2632,12 @@
           processData: false,
           success: (data) => {
             $("#rawMaterials").select2({
-              placeholder: "Choose a driver",
+              placeholder: "Choose a product",
               allowClear: "true",
               data: $.map(data?.data?.rows, function (item) {
                 return {
                   id: item.id,
-                  text: item.species_name,
+                  text: item.product_name,
                 };
               }),
             });
@@ -2646,7 +2675,9 @@
 
       function savePeeling() {
         const peeling_id = $("#submitPeeling").attr("peeling_id");
-        const current_weight_balance = $("#balance_procure_quantity").text();
+        const current_weight_balance = $("#balance_dispatched_quantity").text();
+        const peeling_quantity = parseFloat($("#peeling_quantity").val()) || 0;
+        const yield_quantity = parseFloat($("#yield_quantity").val()) || 0;
 
         if (parseFloat(current_weight_balance) <= -1) {
           toastr["warning"]("Invalid peeling quantity");
@@ -2655,13 +2686,13 @@
 
         let url = "/api/v1/peeling/create";
         let input_params = {
-          procurement_product_id: $("#productNames").val(),
-          unit_master_id: $("#destinationLocation").val(),
-          peeling_quantity: $("#peeling_quantity").val(),
-          temperature: $("#peeling_temperature").val(),
-          delivery_notes: $("#delivery_notes").val(),
-          vehicle_master_id: $("#vehicleNumbers").val(),
-          driver_master_id: $("#driverNames").val(),
+          dispatch_id: $("#peelingProductNames").val(),
+          product_master_id: $("#rawMaterials").val(),
+          unit_master_id: $("#peelingCenters").val(),
+          peeling_quantity,
+          yield_quantity,
+          peeling_method: $("#peelingMethods").val(),
+          peeling_notes: $("#peeling_notes").val(),
         };
 
         if (peeling_id && peeling_id != "null") {
@@ -2673,6 +2704,12 @@
               ...input_params,
             },
           };
+        }
+
+        if (peeling_quantity < yield_quantity) {
+          toastr["warning"](
+            "Yield quantity must not be gra=eater than peeling quantity!"
+          );
         }
 
         $.ajax({

@@ -129,6 +129,7 @@ export const Get = ({ id }) => {
 };
 
 export const GetAll = ({
+  product_category_master_id,
   product_name,
   species_master_name,
   product_category_name,
@@ -163,6 +164,10 @@ export const GetAll = ({
         productCategoryWhere.product_category = {
           [Op.iLike]: `%${product_category_name}%`,
         };
+      }
+
+      if (product_category_master_id) {
+        productCategoryWhere.id = product_category_master_id;
       }
 
       let sizeWhere = {
