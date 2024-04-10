@@ -649,7 +649,7 @@ export const GetPeelingStats = ({
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(yield_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`
+              `(SELECT SUM(yield_quantity) FROM peeling_products peps JOIN peeling ON peps.peeling_id = peeling.id and peeling.is_active = true JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peps.is_active = true)`
             ),
             "total_yield_quantity",
           ],

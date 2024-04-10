@@ -184,6 +184,18 @@ export const GetAll = ({
       }
 
       const peelings = await models.Peeling.findAndCountAll({
+        attributes: [
+          "id",
+          "peeling_quantity",
+          "peeling_method",
+          "created_at",
+          [
+            sequelize.literal(
+              `(SELECT SUM(yield_quantity) FROM peeling_products peps WHERE peps.peeling_id = "Peeling".id and peps.is_active = true)`
+            ),
+            "total_yield_quantity",
+          ],
+        ],
         include: [
           {
             attributes: ["id", "dispatch_quantity"],
@@ -218,6 +230,12 @@ export const GetAll = ({
                 },
               },
             ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.PeelingProducts,
             where: {
               is_active: true,
             },
