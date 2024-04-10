@@ -68,12 +68,16 @@
   <script src="/public/plugins/tippy/popper.min.js"></script>
   <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
-  <!-- Circle ProgressBar -->
-  <!-- <script
-    src="https://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
-    crossorigin="anonymous"
-  ></script> -->
+  <!-- jQuery Smart Tab -->
+  <link
+    href="/public/plugins/smartTab/smart_tab.all.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <script
+    type="text/javascript"
+    src="/public/plugins/smartTab/smart_tab.min.js"
+  ></script>
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/public/css/style.css" />
@@ -301,6 +305,41 @@
         color: #1f2d3e;
         border-radius: 4px;
         font-size: inherit !important;
+      }
+
+      #appendOutput:hover {
+        background-color: rgb(224, 224, 224);
+        color: rgb(145, 145, 145);
+      }
+
+      .st-theme-brick > .nav .nav-link.active {
+        background-color: #dc4c64 !important;
+      }
+
+      .st-theme-brick > .nav .nav-link {
+        color: #dc4c64 !important;
+      }
+
+      .st-theme-brick > .nav {
+        border-color: #dc4c64 !important;
+      }
+
+      .vl {
+        border-left: 2px dashed rgba(129, 145, 179, 0.6);
+        height: 25px;
+        position: absolute;
+        left: 50%;
+        margin-left: -3px;
+        /* bottom: -10; */
+      }
+
+      .vl-top {
+        border-left: 2px dashed rgba(129, 145, 179, 0.6);
+        height: 35px;
+        position: absolute;
+        left: 50%;
+        margin-left: -3px;
+        /* bottom: -10; */
       }
     </style>
   </head>
@@ -747,110 +786,139 @@
 
                 <hr />
 
-                <div class="form-group mt-4">
-                  <label for="lot_no">Lot No:</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="peelingLotNumbers"
-                    name="peelingLotNumbers"
-                  ></select>
-                </div>
+                <div id="smarttab" class="border-0">
+                  <ul class="nav">
+                    <li>
+                      <a class="nav-link">Input</a>
+                    </li>
+                    <li>
+                      <a class="nav-link">Output</a>
+                    </li>
+                  </ul>
 
-                <div class="form-group mt-4">
-                  <label for="s">Peeling Center</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="peelingCenters"
-                    name="peelingCenters"
-                  ></select>
-                </div>
+                  <div class="tab-content">
+                    <div id="tab-1" class="tab-pane p-0" role="tabpanel">
+                      <div class="form-group mt-4">
+                        <label for="lot_no">Lot No:</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="peelingLotNumbers"
+                          name="peelingLotNumbers"
+                        ></select>
+                      </div>
 
-                <div class="form-group mt-4">
-                  <label for="rawMaterials">Raw Materials</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="rawMaterials"
-                    name="rawMaterials"
-                  ></select>
-                </div>
+                      <div class="form-group mt-4">
+                        <label for="s">Peeling Center</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="peelingCenters"
+                          name="peelingCenters"
+                        ></select>
+                      </div>
 
-                <div class="form-group mt-4">
-                  <label for="peeling_quantity">Quantity</label>
-                  <input
-                    id="peeling_quantity"
-                    class="form-control"
-                    type="number"
-                    placeholder="eg. 10"
-                    name="peeling_quantity"
-                    required
-                  />
-                  <span style="font-size: 12px"
-                    >Balance Dispatched Quantity :
-                    <span
-                      class="fw-bold"
-                      id="balance_dispatched_quantity"
-                    ></span
-                  ></span>
-                </div>
+                      <div class="form-group mt-4">
+                        <label for="rawMaterials">Raw Materials</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="rawMaterials"
+                          name="rawMaterials"
+                        ></select>
+                      </div>
 
-                <div class="form-group mt-4">
-                  <label for="peeling_method">Peeling Method</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="peelingMethods"
-                    name="peelingMethods"
-                  ></select>
-                </div>
+                      <div class="form-group mt-4">
+                        <label for="peeling_quantity">Quantity</label>
+                        <input
+                          id="peeling_quantity"
+                          class="form-control"
+                          type="number"
+                          placeholder="eg. 10"
+                          name="peeling_quantity"
+                          required
+                        />
+                        <span style="font-size: 12px"
+                          >Balance Dispatched Quantity :
+                          <span
+                            class="fw-bold"
+                            id="balance_dispatched_quantity"
+                          ></span
+                        ></span>
+                      </div>
 
-                <div class="form-group mt-4 mb-4">
-                  <label for="peeling_notes">Peeling Notes</label>
-                  <textarea
-                    row="3"
-                    class="form-control input-dropdown w-100"
-                    id="peeling_notes"
-                    name="peeling_notes"
-                  ></textarea>
-                </div>
+                      <div class="form-group mt-4">
+                        <label for="peeling_method">Peeling Method</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="peelingMethods"
+                          name="peelingMethods"
+                        ></select>
+                      </div>
 
-                <fieldset
-                  class="form-group border p-3"
-                  style="
-                    border-color: rgba(129, 145, 179, 0.6) !important;
-                    margin-top: 2.2rem !important;
-                  "
-                >
-                  <legend class="mb-2 w-auto px-2">
-                    Output <code>(optional)</code>
-                  </legend>
-                  <div class="form-group">
-                    <label for="product_name">Product Name:</label>
-                    <select
-                      class="form-control input-dropdown w-100"
-                      id="peelingProductNames"
-                      name="peelingProductNames"
-                    ></select>
+                      <div class="form-group mt-4 mb-4">
+                        <label for="peeling_notes">Peeling Notes</label>
+                        <textarea
+                          row="3"
+                          class="form-control input-dropdown w-100"
+                          id="peeling_notes"
+                          name="peeling_notes"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
+                      <div id="outputContainer">
+                        <fieldset
+                          class="form-group border p-3"
+                          style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          "
+                        >
+                          <legend class="mb-2 w-auto px-2">Output 1</legend>
+                          <div class="form-group">
+                            <label for="product_name">Product Name:</label>
+                            <select
+                              class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_1"
+                              name="peelingProductNames"
+                            ></select>
+                          </div>
+
+                          <div class="form-group mt-4">
+                            <label for="yield_quantity">Yield Quantity </label>
+                            <input
+                              class="form-control yield_quantity_1"
+                              type="number"
+                              placeholder="eg. 10"
+                              name="yield_quantity"
+                              required
+                            />
+                          </div>
+                        </fieldset>
+                      </div>
+
+                      <div class="vl"></div>
+                      <div
+                        id="appendOutput"
+                        style="border-color: rgba(98, 114, 147, 0.6) !important"
+                        class="btn border rounded d-flex justify-content-center mt-4"
+                      >
+                        <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
+                      </div>
+                    </div>
                   </div>
-
-                  <div class="form-group mt-4">
-                    <label for="yield_quantity">Yield Quantity </label>
-                    <input
-                      id="yield_quantity"
-                      class="form-control"
-                      type="number"
-                      placeholder="eg. 10"
-                      name="yield_quantity"
-                      required
-                    />
-                  </div>
-                </fieldset>
+                </div>
 
                 <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                  <div id="submitPeeling" class="col-lg-5 btn btn-danger">
+                  <div id="submitPeeling" class="col-lg-auto btn btn-danger">
                     Save
                   </div>
                   <div
+                    id="nextPeeling"
+                    class="col-lg-auto btn btn-outline-info"
+                  >
+                    Next
+                  </div>
+                  <div
                     id="resetPeelingDataBtn"
-                    class="col-lg-5 btn btn-outline-danger"
+                    class="col-lg-auto btn btn-outline-warning"
                   >
                     Clear
                   </div>
@@ -921,7 +989,7 @@
             <!-- Modal content-->
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="modal-title">Peelinged Products</h4>
+                <h4 class="modal-title">Peeling Products</h4>
                 <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
                 </i>
               </div>
@@ -1010,6 +1078,22 @@
         hideMethod: "fadeOut",
       };
 
+      $(function () {
+        // SmartTab initialize
+        $("#smarttab").smartTab({
+          selected: 0,
+          theme: "brick",
+          autoAdjustHeight: false,
+          animation: "fade",
+          // justified: false,
+          keyboardSettings: {
+            keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+            keyLeft: [37], // Left key code
+            keyRight: [39], // Right key code
+          },
+        });
+      });
+
       // Menu navigation
       $(".topMenu-item").click(function () {
         $(".topMenu-item").removeClass("topMenu-item-active");
@@ -1068,7 +1152,7 @@
         $("#peelingLotNumbers").val(null).trigger("change");
         $("#peelingCenters").val(null).trigger("change");
         $("#rawMaterials").val(null).trigger("change");
-        $("#peelingProductNames").val(null).trigger("change");
+        $(".peelingProductNames").val(null).trigger("change");
         $("#peelingMethods").val(null).trigger("change");
 
         $("#peelingCenters").select2({
@@ -1079,7 +1163,7 @@
           placeholder: "Choose a raw material",
           allowClear: true,
         });
-        $("#peelingProductNames").select2({
+        $(".peelingProductNames").select2({
           placeholder: "Choose a product",
           allowClear: true,
         });
@@ -1973,7 +2057,6 @@
       $("#closePeelingPanelBtn").click(function () {
         closeSlidePanel("peelingSlideInPanel");
 
-        view_peeling_product_id = "";
         view_peeling_center_id = "";
         view_raw_material_id = "";
       });
@@ -1998,6 +2081,79 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#peelingModal").modal("hide");
+        }
+      );
+
+      $(document).on("click", "#appendOutput", (e) => {
+        const last_fieldset_index = $("#outputContainer fieldset").length;
+        const next_fieldset_index = (last_fieldset_index || 0) + 1;
+
+        if (
+          !$(`.peelingProductNames_${last_fieldset_index}`).val() ||
+          !$(`.yield_quantity_${last_fieldset_index}`).val()
+        ) {
+          toastr["warning"](
+            "Please fill all the required values in the above output to create a new output"
+          );
+          return;
+        }
+
+        $("#outputContainer").append(`<div class="vl-top"></div><fieldset
+                        class="form-group border p-3 mt-3"
+                        style="
+                          border-color: rgba(129, 145, 179, 0.6) !important;
+                          margin-top: 2.2rem !important;
+                        "
+                      >
+                        <legend class="mb-2 w-auto px-2">Output ${next_fieldset_index}</legend>
+                        <div class="form-group">
+                          <label for="product_name">Product Name:</label>
+                          <select
+                            class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${next_fieldset_index}"
+                            name="peelingProductNames"
+                          ></select>
+                        </div>
+
+                        <div class="form-group mt-4">
+                          <label for="yield_quantity">Yield Quantity</label>
+                          <input
+                            class="form-control yield_quantity yield_quantity_${next_fieldset_index}"
+                            type="number"
+                            placeholder="eg. 10"
+                            name="yield_quantity"
+                            required
+                          />
+                        </div>
+                      </fieldset>`);
+
+        $(`.peelingProductNames_${next_fieldset_index}`).select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          data: productNamesArray,
+        });
+
+        $(`.peelingProductNames_${next_fieldset_index}`)
+          .val(null)
+          .trigger("change");
+      });
+
+      $(document).on("click", "#nextPeeling", (e) => {
+        $("#smarttab").smartTab("next");
+      });
+
+      $(document).on(
+        "showTab",
+        "#smarttab",
+        (e, anchorObject, tabIndex, tabDirection, tabPosition) => {
+          if (tabIndex == 0) {
+            $("#nextPeeling").show();
+            $("#submitPeeling").removeClass("col-lg-5");
+            $("#resetPeelingDataBtn").removeClass("col-lg-5");
+          } else {
+            $("#nextPeeling").hide();
+            $("#submitPeeling").addClass("col-lg-5");
+            $("#resetPeelingDataBtn").addClass("col-lg-5");
+          }
         }
       );
 
@@ -2331,7 +2487,6 @@
         });
       }
 
-      let view_peeling_product_id = "";
       let view_peeling_center_id = "";
       let view_raw_material_id = "";
       $(document).on("click", ".editPeeling", (e) => {
@@ -2355,12 +2510,12 @@
           .find("span")
           .attr("dispatch_id");
 
-        view_peeling_product_id = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(2)
-          .find("span")
-          .attr("product_master_id");
+        // view_peeling_product_id = $(e.target)
+        //   .closest("tr")
+        //   .children("td")
+        //   .eq(2)
+        //   .find("span")
+        //   .attr("product_master_id");
 
         $("#peeling_quantity").val(
           $(e.target).closest("tr").children("td").eq(4).text()
@@ -2432,7 +2587,8 @@
 
         $("#peelingCenters").empty();
         $("#rawMaterials").empty();
-        $("#peelingProductNames").empty();
+        $(".peelingProductNames").empty();
+        productNamesArray = [];
 
         if (lot_no) {
           loadPeelingCenters(lot_no);
@@ -2490,7 +2646,8 @@
         let unit_master_id = $("#peelingCenters").val();
 
         $("#rawMaterials").empty();
-        $("#peelingProductNames").empty();
+        $(".peelingProductNames").empty();
+        productNamesArray = [];
 
         if (lot_no && unit_master_id) {
           loadPeelingRawMaterials(lot_no, unit_master_id);
@@ -2562,7 +2719,8 @@
         if ($("#rawMaterials").val()) {
           $("#balance_dispatched_quantity").text("");
 
-          $("#peelingProductNames").empty();
+          $(".peelingProductNames").empty();
+          productNamesArray = [];
 
           balance_dispatched_quantity =
             $("#rawMaterials").select2("data")[0]?.quantity;
@@ -2582,8 +2740,10 @@
         }
       });
 
+      let productNamesArray = [];
       function loadPeelingProducts(species_id) {
-        $("#peelingProductNames").empty();
+        $(".peelingProductNames").empty();
+        productNamesArray = [];
 
         if (!species_id) {
           toastr["warning"]("Product data must not be empty");
@@ -2597,24 +2757,22 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            $("#peelingProductNames").select2({
-              placeholder: "Choose a product",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.product_name,
-                };
-              }),
+            productNamesArray = [];
+
+            data?.data?.rows.forEach((item) => {
+              productNamesArray.push({
+                id: item.id,
+                text: item.product_name,
+              });
             });
 
-            if (view_peeling_product_id) {
-              $("#peelingProductNames")
-                .val(view_peeling_product_id)
-                .trigger("change");
-            } else {
-              $("#peelingProductNames").val(null).trigger("change");
-            }
+            $(".peelingProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: "true",
+              data: productNamesArray,
+            });
+
+            $(".peelingProductNames").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -2629,21 +2787,21 @@
       $(document).on("keyup", "#peeling_quantity", (e) => {
         e.preventDefault();
 
-        const currentPeelingedQuantity = $(e.target).val();
+        const currentPeelingQuantity = $(e.target).val();
         const procurementQuantity = parseFloat(
           $("#rawMaterials").select2("data")[0]?.quantity
         );
 
-        if (!currentPeelingedQuantity) {
+        if (!currentPeelingQuantity) {
           $("#balance_dispatched_quantity").text(balance_dispatched_quantity);
           $("#balance_dispatched_quantity").css({ color: "white" });
           return;
         }
 
-        let balanceQuantity = procurementQuantity - currentPeelingedQuantity;
+        let balanceQuantity = procurementQuantity - currentPeelingQuantity;
 
         $("#balance_dispatched_quantity").text(
-          !isNaN(balanceQuantity) ? balanceQuantity : currentPeelingedQuantity
+          !isNaN(balanceQuantity) ? balanceQuantity : currentPeelingQuantity
         );
 
         if (balanceQuantity > 0) {
@@ -2686,7 +2844,7 @@
         let url = "/api/v1/peeling/create";
         let input_params = {
           dispatch_id: $("#rawMaterials").val(),
-          product_master_id: $("#peelingProductNames").val(),
+          product_master_id: $(".peelingProductNames").val(),
           unit_master_id: $("#peelingCenters").val(),
           peeling_quantity,
           yield_quantity,
