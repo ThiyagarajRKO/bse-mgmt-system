@@ -34,7 +34,7 @@ export const Insert = async (profile_id, peeling_product_data) => {
   });
 };
 
-export const BulkInsert = async (profile_id, peeling_product_data) => {
+export const BulkUpsert = async (profile_id, peeling_product_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -47,6 +47,14 @@ export const BulkInsert = async (profile_id, peeling_product_data) => {
       const result = await models.PeelingProducts.bulkCreate(
         peeling_product_data,
         {
+          updateOnDuplicate: [
+            "peeling_id",
+            "product_master_id",
+            "yield_quantity",
+            "peeling_status",
+            "peeling_notes",
+            "product_master_id",
+          ],
           profile_id,
         }
       );

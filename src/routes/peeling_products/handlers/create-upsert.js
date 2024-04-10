@@ -1,6 +1,6 @@
 import { PeelingProducts } from "../../../controllers";
 
-export const BulkCreate = (
+export const BulkCreateOrUpdate = (
   { profile_id, peeling_product_data },
   session,
   fastify
@@ -17,7 +17,7 @@ export const BulkCreate = (
       });
       // );
 
-      const peeling_product = await PeelingProducts.BulkInsert(
+      const peeling_product = await PeelingProducts.BulkUpsert(
         profile_id,
         peeling_product_data
       );

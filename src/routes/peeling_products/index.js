@@ -3,7 +3,7 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { BulkCreate } from "./handlers/create-bulk";
+import { BulkCreateOrUpdate } from "./handlers/create-upsert";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -11,7 +11,7 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
-import { bulkCreateSchema } from "./schema/create-bulk";
+import { bulkCreateOrUpdateSchema } from "./schema/create-upsert";
 
 export const peelingProductRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -33,11 +33,11 @@ export const peelingProductRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/create/bulk", bulkCreateSchema, async (req, reply) => {
+  fastify.post("/upsert/bulk", bulkCreateOrUpdateSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
-      const result = await BulkCreate(params, req?.session, fastify);
+      const result = await BulkCreateOrUpdate(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,
