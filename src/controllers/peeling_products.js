@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
 
-export const Insert = async (profile_id, peeling_data, is_product_included) => {
+export const Insert = async (profile_id, peeling_product_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!profile_id) {
@@ -11,35 +11,15 @@ export const Insert = async (profile_id, peeling_data, is_product_included) => {
         });
       }
 
-      if (!peeling_data?.dispatch_id) {
+      if (!peeling_product_data?.peeling_id) {
         return reject({
           statusCode: 420,
-          message: "Dispatch id must not be empty!",
+          message: "peeling data must not be empty!",
         });
       }
 
-      if (!peeling_data?.unit_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Unit data must not be empty!",
-        });
-      }
-
-      let options = {};
-      if (is_product_included) {
-        options = {
-          include: [
-            {
-              profile_id,
-              model: models.PeelingProducts,
-            },
-          ],
-        };
-      }
-
-      const result = await models.Peeling.create(peeling_data, {
+      const result = await models.PeelingProducts.create(peeling_product_data, {
         profile_id,
-        ...options,
       });
       resolve(result);
     } catch (err) {
@@ -54,7 +34,36 @@ export const Insert = async (profile_id, peeling_data, is_product_included) => {
   });
 };
 
-export const Update = async (profile_id, id, peeling_data) => {
+export const BulkInsert = async (profile_id, peeling_product_data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const result = await models.PeelingProducts.bulkCreate(
+        peeling_product_data,
+        {
+          profile_id,
+        }
+      );
+      resolve(result);
+    } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "Peeling data already exists!",
+        });
+      }
+      reject(err);
+    }
+  });
+};
+
+export const Update = async (profile_id, id, peeling_product_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -71,14 +80,14 @@ export const Update = async (profile_id, id, peeling_data) => {
         });
       }
 
-      if (!peeling_data) {
+      if (!peeling_product_data) {
         return reject({
           statusCode: 420,
-          message: "Peeling data must not be empty!",
+          message: "Peeling product data must not be empty!",
         });
       }
 
-      const result = await models.Peeling.update(peeling_data, {
+      const result = await models.PeelingProducts.update(peeling_product_data, {
         where: {
           id,
           is_active: true,
@@ -99,11 +108,11 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Peeling ID field must not be empty!",
+          message: "Peeling Product ID field must not be empty!",
         });
       }
 
-      const peeling = await models.Peeling.findOne({
+      const peeling = await models.PeelingProducts.findOne({
         where: {
           id,
           is_active: true,
@@ -117,30 +126,16 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({
-  procurement_lot_id,
-  procurement_product_id,
-  start,
-  length,
-  search,
-}) => {
+export const GetAll = ({ start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (procurement_product_id) {
-        where.id = procurement_product_id;
-      }
-
       let procurementLotsWhere = {
         is_active: true,
       };
-
-      if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
-      }
 
       if (search) {
         where[Op.or] = [
@@ -183,47 +178,18 @@ export const GetAll = ({
         ];
       }
 
-      const peelings = await models.Peeling.findAndCountAll({
+      const peeling_products = await models.PeelingProducts.findAndCountAll({
         include: [
           {
-            attributes: ["id", "dispatch_quantity"],
-            model: models.Dispatches,
-            include: [
-              {
-                attributes: ["id", "procurement_product_type"],
-                model: models.ProcurementProducts,
-                include: [
-                  {
-                    attributes: ["id", "procurement_lot"],
-                    model: models.ProcurementLots,
-                    where: procurementLotsWhere,
-                  },
-                  {
-                    attributes: ["product_name"],
-                    model: models.ProductMaster,
-                    where: {
-                      is_active: true,
-                    },
-                  },
-                  {
-                    attributes: ["vendor_name"],
-                    model: models.VendorMaster,
-                    where: {
-                      is_active: true,
-                    },
-                  },
-                ],
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
+            attributes: ["id"],
+            model: models.Peeling,
             where: {
               is_active: true,
             },
           },
           {
-            model: models.UnitMaster,
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
             where: {
               is_active: true,
             },
@@ -235,46 +201,7 @@ export const GetAll = ({
         order: [["created_at", "desc"]],
       });
 
-      resolve(peelings);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const GetSumQuantityByDispatchId = ({ id, dispatch_id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!dispatch_id) {
-        return reject({
-          statusCode: 420,
-          message: "Dispatch ID field must not be empty!",
-        });
-      }
-
-      let where = {
-        dispatch_id,
-        is_active: true,
-      };
-
-      if (id) {
-        where.id = {
-          [Op.ne]: id,
-        };
-      }
-
-      const peeling = await models.Peeling.findOne({
-        attributes: [
-          [
-            sequelize.fn("sum", sequelize.col("peeling_quantity")),
-            "old_peeling_quantity",
-          ],
-        ],
-        where,
-        raw: true,
-      });
-
-      resolve(peeling);
+      resolve(peeling_products);
     } catch (err) {
       reject(err);
     }
@@ -298,7 +225,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const peeling = await models.Peeling.destroy({
+      const peeling = await models.PeelingProducts.destroy({
         where: {
           id,
           is_active: true,

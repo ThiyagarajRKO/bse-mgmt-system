@@ -6,6 +6,7 @@ import procurementLotsRoute from "./procurement_lots";
 import procurementProductsRoute from "./procurement_products";
 import dispatchRoute from "./dispatches";
 import peelingRoute from "./peeling";
+import peelingProductRoute from "./peeling_products";
 import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
@@ -90,6 +91,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(dispatchRoute, { prefix: "/dispatch" });
 
   fastify.register(peelingRoute, { prefix: "/peeling" });
+
+  fastify.register(peelingProductRoute, { prefix: "/peeling/product" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 

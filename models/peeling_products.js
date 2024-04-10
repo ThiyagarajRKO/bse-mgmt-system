@@ -2,60 +2,58 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Peeling extends Model {
+  class PeelingProducts extends Model {
     static associate(models) {
-      Peeling.belongsTo(models.UserProfiles, {
+      PeelingProducts.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Peeling.belongsTo(models.UserProfiles, {
+      PeelingProducts.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Peeling.belongsTo(models.UserProfiles, {
+      PeelingProducts.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Peeling.belongsTo(models.Dispatches, {
-        foreignKey: "dispatch_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      Peeling.belongsTo(models.UnitMaster, {
-        foreignKey: "unit_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      Peeling.hasMany(models.PeelingProducts, {
+      PeelingProducts.belongsTo(models.Peeling, {
         foreignKey: "peeling_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      PeelingProducts.belongsTo(models.ProductMaster, {
+        foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  Peeling.init(
+  PeelingProducts.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      peeling_quantity: {
+      yield_quantity: {
         type: DataTypes.FLOAT,
       },
-      peeling_method: {
+      peeling_status: {
         type: DataTypes.STRING,
+        defaultValue: "In Progress",
+      },
+      peeling_notes: {
+        type: DataTypes.TEXT,
       },
       is_active: {
         type: DataTypes.BOOLEAN,
@@ -72,8 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Peeling",
-      tableName: "peeling",
+      modelName: "PeelingProducts",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -82,36 +79,60 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  // // Bulk Create Hook
+  // PeelingProducts.beforeBulkCreate(async (data, options) => {
+  //   try {
+
+  //   } catch (err) {
+  //     console.log(
+  //       "Error while appending an peeling products data",
+  //       err?.message || err
+  //     );
+  //   }
+  // });
+
   // Create Hook
-  Peeling.beforeCreate(async (data, options) => {
+  PeelingProducts.beforeCreate(async (data, options) => {
     try {
+      data.peeling_status = "In Progress";
+      data.is_active = true;
+
       data.created_by = options.profile_id;
     } catch (err) {
-      console.log("Error while appending an peeling data", err?.message || err);
+      console.log(
+        "Error while appending an peeling products data",
+        err?.message || err
+      );
     }
   });
 
   // Update Hook
-  Peeling.beforeUpdate(async (data, options) => {
+  PeelingProducts.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
     } catch (err) {
-      console.log("Error while updating an peeling data", err?.message || err);
+      console.log(
+        "Error while updating an peeling products data",
+        err?.message || err
+      );
     }
   });
 
   // Delete Hook
-  Peeling.afterDestroy(async (data, options) => {
+  PeelingProducts.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting an peeling data", err?.message || err);
+      console.log(
+        "Error while deleting an peeling products data",
+        err?.message || err
+      );
     }
   });
 
-  return Peeling;
+  return PeelingProducts;
 };

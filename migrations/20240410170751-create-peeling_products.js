@@ -1,39 +1,40 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("peeling", {
+    await queryInterface.createTable("peeling_products", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      dispatch_id: {
+      peeling_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "dispatches" },
+          model: { tableName: "peeling" },
           key: "id",
         },
       },
-      unit_master_id: {
+      product_master_id: {
         type: Sequelize.UUID,
-        allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "unit_master" },
+          model: { tableName: "product_master" },
           key: "id",
         },
       },
-      peeling_quantity: {
+      yield_quantity: {
         type: Sequelize.FLOAT,
-        allowNull: false,
       },
-      peeling_method: {
-        type: Sequelize.ENUM("Manual", "Chemical"),
-        allowNull: false,
+      peeling_status: {
+        type: Sequelize.ENUM("In Progress", "Completed"),
+        defaultValue: "In Progress",
+      },
+      peeling_notes: {
+        type: Sequelize.TEXT,
       },
       is_active: {
         defaultValue: false,
@@ -80,6 +81,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("peeling");
+    await queryInterface.dropTable("peeling_products");
   },
 };
