@@ -296,16 +296,16 @@ export const GetAll = ({
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
-        group: [
-          "Peeling.id",
-          "PeelingProducts.id",
-          "UnitMaster.id",
-          "Dispatch.id",
-          "Dispatch->ProcurementProduct.id",
-          "Dispatch->ProcurementProduct->ProcurementLot.id",
-          "Dispatch->ProcurementProduct->ProductMaster.id",
-          "Dispatch->ProcurementProduct->VendorMaster.id",
-        ],
+        // group: [
+        //   "Peeling.id",
+        //   "PeelingProducts.id",
+        //   "UnitMaster.id",
+        //   "Dispatch.id",
+        //   "Dispatch->ProcurementProduct.id",
+        //   "Dispatch->ProcurementProduct->ProcurementLot.id",
+        //   "Dispatch->ProcurementProduct->ProductMaster.id",
+        //   "Dispatch->ProcurementProduct->VendorMaster.id",
+        // ],
       });
 
       let peeling_output = {
