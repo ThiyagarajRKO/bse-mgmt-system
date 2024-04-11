@@ -2541,60 +2541,56 @@
             },
           ],
           drawCallback: () => {
-            $(".peeling_product_list").each((i, obj) => {
-              const data =
-                JSON.parse(
-                  $(obj).parent().find("span").attr("peeling_products_data")
-                ) || [];
-
-              let html_content = "";
-
-              data.forEach((row) => {
-                html_content += `<tr>
-                      <td>${row["ProductMaster"]?.product_name}</td>
-                      <td>${row?.yield_quantity}</td>
-                      <td><span class=${
-                        row?.peeling_status == "In Progress"
-                          ? "text-warning"
-                          : "text-success"
-                      }>${row?.peeling_status} <i class="fa-solid ${
-                  row?.peeling_status == "In Progress"
-                    ? "fa-spinner fa-spin"
-                    : "fa-circle-check"
-                }"></i></span></td>
-                      <td>${row?.peeling_notes}</td>
-                    </tr>`;
-              });
-
-              tippy(`.peeling_product_list`, {
-                content: `
-              <div class="d-flex justify-content-between col-lg-12 p-3 fs-6">
-                <table class="table table-hover table-dark table-bordered w-100">
-                  <thead>
-                    <tr>
-                      <th class="fw-bold">Product Name</th>
-                      <th class="fw-bold">Yield Product</th>
-                      <th class="fw-bold">Status</th>
-                      <th class="fw-bold">Peeling Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${html_content}
-                  </tbody>
-                </table>
-              </div>`,
-                placement: "right",
-                arrow: true,
-                trigger: "click",
-                interactive: true,
-                allowHTML: true,
-                theme: "light",
-                hideOnClick: true,
-                animation: "shift-toward",
-              });
-
-              $(".tippy-box").addClass("col-lg-12 border shadow rounded");
-            });
+            // $(".peeling_product_list").each((i, obj) => {
+            //   const data =
+            //     JSON.parse(
+            //       $(obj).parent().find("span").attr("peeling_products_data")
+            //     ) || [];
+            //   let html_content = "";
+            //   data.forEach((row) => {
+            //     html_content += `<tr>
+            //           <td>${row["ProductMaster"]?.product_name}</td>
+            //           <td>${row?.yield_quantity}</td>
+            //           <td><span class=${
+            //             row?.peeling_status == "In Progress"
+            //               ? "text-warning"
+            //               : "text-success"
+            //           }>${row?.peeling_status} <i class="fa-solid ${
+            //       row?.peeling_status == "In Progress"
+            //         ? "fa-spinner fa-spin"
+            //         : "fa-circle-check"
+            //     }"></i></span></td>
+            //           <td>${row?.peeling_notes}</td>
+            //         </tr>`;
+            //   });
+            //   tippy(`.peeling_product_list`, {
+            //     content: `
+            //   <div class="d-flex justify-content-between col-lg-12 p-3 fs-6">
+            //     <table class="table table-hover table-dark table-bordered w-100">
+            //       <thead>
+            //         <tr>
+            //           <th class="fw-bold">Product Name</th>
+            //           <th class="fw-bold">Yield Product</th>
+            //           <th class="fw-bold">Status</th>
+            //           <th class="fw-bold">Peeling Notes</th>
+            //         </tr>
+            //       </thead>
+            //       <tbody>
+            //         ${html_content}
+            //       </tbody>
+            //     </table>
+            //   </div>`,
+            //     placement: "right",
+            //     arrow: true,
+            //     trigger: "click",
+            //     interactive: true,
+            //     allowHTML: true,
+            //     theme: "light",
+            //     hideOnClick: true,
+            //     animation: "shift-toward",
+            //   });
+            //   $(".tippy-box").addClass("col-lg-12 border shadow rounded");
+            // });
           },
         });
       }
