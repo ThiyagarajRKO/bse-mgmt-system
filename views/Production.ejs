@@ -2592,7 +2592,10 @@
               $(".peelingProductNames_" + i)
                 .val(product?.ProductMaster?.id)
                 .trigger("change");
-              $(".peelingProductNames_" + i).attr("peeling_id", product?.id);
+              $(".peelingProductNames_" + i)
+                .parent()
+                .find("select")
+                .attr("peeling_product_id", product?.id);
               $(".yield_quantity_" + i).val(product?.yield_quantity);
               $(".peeling_notes_" + i).val(product?.peeling_notes);
             } else {
@@ -2920,10 +2923,11 @@
         let PeelingProducts = [];
 
         $(".peelingOutput").each((i, obj) => {
-          let id =
-            $(obj)
-              .find(`.peelingProductNames_${i + 1}`)
-              .attr("peeling_product_id") || null;
+          let id = $(obj)
+            .find(`.peelingProductNames_${i + 1}`)
+            .parent()
+            .find("select")
+            .attr("peeling_product_id");
 
           let product_master_id = $(obj)
             .find(`.peelingProductNames_${i + 1}`)

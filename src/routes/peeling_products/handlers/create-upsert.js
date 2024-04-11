@@ -8,13 +8,13 @@ export const BulkCreateOrUpdate = (
   return new Promise(async (resolve, reject) => {
     try {
       // await Promise.all(
-      peeling_product_data?.map((item) => {
-        item.peeling_status = "In Progress";
+      // peeling_product_data?.map((item) => {
+      //   item.peeling_status = "In Progress";
 
-        item.is_active = true;
+      //   item.is_active = true;
 
-        item.created_by = profile_id;
-      });
+      //   item.created_by = profile_id;
+      // });
       // );
 
       const peeling_product = await PeelingProducts.BulkUpsert(

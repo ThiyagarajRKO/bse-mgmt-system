@@ -49,12 +49,12 @@ export const Update = (
         peeling_data
       );
 
-      await PeelingProducts.BulkUpsert(
-        profile_id,
-        peeling_data?.PeelingProducts
-      );
-
       if (updated_data?.[0] > 0) {
+        await PeelingProducts.BulkUpsert(
+          profile_id,
+          peeling_data?.PeelingProducts
+        );
+
         return resolve({
           message: "Peeling data has been updated successfully",
         });

@@ -79,17 +79,23 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // // Bulk Create Hook
-  // PeelingProducts.beforeBulkCreate(async (data, options) => {
-  //   try {
+  // Bulk Create Hook
+  PeelingProducts.beforeBulkCreate(async (data, options) => {
+    try {
+      data?.map((item) => {
+        item.peeling_status = item.yield_quantity ? "In Progress" : "Completed";
 
-  //   } catch (err) {
-  //     console.log(
-  //       "Error while appending an peeling products data",
-  //       err?.message || err
-  //     );
-  //   }
-  // });
+        item.is_active = true;
+
+        item.created_by = options?.profile_id;
+      });
+    } catch (err) {
+      console.log(
+        "Error while appending an peeling products data",
+        err?.message || err
+      );
+    }
+  });
 
   // Create Hook
   PeelingProducts.beforeCreate(async (data, options) => {
