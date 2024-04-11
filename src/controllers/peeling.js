@@ -284,6 +284,15 @@ export const GetAll = ({
             where: {
               is_active: true,
             },
+            include: [
+              {
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
           },
           {
             model: models.UnitMaster,

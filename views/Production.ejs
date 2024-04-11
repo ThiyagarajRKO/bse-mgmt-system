@@ -867,7 +867,7 @@
                     <div id="tab-2" class="tab-pane p-0" role="tabpanel">
                       <div id="outputContainer">
                         <fieldset
-                          class="form-group border p-3 peelingOutput"
+                          class="form-group border p-3 peelingOutput peelingOutput_1"
                           style="
                             border-color: rgba(129, 145, 179, 0.6) !important;
                             margin-top: 2.2rem !important;
@@ -1069,6 +1069,8 @@
   <script type="text/javascript">
     jQuery(document).ready(async function ($) {
       // Declarations
+      let is_updated_data = false;
+
       toastr.options = {
         closeButton: false,
         debug: false,
@@ -1176,6 +1178,11 @@
           placeholder: "Choose a product",
           allowClear: true,
         });
+
+        $(`.peelingOutput:not(".peelingOutput_1")`).remove();
+        $(`.vl-top:not(".vl-top-1")`).remove();
+
+        is_updated_data = false;
       }
 
       function openSlidePanel(
@@ -2060,6 +2067,8 @@
         );
 
         $("#balance_dispatched_quantity").text("").css({ color: "white" });
+
+        $("#smarttab").smartTab("first");
       });
 
       // Close panel
@@ -2107,53 +2116,7 @@
           return;
         }
 
-        $("#outputContainer").append(`<div class="vl-top"></div><fieldset
-                        class="form-group border p-3 mt-3 peelingOutput"
-                        style="
-                          border-color: rgba(129, 145, 179, 0.6) !important;
-                          margin-top: 2.2rem !important;
-                        "
-                      >
-                        <legend class="mb-2 w-auto px-2">Output ${next_fieldset_index}</legend>
-                        <div class="form-group">
-                          <label for="product_name">Product Name:</label>
-                          <select
-                            class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${next_fieldset_index}"
-                            name="peelingProductNames"
-                          ></select>
-                        </div>
-
-                        <div class="form-group mt-4">
-                          <label for="yield_quantity">Yield Quantity</label>
-                          <input
-                            class="form-control yield_quantity yield_quantity_${next_fieldset_index}"
-                            type="number"
-                            placeholder="eg. 10"
-                            name="yield_quantity"
-                            required
-                          />
-                        </div>
-
-                        <div class="form-group mt-4 mb-4">
-                          <label for="peeling_notes">Peeling Notes</label>
-                          <textarea
-                            row="3"
-                            class="form-control input-dropdown w-100 peeling_notes_${next_fieldset_index}"
-                            name="peeling_notes"
-                          ></textarea>
-                        </div>
-
-                      </fieldset>`);
-
-        $(`.peelingProductNames_${next_fieldset_index}`).select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-          data: productNamesArray,
-        });
-
-        $(`.peelingProductNames_${next_fieldset_index}`)
-          .val(null)
-          .trigger("change");
+        addOutput(next_fieldset_index);
       });
 
       $(document).on("click", "#nextPeeling", (e) => {
@@ -2181,6 +2144,69 @@
         loadPeelingLotNumber();
 
         loadPeelingMethods();
+      }
+
+      function addOutput(
+        index,
+        peeling_id,
+        product_master_id,
+        yield_quantity,
+        peeling_notes
+      ) {
+        $(
+          "#outputContainer"
+        ).append(`<div class="vl-top vl-top-${index}"></div><fieldset
+                        class="form-group border p-3 mt-3 peelingOutput peelingOutput_${index}"
+                        style="
+                          border-color: rgba(129, 145, 179, 0.6) !important;
+                          margin-top: 2.2rem !important;
+                        "
+                      >
+                        <legend class="mb-2 w-auto px-2">Output ${index}</legend>
+                        <div class="form-group">
+                          <label for="product_name">Product Name:</label>
+                          <select
+                            class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${index}"
+                            peeling_id=${peeling_id}
+                            name="peelingProductNames"
+                          ></select>
+                        </div>
+
+                        <div class="form-group mt-4">
+                          <label for="yield_quantity">Yield Quantity</label>
+                          <input
+                            class="form-control yield_quantity yield_quantity_${index}"
+                            type="number"
+                            placeholder="eg. 10"
+                            name="yield_quantity"
+                            required
+                          />
+                        </div>
+
+                        <div class="form-group mt-4 mb-4">
+                          <label for="peeling_notes">Peeling Notes</label>
+                          <textarea
+                            row="3"
+                            class="form-control input-dropdown w-100 peeling_notes_${index}"
+                            name="peeling_notes"
+                          ></textarea>
+                        </div>
+
+                      </fieldset>`);
+
+        $(`.peelingProductNames_${index}`).select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          data: productNamesArray,
+        });
+
+        $(`.peelingProductNames_${index}`)
+          .val(product_master_id || null)
+          .trigger("change");
+
+        $(`.yield_quantity_${index}`).val(yield_quantity || "");
+
+        $(`.peeling_notes_${index}`).val(peeling_notes || "");
       }
 
       $("#submitPeeling").click(function () {
@@ -2427,7 +2453,7 @@
               targets: [2],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span>${
+                return `<span peeling_products_data='${JSON.stringify(data)}'>${
                   data
                     ? '<a href="#" style="text-decoration:none">View</a>'
                     : "-"
@@ -2518,17 +2544,11 @@
       let view_raw_material_id = "";
       $(document).on("click", ".editPeeling", (e) => {
         // Changing panel input fields data
+        is_updated_data = true;
 
         $("#peelingLotNumbers")
           .val($("#view_peeling_lot_no").attr("procurement_lot_id"))
           .trigger("change");
-
-        view_peeling_center_id = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(10)
-          .find("span")
-          .attr("unit_master_id");
 
         view_raw_material_id = $(e.target)
           .closest("tr")
@@ -2537,28 +2557,56 @@
           .find("span")
           .attr("dispatch_id");
 
-        // view_peeling_product_id = $(e.target)
-        //   .closest("tr")
-        //   .children("td")
-        //   .eq(2)
-        //   .find("span")
-        //   .attr("product_master_id");
+        view_peeling_center_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(9)
+          .find("span")
+          .attr("unit_master_id");
 
         $("#peeling_quantity").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#yield_quantity").val(
           $(e.target).closest("tr").children("td").eq(5).text()
         );
 
         $("#peelingMethods")
-          .val($(e.target).closest("tr").children("td").eq(7).text())
+          .val($(e.target).closest("tr").children("td").eq(8).text())
           .trigger("change");
 
-        $("#peeling_notes").val(
-          $(e.target).closest("tr").children("td").eq(9).text()
-        );
+        let peeling_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("peeling_products_data");
+
+        let peeling_products_obj = JSON.parse(peeling_products);
+        if (
+          peeling_products &&
+          Array.isArray(peeling_products_obj) &&
+          peeling_products_obj?.length > 0
+        ) {
+          let i = 1;
+
+          peeling_products_obj?.forEach((product) => {
+            if (i == 1) {
+              $(".peelingProductNames_" + i)
+                .val(product?.ProductMaster?.id)
+                .trigger("change");
+              $(".peelingProductNames_" + i).attr("peeling_id", product?.id);
+              $(".yield_quantity_" + i).val(product?.yield_quantity);
+              $(".peeling_notes_" + i).val(product?.peeling_notes);
+            } else {
+              addOutput(
+                i,
+                product?.id,
+                product?.ProductMaster?.id,
+                product?.yield_quantity,
+                product?.peeling_notes
+              );
+            }
+            i++;
+          });
+        }
 
         // Opening Slied Panel
         $("#openPeelingPanelBtn").click();
@@ -2799,7 +2847,8 @@
               data: productNamesArray,
             });
 
-            $(".peelingProductNames").val(null).trigger("change");
+            if (!is_updated_data)
+              $(".peelingProductNames").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
