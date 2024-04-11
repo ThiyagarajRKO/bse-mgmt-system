@@ -183,7 +183,44 @@ export const GetAll = ({
         ];
       }
 
-      const peelings = await models.Peeling.findAndCountAll({
+      const peeling_count = await models.Peeling.count({
+        subQuery: false,
+        include: [
+          {
+            attributes: [],
+            model: models.Dispatches,
+            include: [
+              {
+                attributes: [],
+                model: models.ProcurementProducts,
+                include: [
+                  {
+                    attributes: [],
+                    model: models.ProcurementLots,
+                    where: procurementLotsWhere,
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: [],
+            model: models.UnitMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+      });
+
+      const peelings = await models.Peeling.findAll({
         subQuery: false,
         attributes: [
           "id",
@@ -199,23 +236,19 @@ export const GetAll = ({
         ],
         include: [
           {
-            required: true,
             attributes: ["id", "dispatch_quantity"],
             model: models.Dispatches,
             include: [
               {
-                required: true,
                 attributes: ["id", "procurement_product_type"],
                 model: models.ProcurementProducts,
                 include: [
                   {
-                    required: true,
                     attributes: ["id", "procurement_lot"],
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
                   },
                   {
-                    required: true,
                     attributes: ["product_name"],
                     model: models.ProductMaster,
                     where: {
@@ -223,7 +256,6 @@ export const GetAll = ({
                     },
                   },
                   {
-                    required: true,
                     attributes: ["vendor_name"],
                     model: models.VendorMaster,
                     where: {
@@ -254,7 +286,6 @@ export const GetAll = ({
             },
           },
           {
-            required: true,
             model: models.UnitMaster,
             where: {
               is_active: true,
@@ -265,9 +296,24 @@ export const GetAll = ({
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
+        group: [
+          "Peeling.id",
+          "PeelingProducts.id",
+          "UnitMaster.id",
+          "Dispatch.id",
+          "Dispatch->ProcurementProduct.id",
+          "Dispatch->ProcurementProduct->ProcurementLot.id",
+          "Dispatch->ProcurementProduct->ProductMaster.id",
+          "Dispatch->ProcurementProduct->VendorMaster.id",
+        ],
       });
 
-      resolve(peelings);
+      let peeling_output = {
+        count: peeling_count,
+        row: peelings,
+      };
+
+      resolve(peeling_output);
     } catch (err) {
       reject(err);
     }
