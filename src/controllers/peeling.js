@@ -310,7 +310,7 @@ export const GetAll = ({
 
       let peeling_output = {
         count: peeling_count,
-        row: peelings,
+        rows: peelings,
       };
 
       resolve(peeling_output);
