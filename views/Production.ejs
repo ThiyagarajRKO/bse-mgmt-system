@@ -2112,10 +2112,7 @@
         const last_fieldset_index = $("#outputContainer fieldset").length;
         const next_fieldset_index = (last_fieldset_index || 0) + 1;
 
-        if (
-          !$(`.peelingProductNames_${last_fieldset_index}`).val() ||
-          !$(`.yield_quantity_${last_fieldset_index}`).val()
-        ) {
+        if (!$(`.peelingProductNames_${last_fieldset_index}`).val()) {
           toastr["warning"](
             "Please fill all the required values in the above output to create a new output"
           );
@@ -2386,12 +2383,13 @@
         loadPeelingProductTableData(view_procurement_lot_id);
       });
 
+      let peelingProductTable;
       function loadPeelingProductTableData(procurement_lot_id) {
         if (!procurement_lot_id) {
           toastr["warning"]("Procurement lot data should not be empty!");
         }
 
-        $("#peelingProductTable").DataTable({
+        peelingProductTable = $("#peelingProductTable").DataTable({
           // searching: true,
           destroy: true,
           responsive: false,
@@ -2461,7 +2459,7 @@
               render: function (data, type, row) {
                 return `<span style="cursor:pointer;color:blue" class="peeling_product_list" peeling_products_data='${JSON.stringify(
                   data
-                )}'>${data ? "View" : "-"}</i>`;
+                )}'>${data ? "Show" : "-"}</i>`;
               },
             },
             {
@@ -2469,6 +2467,13 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span>${row["PeelingProducts"]?.length || 0}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
               },
             },
             {
@@ -2540,59 +2545,64 @@
               },
             },
           ],
-          drawCallback: () => {
-            // $(".peeling_product_list").each((i, obj) => {
-            //   const data =
-            //     JSON.parse(
-            //       $(obj).parent().find("span").attr("peeling_products_data")
-            //     ) || [];
-            //   let html_content = "";
-            //   data.forEach((row) => {
-            //     html_content += `<tr>
-            //           <td>${row["ProductMaster"]?.product_name}</td>
-            //           <td>${row?.yield_quantity}</td>
-            //           <td><span class=${
-            //             row?.peeling_status == "In Progress"
-            //               ? "text-warning"
-            //               : "text-success"
-            //           }>${row?.peeling_status} <i class="fa-solid ${
-            //       row?.peeling_status == "In Progress"
-            //         ? "fa-spinner fa-spin"
-            //         : "fa-circle-check"
-            //     }"></i></span></td>
-            //           <td>${row?.peeling_notes}</td>
-            //         </tr>`;
-            //   });
-            //   tippy(`.peeling_product_list`, {
-            //     content: `
-            //   <div class="d-flex justify-content-between col-lg-12 p-3 fs-6">
-            //     <table class="table table-hover table-dark table-bordered w-100">
-            //       <thead>
-            //         <tr>
-            //           <th class="fw-bold">Product Name</th>
-            //           <th class="fw-bold">Yield Product</th>
-            //           <th class="fw-bold">Status</th>
-            //           <th class="fw-bold">Peeling Notes</th>
-            //         </tr>
-            //       </thead>
-            //       <tbody>
-            //         ${html_content}
-            //       </tbody>
-            //     </table>
-            //   </div>`,
-            //     placement: "right",
-            //     arrow: true,
-            //     trigger: "click",
-            //     interactive: true,
-            //     allowHTML: true,
-            //     theme: "light",
-            //     hideOnClick: true,
-            //     animation: "shift-toward",
-            //   });
-            //   $(".tippy-box").addClass("col-lg-12 border shadow rounded");
-            // });
-          },
+          drawCallback: () => {},
         });
+      }
+
+      $(document).on("click", "td span.peeling_product_list", function (e) {
+        let tr = e.target.closest("tr");
+        let row = peelingProductTable.row(tr);
+
+        if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          $(e.target).text("Show");
+        } else {
+          // Open this row
+          row
+            .child(
+              format(
+                $(e.target).parent().find("span").attr("peeling_products_data")
+              )
+            )
+            .show();
+          $(e.target).text("Hide");
+        }
+      });
+
+      // Formatting function for row details - modify as you need
+      function format(product_data) {
+        // `d` is the original data object for the row
+        let html_content = "";
+
+        JSON.parse(product_data)?.forEach((row) => {
+          html_content += `<tr>
+                      <td>${row["ProductMaster"]?.product_name}</td>
+                      <td>${row?.yield_quantity}</td>
+                      <td><span class=${
+                        row?.peeling_status == "In Progress"
+                          ? "text-warning"
+                          : "text-success"
+                      }>${row?.peeling_status} <i class="fa-solid ${
+            row?.peeling_status == "In Progress"
+              ? "fa-spinner fa-spin"
+              : "fa-circle-check"
+          }"></i></span></td>
+                      <td>${row?.peeling_notes || "-"}</td>
+                    </tr>`;
+        });
+
+        return `<table class="table shadow border rounded table-bordered nowrap w-50">
+                  <tbody>
+                    <tr>
+                      <th class="fw-bold">Product Name</th>
+                      <th class="fw-bold">Yield Quantity</th>
+                      <th class="fw-bold">Status</th>
+                      <th class="fw-bold">Peeling Notes</th>
+                    </tr>
+                    ${html_content}
+                  </tbody>
+                </table>`;
       }
 
       let view_peeling_center_id = "";
@@ -2971,7 +2981,9 @@
         let yield_quantity = 0;
 
         $(".yield_quantity").each((i, obj) => {
-          yield_quantity += parseFloat($(obj).val()) || 0;
+          yield_quantity += isNaN(parseFloat($(obj).val()))
+            ? 0
+            : parseFloat($(obj).val());
         });
 
         if (parseFloat(current_weight_balance) <= -1) {
@@ -2996,11 +3008,15 @@
             .find(`.yield_quantity_${i + 1}`)
             .val();
 
+          yield_quantity = isNaN(parseFloat(yield_quantity))
+            ? 0
+            : parseFloat(yield_quantity);
+
           let peeling_notes = $(obj)
             .find(`.peeling_notes_${i + 1}`)
             .val();
 
-          if (product_master_id && yield_quantity) {
+          if (product_master_id) {
             let outputObj = {
               peeling_id,
               product_master_id,
@@ -3037,7 +3053,7 @@
           };
         }
 
-        if (peeling_quantity < yield_quantity) {
+        if (yield_quantity > 0 && peeling_quantity < yield_quantity) {
           toastr["warning"](
             "Yield quantity must not be greater than peeling quantity!"
           );

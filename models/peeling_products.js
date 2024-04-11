@@ -83,7 +83,7 @@ module.exports = (sequelize, DataTypes) => {
   PeelingProducts.beforeBulkCreate(async (data, options) => {
     try {
       data?.map((item) => {
-        item.peeling_status = item.yield_quantity ? "In Progress" : "Completed";
+        item.peeling_status = item.yield_quantity ? "Completed" : "In Progress";
 
         item.is_active = true;
 
@@ -100,7 +100,7 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PeelingProducts.beforeCreate(async (data, options) => {
     try {
-      data.peeling_status = "In Progress";
+      data.peeling_status = data.yield_quantity ? "Completed" : "In Progress";
       data.is_active = true;
 
       data.created_by = options.profile_id;
