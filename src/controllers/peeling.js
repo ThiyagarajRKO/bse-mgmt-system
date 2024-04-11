@@ -184,6 +184,7 @@ export const GetAll = ({
       }
 
       const peelings = await models.Peeling.findAndCountAll({
+        subQuery: false,
         attributes: [
           "id",
           "peeling_quantity",
@@ -198,19 +199,23 @@ export const GetAll = ({
         ],
         include: [
           {
+            required: true,
             attributes: ["id", "dispatch_quantity"],
             model: models.Dispatches,
             include: [
               {
+                required: true,
                 attributes: ["id", "procurement_product_type"],
                 model: models.ProcurementProducts,
                 include: [
                   {
+                    required: true,
                     attributes: ["id", "procurement_lot"],
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
                   },
                   {
+                    required: true,
                     attributes: ["product_name"],
                     model: models.ProductMaster,
                     where: {
@@ -218,6 +223,7 @@ export const GetAll = ({
                     },
                   },
                   {
+                    required: true,
                     attributes: ["vendor_name"],
                     model: models.VendorMaster,
                     where: {
@@ -235,12 +241,20 @@ export const GetAll = ({
             },
           },
           {
+            required: false,
+            attributes: [
+              "id",
+              "yield_quantity",
+              "peeling_notes",
+              "peeling_status",
+            ],
             model: models.PeelingProducts,
             where: {
               is_active: true,
             },
           },
           {
+            required: true,
             model: models.UnitMaster,
             where: {
               is_active: true,
