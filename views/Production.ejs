@@ -885,7 +885,7 @@
                           <div class="form-group mt-4">
                             <label for="yield_quantity">Yield Quantity </label>
                             <input
-                              class="form-control yield_quantity_1"
+                              class="form-control yield_quantity yield_quantity_1"
                               type="number"
                               placeholder="eg. 10"
                               name="yield_quantity"
@@ -897,7 +897,7 @@
                             <label for="peeling_notes">Peeling Notes</label>
                             <textarea
                               row="3"
-                              class="form-control input-dropdown w-100 peeling_notes_1"
+                              class="form-control input-dropdown w-100 peeling_notes peeling_notes_1"
                               name="peeling_notes"
                             ></textarea>
                           </div>
@@ -2187,7 +2187,7 @@
                           <label for="peeling_notes">Peeling Notes</label>
                           <textarea
                             row="3"
-                            class="form-control input-dropdown w-100 peeling_notes_${index}"
+                            class="form-control input-dropdown w-100 peeling_notes peeling_notes_${index}"
                             name="peeling_notes"
                           ></textarea>
                         </div>
@@ -2913,7 +2913,11 @@
         const peeling_id = $("#submitPeeling").attr("peeling_id");
         const current_weight_balance = $("#balance_dispatched_quantity").text();
         const peeling_quantity = parseFloat($("#peeling_quantity").val()) || 0;
-        // const yield_quantity = parseFloat($("#yield_quantity").val()) || 0;
+        let yield_quantity = 0;
+
+        $(".yield_quantity").each((i, obj) => {
+          yield_quantity += parseFloat($(obj).val()) || 0;
+        });
 
         if (parseFloat(current_weight_balance) <= -1) {
           toastr["warning"]("Invalid peeling quantity");
@@ -2978,12 +2982,12 @@
           };
         }
 
-        // if (peeling_quantity < yield_quantity) {
-        //   toastr["warning"](
-        //     "Yield quantity must not be greater than peeling quantity!"
-        //   );
-        //   return;
-        // }
+        if (peeling_quantity < yield_quantity) {
+          toastr["warning"](
+            "Yield quantity must not be greater than peeling quantity!"
+          );
+          return;
+        }
 
         $.ajax({
           url,
