@@ -2148,7 +2148,7 @@
 
       function addOutput(
         index,
-        peeling_id,
+        peeling_product_id,
         product_master_id,
         yield_quantity,
         peeling_notes
@@ -2167,7 +2167,7 @@
                           <label for="product_name">Product Name:</label>
                           <select
                             class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${index}"
-                            peeling_id=${peeling_id}
+                            peeling_product_id=${peeling_product_id}
                             name="peelingProductNames"
                           ></select>
                         </div>
@@ -2939,6 +2939,7 @@
 
           if (product_master_id && yield_quantity) {
             let outputObj = {
+              peeling_id,
               product_master_id,
               yield_quantity,
               peeling_notes,

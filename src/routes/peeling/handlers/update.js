@@ -1,4 +1,4 @@
-import { Dispatches, Peeling } from "../../../controllers";
+import { Dispatches, Peeling, PeelingProducts } from "../../../controllers";
 
 export const Update = (
   { profile_id, peeling_id, peeling_data },
@@ -47,6 +47,11 @@ export const Update = (
         profile_id,
         peeling_id,
         peeling_data
+      );
+
+      await PeelingProducts.BulkUpsert(
+        profile_id,
+        peeling_data?.PeelingProducts
       );
 
       if (updated_data?.[0] > 0) {
