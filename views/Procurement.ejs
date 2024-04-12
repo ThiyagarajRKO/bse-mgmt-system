@@ -53,6 +53,9 @@
 <script src="/public/plugins/tippy/popper.min.js"></script>
 <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
+<!-- Canvas JS -->
+<script src="/public/plugins/canvasJs/canvasjs.min.js"></script>
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/public/css/style.css" />
 
@@ -262,6 +265,10 @@
     table.dataTable th {
       text-align: left !important;
     }
+
+    .canvasjs-chart-credit {
+      display: none;
+    }
   </style>
 </head>
 
@@ -271,8 +278,7 @@
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div class="topMenu-container d-flex justify-content-center mt-0">
-      <div
-        class="topMenu-item topMenu-item-active procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+      <div class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-shopping-bag"></i>
         </div>
@@ -300,6 +306,30 @@
       </div>
     </div>
     <!-- Top Menu Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Dashboard Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container dashboardContainer px-2">
+      <div class="row">
+        <div class="col-lg-6 mt-4">
+          <div id="totalSpendChart" class="shadow" style="height: 300px; width: 100%"></div>
+        </div>
+        <div class="col-lg-6 mt-4">
+          <div id="supplierPerformanceChart" class="shadow" style="height: 300px; width: 100%"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mt-4">
+          <div id="inventoryLevelsChart" class="shadow" style="height: 300px; width: 100%"></div>
+        </div>
+        <div class="col-lg-6 mt-4">
+          <div id="monthlySpendingChart" class="shadow" style="height: 300px; width: 100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Purchases Container ------------------------------------------------ -->
@@ -399,96 +429,224 @@
 
     <!-- modal-dialog-centered modal-dialog-scrollable -->
     <!-- Modal -->
-    <div id="procurementProductModal" class="modal hide fade modal-xl" role="dialog" aria-labelledby="myModalLabel"
-      data-keyboard="false" data-backdrop="static">
-      <div class="modal-dialog modal-dialog-scrollable">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Procurement Products</h4>
-            <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
-            </i>
+    <div
+      class="topMenu-item topMenu-item-active procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+      <div class="fs-6">
+        <i class="fa-solid fa-shopping-bag"></i>
+      </div>
+      <div class="pt-2">
+        <span>Purchases</span>
+      </div>
+    </div>
+
+    <div class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+      <div class="fs-6">
+        <i class="fa-solid fa-circle-half-stroke"></i>
+      </div>
+      <div class="pt-2">
+        <span>Adjustment</span>
+      </div>
+    </div>
+
+    <div class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+      <div class="fs-6">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+      </div>
+      <div class="pt-2">
+        <span>Payments</span>
+      </div>
+    </div>
+  </div>
+  <!-- Top Menu Container Ends -->
+
+  <!-- ------------------------------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------ Purchases Container ------------------------------------------------ -->
+  <!-- ------------------------------------------------------------------------------------------------------------- -->
+  <div class="menu-container procurementContainer d-none">
+    <!-- Slide-in Panel -->
+    <div id="procurementSlideInPanel" class="slideInPanel px-4 overflow-auto">
+      <div class="row d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-md-12">
+          <div class="text-center mt-4 d-flex justify-content-between">
+            <span id="procurementPanelHeading" class="fw-bold fs-5">Add Procurement Data</span>
+            <div class="col my-auto d-flex justify-content-end">
+              <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeProcurementPanelBtn"></i>
+            </div>
           </div>
-          <div class="modal-body">
-            <div class="d-flex justify-content-between">
-              <div class="form-group">
-                <label class="fw-bold" for="lot_no">Lot No:</label>
-                <span id="view_lot_no"></span>
-              </div>
-
-              <div class="form-group">
-                <label class="fw-bold" for="total_products">Total Products:</label>
-                <span id="view_total_products"></span>
-              </div>
-
-              <div class="form-group">
-                <label class="fw-bold" for="total_weight">Total Weight:</label>
-                <span id="view_total_weight"></span>
-              </div>
+          <hr />
+          <div class="">
+            <div class="form-group my-2">
+              <label for="procurement_date">Date of Purchase</label>
+              <input type="date" class="form-control" id="procurement_date" name="procurementDate" required />
             </div>
 
-            <hr class="mb-4" />
-
-            <table id="procurementProductTable" class="rounded table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th style="border-radius: 4px 0 0 0"></th>
-                  <th class="fw-bold"><span>Product Name</span></th>
-                  <th class="fw-bold">
-                    <span>Purchased Type</span>
-                  </th>
-                  <th class="fw-bold">
-                    <span>Purchased Quantity</span>
-                  </th>
-                  <th class="fw-bold">
-                    <span>Purchased Price</span>
-                  </th>
-                  <th class="fw-bold">
-                    <span>Vendor Name</span>
-                  </th>
-                  <th class="fw-bold">
-                    <span>Purchaser</span>
-                  </th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">
-              Close
-            </button>
+            <div class="form-group my-2">
+              <label for="procurement_unit">Purchase Source</label>
+              <select id="procurement_unit" class="form-control input-dropdown w-100" name="procurement_unit"
+                required></select>
+            </div>
+            <div class="form-group my-2">
+              <label for="procurement_product">Product</label>
+              <select id="procurement_product" class="form-control input-dropdown w-100" name="procurementProduct"
+                required></select>
+            </div>
+            <div class="form-group my-2">
+              <label for="procurement_product_type">Product Type</label>
+              <select id="procurement_product_type" class="form-control input-dropdown w-100"
+                name="procurementProductType" required></select>
+            </div>
+            <div class="form-group my-2">
+              <label for="procurement_quantity"> Quantity (kg)</label>
+              <input id="procurement_quantity" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                name="procurementQuantity" />
+            </div>
+            <div class="form-group my-2">
+              <label for="procurement_price">Price (USD)</label>
+              <input id="procurement_price" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                name="procurement_price" />
+            </div>
+            <div class="form-group my-3">
+              <label for="procurement_product_supplier">Vendor Name</label>
+              <select id="procurement_product_supplier" class="form-control input-dropdown w-100"
+                name="procurementProductSupplier" required></select>
+            </div>
+            <div class="form-group my-2">
+              <label for="procurement_purchaser"> Purchaser</label>
+              <input id="procurement_purchaser" class="form-control" placeholder="eg. Smith" type="text"
+                name="procurementPurchaser" />
+            </div>
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitPurchases" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div id="resetProcurementDataBtn" class="col-lg-5 btn btn-outline-danger">
+                Clear
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- Purchases Container Ends -->
+    <!-- Table Content -->
+    <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+      <div class="border p-4 w-100">
+        <!-- Add Button -->
+        <div class="d-flex rounded-2 justify-content-end pb-4">
+          <div id="openProcurementPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+            style="width: 100px">
+            <i class="fa-solid fa-circle-plus my-auto"></i>
+            <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+          </div>
+        </div>
+        <table id="procurementTable" class="table table-hover nowrap w-100">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="fw-bold"><span>Purchase Date</span></th>
+              <th class="fw-bold"><span>Lot no</span></th>
+              <th class="fw-bold"><span>Total Product Items</span></th>
+              <th class="fw-bold"><span>Total Purchased Quantity</span></th>
+              <th class="fw-bold"><span>Total Purchased Price</span></th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
 
-    <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
-    <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <div class="menu-container adjustmentContainer d-none">
-      <!-- Table Content -->
-      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-        <div class="border p-4 w-100">
-          <table id="adjustmentTable" class="table table-hover nowrap w-100">
+  <!-- modal-dialog-centered modal-dialog-scrollable -->
+  <!-- Modal -->
+  <div id="procurementProductModal" class="modal hide fade modal-xl" role="dialog" aria-labelledby="myModalLabel"
+    data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Procurement Products</h4>
+          <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+          </i>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-between">
+            <div class="form-group">
+              <label class="fw-bold" for="lot_no">Lot No:</label>
+              <span id="view_lot_no"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="fw-bold" for="total_products">Total Products:</label>
+              <span id="view_total_products"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="fw-bold" for="total_weight">Total Weight:</label>
+              <span id="view_total_weight"></span>
+            </div>
+          </div>
+
+          <hr class="mb-4" />
+
+          <table id="procurementProductTable" class="rounded table table-hover nowrap w-100">
             <thead>
               <tr>
-                <th class="fw-bold"><span>Lot No</span></th>
-                <th class="fw-bold"><span>Product</span></th>
-                <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
-                <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
-                <th class="fw-bold"><span>Actual Price (USD)</span></th>
-                <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
-                <th class="fw-bold"><span>Reason for Adjustment</span></th>
-                <th class="fw-bold"><span>Surveyor</span></th>
-                <th class="fw-bold"><span>Created At</span></th>
+                <th style="border-radius: 4px 0 0 0"></th>
+                <th class="fw-bold"><span>Product Name</span></th>
+                <th class="fw-bold">
+                  <span>Purchased Type</span>
+                </th>
+                <th class="fw-bold">
+                  <span>Purchased Quantity</span>
+                </th>
+                <th class="fw-bold">
+                  <span>Purchased Price</span>
+                </th>
+                <th class="fw-bold">
+                  <span>Vendor Name</span>
+                </th>
+                <th class="fw-bold">
+                  <span>Purchaser</span>
+                </th>
               </tr>
             </thead>
           </table>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Close
+          </button>
+        </div>
       </div>
     </div>
-    <!-- Adjustment Container Ends -->
+  </div>
+  <!-- Purchases Container Ends -->
+
+  <!-- ------------------------------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------------------------------- -->
+  <div class="menu-container adjustmentContainer d-none">
+    <!-- Table Content -->
+    <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+      <div class="border p-4 w-100">
+        <table id="adjustmentTable" class="table table-hover nowrap w-100">
+          <thead>
+            <tr>
+              <th class="fw-bold"><span>Lot No</span></th>
+              <th class="fw-bold"><span>Product</span></th>
+              <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
+              <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
+              <th class="fw-bold"><span>Actual Price (USD)</span></th>
+              <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
+              <th class="fw-bold"><span>Reason for Adjustment</span></th>
+              <th class="fw-bold"><span>Surveyor</span></th>
+              <th class="fw-bold"><span>Created At</span></th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Adjustment Container Ends -->
   </div>
 </body>
 
@@ -619,6 +777,210 @@
     }
 
     // ---------------------------------------------------------
+    // ----------------------- Dashboard -----------------------
+    // ---------------------------------------------------------
+
+    let totalSpendChartOptions = {
+      animationEnabled: true,
+      // theme: "dark2",
+      title: {
+        text: "Total Procurement Analysis",
+      },
+      // axisX: {
+      //   valueFormatString: "MMM",
+      // },
+      // axisY: {
+      //   title: "Quantity (in KG)",
+      //   // prefix: "₹",
+      // },
+      legend: {
+        cursor: "pointer",
+        itemclick: function (e) {
+          if (
+            typeof e.dataSeries.visible === "undefined" ||
+            e.dataSeries.visible
+          ) {
+            e.dataSeries.visible = false;
+          } else {
+            e.dataSeries.visible = true;
+          }
+          e.chart.render();
+        },
+      },
+      data: [
+        {
+          // yValueFormatString: "$#,###",
+          type: "line",
+          showInLegend: "true",
+          indexLabelFontColor: "white",
+          legendText: "Actual",
+          toolTipContent:
+            "Vendor Name: <b>{indexLabel}</b><br />Quantity: <b>{y}</b><br />On: <b>{x}</b>",
+          dataPoints: [
+            { y: 25060, label: "AJs" },
+            { y: 27980, label: "AJs" },
+            { y: 27980, label: "AJs" },
+            { y: 27980, label: "AJs" },
+            { y: 27980, label: "AJs" },
+            { y: 47800, label: "AJs" },
+            { y: 49400, label: "VJs" },
+            { y: 40260, label: "AJs" },
+            { y: 33900, label: "AJs" },
+            { y: 48000, label: "AJs" },
+            { y: 41300, label: "AJs" },
+            { y: 23400, label: "AJs" },
+            { y: 24500, label: "AJs" },
+            { y: 23500, label: "AJs" },
+          ],
+        },
+        {
+          // yValueFormatString: "$#,###",
+          type: "line",
+          showInLegend: "true",
+          name: "Adjusted",
+          toolTipContent:
+            "Vendor Name: <b>{indexLabel}</b><br />Amount Spent: <b>{y}</b><br />On: <b>{x}</b>",
+          dataPoints: [
+            { y: 560, label: "AJs" },
+            { y: 7980, label: "AJs" },
+            { y: 7980, label: "AJs" },
+            { y: 800, label: "AJs" },
+            { y: 9400, label: "VJs" },
+            { y: 8260, label: "AJs" },
+            { y: 3900, label: "AJs" },
+            { y: 8000, label: "AJs" },
+            { y: 1500, label: "AJs" },
+            { y: 2300, label: "AJs" },
+            { y: 3300, label: "AJs" },
+            { y: 6300, label: "AJs" },
+            { y: 1300, label: "AJs" },
+            { y: 9300, label: "AJs" },
+          ],
+        },
+      ],
+    };
+
+    new CanvasJS.Chart("totalSpendChart", totalSpendChartOptions).render();
+
+    let supplierPerformanceChartoptions = {
+      animationEnabled: true,
+      theme: "dark1",
+      title: {
+        text: "Adjustment Analysis",
+      },
+      axisX: {
+        valueFormatString: "MMM",
+      },
+      axisY: {
+        title: "Vendors",
+        // prefix: "kg",
+      },
+      data: [
+        {
+          yValueFormatString: "#,###%",
+          xValueFormatString: "MMMM",
+          type: "pie",
+          dataPoints: [
+            { label: "AJs", y: 36 },
+            { label: "Email Marketing", y: 31 },
+            { label: "Referrals", y: 7 },
+            { label: "Twitter", y: 7 },
+            { label: "Facebook", y: 6 },
+            { label: "Google", y: 10 },
+            { label: "Others", y: 3 },
+          ],
+        },
+      ],
+    };
+
+    new CanvasJS.Chart(
+      "supplierPerformanceChart",
+      supplierPerformanceChartoptions
+    ).render();
+
+    let inventoryLevelsChartOptions = {
+      animationEnabled: true,
+      theme: "light1",
+      title: {
+        text: "Inventory Levels",
+      },
+      axisX: {
+        valueFormatString: "MMM",
+      },
+      axisY: {
+        title: "Vendors",
+        prefix: "$",
+      },
+      data: [
+        {
+          yValueFormatString: "$#,###",
+          xValueFormatString: "MMMM",
+          type: "spline",
+          dataPoints: [
+            { x: new Date(2017, 0), y: 25060 },
+            { x: new Date(2017, 1), y: 27980 },
+            { x: new Date(2017, 2), y: 33800 },
+            { x: new Date(2017, 3), y: 49400 },
+            { x: new Date(2017, 4), y: 40260 },
+            { x: new Date(2017, 5), y: 33900 },
+            { x: new Date(2017, 6), y: 48000 },
+            { x: new Date(2017, 7), y: 31500 },
+            { x: new Date(2017, 8), y: 32300 },
+            { x: new Date(2017, 9), y: 42000 },
+            { x: new Date(2017, 10), y: 52160 },
+            { x: new Date(2017, 11), y: 49400 },
+          ],
+        },
+      ],
+    };
+
+    new CanvasJS.Chart(
+      "inventoryLevelsChart",
+      inventoryLevelsChartOptions
+    ).render();
+
+    let monthlySpendingChartOptions = {
+      animationEnabled: true,
+      theme: "light2",
+      title: {
+        text: "Spending Pattern",
+      },
+      axisX: {
+        valueFormatString: "MMM",
+      },
+      axisY: {
+        title: "Vendors",
+        prefix: "$",
+      },
+      data: [
+        {
+          yValueFormatString: "$#,###",
+          xValueFormatString: "MMMM",
+          type: "spline",
+          dataPoints: [
+            { x: new Date(2017, 0), y: 25060 },
+            { x: new Date(2017, 1), y: 27980 },
+            { x: new Date(2017, 2), y: 33800 },
+            { x: new Date(2017, 3), y: 49400 },
+            { x: new Date(2017, 4), y: 40260 },
+            { x: new Date(2017, 5), y: 33900 },
+            { x: new Date(2017, 6), y: 48000 },
+            { x: new Date(2017, 7), y: 31500 },
+            { x: new Date(2017, 8), y: 32300 },
+            { x: new Date(2017, 9), y: 42000 },
+            { x: new Date(2017, 10), y: 52160 },
+            { x: new Date(2017, 11), y: 49400 },
+          ],
+        },
+      ],
+    };
+
+    new CanvasJS.Chart(
+      "monthlySpendingChart",
+      monthlySpendingChartOptions
+    ).render();
+
+    // ---------------------------------------------------------
     // ----------------------- Purchases -----------------------
     // ---------------------------------------------------------
 
@@ -644,8 +1006,8 @@
     $(".procurementMenu").click(function () {
       $(".menu-container").addClass("d-none");
 
-      $(".procurementContainer").removeClass("d-none");
-      $(".procurementContainer").addClass("d-block");
+      $(".dashboardContainer").removeClass("d-none");
+      $(".dashboardContainer").addClass("d-block");
 
       loadProcurementTableData();
     });
