@@ -1383,8 +1383,8 @@
             },
           },
           columns: [
-            { data: "procurement_lot" },
-            { data: "procurement_product_name" },
+            { data: "ProcurementLot.procurement_lot" },
+            { data: "ProductMaster.product_name" },
             { data: "procurement_quantity" },
             { data: "adjusted_quantity" },
             { data: "procurement_price" },
@@ -1398,7 +1398,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span procurement_id=${row["id"]}>${data}</span>`;
+                return `<span procurement_product_id=${row["id"]}>${data}</span>`;
               },
             },
             {
@@ -1544,7 +1544,7 @@
                 .closest("tr")
                 .eq(0)
                 .find("span")
-                .attr("procurement_id"),
+                .attr("procurement_product_id"),
               adjusted_quantity.val(),
               adjusted_price.val(),
               adjusted_reason.val(),
@@ -1555,20 +1555,20 @@
       });
 
       function saveAdjustment(
-        procurement_id,
+        procurement_product_id,
         adjusted_quantity,
         adjusted_price,
         adjusted_reason,
         adjusted_surveyor
       ) {
-        if (!procurement_id) {
-          toastr["warning"]("Procurement id must not be empty");
+        if (!procurement_product_id) {
+          toastr["warning"]("Procurement product id must not be empty");
           return;
         }
 
         const input_params = {
-          procurement_id,
-          procurement_data: {
+          procurement_product_id,
+          procurement_product_data: {
             adjusted_quantity,
             adjusted_price,
             adjusted_reason,
