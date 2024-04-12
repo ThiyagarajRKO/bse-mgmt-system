@@ -547,6 +547,12 @@ export const GetDispatchStats = ({
             ),
             "total_purchased_quantity",
           ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+            ),
+            "total_adjusted_quantity",
+          ],
         ],
         where: {
           ...where,

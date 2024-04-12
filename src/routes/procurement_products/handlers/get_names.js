@@ -1,7 +1,7 @@
 import { ProcurementProducts } from "../../../controllers";
 
 export const GetNames = (
-  { procurement_lot_id, start, length, "search[value]": search },
+  { procurement_lot_id, dispatch_id, start, length, "search[value]": search },
   session,
   fastify
 ) => {
@@ -9,6 +9,7 @@ export const GetNames = (
     try {
       let procurement = await ProcurementProducts.GetNames({
         procurement_lot_id,
+        dispatch_id,
         start,
         length,
         search,

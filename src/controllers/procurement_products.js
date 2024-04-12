@@ -188,7 +188,7 @@ export const GetQuantity = ({ id }) => {
       }
 
       const product = await models.ProcurementProducts.findOne({
-        attributes: ["procurement_quantity"],
+        attributes: ["procurement_quantity", "adjusted_quantity"],
         where: {
           id,
           is_active: true,
@@ -326,6 +326,7 @@ export const GetAll = ({
 // Retrive Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,
+  dispatch_id,
   start = 0,
   length = 10,
   search,
@@ -349,9 +350,12 @@ export const GetNames = ({
           "id",
           "procurement_product_type",
           "procurement_quantity",
+          "adjusted_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and dispatches.is_active = true)`
+              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and ${
+                dispatch_id != "null" ? "id != '" + dispatch_id + "' and" : ""
+              } dispatches.is_active = true)`
             ),
             "dispatched_quantity",
           ],

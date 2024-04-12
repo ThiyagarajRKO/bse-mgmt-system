@@ -4,6 +4,7 @@ export const getNamesSchema = {
       type: "object",
       required: [],
       properties: {
+        dispatch_id: { type: "string" },
         procurement_lot_id: { type: "string" },
         "search[value]": { type: "string" },
       },

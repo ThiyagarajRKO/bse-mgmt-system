@@ -1331,6 +1331,7 @@
         closeSlidePanel("dispatchSlideInPanel");
 
         view_procurement_product_id = "";
+        view_dispatch_id = "";
       });
 
       $(".dispatchMenu").click(async function () {
@@ -1457,7 +1458,7 @@
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
+                return row["total_adjusted_quantity"] || data || 0;
               },
             },
             {
@@ -1595,6 +1596,15 @@
               },
             },
             {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  row["ProcurementProduct"]?.adjusted_quantity || data || 0
+                );
+              },
+            },
+            {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
@@ -1619,6 +1629,13 @@
                     ? row["DriverMaster"]?.phone
                     : `+91${row["DriverMaster"]?.phone}`
                 }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
               },
             },
             {
@@ -1674,8 +1691,11 @@
       }
 
       let view_procurement_product_id = "";
+      let view_dispatch_id = "";
       $(document).on("click", ".editDispatch", (e) => {
         // Changing panel input fields data
+
+        view_dispatch_id = $(e.target).attr("dispatch_id");
 
         $("#lotNumbers")
           .val($("#view_lot_no").attr("procurement_lot_id"))
@@ -1745,10 +1765,7 @@
         $("#submitDispatch").text("Update");
 
         // Changing panel button attribute
-        $("#submitDispatch").attr(
-          "dispatch_id",
-          $(e.target).attr("dispatch_id")
-        );
+        $("#submitDispatch").attr("dispatch_id", view_dispatch_id);
 
         $("#dispatchModal").modal("hide");
       });
@@ -1851,7 +1868,9 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}`,
+          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}&dispatch_id=${
+            view_dispatch_id || null
+          }`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1865,8 +1884,9 @@
                 return {
                   id: item.id,
                   quantity:
-                    (parseFloat(item?.procurement_quantity) || 0) -
-                    (parseFloat(item?.dispatched_quantity) || 0),
+                    (parseFloat(
+                      item?.adjusted_quantity || item?.procurement_quantity
+                    ) || 0) - (parseFloat(item?.dispatched_quantity) || 0),
                   text: `${item?.ProductMaster?.product_name}-${
                     item?.procurement_product_type
                   }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,

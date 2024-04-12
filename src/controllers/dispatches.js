@@ -204,19 +204,28 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
       const dispatchs = await models.Dispatches.findAndCountAll({
         include: [
           {
+            attributes: [
+              "id",
+              "procurement_quantity",
+              "adjusted_quantity",
+              "procurement_product_type",
+            ],
             model: models.ProcurementProducts,
             include: [
               {
+                attributes: ["id", "procurement_lot"],
                 model: models.ProcurementLots,
                 where: procurementLotsWhere,
               },
               {
+                attributes: ["id", "product_name"],
                 model: models.ProductMaster,
                 where: {
                   is_active: true,
                 },
               },
               {
+                attributes: ["id", "vendor_name"],
                 model: models.VendorMaster,
                 where: {
                   is_active: true,
@@ -228,18 +237,21 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             },
           },
           {
+            attributes: ["id", "unit_code"],
             model: models.UnitMaster,
             where: {
               is_active: true,
             },
           },
           {
+            attributes: ["id", "vehicle_number"],
             model: models.VehicleMaster,
             where: {
               is_active: true,
             },
           },
           {
+            attributes: ["id", "driver_name"],
             model: models.DriverMaster,
             where: {
               is_active: true,
