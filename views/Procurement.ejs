@@ -273,11 +273,11 @@
 </head>
 
 <body>
-  <div class="">
+  <div class="container-fluid">
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <div class="topMenu-container d-flex justify-content-center mt-0">
+    <div class=" topMenu-container d-flex justify-content-center mt-0">
       <div class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
         <div class="fs-6">
           <i class="fa-solid fa-shopping-bag"></i>
@@ -310,21 +310,21 @@
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------------ Dashboard Container ------------------------------------------------ -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
-    <div class="menu-container dashboardContainer px-2">
+    <div class="menu-container dashboardContainer">
       <div class="row">
-        <div class="col-lg-6 mt-4">
-          <div id="totalSpendChart" class="shadow" style="height: 300px; width: 100%"></div>
+        <div class="mt-4 border rounded mx-2 p-4" style="height: 50vh;width:49%">
+          <div id="totalSpendChart" class="" style="height: 100%; width: 100%"></div>
         </div>
-        <div class="col-lg-6 mt-4">
-          <div id="supplierPerformanceChart" class="shadow" style="height: 300px; width: 100%"></div>
+        <div class="mt-4 border rounded mx-2 p-4" style="height: 50vh;width:49%">
+          <div id="supplierPerformanceChart" class="" style="height: 100%; width: 100%"></div>
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-6 mt-4">
-          <div id="inventoryLevelsChart" class="shadow" style="height: 300px; width: 100%"></div>
+        <div class="mt-4 border rounded mx-2 p-4" style="height: 50vh;width:49%">
+          <div id="inventoryLevelsChart" class="" style="height: 100%; width: 100%"></div>
         </div>
-        <div class="col-lg-6 mt-4">
-          <div id="monthlySpendingChart" class="shadow" style="height: 300px; width: 100%"></div>
+        <div class="mt-4 border rounded mx-2 p-4" style="height: 50vh;width:49%">
+          <div id="monthlySpendingChart" class="" style="height: 100%; width: 100%"></div>
         </div>
       </div>
     </div>
@@ -653,8 +653,9 @@
     // ---------------------------------------------------------
 
     let totalSpendChartOptions = {
+      backgroundColor: "#f7f9fd",
       animationEnabled: true,
-      // theme: "dark2",
+      theme: "light2",
       title: {
         text: "Total Procurement Analysis",
       },
@@ -666,6 +667,8 @@
       //   // prefix: "₹",
       // },
       legend: {
+        // verticalAlign: "top",
+        // horizontalAlign: "center",
         cursor: "pointer",
         itemclick: function (e) {
           if (
@@ -682,51 +685,51 @@
       data: [
         {
           // yValueFormatString: "$#,###",
-          type: "line",
+          type: "stackedColumn",
           showInLegend: "true",
           indexLabelFontColor: "white",
           legendText: "Actual",
           toolTipContent:
             "Vendor Name: <b>{indexLabel}</b><br />Quantity: <b>{y}</b><br />On: <b>{x}</b>",
           dataPoints: [
-            { y: 25060, label: "AJs" },
-            { y: 27980, label: "AJs" },
-            { y: 27980, label: "AJs" },
-            { y: 27980, label: "AJs" },
-            { y: 27980, label: "AJs" },
-            { y: 47800, label: "AJs" },
-            { y: 49400, label: "VJs" },
-            { y: 40260, label: "AJs" },
-            { y: 33900, label: "AJs" },
-            { y: 48000, label: "AJs" },
-            { y: 41300, label: "AJs" },
-            { y: 23400, label: "AJs" },
-            { y: 24500, label: "AJs" },
-            { y: 23500, label: "AJs" },
+            { label: "AJs", y: 25060 },
+            { label: "AJs", y: 27980 },
+            { label: "AJs", y: 27980 },
+            { label: "AJs", y: 27980 },
+            { label: "AJs", y: 27980 },
+            { label: "AJs", y: 47800 },
+            { label: "AJs", y: 49400 },
+            { label: "AJs", y: 40260 },
+            { label: "AJs", y: 33900 },
+            { label: "AJs", y: 48000 },
+            { label: "AJs", y: 41300 },
+            { label: "AJs", y: 23400 },
+            { label: "AJs", y: 24500 },
+            { label: "AJs", y: 23500 },
           ],
         },
         {
           // yValueFormatString: "$#,###",
-          type: "line",
+          type: "stackedColumn",
           showInLegend: "true",
           name: "Adjusted",
           toolTipContent:
             "Vendor Name: <b>{indexLabel}</b><br />Amount Spent: <b>{y}</b><br />On: <b>{x}</b>",
           dataPoints: [
-            { y: 560, label: "AJs" },
-            { y: 7980, label: "AJs" },
-            { y: 7980, label: "AJs" },
-            { y: 800, label: "AJs" },
-            { y: 9400, label: "VJs" },
-            { y: 8260, label: "AJs" },
-            { y: 3900, label: "AJs" },
-            { y: 8000, label: "AJs" },
-            { y: 1500, label: "AJs" },
-            { y: 2300, label: "AJs" },
-            { y: 3300, label: "AJs" },
-            { y: 6300, label: "AJs" },
-            { y: 1300, label: "AJs" },
-            { y: 9300, label: "AJs" },
+            { label: "AJs", y: 560 },
+            { label: "AJs", y: 7980 },
+            { label: "AJs", y: 7980 },
+            { label: "AJs", y: 800 },
+            { label: "AJs", y: 9400 },
+            { label: "AJs", y: 8260 },
+            { label: "AJs", y: 3900 },
+            { label: "AJs", y: 8000 },
+            { label: "AJs", y: 1500 },
+            { label: "AJs", y: 2300 },
+            { label: "AJs", y: 3300 },
+            { label: "AJs", y: 6300 },
+            { label: "AJs", y: 1300 },
+            { label: "AJs", y: 9300 },
           ],
         },
       ],
@@ -735,8 +738,9 @@
     new CanvasJS.Chart("totalSpendChart", totalSpendChartOptions).render();
 
     let supplierPerformanceChartoptions = {
+      backgroundColor: "#f7f9fd",
       animationEnabled: true,
-      theme: "dark1",
+      theme: "light2",
       title: {
         text: "Adjustment Analysis",
       },
@@ -771,8 +775,9 @@
     ).render();
 
     let inventoryLevelsChartOptions = {
+      backgroundColor: "#f7f9fd",
       animationEnabled: true,
-      theme: "light1",
+      theme: "light2",
       title: {
         text: "Inventory Levels",
       },
@@ -812,6 +817,7 @@
     ).render();
 
     let monthlySpendingChartOptions = {
+      backgroundColor: "#f7f9fd",
       animationEnabled: true,
       theme: "light2",
       title: {
