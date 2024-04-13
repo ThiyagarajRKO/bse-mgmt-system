@@ -15,7 +15,7 @@ export const GetPeelingStats = (
       if (!procurement) {
         return reject({
           statusCode: 420,
-          message: "No rows found!",
+          message: "No data found!",
         });
       }
 

@@ -11,7 +11,7 @@ export const GetDispatchLots = ({ start, length }, session, fastify) => {
       if (!procurement) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

@@ -26,7 +26,7 @@ export const GetAll = (
       if (!vehicle_master) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

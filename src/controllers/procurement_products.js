@@ -509,3 +509,51 @@ export const Delete = ({ profile_id, id }) => {
     }
   });
 };
+
+// --------------------------------------------------------------------------------
+// ----------------------------------- Charts -------------------------------------
+// --------------------------------------------------------------------------------
+
+export const GetCostAnalysisData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        created_at: {
+          [Op.between]: [
+            new Date(from_date || null),
+            new Date(to_date || null),
+          ],
+        },
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          "product_master_id",
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+        ],
+        include: [
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        group: ["product_master_id", "ProductMaster.id"],
+      });
+
+      [];
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

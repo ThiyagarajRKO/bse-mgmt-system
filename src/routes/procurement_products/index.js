@@ -4,6 +4,7 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
+import { GetCostAnalysis } from "./handlers/chart_cost_analysis";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -12,6 +13,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
+import { getCostAnalysisSchema } from "./schema/chart_cost_analysis";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -127,6 +129,33 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  // ----------------------------------------------------------------------
+  // ------------------------------- Charts -------------------------------
+  // ----------------------------------------------------------------------
+
+  fastify.get(
+    "/chart/cost/analysis",
+    getCostAnalysisSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetCostAnalysis(params, req?.session, fastify);
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
 
   done();
 };

@@ -105,6 +105,9 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   ProcurementProducts.beforeCreate(async (data, options) => {
     try {
+      data.procurement_totalamount =
+        data.procurement_quantity * data.procurement_price;
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
