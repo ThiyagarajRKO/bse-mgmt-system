@@ -2,1603 +2,1510 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <!-- title logo -->
-  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+<!-- title logo -->
+<link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Bootstrap -->
-  <link
-    href="/public/plugins/bootstrap/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- Bootstrap -->
+<link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
-  <!-- MDB5  -->
-  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
-  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
+<!-- MDB5  -->
+<link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
+<script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
 
-  <!-- jQuery -->
-  <script src="/public/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery -->
+<script src="/public/plugins/jquery/jquery.min.js"></script>
 
-  <!-- Select2 -->
-  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
-  <script src="/public/plugins/select2/js/select2.min.js"></script>
+<!-- Select2 -->
+<link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+<script src="/public/plugins/select2/js/select2.min.js"></script>
 
-  <!-- DataTable -->
-  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
-  <script src="/public/plugins/dataTables/datatables.min.js"></script>
-  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
-  <!-- Responsive Datatable -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/dataTables/datatables.responsive.min.css"
-  />
-  <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
+<!-- DataTable -->
+<link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
+<script src="/public/plugins/dataTables/datatables.min.js"></script>
+<script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
+<!-- Responsive Datatable -->
+<link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css" />
+<script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
 
-  <!-- Toast -->
-  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
-  <script src="/public/plugins/Toastr/toastr.min.js"></script>
+<!-- Toast -->
+<link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+<script src="/public/plugins/Toastr/toastr.min.js"></script>
 
-  <!-- perfect-scrollbar plugin -->
-  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<!-- perfect-scrollbar plugin -->
+<script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
 
-  <!-- jQuery Confirm -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
-  />
-  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
+<!-- jQuery Confirm -->
+<link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css" />
+<script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
 
-  <!-- Slide-in Panel -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
-  />
-  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
+<!-- Slide-in Panel -->
+<link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css" />
+<script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
 
-  <!-- Tippy -->
-  <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
-  <script src="/public/plugins/tippy/popper.min.js"></script>
-  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+<!-- Tippy -->
+<link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
+<script src="/public/plugins/tippy/popper.min.js"></script>
+<script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/public/css/style.css" />
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/public/css/style.css" />
 
-  <!-- Custom Script -->
-  <script src="/public/custom/App.js"></script>
+<!-- Custom Script -->
+<script src="/public/custom/App.js"></script>
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BSE</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSE</title>
 
-    <style type="text/css">
-      @font-face {
-        font-family: "CassandraPersonalUse";
-        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <style type="text/css">
+    @font-face {
+      font-family: "CassandraPersonalUse";
+      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
+    }
 
-      @font-face {
-        font-family: "CerebriSansPro-Regular";
-        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
-          format("truetype");
-      }
+    @font-face {
+      font-family: "CerebriSansPro-Regular";
+      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
+    }
 
-      body {
-        font-family: "CerebriSansPro-Regular";
-        background-color: #f7f9fd;
-      }
+    body {
+      font-family: "CerebriSansPro-Regular";
+      background-color: #f7f9fd;
+    }
 
-      #closeVehiclePanelBtn,
-      .panelClose {
-        cursor: pointer;
-      }
+    #closeVehiclePanelBtn,
+    .panelClose {
+      cursor: pointer;
+    }
 
-      .toast {
-        opacity: 1 !important;
-      }
+    .toast {
+      opacity: 1 !important;
+    }
 
-      .show-dot {
-        display: none !important;
-      }
+    .show-dot {
+      display: none !important;
+    }
 
-      #lastMenu {
-        border-right: 0px solid #414a57;
-      }
+    #lastMenu {
+      border-right: 0px solid #414a57;
+    }
 
-      .bg-danger,
-      .btn-red {
-        background-color: #ea5455;
-      }
+    .bg-danger,
+    .btn-red {
+      background-color: #ea5455;
+    }
 
-      .topMenu-item,
-      .topSubMenuContainer {
-        display: block;
-        color: rgb(44 44 44);
-        text-align: center;
-        /* padding: 0px; */
-        text-decoration: none;
-        border-right: 0px solid #1f2d3e;
-        /* padding-bottom: 3px !important; */
-        width: 100px;
-        cursor: pointer;
-      }
+    .topMenu-item,
+    .topSubMenuContainer {
+      display: block;
+      color: rgb(44 44 44);
+      text-align: center;
+      /* padding: 0px; */
+      text-decoration: none;
+      border-right: 0px solid #1f2d3e;
+      /* padding-bottom: 3px !important; */
+      width: 100px;
+      cursor: pointer;
+    }
 
-      .topMenu-item:hover:not(.topMenu-item-active),
-      .topSubMenuContainer:hover {
-        /* border-bottom: 1px solid #ea5455; */
-        color: #ea5455 !important;
-        /* font-weight: bold; */
-        transition: right 0.3s ease;
-        cursor: pointer;
-      }
+    .topMenu-item:hover:not(.topMenu-item-active),
+    .topSubMenuContainer:hover {
+      /* border-bottom: 1px solid #ea5455; */
+      color: #ea5455 !important;
+      /* font-weight: bold; */
+      transition: right 0.3s ease;
+      cursor: pointer;
+    }
 
-      .topMenu-item-active {
-        border-bottom: 1px solid #ea5455;
-        color: #ea5455 !important;
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
+    .topMenu-item-active {
+      border-bottom: 1px solid #ea5455;
+      color: #ea5455 !important;
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
 
-      .tippy-box[data-theme~="tomato"] {
-        background-color: #4f4f4f;
-        color: white;
-      }
+    .tippy-box[data-theme~="tomato"] {
+      background-color: #4f4f4f;
+      color: white;
+    }
 
-      .edit,
-      .view,
-      .close,
-      .del {
-        cursor: pointer;
-      }
+    .edit,
+    .view,
+    .close,
+    .del {
+      cursor: pointer;
+    }
 
-      .slideInPanel {
-        z-index: 9999;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        right: -600px;
-        width: 400px;
-        background-color: #1f2d3e;
-        color: #e3e3e3;
-        height: 90vh;
-        /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-        transition: right 0.3s ease;
-        border-radius: 8px;
-      }
+    .slideInPanel {
+      z-index: 9999;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -600px;
+      width: 400px;
+      background-color: #1f2d3e;
+      color: #e3e3e3;
+      height: 90vh;
+      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+      transition: right 0.3s ease;
+      border-radius: 8px;
+    }
 
-      /* Input */
-      .slideInPanel input {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6);
-        color: white;
-      }
+    /* Input */
+    .slideInPanel input {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6);
+      color: white;
+    }
 
-      .slideInPanel input::webkit-calen .slideInPanel input:focus {
-        background-color: transparent !important;
-        color: white;
-      }
+    .slideInPanel input::webkit-calen .slideInPanel input:focus {
+      background-color: transparent !important;
+      color: white;
+    }
 
-      .slideInPanel input:hover {
-        background-color: transparent !important;
-        border-color: #627293;
-        color: white;
-      }
+    .slideInPanel input:hover {
+      background-color: transparent !important;
+      border-color: #627293;
+      color: white;
+    }
 
-      /* Select */
-      .slideInPanel .select2-container {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        color: 627293 !important;
-      }
+    /* Select */
+    .slideInPanel .select2-container {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      color: 627293 !important;
+    }
 
-      .select2-container {
-        width: 100% !important;
-      }
+    .select2-container {
+      width: 100% !important;
+    }
 
-      .select2-selection__rendered,
-      .select2-selection__clear,
-      .select2-selection__arrow {
-        color: white !important;
-        margin-top: 0.25rem !important;
-      }
+    .select2-selection__rendered,
+    .select2-selection__clear,
+    .select2-selection__arrow {
+      color: white !important;
+      margin-top: 0.25rem !important;
+    }
 
-      .slideInPanel .select:focus {
-        background-color: transparent !important;
-        border-color: #627293;
-      }
+    .slideInPanel .select:focus {
+      background-color: transparent !important;
+      border-color: #627293;
+    }
 
-      .slideInPanel .select2-container:hover {
-        border-color: #627293;
-      }
+    .slideInPanel .select2-container:hover {
+      border-color: #627293;
+    }
 
-      /* TextArea */
-      .slideInPanel textarea {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6);
-      }
+    /* TextArea */
+    .slideInPanel textarea {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6);
+    }
 
-      .slideInPanel textarea:focus {
-        background-color: transparent !important;
-      }
+    .slideInPanel textarea:focus {
+      background-color: transparent !important;
+    }
 
-      .slideInPanel textarea:hover {
-        border-color: #627293;
-      }
+    .slideInPanel textarea:hover {
+      border-color: #627293;
+    }
 
-      Form Control .slideInPanel .form-control {
-        color: #f7f9fc;
-      }
+    Form Control .slideInPanel .form-control {
+      color: #f7f9fc;
+    }
 
-      .slideInPanel .form-control::placeholder {
-        color: #627293;
-      }
+    .slideInPanel .form-control::placeholder {
+      color: #627293;
+    }
 
-      .select2-selection::placeholder {
-        color: #627293;
-      }
+    .select2-selection::placeholder {
+      color: #627293;
+    }
 
-      .page-item.active .page-link {
-        color: #fff !important;
-        background-color: #ea5455 !important;
-        border-color: #ea5455 !important;
-      }
+    .page-item.active .page-link {
+      color: #fff !important;
+      background-color: #ea5455 !important;
+      border-color: #ea5455 !important;
+    }
 
-      .page-link {
-        color: #000 !important;
-        background-color: #fff !important;
-        border: 1px solid #dee2e6 !important;
-      }
+    .page-link {
+      color: #000 !important;
+      background-color: #fff !important;
+      border: 1px solid #dee2e6 !important;
+    }
 
-      .page-link:hover {
-        color: #fff !important;
-        background-color: #f17979 !important;
-        border-color: #ea5455 !important;
-      }
+    .page-link:hover {
+      color: #fff !important;
+      background-color: #f17979 !important;
+      border-color: #ea5455 !important;
+    }
 
-      .select2-selection {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        height: 35px !important;
-      }
+    .select2-selection {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      height: 35px !important;
+    }
 
-      .select2-dropdown {
-        z-index: 10000 !important;
-      }
+    .select2-dropdown {
+      z-index: 10000 !important;
+    }
 
-      table.dataTable th {
-        text-align: left !important;
-      }
-    </style>
-  </head>
+    table.dataTable th {
+      text-align: left !important;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="">
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="topMenu-container d-flex justify-content-center mt-0">
-        <div
-          class="topMenu-item topMenu-item-active procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-shopping-bag"></i>
-          </div>
-          <div class="pt-2">
-            <span>Purchases</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-circle-half-stroke"></i>
-          </div>
-          <div class="pt-2">
-            <span>Adjustment</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-          </div>
-          <div class="pt-2">
-            <span>Payments</span>
-          </div>
-        </div>
-      </div>
-      <!-- Top Menu Container Ends -->
-
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Purchases Container ------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container procurementContainer d-none">
-        <!-- Slide-in Panel -->
-        <div
-          id="procurementSlideInPanel"
-          class="slideInPanel px-4 overflow-auto"
-        >
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="procurementPanelHeading" class="fw-bold fs-5"
-                  >Add Procurement Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeProcurementPanelBtn"
-                  ></i>
-                </div>
-              </div>
-              <hr />
-              <div class="">
-                <div class="form-group my-2">
-                  <label for="procurement_date">Date of Purchase</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="procurement_date"
-                    name="procurementDate"
-                    required
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="procurement_unit">Purchase Source</label>
-                  <select
-                    id="procurement_unit"
-                    class="form-control input-dropdown w-100"
-                    name="procurement_unit"
-                    required
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="procurement_product">Product</label>
-                  <select
-                    id="procurement_product"
-                    class="form-control input-dropdown w-100"
-                    name="procurementProduct"
-                    required
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="procurement_product_type">Product Type</label>
-                  <select
-                    id="procurement_product_type"
-                    class="form-control input-dropdown w-100"
-                    name="procurementProductType"
-                    required
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="procurement_quantity"> Quantity (kg)</label>
-                  <input
-                    id="procurement_quantity"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="procurementQuantity"
-                  />
-                </div>
-                <div class="form-group my-2">
-                  <label for="procurement_price">Price (USD)</label>
-                  <input
-                    id="procurement_price"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="procurement_price"
-                  />
-                </div>
-                <div class="form-group my-3">
-                  <label for="procurement_product_supplier">Vendor Name</label>
-                  <select
-                    id="procurement_product_supplier"
-                    class="form-control input-dropdown w-100"
-                    name="procurementProductSupplier"
-                    required
-                  ></select>
-                </div>
-                <div class="form-group my-2">
-                  <label for="procurement_purchaser"> Purchaser</label>
-                  <input
-                    id="procurement_purchaser"
-                    class="form-control"
-                    placeholder="eg. Smith"
-                    type="text"
-                    name="procurementPurchaser"
-                  />
-                </div>
-                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                  <div id="submitPurchases" class="col-lg-5 btn btn-danger">
-                    Save
-                  </div>
-                  <div
-                    id="resetProcurementDataBtn"
-                    class="col-lg-5 btn btn-outline-danger"
-                  >
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openProcurementPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-            <table id="procurementTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Purchase Date</span></th>
-                  <th class="fw-bold"><span>Lot no</span></th>
-                  <th class="fw-bold"><span>Total Product Items</span></th>
-                  <th class="fw-bold"><span>Total Purchased Quantity</span></th>
-                  <th class="fw-bold"><span>Total Purchased Price</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- modal-dialog-centered modal-dialog-scrollable -->
-      <!-- Modal -->
+<body>
+  <div class="">
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="topMenu-container d-flex justify-content-center mt-0">
       <div
-        id="procurementProductModal"
-        class="modal hide fade modal-xl"
-        role="dialog"
-        aria-labelledby="myModalLabel"
-        data-keyboard="false"
-        data-backdrop="static"
-      >
-        <div class="modal-dialog modal-dialog-scrollable">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Procurement Products</h4>
-              <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
-              </i>
+        class="topMenu-item topMenu-item-active procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+        <div class="fs-6">
+          <i class="fa-solid fa-shopping-bag"></i>
+        </div>
+        <div class="pt-2">
+          <span>Purchases</span>
+        </div>
+      </div>
+
+      <div class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+        <div class="fs-6">
+          <i class="fa-solid fa-circle-half-stroke"></i>
+        </div>
+        <div class="pt-2">
+          <span>Adjustment</span>
+        </div>
+      </div>
+
+      <div class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+        <div class="fs-6">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <div class="pt-2">
+          <span>Payments</span>
+        </div>
+      </div>
+    </div>
+    <!-- Top Menu Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Purchases Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container procurementContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="procurementSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="procurementPanelHeading" class="fw-bold fs-5">Add Procurement Data</span>
+              <div class="col my-auto d-flex justify-content-end">
+                <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeProcurementPanelBtn"></i>
+              </div>
             </div>
-            <div class="modal-body">
-              <div class="d-flex justify-content-between">
-                <div class="form-group">
-                  <label class="fw-bold" for="lot_no">Lot No:</label>
-                  <span id="view_lot_no"></span>
-                </div>
-
-                <div class="form-group">
-                  <label class="fw-bold" for="total_products"
-                    >Total Products:</label
-                  >
-                  <span id="view_total_products"></span>
-                </div>
-
-                <div class="form-group">
-                  <label class="fw-bold" for="total_weight"
-                    >Total Weight:</label
-                  >
-                  <span id="view_total_weight"></span>
-                </div>
+            <hr />
+            <div class="">
+              <div class="form-group my-2">
+                <label for="procurement_date">Date of Purchase</label>
+                <input type="date" class="form-control" id="procurement_date" name="procurementDate" required />
               </div>
 
-              <hr class="mb-4" />
-
-              <table
-                id="procurementProductTable"
-                class="rounded table table-hover nowrap w-100"
-              >
-                <thead>
-                  <tr>
-                    <th style="border-radius: 4px 0 0 0"></th>
-                    <th class="fw-bold"><span>Product Name</span></th>
-                    <th class="fw-bold">
-                      <span>Purchased Type</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Purchased Quantity</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Purchased Price</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Vendor Name</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Purchaser</span>
-                    </th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-default"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
+              <div class="form-group my-2">
+                <label for="procurement_unit">Purchase Source</label>
+                <select id="procurement_unit" class="form-control input-dropdown w-100" name="procurement_unit"
+                  required></select>
+              </div>
+              <div class="form-group my-2">
+                <label for="procurement_product">Product</label>
+                <select id="procurement_product" class="form-control input-dropdown w-100" name="procurementProduct"
+                  required></select>
+              </div>
+              <div class="form-group my-2">
+                <label for="procurement_product_type">Product Type</label>
+                <select id="procurement_product_type" class="form-control input-dropdown w-100"
+                  name="procurementProductType" required></select>
+              </div>
+              <div class="form-group my-2">
+                <label for="procurement_quantity"> Quantity (kg)</label>
+                <input id="procurement_quantity" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                  name="procurementQuantity" />
+              </div>
+              <div class="form-group my-2">
+                <label for="procurement_price">Price (USD)</label>
+                <input id="procurement_price" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                  name="procurement_price" />
+              </div>
+              <div class="form-group my-3">
+                <label for="procurement_product_supplier">Vendor Name</label>
+                <select id="procurement_product_supplier" class="form-control input-dropdown w-100"
+                  name="procurementProductSupplier" required></select>
+              </div>
+              <div class="form-group my-2">
+                <label for="procurement_purchaser"> Purchaser</label>
+                <input id="procurement_purchaser" class="form-control" placeholder="eg. Smith" type="text"
+                  name="procurementPurchaser" />
+              </div>
+              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                <div id="submitPurchases" class="col-lg-5 btn btn-danger">
+                  Save
+                </div>
+                <div id="resetProcurementDataBtn" class="col-lg-5 btn btn-outline-danger">
+                  Clear
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Purchases Container Ends -->
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div id="openProcurementPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px">
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+          <table id="procurementTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Purchase Date</span></th>
+                <th class="fw-bold"><span>Lot no</span></th>
+                <th class="fw-bold"><span>Total Product Items</span></th>
+                <th class="fw-bold"><span>Total Purchased Quantity</span></th>
+                <th class="fw-bold"><span>Total Purchased Price</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container adjustmentContainer d-none">
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <table id="adjustmentTable" class="table table-hover nowrap w-100">
+    <!-- modal-dialog-centered modal-dialog-scrollable -->
+    <!-- Modal -->
+    <div id="procurementProductModal" class="modal hide fade modal-xl" role="dialog" aria-labelledby="myModalLabel"
+      data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Procurement Products</h4>
+            <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+            </i>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex justify-content-between">
+              <div class="form-group">
+                <label class="fw-bold" for="lot_no">Lot No:</label>
+                <span id="view_lot_no"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="fw-bold" for="total_products">Total Products:</label>
+                <span id="view_total_products"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="fw-bold" for="total_weight">Total Weight:</label>
+                <span id="view_total_weight"></span>
+              </div>
+            </div>
+
+            <hr class="mb-4" />
+
+            <table id="procurementProductTable" class="rounded table table-hover nowrap w-100">
               <thead>
                 <tr>
-                  <th class="fw-bold"><span>Lot No</span></th>
-                  <th class="fw-bold"><span>Product</span></th>
-                  <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
-                  <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
-                  <th class="fw-bold"><span>Actual Price (USD)</span></th>
-                  <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
-                  <th class="fw-bold"><span>Reason for Adjustment</span></th>
-                  <th class="fw-bold"><span>Surveyor</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
+                  <th style="border-radius: 4px 0 0 0"></th>
+                  <th class="fw-bold"><span>Product Name</span></th>
+                  <th class="fw-bold">
+                    <span>Purchased Type</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Purchased Quantity</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Purchased Price</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Vendor Name</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Purchaser</span>
+                  </th>
                 </tr>
               </thead>
             </table>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+              Close
+            </button>
+          </div>
         </div>
       </div>
-      <!-- Adjustment Container Ends -->
     </div>
-  </body>
+    <!-- Purchases Container Ends -->
 
-  <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-      // Declarations
-      new PerfectScrollbar(".slideInPanel", {
-        suppressScrollX: true,
-      }).update();
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container adjustmentContainer d-none">
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <table id="adjustmentTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th class="fw-bold"><span>Lot No</span></th>
+                <th class="fw-bold"><span>Product</span></th>
+                <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
+                <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
+                <th class="fw-bold"><span>Actual Price (USD)</span></th>
+                <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
+                <th class="fw-bold"><span>Reason for Adjustment</span></th>
+                <th class="fw-bold"><span>Surveyor</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Adjustment Container Ends -->
+  </div>
+</body>
 
-      toastr.options = {
-        closeButton: false,
-        debug: false,
-        newestOnTop: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "5000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut",
-      };
+<script type="text/javascript">
+  jQuery(document).ready(function ($) {
+    // Declarations
+    App.checkAccess();
 
-      // Open Purchases on load (default)
+    new PerfectScrollbar(".slideInPanel", {
+      suppressScrollX: true,
+    }).update();
+
+    toastr.options = {
+      closeButton: false,
+      debug: false,
+      newestOnTop: true,
+      progressBar: true,
+      positionClass: "toast-top-right",
+      preventDuplicates: false,
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "5000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut",
+    };
+
+    // Open Purchases on load (default)
+    $(".menu-container").addClass("d-none");
+
+    $(".procurementContainer").removeClass("d-none");
+    $(".procurementContainer").addClass("d-block");
+
+    loadProcurementTableData();
+
+    // Menu navigation
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass("topMenu-item-active");
+
+      $(this).addClass("topMenu-item-active");
+      $(".productTopMenu").removeClass("topMenu-item-active");
+      $(".panelClose").click();
+
+      resetAllInputs();
+    });
+
+    // Global Functions
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      // Ensure 2-digit formatting
+      if (day < 10) {
+        day = "0" + day;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
+      return year + "-" + month + "-" + day;
+    }
+
+    // Function to reset all input fields
+    function resetAllInputs() {
+      $("input").val("");
+
+      // Reset all date inputs
+      var dateInputs = document.querySelectorAll('input[type="date"]');
+      // looping all the date inputs
+      dateInputs.forEach(function (input) {
+        input.value = formatDate(new Date());
+      });
+
+      // Resetting textarea
+      $("textarea").val("");
+
+      // Resetting select field selected option
+      $("#procurement_location").val(null).trigger("change");
+      $("#procurement_unit").val(null).trigger("change");
+      $("#procurement_product").val(null).trigger("change");
+      $("#procurement_product_type").val(null).trigger("change");
+      $("#procurement_product_supplier").val(null).trigger("change");
+    }
+
+    function openSlidePanel(
+      panelId,
+      panelHeadingId,
+      panelType,
+      panelSubmitButton,
+      panelBtnAttrName
+    ) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "0");
+
+      // Changing panel Heading label
+      $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+
+      // Changing panel save button label
+      $(`#${panelSubmitButton}`).text("Save");
+
+      // Changing panel save button attribute
+      $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+    }
+
+    function closeSlidePanel(panelId) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "-600px");
+
+      // Resetting all the input fields' data
+      resetAllInputs();
+
+      // Destroying select2 all the dropdowns
+      // $('select.select2-hidden-accessible').select2('destroy');
+    }
+
+    loadDropdowns();
+
+    function loadDropdowns() {
+      loadProcurementProductType();
+      loadProcurementProducts();
+      loadProcurementSuppliers();
+      loadProcurementUnits();
+    }
+
+    // ---------------------------------------------------------
+    // ----------------------- Purchases -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $("#openProcurementPanelBtn").click(function () {
+      openSlidePanel(
+        "procurementSlideInPanel",
+        "procurementPanelHeading",
+        "Procurement",
+        "submitPurchases",
+        "procurement_product_id"
+      );
+
+      // Changing panel save button attribute
+      $(`#submitPurchases`).attr("procurement_lot_id", null);
+    });
+
+    // Close panel
+    $("#closeProcurementPanelBtn").click(function () {
+      closeSlidePanel("procurementSlideInPanel");
+    });
+
+    $(".procurementMenu").click(function () {
       $(".menu-container").addClass("d-none");
 
       $(".procurementContainer").removeClass("d-none");
       $(".procurementContainer").addClass("d-block");
 
       loadProcurementTableData();
+    });
 
-      // Menu navigation
-      $(".topMenu-item").click(function () {
-        $(".topMenu-item").removeClass("topMenu-item-active");
+    $(document).on("click", ".modal-header .close", () => {
+      $("#procurementProductModal").modal("hide");
+    });
 
-        $(this).addClass("topMenu-item-active");
-        $(".productTopMenu").removeClass("topMenu-item-active");
-        $(".panelClose").click();
+    $("#submitPurchases").click(function () {
+      savePurchases();
+    });
 
-        resetAllInputs();
-      });
+    function loadProcurementTableData() {
+      $("#procurementTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/procurement/lot/get/stats/all",
+          error: function (xhr, error, code) {
+            $("#procurementTable").DataTable().destroy();
+            $("#procurementTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
 
-      // Global Functions
-      // Function to format date as YYYY-MM-DD
-      function formatDate(date) {
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
+            toastr.error(xhr.responseJSON.message, "Error");
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
 
-        // Ensure 2-digit formatting
-        if (day < 10) {
-          day = "0" + day;
-        }
-        if (month < 10) {
-          month = "0" + month;
-        }
-
-        return year + "-" + month + "-" + day;
-      }
-
-      // Function to reset all input fields
-      function resetAllInputs() {
-        $("input").val("");
-
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
-
-        // Resetting textarea
-        $("textarea").val("");
-
-        // Resetting select field selected option
-        $("#procurement_location").val(null).trigger("change");
-        $("#procurement_unit").val(null).trigger("change");
-        $("#procurement_product").val(null).trigger("change");
-        $("#procurement_product_type").val(null).trigger("change");
-        $("#procurement_product_supplier").val(null).trigger("change");
-      }
-
-      function openSlidePanel(
-        panelId,
-        panelHeadingId,
-        panelType,
-        panelSubmitButton,
-        panelBtnAttrName
-      ) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "0");
-
-        // Changing panel Heading label
-        $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
-
-        // Changing panel save button label
-        $(`#${panelSubmitButton}`).text("Save");
-
-        // Changing panel save button attribute
-        $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
-      }
-
-      function closeSlidePanel(panelId) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "-600px");
-
-        // Resetting all the input fields' data
-        resetAllInputs();
-
-        // Destroying select2 all the dropdowns
-        // $('select.select2-hidden-accessible').select2('destroy');
-      }
-
-      loadDropdowns();
-
-      function loadDropdowns() {
-        loadProcurementProductType();
-        loadProcurementProducts();
-        loadProcurementSuppliers();
-        loadProcurementUnits();
-      }
-
-      // ---------------------------------------------------------
-      // ----------------------- Purchases -----------------------
-      // ---------------------------------------------------------
-
-      // Open panel
-      $("#openProcurementPanelBtn").click(function () {
-        openSlidePanel(
-          "procurementSlideInPanel",
-          "procurementPanelHeading",
-          "Procurement",
-          "submitPurchases",
-          "procurement_product_id"
-        );
-
-        // Changing panel save button attribute
-        $(`#submitPurchases`).attr("procurement_lot_id", null);
-      });
-
-      // Close panel
-      $("#closeProcurementPanelBtn").click(function () {
-        closeSlidePanel("procurementSlideInPanel");
-      });
-
-      $(".procurementMenu").click(function () {
-        $(".menu-container").addClass("d-none");
-
-        $(".procurementContainer").removeClass("d-none");
-        $(".procurementContainer").addClass("d-block");
-
-        loadProcurementTableData();
-      });
-
-      $(document).on("click", ".modal-header .close", () => {
-        $("#procurementProductModal").modal("hide");
-      });
-
-      $("#submitPurchases").click(function () {
-        savePurchases();
-      });
-
-      function loadProcurementTableData() {
-        $("#procurementTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/all",
-            error: function (xhr, error, code) {
-              $("#procurementTable").DataTable().destroy();
-              $("#procurementTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
-
-              toastr.error(xhr.responseJSON.message, "Error");
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "procurement_date" },
+          { data: "procurement_lot" },
+          { data: "total_product_count" },
+          { data: "total_purchased_quantity" },
+          { data: "total_purchased_price" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
             },
           },
-          columns: [
-            { data: null },
-            { data: null },
-            { data: "procurement_date" },
-            { data: "procurement_lot" },
-            { data: "total_product_count" },
-            { data: "total_purchased_quantity" },
-            { data: "total_purchased_price" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
-              },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return (
+                '<i class="fa fa-trash del delProcurement" procurement_id=' +
+                row["id"] +
+                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
+              );
             },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delProcurement" procurement_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
-                );
-              },
-            },
-            {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["procurement_date"]);
+          },
+          {
+            targets: [2],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["procurement_date"]);
 
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
 
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return day + "-" + month + "-" + date.getFullYear();
+            },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+
+      $(document).on("click", ".viewProcurementProducts", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
+
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_lot_no").attr(
+          "procurement_lot_id",
+          $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(0)
+            .find("i")
+            .attr("procurement_lot_id")
+        );
+
+        $("#view_lot_no").attr(
+          "procurement_date",
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
+
+        // Opening Slied Panel
+        $("#procurementProductModal").modal("show");
+
+        loadProcurementProductTableData(view_lot_no);
+      });
+
+      $(document).on("click", ".delProcurement", (e) => {
+        let procurement_id = $(e.target).attr("procurement_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Procurement Detail?",
+          content: "Are you sure, do you want to remove this Procurement?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/v1/procurement/product/delete",
+                  method: "post",
+                  dataType: "json",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                    procurement_id,
+                  }),
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadProcurementTableData();
+
+                    toastr.success(
+                      "Procurement detail deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function () {
+                    toastr.error(
+                      "Procurement detail failed to delete!",
+                      "Error"
+                    );
+                  });
               },
             },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
+            no: function () {
+              toastr.info("Procurement detail is safe now", "Info");
             },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-          ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
+          },
         });
+      });
+    }
 
-        $(document).on("click", ".viewProcurementProducts", (e) => {
-          // Changing panel input fields data
-          $("#closeProcurementPanelBtn").click();
+    function loadProcurementProductTableData(lot_no) {
+      if (!lot_no) {
+        toastr["warning"]("Lot no should not be empty!");
+      }
+      $("#procurementProductTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: `/api/v1/procurement/product/get/all?procurement_lot=${lot_no}`,
+          error: function (xhr, error, code) {
+            $("#procurementProductTable").DataTable().destroy();
+            $("#procurementProductTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
 
-          const view_lot_no = $(e.target)
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: "ProductMaster.product_name" },
+          { data: "procurement_product_type" },
+          { data: "procurement_quantity" },
+          { data: "procurement_price" },
+          { data: "VendorMaster.vendor_name" },
+          { data: "procurement_purchaser" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
+            },
+          },
+        ],
+        drawCallback: () => { },
+      });
+    }
+
+    $(document).on("click", ".editProcurementProducts", (e) => {
+      // Changing panel input fields data
+
+      $("#procurement_date").val(
+        formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+      );
+
+      $("#procurement_unit")
+        .val(
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(3)
-            .text();
+            .eq(0)
+            .find("i")
+            .attr("unit_master_id")
+        )
+        .trigger("change");
 
-          const view_total_products = $(e.target)
+      $("#procurement_product")
+        .val(
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(4)
-            .text();
+            .eq(1)
+            .find("span")
+            .attr("product_master_id")
+        )
+        .trigger("change");
 
-          const view_total_weight = $(e.target)
+      $("#procurement_product_type")
+        .val($(e.target).closest("tr").children("td").eq(2).text())
+        .trigger("change");
+
+      $("#procurement_quantity").val(
+        $(e.target).closest("tr").children("td").eq(3).text()
+      );
+
+      $("#procurement_price").val(
+        $(e.target).closest("tr").children("td").eq(4).text()
+      );
+
+      $("#procurement_product_supplier")
+        .val(
+          $(e.target)
             .closest("tr")
             .children("td")
             .eq(5)
-            .text();
+            .find("span")
+            .attr("vendor_master_id")
+        )
+        .trigger("change");
 
-          $("#view_lot_no").text(view_lot_no);
+      $("#procurement_purchaser").val(
+        $(e.target).closest("tr").children("td").eq(6).text()
+      );
 
-          $("#view_lot_no").attr(
-            "procurement_lot_id",
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("procurement_lot_id")
-          );
+      // Opening Slied Panel
+      $("#openProcurementPanelBtn").click();
 
-          $("#view_lot_no").attr(
-            "procurement_date",
-            $(e.target).closest("tr").children("td").eq(2).text()
-          );
+      // Changing panel heading
+      $("#procurementPanelHeading").text("Edit Procurement Data");
 
-          $("#view_total_products").text(view_total_products);
+      // Changing panel button label
+      $("#submitPurchases").text("Update");
 
-          $("#view_total_weight").text(view_total_weight);
+      // Changing panel button attribute
+      $("#submitPurchases").attr(
+        "procurement_product_id",
+        $(e.target).attr("procurement_product_id")
+      );
 
-          // Opening Slied Panel
-          $("#procurementProductModal").modal("show");
+      $("#submitPurchases").attr(
+        "procurement_lot_id",
+        $("#view_lot_no").attr("procurement_lot_id")
+      );
 
-          loadProcurementProductTableData(view_lot_no);
-        });
+      $("#procurementProductModal").modal("hide");
+    });
 
-        $(document).on("click", ".delProcurement", (e) => {
-          let procurement_id = $(e.target).attr("procurement_id");
-          let currentRow = $(e.target).closest("tr");
-          $.confirm({
-            title: "Delete Procurement Detail?",
-            content: "Are you sure, do you want to remove this Procurement?",
-            backgroundDismiss: false,
-            backgroundDismissAnimation: "glow",
-            type: "red",
-            closeIcon: true,
-            closeIconClass: "fa fa-close",
-            typeAnimated: true,
-            boxWidth: "30%",
-            useBootstrap: false,
-            autoClose: "no|5000",
-            buttons: {
-              delete: {
-                text: "Delete",
-                btnClass: "btn-red",
-                action: function () {
-                  $.ajax({
-                    url: "/api/v1/procurement/product/delete",
-                    method: "post",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                      procurement_id,
-                    }),
-                  })
-                    .done(function (response) {
-                      //loading data to table
-                      loadProcurementTableData();
+    function loadProcurementProductType() {
+      $("#procurement_product_type").select2({
+        placeholder: "Choose a Type",
+        allowClear: true,
+        data: [
+          {
+            id: "CLEANED",
+            text: "CLEANED",
+          },
+          {
+            id: "PEELED",
+            text: "PEELED",
+          },
+          {
+            id: "SOAKED",
+            text: "SOAKED",
+          },
+          {
+            id: "RE-GLAZED",
+            text: "RE-GLAZED",
+          },
+          {
+            id: "GRADED",
+            text: "GRADED",
+          },
+          {
+            id: "COOKED",
+            text: "COOKED",
+          },
+          {
+            id: "SORTED",
+            text: "SORTED",
+          },
+          {
+            id: "VALUE-ADDED",
+            text: "VALUE-ADDED",
+          },
+          {
+            id: "UNPROCESSED",
+            text: "UNPROCESSED",
+          },
+        ],
+      });
 
-                      toastr.success(
-                        "Procurement detail deleted successfully",
-                        "Deleted"
-                      );
-                    })
-                    .fail(function () {
-                      toastr.error(
-                        "Procurement detail failed to delete!",
-                        "Error"
-                      );
-                    });
-                },
-              },
-              no: function () {
-                toastr.info("Procurement detail is safe now", "Info");
-              },
-            },
+      // Clearing selected value
+      $("#procurement_product_type").val(null).trigger("change");
+    }
+
+    function loadProcurementProducts() {
+      // Load Products
+      $.ajax({
+        url: "/api/v1/master/product/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_product").select2({
+            placeholder: "Choose a product",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.product_name,
+              };
+            }),
           });
-        });
-      }
 
-      function loadProcurementProductTableData(lot_no) {
-        if (!lot_no) {
-          toastr["warning"]("Lot no should not be empty!");
-        }
-        $("#procurementProductTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: `/api/v1/procurement/product/get/all?procurement_lot=${lot_no}`,
-            error: function (xhr, error, code) {
-              $("#procurementProductTable").DataTable().destroy();
-              $("#procurementProductTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
-
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: "ProductMaster.product_name" },
-            { data: "procurement_product_type" },
-            { data: "procurement_quantity" },
-            { data: "procurement_price" },
-            { data: "VendorMaster.vendor_name" },
-            { data: "procurement_purchaser" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
-              },
-            },
-          ],
-          drawCallback: () => {},
-        });
-      }
-
-      $(document).on("click", ".editProcurementProducts", (e) => {
-        // Changing panel input fields data
-
-        $("#procurement_date").val(
-          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
-        );
-
-        $("#procurement_unit")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product_type")
-          .val($(e.target).closest("tr").children("td").eq(2).text())
-          .trigger("change");
-
-        $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#procurement_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("vendor_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-
-        // Opening Slied Panel
-        $("#openProcurementPanelBtn").click();
-
-        // Changing panel heading
-        $("#procurementPanelHeading").text("Edit Procurement Data");
-
-        // Changing panel button label
-        $("#submitPurchases").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPurchases").attr(
-          "procurement_product_id",
-          $(e.target).attr("procurement_product_id")
-        );
-
-        $("#submitPurchases").attr(
-          "procurement_lot_id",
-          $("#view_lot_no").attr("procurement_lot_id")
-        );
-
-        $("#procurementProductModal").modal("hide");
-      });
-
-      function loadProcurementProductType() {
-        $("#procurement_product_type").select2({
-          placeholder: "Choose a Type",
-          allowClear: true,
-          data: [
-            {
-              id: "CLEANED",
-              text: "CLEANED",
-            },
-            {
-              id: "PEELED",
-              text: "PEELED",
-            },
-            {
-              id: "SOAKED",
-              text: "SOAKED",
-            },
-            {
-              id: "RE-GLAZED",
-              text: "RE-GLAZED",
-            },
-            {
-              id: "GRADED",
-              text: "GRADED",
-            },
-            {
-              id: "COOKED",
-              text: "COOKED",
-            },
-            {
-              id: "SORTED",
-              text: "SORTED",
-            },
-            {
-              id: "VALUE-ADDED",
-              text: "VALUE-ADDED",
-            },
-            {
-              id: "UNPROCESSED",
-              text: "UNPROCESSED",
-            },
-          ],
-        });
-
-        // Clearing selected value
-        $("#procurement_product_type").val(null).trigger("change");
-      }
-
-      function loadProcurementProducts() {
-        // Load Products
-        $.ajax({
-          url: "/api/v1/master/product/get/all",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.product_name,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_product").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadProcurementUnits() {
-        // Load Products
-        $.ajax({
-          url: `/api/v1/master/unit/get/all?unit_type=Collection Center`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_unit").select2({
-              placeholder: "Choose an unit",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_unit").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadProcurementSuppliers() {
-        // Load Suppliers
-        $.ajax({
-          url: "/api/v1/master/vendor/get/all",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product_supplier").select2({
-              placeholder: "Choose a vendor",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.vendor_name,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_product_supplier").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function savePurchases() {
-        const procurement_lot_id =
-          $("#submitPurchases").attr("procurement_lot_id");
-        const procurement_product_id = $("#submitPurchases").attr(
-          "procurement_product_id"
-        );
-
-        let url = "/api/v1/procurement/product/create";
-        let input_params = {
-          procurement_date: $("#procurement_date").val(),
-          unit_master_id: $("#procurement_unit").val(),
-          product_master_id: $("#procurement_product").val(),
-          procurement_product_type: $("#procurement_product_type").val(),
-          procurement_quantity: $("#procurement_quantity").val(),
-          procurement_price: $("#procurement_price").val(),
-          vendor_master_id: $("#procurement_product_supplier").val(),
-          procurement_purchaser: $("#procurement_purchaser").val(),
-        };
-
-        if (procurement_product_id) {
-          if (!procurement_lot_id) {
-            toastr["warning"]("Procurement lot id must not be empty");
-            return;
+          // Clearing selected value
+          $("#procurement_product").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
           }
-
-          url = "/api/v1/procurement/product/update";
-
-          input_params = {
-            procurement_product_id,
-            procurement_product_data: {
-              procurement_lot_id,
-              ...input_params,
-            },
-          };
-        }
-
-        $.ajax({
-          url,
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            toastr["success"](data?.message);
-
-            $("#closeProcurementPanelBtn").click();
-
-            if ($("#view_lot_no").text()) {
-              loadProcurementProductTableData($("#view_lot_no").text());
-            }
-
-            loadProcurementTableData();
-
-            resetAllInputs();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      $("#resetProcurementDataBtn").on("click", resetAllInputs);
-
-      // ----------------------------------------------------------
-      // ----------------------- Adjustment -----------------------
-      // ----------------------------------------------------------
-
-      $(".adjustmentMenu").click(function () {
-        $(".menu-container").addClass("d-none");
-
-        $(".adjustmentContainer").removeClass("d-none");
-        $(".adjustmentContainer").addClass("d-block");
-
-        loadAdjustmentTableData();
+        },
       });
+    }
 
-      function loadAdjustmentTableData() {
-        $("#adjustmentTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/procurement/product/get/all",
-            error: function (xhr, error, code) {
-              $("#adjustmentTable").DataTable().destroy();
-              $("#adjustmentTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
+    function loadProcurementUnits() {
+      // Load Products
+      $.ajax({
+        url: `/api/v1/master/unit/get/all?unit_type=Collection Center`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_unit").select2({
+            placeholder: "Choose an unit",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.unit_code,
+              };
+            }),
+          });
 
-              toastr.error(xhr.responseJSON.message, "Error");
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: "ProcurementLot.procurement_lot" },
-            { data: "ProductMaster.product_name" },
-            { data: "procurement_quantity" },
-            { data: "adjusted_quantity" },
-            { data: "procurement_price" },
-            { data: "adjusted_price" },
-            { data: "adjusted_reason" },
-            { data: "adjusted_surveyor" },
-            { data: "created_at" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span procurement_product_id=${row["id"]}>${data}</span>`;
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${
-                  data || 0
-                }></span>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${
-                  data || 0
-                }></span>`;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="text" style="width:300px" class="form-control adjusted_reason" placeholder="Type the reason for adjustment" value=${
-                  data || ""
-                }></span>`;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="text" style="width:200px" class="form-control adjusted_surveyor" placeholder="Type the adjustment servoyer name" value=${
-                  data || ""
-                }></span>`;
-              },
-            },
-            {
-              targets: [8],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
-              },
-            },
-          ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
-        });
-      }
-
-      let original_adjusted_quantity = "";
-      let original_adjusted_price = "";
-      let original_adjusted_reason = "";
-      let original_adjusted_surveyor = "";
-
-      $(document).on("focus", "#adjustmentTable > tbody > tr", function (e) {
-        original_adjusted_quantity = $(e.target)
-          .closest("tr")
-          .find(".adjusted_quantity")
-          .val();
-        original_adjusted_price = $(e.target)
-          .closest("tr")
-          .find(".adjusted_price")
-          .val();
-        original_adjusted_reason = $(e.target)
-          .closest("tr")
-          .find(".adjusted_reason")
-          .val();
-        original_adjusted_surveyor = $(e.target)
-          .closest("tr")
-          .find(".adjusted_surveyor")
-          .val();
-      });
-
-      $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
-        const adjusted_quantity = $(e.target)
-          .closest("tr")
-          .find(".adjusted_quantity");
-        const adjusted_price = $(e.target)
-          .closest("tr")
-          .find(".adjusted_price");
-        const adjusted_reason = $(e.target)
-          .closest("tr")
-          .find(".adjusted_reason");
-        const adjusted_surveyor = $(e.target)
-          .closest("tr")
-          .find(".adjusted_surveyor");
-
-        if (
-          adjusted_quantity.val() == 0 ||
-          adjusted_price.val() == 0 ||
-          !adjusted_reason.val() ||
-          !adjusted_surveyor.val()
-        ) {
-          // toastr["warning"]("Fill all the required fields");
-          // if (adjusted_quantity.val() == 0) {
-          //   adjusted_quantity.focus();
-          // } else if (adjusted_price.val() == 0) {
-          //   adjusted_price.focus();
-          // } else if (!adjusted_reason.val()) {
-          //   adjusted_reason.focus();
-          // } else if (!adjusted_surveyor.val()) {
-          //   adjusted_surveyor.focus();
-          // }
-        } else {
-          if (
-            original_adjusted_quantity != adjusted_quantity.val() ||
-            original_adjusted_price != adjusted_price.val() ||
-            original_adjusted_reason != adjusted_reason.val() ||
-            original_adjusted_surveyor != adjusted_surveyor.val()
-          ) {
-            saveAdjustment(
-              $(e.target)
-                .closest("tr")
-                .eq(0)
-                .find("span")
-                .attr("procurement_product_id"),
-              adjusted_quantity.val(),
-              adjusted_price.val(),
-              adjusted_reason.val(),
-              adjusted_surveyor.val()
-            );
+          // Clearing selected value
+          $("#procurement_unit").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
           }
-        }
+        },
       });
+    }
 
-      function saveAdjustment(
-        procurement_product_id,
-        adjusted_quantity,
-        adjusted_price,
-        adjusted_reason,
-        adjusted_surveyor
-      ) {
-        if (!procurement_product_id) {
-          toastr["warning"]("Procurement product id must not be empty");
+    function loadProcurementSuppliers() {
+      // Load Suppliers
+      $.ajax({
+        url: "/api/v1/master/vendor/get/all",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_product_supplier").select2({
+            placeholder: "Choose a vendor",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.vendor_name,
+              };
+            }),
+          });
+
+          // Clearing selected value
+          $("#procurement_product_supplier").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function savePurchases() {
+      const procurement_lot_id =
+        $("#submitPurchases").attr("procurement_lot_id");
+      const procurement_product_id = $("#submitPurchases").attr(
+        "procurement_product_id"
+      );
+
+      let url = "/api/v1/procurement/product/create";
+      let input_params = {
+        procurement_date: $("#procurement_date").val(),
+        unit_master_id: $("#procurement_unit").val(),
+        product_master_id: $("#procurement_product").val(),
+        procurement_product_type: $("#procurement_product_type").val(),
+        procurement_quantity: $("#procurement_quantity").val(),
+        procurement_price: $("#procurement_price").val(),
+        vendor_master_id: $("#procurement_product_supplier").val(),
+        procurement_purchaser: $("#procurement_purchaser").val(),
+      };
+
+      if (procurement_product_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Procurement lot id must not be empty");
           return;
         }
 
-        const input_params = {
+        url = "/api/v1/procurement/product/update";
+
+        input_params = {
           procurement_product_id,
           procurement_product_data: {
-            adjusted_quantity,
-            adjusted_price,
-            adjusted_reason,
-            adjusted_surveyor,
+            procurement_lot_id,
+            ...input_params,
           },
         };
-
-        $.ajax({
-          url: "/api/v1/procurement/product/update",
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // toastr["success"](data?.message);
-            // loadAdjustmentTableData();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
       }
 
-      $("#resetAdjustmentDataBtn").on("click", resetAllInputs);
+      $.ajax({
+        url,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeProcurementPanelBtn").click();
+
+          if ($("#view_lot_no").text()) {
+            loadProcurementProductTableData($("#view_lot_no").text());
+          }
+
+          loadProcurementTableData();
+
+          resetAllInputs();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetProcurementDataBtn").on("click", resetAllInputs);
+
+    // ----------------------------------------------------------
+    // ----------------------- Adjustment -----------------------
+    // ----------------------------------------------------------
+
+    $(".adjustmentMenu").click(function () {
+      $(".menu-container").addClass("d-none");
+
+      $(".adjustmentContainer").removeClass("d-none");
+      $(".adjustmentContainer").addClass("d-block");
+
+      loadAdjustmentTableData();
     });
-  </script>
+
+    function loadAdjustmentTableData() {
+      $("#adjustmentTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/procurement/product/get/all",
+          error: function (xhr, error, code) {
+            $("#adjustmentTable").DataTable().destroy();
+            $("#adjustmentTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
+
+            toastr.error(xhr.responseJSON.message, "Error");
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: "ProcurementLot.procurement_lot" },
+          { data: "ProductMaster.product_name" },
+          { data: "procurement_quantity" },
+          { data: "adjusted_quantity" },
+          { data: "procurement_price" },
+          { data: "adjusted_price" },
+          { data: "adjusted_reason" },
+          { data: "adjusted_surveyor" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span procurement_product_id=${row["id"]}>${data}</span>`;
+            },
+          },
+          {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${data || 0
+                }></span>`;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${data || 0
+                }></span>`;
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="text" style="width:300px" class="form-control adjusted_reason" placeholder="Type the reason for adjustment" value=${data || ""
+                }></span>`;
+            },
+          },
+          {
+            targets: [7],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="text" style="width:200px" class="form-control adjusted_surveyor" placeholder="Type the adjustment servoyer name" value=${data || ""
+                }></span>`;
+            },
+          },
+          {
+            targets: [8],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              var strTime = hours + ":" + minutes + " " + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return (
+                day + "-" + month + "-" + date.getFullYear() + " " + strTime
+              );
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    let original_adjusted_quantity = "";
+    let original_adjusted_price = "";
+    let original_adjusted_reason = "";
+    let original_adjusted_surveyor = "";
+
+    $(document).on("focus", "#adjustmentTable > tbody > tr", function (e) {
+      original_adjusted_quantity = $(e.target)
+        .closest("tr")
+        .find(".adjusted_quantity")
+        .val();
+      original_adjusted_price = $(e.target)
+        .closest("tr")
+        .find(".adjusted_price")
+        .val();
+      original_adjusted_reason = $(e.target)
+        .closest("tr")
+        .find(".adjusted_reason")
+        .val();
+      original_adjusted_surveyor = $(e.target)
+        .closest("tr")
+        .find(".adjusted_surveyor")
+        .val();
+    });
+
+    $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
+      const adjusted_quantity = $(e.target)
+        .closest("tr")
+        .find(".adjusted_quantity");
+      const adjusted_price = $(e.target)
+        .closest("tr")
+        .find(".adjusted_price");
+      const adjusted_reason = $(e.target)
+        .closest("tr")
+        .find(".adjusted_reason");
+      const adjusted_surveyor = $(e.target)
+        .closest("tr")
+        .find(".adjusted_surveyor");
+
+      if (
+        adjusted_quantity.val() == 0 ||
+        adjusted_price.val() == 0 ||
+        !adjusted_reason.val() ||
+        !adjusted_surveyor.val()
+      ) {
+        // toastr["warning"]("Fill all the required fields");
+        // if (adjusted_quantity.val() == 0) {
+        //   adjusted_quantity.focus();
+        // } else if (adjusted_price.val() == 0) {
+        //   adjusted_price.focus();
+        // } else if (!adjusted_reason.val()) {
+        //   adjusted_reason.focus();
+        // } else if (!adjusted_surveyor.val()) {
+        //   adjusted_surveyor.focus();
+        // }
+      } else {
+        if (
+          original_adjusted_quantity != adjusted_quantity.val() ||
+          original_adjusted_price != adjusted_price.val() ||
+          original_adjusted_reason != adjusted_reason.val() ||
+          original_adjusted_surveyor != adjusted_surveyor.val()
+        ) {
+          saveAdjustment(
+            $(e.target)
+              .closest("tr")
+              .eq(0)
+              .find("span")
+              .attr("procurement_product_id"),
+            adjusted_quantity.val(),
+            adjusted_price.val(),
+            adjusted_reason.val(),
+            adjusted_surveyor.val()
+          );
+        }
+      }
+    });
+
+    function saveAdjustment(
+      procurement_product_id,
+      adjusted_quantity,
+      adjusted_price,
+      adjusted_reason,
+      adjusted_surveyor
+    ) {
+      if (!procurement_product_id) {
+        toastr["warning"]("Procurement product id must not be empty");
+        return;
+      }
+
+      const input_params = {
+        procurement_product_id,
+        procurement_product_data: {
+          adjusted_quantity,
+          adjusted_price,
+          adjusted_reason,
+          adjusted_surveyor,
+        },
+      };
+
+      $.ajax({
+        url: "/api/v1/procurement/product/update",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // toastr["success"](data?.message);
+          // loadAdjustmentTableData();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetAdjustmentDataBtn").on("click", resetAllInputs);
+  });
+</script>
+
 </html>

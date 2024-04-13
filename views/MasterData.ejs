@@ -1442,8 +1442,10 @@
 
 <script type="text/javascript">
   jQuery(document).ready(function ($) {
-
     // Declarations
+
+    App.checkAccess();
+
     new PerfectScrollbar(".slideInPanel", {
       suppressScrollX: true,
     }).update()
