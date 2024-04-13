@@ -354,7 +354,9 @@ export const GetNames = ({
           [
             sequelize.literal(
               `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and ${
-                dispatch_id != "null" ? "id != '" + dispatch_id + "' and" : ""
+                dispatch_id != "null" && dispatch_id != undefined
+                  ? "dispatches.id != '" + dispatch_id + "' and"
+                  : ""
               } dispatches.is_active = true)`
             ),
             "dispatched_quantity",

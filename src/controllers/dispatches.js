@@ -373,7 +373,9 @@ export const GetProductNames = ({
           [
             sequelize.literal(
               `(SELECT CASE WHEN SUM(peeling_quantity) IS NULL THEN 0 ELSE SUM(peeling_quantity) END FROM peeling WHERE ${
-                peeling_id != "null" ? "id != '" + peeling_id + "' and" : ""
+                peeling_id != "null" && peeling_id != undefined
+                  ? "id != '" + peeling_id + "' and"
+                  : ""
               } dispatch_id = "Dispatches".id and peeling.is_active = true)`
             ),
             "peeling_quantity",
