@@ -286,6 +286,27 @@
       .canvasjs-chart-credit {
         display: none;
       }
+
+      /* Styles for screens smaller than 600px */
+      @media screen and (max-width: 600px) {
+        .dashboardCard {
+          width: 100%;
+        }
+      }
+
+      /* Styles for screens between 600px and 900px */
+      @media screen and (min-width: 600px) and (max-width: 900px) {
+        .dashboardCard {
+          width: 49%;
+        }
+      }
+
+      /* Styles for screens larger than 900px */
+      @media screen and (min-width: 900px) {
+        .dashboardCard {
+          width: 49%;
+        }
+      }
     </style>
   </head>
 
@@ -334,35 +355,54 @@
       <!-- ------------------------------------------ Dashboard Container ------------------------------------------------ -->
       <!-- ------------------------------------------------------------------------------------------------------------- -->
       <div class="menu-container dashboardContainer">
-        <div class="row">
+        <div class="row d-flex justify-content-between">
           <div
-            class="mt-4 border rounded mx-2 p-4"
-            style="height: 50vh; width: 49%"
+            class="dashboardCard mt-4 border rounded p-4"
+            style="height: 50vh"
           >
-            <div
-              id="totalSpendChart"
-              class=""
-              style="height: 100%; width: 100%"
-            ></div>
+            <div class="position-relative" style="z-index: 999999">
+              <span class="position-absolute fw-bold fs-5" style="left: 0"
+                >Purchase Order Status</span
+              >
+              <select
+                id="costAnalysisFilter1"
+                class="form-select form-select-sm position-absolute"
+                style="
+                  height: 28px !important;
+                  padding-top: 5px;
+                  right: 0;
+                  width: 7rem;
+                "
+              >
+                <option value="7">7 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div id="totalSpendChart" class="mt-5" style="height: 100%"></div>
           </div>
           <div
-            class="mt-4 border rounded mx-2 p-4"
-            style="height: 50vh; width: 49%"
+            class="dashboardCard mt-4 border rounded p-4"
+            style="height: 50vh"
           >
-            <div
-              class="position-relative d-flex justify-content-between"
-              style="z-index: 999999"
-            >
-              <span class="position-absolute fw-bold" style="left: 0"
+            <div class="position-relative" style="z-index: 999999">
+              <span class="position-absolute fw-bold fs-5" style="left: 0"
                 >Procurement Cost Analysis</span
               >
               <select
                 id="costAnalysisFilter"
                 class="form-select form-select-sm position-absolute"
-                style="right: 0; width: 7rem"
+                style="
+                  height: 28px !important;
+                  padding-top: 5px;
+                  right: 0;
+                  width: 7rem;
+                "
               >
                 <option value="7">7 days</option>
-                <option value="30">30 days</option>
+                <option value="30" selected>30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
                 <!-- <option value="Date Range">Custom Range</option> -->
@@ -371,14 +411,14 @@
             <div
               id="procurementCostAnalysisChart"
               class=""
-              style="height: 100%; width: 100%"
+              style="height: 100%"
             ></div>
           </div>
         </div>
-        <div class="row">
+        <div class="row d-flex justify-content-between">
           <div
-            class="mt-4 border rounded mx-2 p-4"
-            style="height: 50vh; width: 49%"
+            class="dashboardCard mt-4 border rounded p-4"
+            style="height: 50vh"
           >
             <div
               id="inventoryLevelsChart"
@@ -387,8 +427,8 @@
             ></div>
           </div>
           <div
-            class="mt-4 border rounded mx-2 p-4"
-            style="height: 50vh; width: 49%"
+            class="dashboardCard mt-4 border rounded p-4"
+            style="height: 50vh"
           >
             <div
               id="monthlySpendingChart"
@@ -475,7 +515,7 @@
                   />
                 </div>
                 <div class="form-group my-2">
-                  <label for="procurement_price">Price (USD)</label>
+                  <label for="procurement_price">Price (INR per kg)</label>
                   <input
                     id="procurement_price"
                     maxlength="10"
@@ -794,7 +834,7 @@
 
       // Loading Charts
       loadTotalSpendChart();
-      loadProcurementCostAnalysisChart("days", "7");
+      loadProcurementCostAnalysisChart("days", $("#costAnalysisFilter").val());
       inventoryLevelsChart();
       monthlySpendingChart();
 
@@ -807,9 +847,6 @@
           backgroundColor: "#f7f9fd",
           animationEnabled: true,
           theme: "light2",
-          title: {
-            text: "Total Procurement Analysis",
-          },
           // axisX: {
           //   valueFormatString: "MMM",
           // },
@@ -964,8 +1001,8 @@
               data: [
                 {
                   showInLegend: true,
-                  toolTipContent: "{name}: <strong>{y} kg</strong>",
-                  indexLabel: "{name} ({y} kg)",
+                  toolTipContent: "{name}: <strong>₹ {y}</strong>",
+                  indexLabel: "{name} (₹ {y})",
                   type: "pie",
                   dataPoints,
                 },

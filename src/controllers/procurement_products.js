@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models, { sequelize } from "../../models";
+import models, { Sequelize, sequelize } from "../../models";
 import procurementLotsRoute from "../routes/procurement_lots";
 
 export const Insert = async (profile_id, procurement_data) => {
@@ -519,12 +519,15 @@ export const GetCostAnalysisData = ({ from_date, to_date }) => {
     try {
       let where = {
         is_active: true,
-        created_at: {
-          [Op.between]: [
-            new Date(from_date || null),
-            new Date(to_date || null),
-          ],
-        },
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("ProcurementProducts.created_at")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
       };
 
       const output_data = await models.ProcurementProducts.findAll({
