@@ -68,6 +68,9 @@
   <script src="/public/plugins/tippy/popper.min.js"></script>
   <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
+  <!-- Popper -->
+  <script src="/public/plugins/popper/popper.umd.min.js"></script>
+
   <!-- Canvas JS -->
   <script src="/public/plugins/canvasJs/canvasjs.min.js"></script>
 
@@ -98,6 +101,7 @@
       body {
         font-family: "CerebriSansPro-Regular";
         background-color: #f7f9fd;
+        text-transform: none;
       }
 
       #closeVehiclePanelBtn,
@@ -119,7 +123,23 @@
 
       .bg-danger,
       .btn-red {
-        background-color: #ea5455;
+        background-color: #e8763e !important;
+        text-transform: none;
+      }
+
+      .procurementSpendBtn.btn-danger {
+        background-color: rgba(31, 45, 62, 0.8);
+        text-transform: none;
+      }
+
+      .procurementSpendBtn.btn-outline-danger {
+        border-color: rgba(31, 45, 62, 0.8) !important;
+        color: rgba(31, 45, 62, 0.8);
+        text-transform: none;
+      }
+
+      .procurementSpendBtn.btn-outline-danger:hover {
+        color: rgba(31, 45, 62, 0.8);
       }
 
       .topMenu-item,
@@ -287,24 +307,78 @@
         display: none;
       }
 
-      /* Styles for screens smaller than 600px */
-      @media screen and (max-width: 600px) {
+      /* Styles for mobile screens */
+      @media screen and (max-width: 480px) {
         .dashboardCard {
           width: 100%;
         }
-      }
 
-      /* Styles for screens between 600px and 900px */
-      @media screen and (min-width: 600px) and (max-width: 900px) {
-        .dashboardCard {
-          width: 49%;
+        .chartBtnTxt {
+          display: none;
+        }
+
+        .chartBtnIcn {
+          display: block;
         }
       }
 
-      /* Styles for screens larger than 900px */
-      @media screen and (min-width: 900px) {
+      /* Styles for iPads, tablets */
+      @media screen and (min-width: 481px) and (max-width: 768px) {
+        .dashboardCard {
+          width: 100%;
+        }
+
+        .chartBtnTxt {
+          display: none;
+        }
+
+        .chartBtnIcn {
+          display: block;
+        }
+      }
+
+      /* Styles for Small screens, laptops */
+      @media screen and (min-width: 769px) and (max-width: 1024px) {
+        .dashboardCard {
+          width: 100%;
+        }
+
+        .chartBtnTxt {
+          display: block;
+        }
+
+        .chartBtnIcn {
+          display: none;
+        }
+      }
+
+      /* Styles for Desktops, large screens */
+      @media screen and (min-width: 1025px) and (max-width: 1200px) {
         .dashboardCard {
           width: 49%;
+        }
+
+        .chartBtnTxt {
+          display: block;
+        }
+
+        .chartBtnIcn {
+          display: none;
+        }
+      }
+
+      /* Styles for extra large screens */
+      @media screen and (min-width: 1201px) {
+        .dashboardCard {
+          width: 49.5%;
+        }
+
+        .chartBtnTxt {
+          display: block;
+        }
+
+        .chartBtnIcn {
+          display: none;
         }
       }
     </style>
@@ -358,9 +432,29 @@
         <div class="row d-flex justify-content-between">
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Top Suppliers by Procurement Spend</span>
+              <span class="fw-bold">Procurement Spend</span>
+              <div class="btn-group btn-group-sm">
+                <div
+                  class="btn btn-danger procurementSpendBtn supplierFilter"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="by Suppliers"
+                >
+                  <span class="chartBtnTxt">Supplier</span>
+                  <i class="fa-solid fa-users chartBtnIcn"></i>
+                </div>
+                <div
+                  class="btn btn-outline-danger procurementSpendBtn productFilter"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="by Products"
+                >
+                  <span class="chartBtnTxt">Product</span>
+                  <i class="fa-solid fa-users chartBtnIcn"></i>
+                </div>
+              </div>
               <select
-                id="procurementSpendByVendorsChartFilter"
+                id="procurementSpendChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -377,18 +471,19 @@
               </select>
             </div>
             <div class="py-4" style="height: 50vh">
-              <div
-                id="procurementSpendByVendorsChart"
-                style="height: 100%"
-              ></div>
+              <div id="procurementSpend" style="height: 100%"></div>
             </div>
           </div>
 
-          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+          <!-- <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Product-wise Procurement Spend</span>
+              <span class="fw-bold">Procurement Spend</span>
+              <div class="btn-group btn-group-sm">
+                <div class="btn btn-danger">Supplier</div>
+                <div class="btn btn-outline-danger">Product</div>
+              </div>
               <select
-                id="procurementSpendByProductFilter"
+                id="procurementSpendByProductsChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -401,25 +496,21 @@
                 <option value="30" selected>30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
-                <!-- <option value="Date Range">Custom Range</option> -->
-              </select>
-            </div>
-            <div class="pb-4" style="height: 50vh">
-              <div
-                id="procurementSpendByProductChart"
-                class=""
-                style="height: 100%"
-              ></div>
-            </div>
-          </div>
+                <option value="Date Range">Custom Range</option> 
+        </select>
+      </div>
+      <div class="supplierChart pb-4" style="height: 50vh">
+        <div id="procurementSpendByProductChart" class="" style="height: 100%"></div>
+      </div>
+    </div> -->
         </div>
 
         <div class="row d-flex justify-content-between">
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Inventory Levels</span>
+              <span class="fw-bold">Inventory Ageing Analysis</span>
               <select
-                id="inventoryLevelsChartFilter"
+                id="inventoryAgeingAnalysisChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -436,15 +527,15 @@
               </select>
             </div>
             <div class="py-4" style="height: 50vh">
-              <div id="inventoryLevelsChart" style="height: 100%"></div>
+              <div id="inventoryAgeingAnalysisChart" style="height: 100%"></div>
             </div>
           </div>
 
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Monthly Spending</span>
+              <span class="fw-bold">Supplier Performance Scorecard</span>
               <select
-                id="monthlySpendingChartFilter"
+                id="supplierPerformanceScorecardChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -461,7 +552,10 @@
               </select>
             </div>
             <div class="py-4" style="height: 50vh">
-              <div id="monthlySpendingChart" style="height: 100%"></div>
+              <div
+                id="supplierPerformanceScorecardChart"
+                style="height: 100%"
+              ></div>
             </div>
           </div>
         </div>
@@ -735,6 +829,13 @@
       // Declarations
       App.checkAccess();
 
+      var tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      );
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+
       new PerfectScrollbar(".slideInPanel", {
         suppressScrollX: true,
       }).update();
@@ -861,26 +962,35 @@
       // ---------------------------------------------------------
 
       // Loading Charts
-      loadProcurementSpendByVendorsChartChart(
-        "days",
-        $("#procurementSpendByVendorsChartFilter").val()
-      );
-      loadProcurementSpendByProductChart(
-        "days",
-        $("#procurementSpendByProductFilter").val()
-      );
-      inventoryLevelsChart();
-      monthlySpendingChart();
+      loadProcurementSpendByVendorsChart("days", "30");
+      loadInventoryAgeingAnalysisChart();
+      loadSupplierPerformanceScorecardChart();
 
-      $(document).on("change", "#procurementSpendByVendorsChartFilter", (e) => {
-        loadProcurementSpendByVendorsChartChart("days", $(e.target).val());
+      $(document).on("change", "#procurementSpendChartFilter", (e) => {
+        loadProcurementSpendChartChart("days", $(e.target).val());
       });
 
-      $(document).on("change", "#procurementSpendByProductFilter", (e) => {
-        loadProcurementSpendByProductChart("days", $(e.target).val());
+      $(document).on("click", ".supplierFilter", (e) => {
+        $(".productFilter").addClass("btn-outline-danger");
+        $(".productFilter").removeClass("btn-danger");
+
+        $(".supplierFilter").removeClass("btn-outline-danger");
+        $(".supplierFilter").addClass("btn-danger");
+
+        loadProcurementSpendByVendorsChart("days", "30");
       });
 
-      function loadProcurementSpendByVendorsChartChart(
+      $(document).on("click", ".productFilter", (e) => {
+        $(".supplierFilter").addClass("btn-outline-danger");
+        $(".supplierFilter").removeClass("btn-danger");
+
+        $(".productFilter").removeClass("btn-outline-danger");
+        $(".productFilter").addClass("btn-danger");
+
+        loadProcurementSpendByProductsChart("days", "30");
+      });
+
+      function loadProcurementSpendByVendorsChart(
         filter_type,
         filter_days,
         from_date,
@@ -930,17 +1040,18 @@
 
             data?.data.map((item) => {
               dataPoints.push({
-                name: item?.VendorMaster?.vendor_name,
+                label: item?.VendorMaster?.vendor_name,
                 y: parseFloat(item.total_amount) || 0,
               });
             });
 
-            let procurementSpendByVendorsChartOptions = {
+            let procurementSpendChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
               theme: "light2",
               axisX: {
                 interval: 1,
+                // title: "Vendors",
               },
               legend: {
                 horizontalAlign: "middle",
@@ -953,16 +1064,14 @@
                   indexLabel: "₹ {y}",
                   type: "bar",
                   axisYType: "secondary",
-                  // indexLabelFontColor: "#EEEEEE",
-                  // indexLabelPlacement: "inside",
                   dataPoints,
                 },
               ],
             };
 
             new CanvasJS.Chart(
-              "procurementSpendByVendorsChart",
-              procurementSpendByVendorsChartOptions
+              "procurementSpend",
+              procurementSpendChartOptions
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -975,7 +1084,7 @@
         });
       }
 
-      function loadProcurementSpendByProductChart(
+      function loadProcurementSpendByProductsChart(
         filter_type,
         filter_days,
         from_date,
@@ -1025,15 +1134,19 @@
 
             data?.data.map((item) => {
               dataPoints.push({
-                name: item?.ProductMaster?.product_name,
+                label: item?.ProductMaster?.product_name,
                 y: parseFloat(item.total_amount) || 0,
               });
             });
 
-            let procurementSpendByProductChartOptions = {
+            let procurementSpendChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
               theme: "light2",
+              axisX: {
+                interval: 1,
+                // title: "Product",
+              },
               legend: {
                 horizontalAlign: "middle",
                 cursor: "pointer",
@@ -1041,18 +1154,18 @@
               },
               data: [
                 {
-                  showInLegend: true,
-                  toolTipContent: "{name}: <strong>₹ {y}</strong>",
-                  indexLabel: "{name} (₹ {y})",
-                  type: "pie",
+                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                  indexLabel: "₹ {y}",
+                  type: "bar",
+                  axisYType: "secondary",
                   dataPoints,
                 },
               ],
             };
 
             new CanvasJS.Chart(
-              "procurementSpendByProductChart",
-              procurementSpendByProductChartOptions
+              "procurementSpend",
+              procurementSpendChartOptions
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -1065,58 +1178,46 @@
         });
       }
 
-      function inventoryLevelsChart() {
-        let inventoryLevelsChartOptions = {
+      function loadInventoryAgeingAnalysisChart() {
+        let inventoryAgeingAnalysisChartOptions = {
           backgroundColor: "#f7f9fd",
           animationEnabled: true,
           theme: "light2",
-          title: {
-            text: "Inventory Levels",
-          },
           axisX: {
-            valueFormatString: "MMM",
-          },
-          axisY: {
-            title: "Vendors",
-            prefix: "$",
+            interval: 1,
           },
           data: [
             {
-              yValueFormatString: "$#,###",
-              xValueFormatString: "MMMM",
               type: "spline",
               dataPoints: [
-                { x: new Date(2017, 0), y: 25060 },
-                { x: new Date(2017, 1), y: 27980 },
-                { x: new Date(2017, 2), y: 33800 },
-                { x: new Date(2017, 3), y: 49400 },
-                { x: new Date(2017, 4), y: 40260 },
-                { x: new Date(2017, 5), y: 33900 },
-                { x: new Date(2017, 6), y: 48000 },
-                { x: new Date(2017, 7), y: 31500 },
-                { x: new Date(2017, 8), y: 32300 },
-                { x: new Date(2017, 9), y: 42000 },
-                { x: new Date(2017, 10), y: 52160 },
-                { x: new Date(2017, 11), y: 49400 },
+                { label: "AJs", y: 25060 },
+                { label: "AJs", y: 27980 },
+                { label: "AJs", y: 33800 },
+                { label: "AJs", y: 49400 },
+                { label: "AJs", y: 40260 },
+                { label: "AJs", y: 33900 },
+                { label: "AJs", y: 48000 },
+                { label: "AJs", y: 31500 },
+                { label: "AJs", y: 32300 },
+                { label: "AJs", y: 42000 },
+                { label: "AJs", y: 52160 },
+                { label: "AJs", y: 49400 },
               ],
             },
           ],
         };
 
         new CanvasJS.Chart(
-          "inventoryLevelsChart",
-          inventoryLevelsChartOptions
+          "inventoryAgeingAnalysisChart",
+          inventoryAgeingAnalysisChartOptions
         ).render();
       }
 
-      function monthlySpendingChart() {
-        let monthlySpendingChartOptions = {
+      function loadSupplierPerformanceScorecardChart() {
+        let supplierPerformanceScorecardChartOptions = {
           backgroundColor: "#f7f9fd",
           animationEnabled: true,
           theme: "light2",
-          title: {
-            text: "Spending Pattern",
-          },
           axisX: {
             valueFormatString: "MMM",
           },
@@ -1148,8 +1249,8 @@
         };
 
         new CanvasJS.Chart(
-          "monthlySpendingChart",
-          monthlySpendingChartOptions
+          "supplierPerformanceScorecardChart",
+          supplierPerformanceScorecardChartOptions
         ).render();
       }
 

@@ -595,7 +595,7 @@ export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
           },
         ],
         where,
-        order: [["total_amount", "desc"]],
+        order: [["total_amount", "asc"]],
         group: ["product_master_id", "ProductMaster.id"],
       });
 
