@@ -1,4 +1,4 @@
-export const getCostAnalysisSchema = {
+export const getProcurementSpendByVendorsSchema = {
   schema: {
     query: {
       type: "object",

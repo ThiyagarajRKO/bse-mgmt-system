@@ -358,9 +358,9 @@
         <div class="row d-flex justify-content-between">
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Purchase Order Status</span>
+              <span class="fw-bold">Top Suppliers by Procurement Spend</span>
               <select
-                id="costAnalysisFilter1"
+                id="procurementSpendByVendorsChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -377,15 +377,18 @@
               </select>
             </div>
             <div class="py-4" style="height: 50vh">
-              <div id="totalSpendChart" style="height: 100%"></div>
+              <div
+                id="procurementSpendByVendorsChart"
+                style="height: 100%"
+              ></div>
             </div>
           </div>
 
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
             <div class="d-flex justify-content-between">
-              <span class="fw-bold">Procurement Cost Analysis</span>
+              <span class="fw-bold">Product-wise Procurement Spend</span>
               <select
-                id="costAnalysisFilter"
+                id="procurementSpendByProductFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -403,7 +406,7 @@
             </div>
             <div class="pb-4" style="height: 50vh">
               <div
-                id="procurementCostAnalysisChart"
+                id="procurementSpendByProductChart"
                 class=""
                 style="height: 100%"
               ></div>
@@ -858,100 +861,26 @@
       // ---------------------------------------------------------
 
       // Loading Charts
-      loadTotalSpendChart();
-      loadProcurementCostAnalysisChart("days", $("#costAnalysisFilter").val());
+      loadProcurementSpendByVendorsChartChart(
+        "days",
+        $("#procurementSpendByVendorsChartFilter").val()
+      );
+      loadProcurementSpendByProductChart(
+        "days",
+        $("#procurementSpendByProductFilter").val()
+      );
       inventoryLevelsChart();
       monthlySpendingChart();
 
-      $(document).on("change", "#costAnalysisFilter", (e) => {
-        loadProcurementCostAnalysisChart("days", $(e.target).val());
+      $(document).on("change", "#procurementSpendByVendorsChartFilter", (e) => {
+        loadProcurementSpendByVendorsChartChart("days", $(e.target).val());
       });
 
-      function loadTotalSpendChart() {
-        let totalSpendChartOptions = {
-          backgroundColor: "#f7f9fd",
-          animationEnabled: true,
-          theme: "light2",
-          // axisX: {
-          //   valueFormatString: "MMM",
-          // },
-          // axisY: {
-          //   title: "Quantity (in KG)",
-          //   // prefix: "₹",
-          // },
-          legend: {
-            // verticalAlign: "top",
-            // horizontalAlign: "center",
-            cursor: "pointer",
-            itemclick: function (e) {
-              if (
-                typeof e.dataSeries.visible === "undefined" ||
-                e.dataSeries.visible
-              ) {
-                e.dataSeries.visible = false;
-              } else {
-                e.dataSeries.visible = true;
-              }
-              e.chart.render();
-            },
-          },
-          data: [
-            {
-              // yValueFormatString: "$#,###",
-              type: "stackedColumn",
-              showInLegend: "true",
-              indexLabelFontColor: "white",
-              legendText: "Actual",
-              toolTipContent:
-                "Vendor Name: <b>{indexLabel}</b><br />Quantity: <b>{y}</b><br />On: <b>{x}</b>",
-              dataPoints: [
-                { label: "AJs", y: 25060 },
-                { label: "AJs", y: 27980 },
-                { label: "AJs", y: 27980 },
-                { label: "AJs", y: 27980 },
-                { label: "AJs", y: 27980 },
-                { label: "AJs", y: 47800 },
-                { label: "AJs", y: 49400 },
-                { label: "AJs", y: 40260 },
-                { label: "AJs", y: 33900 },
-                { label: "AJs", y: 48000 },
-                { label: "AJs", y: 41300 },
-                { label: "AJs", y: 23400 },
-                { label: "AJs", y: 24500 },
-                { label: "AJs", y: 23500 },
-              ],
-            },
-            {
-              // yValueFormatString: "$#,###",
-              type: "stackedColumn",
-              showInLegend: "true",
-              name: "Adjusted",
-              toolTipContent:
-                "Vendor Name: <b>{indexLabel}</b><br />Amount Spent: <b>{y}</b><br />On: <b>{x}</b>",
-              dataPoints: [
-                { label: "AJs", y: 560 },
-                { label: "AJs", y: 7980 },
-                { label: "AJs", y: 7980 },
-                { label: "AJs", y: 800 },
-                { label: "AJs", y: 9400 },
-                { label: "AJs", y: 8260 },
-                { label: "AJs", y: 3900 },
-                { label: "AJs", y: 8000 },
-                { label: "AJs", y: 1500 },
-                { label: "AJs", y: 2300 },
-                { label: "AJs", y: 3300 },
-                { label: "AJs", y: 6300 },
-                { label: "AJs", y: 1300 },
-                { label: "AJs", y: 9300 },
-              ],
-            },
-          ],
-        };
+      $(document).on("change", "#procurementSpendByProductFilter", (e) => {
+        loadProcurementSpendByProductChart("days", $(e.target).val());
+      });
 
-        new CanvasJS.Chart("totalSpendChart", totalSpendChartOptions).render();
-      }
-
-      function loadProcurementCostAnalysisChart(
+      function loadProcurementSpendByVendorsChartChart(
         filter_type,
         filter_days,
         from_date,
@@ -990,7 +919,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/cost/analysis?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/v1/procurement/product/chart/spend/by/vendor?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1000,24 +929,111 @@
             let dataPoints = [];
 
             data?.data.map((item) => {
-              let weight = item?.total_amount
-                ?.toFixed(2)
-                .replace(/(\d)(?=(\d{3})+\.)/g, "$1,")
-                .toString();
+              dataPoints.push({
+                name: item?.VendorMaster?.vendor_name,
+                y: parseFloat(item.total_amount) || 0,
+              });
+            });
 
+            let procurementSpendByVendorsChartOptions = {
+              backgroundColor: "#f7f9fd",
+              animationEnabled: true,
+              theme: "light2",
+              axisX: {
+                interval: 1,
+              },
+              legend: {
+                horizontalAlign: "middle",
+                cursor: "pointer",
+                itemclick: explodePie,
+              },
+              data: [
+                {
+                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                  indexLabel: "₹ {y}",
+                  type: "bar",
+                  axisYType: "secondary",
+                  // indexLabelFontColor: "#EEEEEE",
+                  // indexLabelPlacement: "inside",
+                  dataPoints,
+                },
+              ],
+            };
+
+            new CanvasJS.Chart(
+              "procurementSpendByVendorsChart",
+              procurementSpendByVendorsChartOptions
+            ).render();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadProcurementSpendByProductChart(
+        filter_type,
+        filter_days,
+        from_date,
+        to_date
+      ) {
+        if (filter_type == "days") {
+          switch (filter_days) {
+            case "7":
+              var d = new Date();
+              d.setDate(d.getDate() - 7);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "90":
+              var d = new Date();
+              d.setDate(d.getDate() - 90);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "180":
+              var d = new Date();
+              d.setDate(d.getDate() - 180);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            default:
+              var d = new Date();
+              d.setDate(d.getDate() - 30);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+          }
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/chart/spend/by/product?from_date=${from_date}&to_date=${to_date}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            let dataPoints = [];
+
+            data?.data.map((item) => {
               dataPoints.push({
                 name: item?.ProductMaster?.product_name,
                 y: parseFloat(item.total_amount) || 0,
               });
             });
 
-            let supplierPerformanceChartoptions = {
+            let procurementSpendByProductChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
               theme: "light2",
-              // title: {
-              //   text: "Procurement Cost Analysis",
-              // },
               legend: {
                 horizontalAlign: "middle",
                 cursor: "pointer",
@@ -1035,8 +1051,8 @@
             };
 
             new CanvasJS.Chart(
-              "procurementCostAnalysisChart",
-              supplierPerformanceChartoptions
+              "procurementSpendByProductChart",
+              procurementSpendByProductChartOptions
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {

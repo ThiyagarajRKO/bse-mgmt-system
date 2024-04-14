@@ -514,7 +514,53 @@ export const Delete = ({ profile_id, id }) => {
 // ----------------------------------- Charts -------------------------------------
 // --------------------------------------------------------------------------------
 
-export const GetCostAnalysisData = ({ from_date, to_date }) => {
+export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("ProcurementProducts.created_at")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          "vendor_master_id",
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+        ],
+        include: [
+          {
+            attributes: ["id", "vendor_name"],
+            model: models.VendorMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        order: [["total_amount", "asc"]],
+        group: ["vendor_master_id", "VendorMaster.id"],
+      });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -549,10 +595,9 @@ export const GetCostAnalysisData = ({ from_date, to_date }) => {
           },
         ],
         where,
+        order: [["total_amount", "desc"]],
         group: ["product_master_id", "ProductMaster.id"],
       });
-
-      [];
 
       resolve(output_data);
     } catch (err) {
