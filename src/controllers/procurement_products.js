@@ -1,6 +1,5 @@
 import { Op } from "sequelize";
 import models, { Sequelize, sequelize } from "../../models";
-import procurementLotsRoute from "../routes/procurement_lots";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -597,6 +596,47 @@ export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
         where,
         order: [["total_amount", "asc"]],
         group: ["product_master_id", "ProductMaster.id"],
+      });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("created_at")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        attributes: [
+          [
+            Sequelize.literal(
+              `CONCAT(EXTRACT(YEAR FROM created_at), '-', EXTRACT(MONTH FROM created_at))`
+            ),
+            "yearMonth",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+        ],
+        where,
+        order: [["yearMonth", "asc"]],
+        group: ["yearMonth"],
       });
 
       resolve(output_data);

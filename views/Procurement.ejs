@@ -101,7 +101,7 @@
       body {
         font-family: "CerebriSansPro-Regular";
         background-color: #f7f9fd;
-        text-transform: none;
+        text-transform: none !important;
       }
 
       #closeVehiclePanelBtn,
@@ -121,6 +121,10 @@
         border-right: 0px solid #414a57;
       }
 
+      .btn {
+        text-transform: none;
+      }
+
       .bg-danger,
       .btn-red {
         background-color: #e8763e !important;
@@ -132,31 +136,36 @@
         text-transform: none;
       }
 
-      .procurementSpendBtn.btn-outline-danger {
-        border-color: rgba(31, 45, 62, 0.8) !important;
-        color: rgba(31, 45, 62, 0.8);
+      .procurementSpendBtn.btn-danger:hover {
+        background-color: rgba(31, 45, 62, 0.8);
         text-transform: none;
       }
 
-      .procurementSpendBtn.btn-outline-danger:hover {
-        color: rgba(31, 45, 62, 0.8);
+      .procurementSpendBtn.btn-outline-danger {
+        border-color: rgba(31, 45, 62, 0.8) !important;
+        color: rgba(31, 45, 62, 0.8) !important;
+        text-transform: none;
+        box-shadow: none !important;
+        /* --webkit-background-clip: padding-box;
+        background-clip: padding-box; */
       }
 
-      .topMenu-item,
-      .topSubMenuContainer {
+      .procurementSpendBtn.btn-outline-danger:hover {
+        border-color: rgba(31, 45, 62, 0.8) !important;
+        color: rgba(31, 45, 62, 0.8) !important;
+        /* -webkit-background-clip: padding-box;
+        background-clip: padding-box; */
+      }
+
+      .topMenu-item {
         display: block;
-        color: rgb(44 44 44);
         text-align: center;
-        /* padding: 0px; */
         text-decoration: none;
-        border-right: 0px solid #1f2d3e;
-        /* padding-bottom: 3px !important; */
         width: 100px;
         cursor: pointer;
       }
 
-      .topMenu-item:hover:not(.topMenu-item-active),
-      .topSubMenuContainer:hover {
+      .topMenu-item:hover:not(.topMenu-item-active) {
         /* border-bottom: 1px solid #ea5455; */
         color: #ea5455 !important;
         /* font-weight: bold; */
@@ -192,7 +201,7 @@
         bottom: 0;
         right: -600px;
         width: 400px;
-        background-color: #1f2d3e;
+        background-color: rgba(31, 45, 62);
         color: #e3e3e3;
         height: 90vh;
         /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
@@ -256,7 +265,7 @@
       }
 
       .slideInPanel textarea:hover {
-        border-color: #627293;
+        border-color: rgba(98, 114, 147, 0.6);
       }
 
       Form Control .slideInPanel .form-control {
@@ -355,7 +364,7 @@
       /* Styles for Desktops, large screens */
       @media screen and (min-width: 1025px) and (max-width: 1200px) {
         .dashboardCard {
-          width: 49%;
+          width: 49.5%;
         }
 
         .chartBtnTxt {
@@ -431,14 +440,14 @@
       <div class="menu-container dashboardContainer">
         <div class="row d-flex justify-content-between">
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
-            <div class="d-flex justify-content-between">
+            <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Procurement Spend</span>
               <div class="btn-group btn-group-sm">
                 <div
                   class="btn btn-danger procurementSpendBtn supplierFilter"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"
-                  title="by Suppliers"
+                  title="Fetch Top products by procurement spend"
                 >
                   <span class="chartBtnTxt">Supplier</span>
                   <i class="fa-solid fa-users chartBtnIcn"></i>
@@ -447,7 +456,7 @@
                   class="btn btn-outline-danger procurementSpendBtn productFilter"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"
-                  title="by Products"
+                  title="Fetch Top products by procurement spend"
                 >
                   <span class="chartBtnTxt">Product</span>
                   <i class="fa-solid fa-users chartBtnIcn"></i>
@@ -470,20 +479,16 @@
                 <!-- <option value="Date Range">Custom Range</option> -->
               </select>
             </div>
-            <div class="py-4" style="height: 50vh">
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
               <div id="procurementSpend" style="height: 100%"></div>
             </div>
           </div>
 
-          <!-- <div class="dashboardCard mt-4 border rounded pt-4 px-4">
-            <div class="d-flex justify-content-between">
-              <span class="fw-bold">Procurement Spend</span>
-              <div class="btn-group btn-group-sm">
-                <div class="btn btn-danger">Supplier</div>
-                <div class="btn btn-outline-danger">Product</div>
-              </div>
+          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Procurement Analysis</span>
               <select
-                id="procurementSpendByProductsChartFilter"
+                id="procuredAnalysisChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -496,18 +501,18 @@
                 <option value="30" selected>30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
-                <option value="Date Range">Custom Range</option> 
-        </select>
-      </div>
-      <div class="supplierChart pb-4" style="height: 50vh">
-        <div id="procurementSpendByProductChart" class="" style="height: 100%"></div>
-      </div>
-    </div> -->
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div id="procuredAnalysisChart" style="height: 100%"></div>
+            </div>
+          </div>
         </div>
 
         <div class="row d-flex justify-content-between">
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
-            <div class="d-flex justify-content-between">
+            <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Inventory Ageing Analysis</span>
               <select
                 id="inventoryAgeingAnalysisChartFilter"
@@ -526,13 +531,13 @@
                 <!-- <option value="Date Range">Custom Range</option> -->
               </select>
             </div>
-            <div class="py-4" style="height: 50vh">
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
               <div id="inventoryAgeingAnalysisChart" style="height: 100%"></div>
             </div>
           </div>
 
           <div class="dashboardCard mt-4 border rounded pt-4 px-4">
-            <div class="d-flex justify-content-between">
+            <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Supplier Performance Scorecard</span>
               <select
                 id="supplierPerformanceScorecardChartFilter"
@@ -551,7 +556,7 @@
                 <!-- <option value="Date Range">Custom Range</option> -->
               </select>
             </div>
-            <div class="py-4" style="height: 50vh">
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
               <div
                 id="supplierPerformanceScorecardChart"
                 style="height: 100%"
@@ -948,8 +953,6 @@
         // $('select.select2-hidden-accessible').select2('destroy');
       }
 
-      loadDropdowns();
-
       function loadDropdowns() {
         loadProcurementProductType();
         loadProcurementProducts();
@@ -963,33 +966,41 @@
 
       // Loading Charts
       loadProcurementSpendByVendorsChart("days", "30");
+      loadProcuredAnalysisChart("days", "30");
       loadInventoryAgeingAnalysisChart();
       loadSupplierPerformanceScorecardChart();
 
+      // Chart Filters
       $(document).on("change", "#procurementSpendChartFilter", (e) => {
         loadProcurementSpendChartChart("days", $(e.target).val());
       });
 
+      $(document).on("change", "#procuredAnalysisChartFilter", (e) => {
+        loadProcuredAnalysisChart("days", $(e.target).val());
+      });
+
+      // Button Click Events
       $(document).on("click", ".supplierFilter", (e) => {
-        $(".productFilter").addClass("btn-outline-danger");
+        $(".supplierFilter").removeClass("btn-outline-danger");
         $(".productFilter").removeClass("btn-danger");
 
-        $(".supplierFilter").removeClass("btn-outline-danger");
+        $(".productFilter").addClass("btn-outline-danger");
         $(".supplierFilter").addClass("btn-danger");
 
         loadProcurementSpendByVendorsChart("days", "30");
       });
 
       $(document).on("click", ".productFilter", (e) => {
-        $(".supplierFilter").addClass("btn-outline-danger");
+        $(".productFilter").removeClass("btn-outline-danger");
         $(".supplierFilter").removeClass("btn-danger");
 
-        $(".productFilter").removeClass("btn-outline-danger");
+        $(".supplierFilter").addClass("btn-outline-danger");
         $(".productFilter").addClass("btn-danger");
 
         loadProcurementSpendByProductsChart("days", "30");
       });
 
+      // Chart Functions
       function loadProcurementSpendByVendorsChart(
         filter_type,
         filter_days,
@@ -1048,15 +1059,10 @@
             let procurementSpendChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
+              zoomEnabled: true,
               theme: "light2",
               axisX: {
                 interval: 1,
-                // title: "Vendors",
-              },
-              legend: {
-                horizontalAlign: "middle",
-                cursor: "pointer",
-                itemclick: explodePie,
               },
               data: [
                 {
@@ -1142,15 +1148,10 @@
             let procurementSpendChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
+              zoomEnabled: true,
               theme: "light2",
               axisX: {
                 interval: 1,
-                // title: "Product",
-              },
-              legend: {
-                horizontalAlign: "middle",
-                cursor: "pointer",
-                itemclick: explodePie,
               },
               data: [
                 {
@@ -1178,10 +1179,114 @@
         });
       }
 
+      function loadProcuredAnalysisChart(
+        filter_type,
+        filter_days,
+        from_date,
+        to_date
+      ) {
+        if (filter_type == "days") {
+          switch (filter_days) {
+            case "7":
+              var d = new Date();
+              d.setDate(d.getDate() - 7);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "90":
+              var d = new Date();
+              d.setDate(d.getDate() - 90);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "180":
+              var d = new Date();
+              d.setDate(d.getDate() - 180);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            default:
+              var d = new Date();
+              d.setDate(d.getDate() - 30);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+          }
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/chart/spend/by/date?from_date=${from_date}&to_date=${to_date}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            let dataPoints = [];
+
+            data?.data.map((item) => {
+              dataPoints.push({
+                // label: "₹ " + item.total_amount,
+                x: new Date(item?.yearMonth),
+                y: parseFloat(item.total_amount) || 0,
+              });
+            });
+
+            let procuredAnalysisChartOptions = {
+              backgroundColor: "#f7f9fd",
+              animationEnabled: true,
+              zoomEnabled: true,
+              theme: "light2",
+              axisX: {
+                valueFormatString: "YYYY, MMM",
+                // crosshair: {
+                //   enabled: true,
+                //   snapToDataPoint: true,
+                // },
+                // minimum: 0,
+              },
+              axisY: {
+                prefix: "₹ ",
+                // crosshair: {
+                //   enabled: true,
+                //   // snapToDataPoint: true,
+                // },
+                minimum: 0,
+              },
+              data: [
+                {
+                  toolTipContent: "{x}: <strong>₹ {y}</strong>",
+                  // indexLabel: "₹ {y}",
+                  type: "line",
+                  xValueFormatString: "YYYY, MMM",
+                  dataPoints,
+                },
+              ],
+            };
+
+            new CanvasJS.Chart(
+              "procuredAnalysisChart",
+              procuredAnalysisChartOptions
+            ).render();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
       function loadInventoryAgeingAnalysisChart() {
         let inventoryAgeingAnalysisChartOptions = {
           backgroundColor: "#f7f9fd",
           animationEnabled: true,
+          zoomEnabled: true,
           theme: "light2",
           axisX: {
             interval: 1,
@@ -1217,6 +1322,7 @@
         let supplierPerformanceScorecardChartOptions = {
           backgroundColor: "#f7f9fd",
           animationEnabled: true,
+          zoomEnabled: true,
           theme: "light2",
           axisX: {
             valueFormatString: "MMM",
@@ -1296,6 +1402,7 @@
         $(".procurementContainer").removeClass("d-none");
         $(".procurementContainer").addClass("d-block");
 
+        loadDropdowns();
         loadProcurementTableData();
       });
 

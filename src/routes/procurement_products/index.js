@@ -6,6 +6,7 @@ import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
 import { GetProcurementSpendByVendors } from "./handlers/chart_procurement_spend_by_vendors";
 import { GetProcurementSpendByProducts } from "./handlers/chart_procurement_spend_by_products";
+import { GetProcurementSpendByDate } from "./handlers/chart_procurement_spend_by_date";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -16,6 +17,7 @@ import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
 import { getProcurementSpendByVendorsSchema } from "./schema/chart_procurement_spend_by_vendors";
 import { getProcurementSpendByProductsSchema } from "./schema/chart_procurement_spend_by_products";
+import { getProcurementSpendByDateSchema } from "./schema/chart_procurement_spend_by_date";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -171,6 +173,33 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
         const result = await GetProcurementSpendByProducts(
+          params,
+          req?.session,
+          fastify
+        );
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/chart/spend/by/date",
+    getProcurementSpendByDateSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetProcurementSpendByDate(
           params,
           req?.session,
           fastify
