@@ -439,7 +439,7 @@
       <!-- ------------------------------------------------------------------------------------------------------------- -->
       <div class="menu-container dashboardContainer">
         <div class="row d-flex justify-content-between">
-          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Procurement Spend</span>
               <div class="btn-group btn-group-sm">
@@ -447,7 +447,7 @@
                   class="btn btn-danger procurementSpendBtn supplierFilter"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"
-                  title="Fetch Top products by procurement spend"
+                  title="Supplier-wise Procurement Spend"
                 >
                   <span class="chartBtnTxt">Supplier</span>
                   <i class="fa-solid fa-users chartBtnIcn"></i>
@@ -456,10 +456,10 @@
                   class="btn btn-outline-danger procurementSpendBtn productFilter"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"
-                  title="Fetch Top products by procurement spend"
+                  title="Product-wise Procurement Spend"
                 >
                   <span class="chartBtnTxt">Product</span>
-                  <i class="fa-solid fa-users chartBtnIcn"></i>
+                  <i class="fa-solid fa-box-open chartBtnIcn"></i>
                 </div>
               </div>
               <select
@@ -472,8 +472,8 @@
                   width: 7rem;
                 "
               >
-                <option value="7">7 days</option>
-                <option value="30" selected>30 days</option>
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
                 <!-- <option value="Date Range">Custom Range</option> -->
@@ -484,11 +484,31 @@
             </div>
           </div>
 
-          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Procurement Analysis</span>
+              <div class="btn-group btn-group-sm">
+                <div
+                  class="btn btn-danger procurementSpendBtn spendByDateFilter"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Date-wise Procurement Spent"
+                >
+                  <span class="chartBtnTxt">Get Price</span>
+                  <i class="fa-solid fa-money-check-dollar chartBtnIcn"></i>
+                </div>
+                <div
+                  class="btn btn-outline-danger procurementSpendBtn quantityByDateFilter"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Date-wise Procured Quantity"
+                >
+                  <span class="chartBtnTxt">Quantity</span>
+                  <i class="fa-solid fa-scale-unbalanced-flip chartBtnIcn"></i>
+                </div>
+              </div>
               <select
-                id="procuredAnalysisChartFilter"
+                id="procurementAnalysisByDateChartFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -497,21 +517,24 @@
                   width: 7rem;
                 "
               >
-                <option value="7">7 days</option>
-                <option value="30" selected>30 days</option>
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
                 <!-- <option value="Date Range">Custom Range</option> -->
               </select>
             </div>
             <div class="dashboardCard-Body py-4" style="height: 50vh">
-              <div id="procuredAnalysisChart" style="height: 100%"></div>
+              <div
+                id="procurementAnalysisByDateChart"
+                style="height: 100%"
+              ></div>
             </div>
           </div>
         </div>
 
         <div class="row d-flex justify-content-between">
-          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Inventory Ageing Analysis</span>
               <select
@@ -524,8 +547,8 @@
                   width: 7rem;
                 "
               >
-                <option value="7">7 days</option>
-                <option value="30" selected>30 days</option>
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
                 <!-- <option value="Date Range">Custom Range</option> -->
@@ -536,7 +559,7 @@
             </div>
           </div>
 
-          <div class="dashboardCard mt-4 border rounded pt-4 px-4">
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Supplier Performance Scorecard</span>
               <select
@@ -549,8 +572,8 @@
                   width: 7rem;
                 "
               >
-                <option value="7">7 days</option>
-                <option value="30" selected>30 days</option>
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
                 <option value="90">3 months</option>
                 <option value="180">6 months</option>
                 <!-- <option value="Date Range">Custom Range</option> -->
@@ -965,18 +988,32 @@
       // ---------------------------------------------------------
 
       // Loading Charts
-      loadProcurementSpendByVendorsChart("days", "30");
-      loadProcuredAnalysisChart("days", "30");
+      loadProcurementSpendByVendorsChart(
+        "days",
+        $("#procurementSpendChartFilter").val()
+      );
+      loadProcurementSpendByDateChart(
+        "days",
+        $("#procurementAnalysisByDateChartFilter").val()
+      );
       loadInventoryAgeingAnalysisChart();
       loadSupplierPerformanceScorecardChart();
 
       // Chart Filters
       $(document).on("change", "#procurementSpendChartFilter", (e) => {
-        loadProcurementSpendChartChart("days", $(e.target).val());
+        if ($(".supplierFilter").hasClass("btn-danger")) {
+          loadProcurementSpendByVendorsChart("days", $(e.target).val());
+        } else if ($(".productFilter").hasClass("btn-danger")) {
+          loadProcurementSpendByProductsChart("days", $(e.target).val());
+        }
       });
 
-      $(document).on("change", "#procuredAnalysisChartFilter", (e) => {
-        loadProcuredAnalysisChart("days", $(e.target).val());
+      $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
+        if ($(".spendByDateFilter").hasClass("btn-danger")) {
+          loadProcurementSpendByDateChart("days", $(e.target).val());
+        } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
+          loadProcurementQuantityByDateChart("days", $(e.target).val());
+        }
       });
 
       // Button Click Events
@@ -987,7 +1024,10 @@
         $(".productFilter").addClass("btn-outline-danger");
         $(".supplierFilter").addClass("btn-danger");
 
-        loadProcurementSpendByVendorsChart("days", "30");
+        loadProcurementSpendByVendorsChart(
+          "days",
+          $("#procurementSpendChartFilter").val()
+        );
       });
 
       $(document).on("click", ".productFilter", (e) => {
@@ -997,7 +1037,36 @@
         $(".supplierFilter").addClass("btn-outline-danger");
         $(".productFilter").addClass("btn-danger");
 
-        loadProcurementSpendByProductsChart("days", "30");
+        loadProcurementSpendByProductsChart(
+          "days",
+          $("#procurementSpendChartFilter").val()
+        );
+      });
+
+      $(document).on("click", ".spendByDateFilter", (e) => {
+        $(".spendByDateFilter").removeClass("btn-outline-danger");
+        $(".quantityByDateFilter").removeClass("btn-danger");
+
+        $(".quantityByDateFilter").addClass("btn-outline-danger");
+        $(".spendByDateFilter").addClass("btn-danger");
+
+        loadProcurementSpendByDateChart(
+          "days",
+          $("#procurementAnalysisByDateChartFilter").val()
+        );
+      });
+
+      $(document).on("click", ".quantityByDateFilter", (e) => {
+        $(".quantityByDateFilter").removeClass("btn-outline-danger");
+        $(".spendByDateFilter").removeClass("btn-danger");
+
+        $(".spendByDateFilter").addClass("btn-outline-danger");
+        $(".quantityByDateFilter").addClass("btn-danger");
+
+        loadProcurementQuantityByDateChart(
+          "days",
+          $("#procurementAnalysisByDateChartFilter").val()
+        );
       });
 
       // Chart Functions
@@ -1179,7 +1248,7 @@
         });
       }
 
-      function loadProcuredAnalysisChart(
+      function loadProcurementSpendByDateChart(
         filter_type,
         filter_days,
         from_date,
@@ -1228,20 +1297,27 @@
             let dataPoints = [];
 
             data?.data.map((item) => {
+              let procurement_lot_date = new Date(item?.procurement_lot_date);
+
               dataPoints.push({
                 // label: "₹ " + item.total_amount,
-                x: new Date(item?.yearMonth),
+
+                x: new Date(
+                  procurement_lot_date.getFullYear(),
+                  procurement_lot_date.getMonth(),
+                  procurement_lot_date.getDate()
+                ),
                 y: parseFloat(item.total_amount) || 0,
               });
             });
 
-            let procuredAnalysisChartOptions = {
+            let procurementAnalysisByDateChartOptions = {
               backgroundColor: "#f7f9fd",
               animationEnabled: true,
               zoomEnabled: true,
               theme: "light2",
               axisX: {
-                valueFormatString: "YYYY, MMM",
+                valueFormatString: "DD-MMM-YYYY",
                 // crosshair: {
                 //   enabled: true,
                 //   snapToDataPoint: true,
@@ -1261,15 +1337,129 @@
                   toolTipContent: "{x}: <strong>₹ {y}</strong>",
                   // indexLabel: "₹ {y}",
                   type: "line",
-                  xValueFormatString: "YYYY, MMM",
+                  xValueFormatString: "DD-MMM-YYYY",
                   dataPoints,
                 },
               ],
             };
 
             new CanvasJS.Chart(
-              "procuredAnalysisChart",
-              procuredAnalysisChartOptions
+              "procurementAnalysisByDateChart",
+              procurementAnalysisByDateChartOptions
+            ).render();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadProcurementQuantityByDateChart(
+        filter_type,
+        filter_days,
+        from_date,
+        to_date
+      ) {
+        if (filter_type == "days") {
+          switch (filter_days) {
+            case "7":
+              var d = new Date();
+              d.setDate(d.getDate() - 7);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "90":
+              var d = new Date();
+              d.setDate(d.getDate() - 90);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "180":
+              var d = new Date();
+              d.setDate(d.getDate() - 180);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            default:
+              var d = new Date();
+              d.setDate(d.getDate() - 30);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+          }
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/chart/quantity/by/date?from_date=${from_date}&to_date=${to_date}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            let dataPoints = [];
+
+            data?.data.map((item) => {
+              let procurement_lot_date = new Date(item?.procurement_lot_date);
+
+              dataPoints.push({
+                // label: "₹ " + item.total_amount,
+
+                x: new Date(
+                  procurement_lot_date.getFullYear(),
+                  procurement_lot_date.getMonth(),
+                  procurement_lot_date.getDate()
+                ),
+                y:
+                  parseFloat(
+                    item.total_adjusted_quantity ||
+                      item.total_procurement_quantity
+                  ) || 0,
+              });
+            });
+
+            let procurementAnalysisByDateChartOptions = {
+              backgroundColor: "#f7f9fd",
+              animationEnabled: true,
+              zoomEnabled: true,
+              theme: "light2",
+              axisX: {
+                valueFormatString: "DD-MMM-YYYY",
+                // crosshair: {
+                //   enabled: true,
+                //   snapToDataPoint: true,
+                // },
+                // minimum: 0,
+              },
+              axisY: {
+                suffix: " kg",
+                // crosshair: {
+                //   enabled: true,
+                //   // snapToDataPoint: true,
+                // },
+                minimum: 0,
+              },
+              data: [
+                {
+                  toolTipContent: "{x}: <strong>{y} kg</strong>",
+                  // indexLabel: "{y} kg",
+                  type: "line",
+                  xValueFormatString: "DD-MMM-YYYY",
+                  dataPoints,
+                },
+              ],
+            };
+
+            new CanvasJS.Chart(
+              "procurementAnalysisByDateChart",
+              procurementAnalysisByDateChartOptions
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {

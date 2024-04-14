@@ -624,10 +624,8 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
       const output_data = await models.ProcurementProducts.findAll({
         attributes: [
           [
-            Sequelize.literal(
-              `CONCAT(EXTRACT(YEAR FROM procurement_lot_date), '-', EXTRACT(MONTH FROM procurement_lot_date))`
-            ),
-            "yearMonth",
+            Sequelize.literal(`DATE(procurement_lot_date)`),
+            "procurement_lot_date",
           ],
           [
             sequelize.fn("sum", sequelize.col("procurement_totalamount")),
@@ -635,8 +633,51 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
           ],
         ],
         where,
-        order: [["yearMonth", "asc"]],
-        group: ["yearMonth"],
+        order: [["procurement_lot_date", "asc"]],
+        group: ["procurement_lot_date"],
+      });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementQuantityByDateData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("procurement_lot_date")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        attributes: [
+          [
+            Sequelize.literal(`DATE(procurement_lot_date)`),
+            "procurement_lot_date",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("procurement_quantity")),
+            "total_procurement_quantity",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("adjusted_quantity")),
+            "total_adjusted_quantity",
+          ],
+        ],
+        where,
+        order: [["procurement_lot_date", "asc"]],
+        group: ["procurement_lot_date"],
       });
 
       resolve(output_data);
