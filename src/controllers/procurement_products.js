@@ -312,7 +312,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["procurement_lot_date", "desc"]],
       });
 
       resolve(procurements);
@@ -611,7 +611,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
       let where = {
         is_active: true,
         [Op.and]: Sequelize.where(
-          Sequelize.fn("date", Sequelize.col("created_at")),
+          Sequelize.fn("date", Sequelize.col("procurement_lot_date")),
           {
             [Op.between]: [
               new Date(from_date || null),
@@ -625,7 +625,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
         attributes: [
           [
             Sequelize.literal(
-              `CONCAT(EXTRACT(YEAR FROM created_at), '-', EXTRACT(MONTH FROM created_at))`
+              `CONCAT(EXTRACT(YEAR FROM procurement_lot_date), '-', EXTRACT(MONTH FROM procurement_lot_date))`
             ),
             "yearMonth",
           ],

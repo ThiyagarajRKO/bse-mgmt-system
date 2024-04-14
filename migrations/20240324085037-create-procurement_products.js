@@ -51,6 +51,10 @@ module.exports = {
           "UNPROCESSED"
         ),
       },
+      procurement_log_date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
       procurement_quantity: {
         type: Sequelize.FLOAT,
         allowNull: false,

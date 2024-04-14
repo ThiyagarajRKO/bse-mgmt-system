@@ -52,6 +52,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      procurement_lot_date: {
+        type: DataTypes.DATE,
+      },
       procurement_product_type: {
         type: DataTypes.STRING,
       },
@@ -122,6 +125,10 @@ module.exports = (sequelize, DataTypes) => {
     try {
       data.procurement_totalamount =
         data.procurement_quantity * data.procurement_price;
+
+      if (adjusted_quantity && data.adjusted_price)
+        data.procurement_totalamount =
+          data.adjusted_quantity * data.adjusted_price;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

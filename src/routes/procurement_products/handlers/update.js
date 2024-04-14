@@ -1,5 +1,5 @@
-import { ProcurementLots, ProcurementProducts } from "../../../controllers";
-import * as ProcurementProductsHandler from "../../procurement_lots/handlers/update";
+import { ProcurementProducts } from "../../../controllers";
+import { Update as ProcurementLotUpdateHandler } from "../../procurement_lots/handlers/update";
 
 export const Update = (
   { profile_id, procurement_product_id, procurement_product_data },
@@ -9,7 +9,7 @@ export const Update = (
   return new Promise(async (resolve, reject) => {
     try {
       if (procurement_product_data?.procurement_lot_id) {
-        const procurement_lot = await ProcurementProductsHandler.Update(
+        const procurement_lot = await ProcurementLotUpdateHandler(
           {
             profile_id,
             procurement_lot_id: procurement_product_data?.procurement_lot_id,
@@ -47,6 +47,17 @@ export const Update = (
           });
         }
       }
+
+      if (!procurement_product_data?.procurement_product_type) {
+        return reject({
+          statusCode: 420,
+          message: "Procurement date must not be empty!",
+        });
+      }
+
+      procurement_product_data["procurement_lot_date"] = new Date(
+        procurement_product_data?.procurement_date
+      );
 
       const updated_data = await ProcurementProducts.Update(
         profile_id,

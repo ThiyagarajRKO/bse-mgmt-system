@@ -412,7 +412,7 @@ export const GetStats = ({
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["procurement_date", "desc"]],
         group: ["ProcurementLots.id"],
       });
 
