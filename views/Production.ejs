@@ -3729,8 +3729,8 @@
       $(document).on("click", ".editPeeledDispatch", (e) => {
         // Changing panel input fields data
 
-        $("#peeledlotNumbers")
-          .val($("#view_lot_no").attr("procurement_lot_id"))
+        $("#peeledLotNumbers")
+          .val($("#view_peeled_dispatch_lot_no").attr("procurement_lot_id"))
           .trigger("change");
 
         view_peeled_product_id = $(e.target)
