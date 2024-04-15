@@ -4,10 +4,11 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
-import { GetProcurementSpendByVendors } from "./handlers/chart_procurement_spend_by_vendors";
-import { GetProcurementSpendByProducts } from "./handlers/chart_procurement_spend_by_products";
-import { GetProcurementSpendByDate } from "./handlers/chart_procurement_spend_by_date";
-import { GetProcurementQuantityByDate } from "./handlers/chart_procurement_quantity_by_date";
+
+// Chart Handler
+import { GetProcurementSpendByVendors } from "./handlers/charts/chart_procurement_spend_by_vendors";
+import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
+import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -16,10 +17,11 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
-import { getProcurementSpendByVendorsSchema } from "./schema/chart_procurement_spend_by_vendors";
-import { getProcurementSpendByProductsSchema } from "./schema/chart_procurement_spend_by_products";
-import { getProcurementSpendByDateSchema } from "./schema/chart_procurement_spend_by_date";
-import { getProcurementQuantityByDateSchema } from "./schema/chart_procurement_quantity_by_date";
+
+// Chart Schema
+import { getProcurementSpendByVendorsSchema } from "./schema/charts/chart_procurement_spend_by_vendors";
+import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
+import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -202,33 +204,6 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
         const result = await GetProcurementSpendByDate(
-          params,
-          req?.session,
-          fastify
-        );
-
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
-    }
-  );
-
-  fastify.get(
-    "/chart/quantity/by/date",
-    getProcurementQuantityByDateSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
-
-        const result = await GetProcurementQuantityByDate(
           params,
           req?.session,
           fastify

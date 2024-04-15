@@ -79,7 +79,6 @@ export const Create = (
         procurement_lot_id,
         product_master_id,
         vendor_master_id,
-        procurement_lot_date: new Date(procurement_date),
         procurement_product_type,
         procurement_quantity,
         procurement_price,

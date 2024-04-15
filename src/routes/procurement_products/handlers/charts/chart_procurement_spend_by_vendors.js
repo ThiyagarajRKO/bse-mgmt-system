@@ -1,4 +1,4 @@
-import { ProcurementProducts } from "../../../controllers";
+import { ProcurementProducts } from "../../../../controllers";
 
 export const GetProcurementSpendByVendors = (
   { from_date, to_date },

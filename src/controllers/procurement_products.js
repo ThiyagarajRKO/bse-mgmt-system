@@ -312,7 +312,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [["procurement_lot_date", "desc"]],
+        order: [[sequelize.col(`"ProcurementLot".procurement_date`), "desc"]],
       });
 
       resolve(procurements);
@@ -611,7 +611,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
       let where = {
         is_active: true,
         [Op.and]: Sequelize.where(
-          Sequelize.fn("date", Sequelize.col("procurement_lot_date")),
+          Sequelize.literal(`CAST("ProcurementLot".procurement_date AS DATE)`),
           {
             [Op.between]: [
               new Date(from_date || null),
@@ -622,49 +622,17 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
       };
 
       const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
         attributes: [
           [
-            Sequelize.literal(`DATE(procurement_lot_date)`),
-            "procurement_lot_date",
+            Sequelize.literal(
+              `CAST("ProcurementLot".procurement_date AS DATE)`
+            ),
+            "procurement_date",
           ],
           [
             sequelize.fn("sum", sequelize.col("procurement_totalamount")),
             "total_amount",
-          ],
-        ],
-        where,
-        order: [["procurement_lot_date", "asc"]],
-        group: ["procurement_lot_date"],
-      });
-
-      resolve(output_data);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const GetProcurementQuantityByDateData = ({ from_date, to_date }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let where = {
-        is_active: true,
-        [Op.and]: Sequelize.where(
-          Sequelize.fn("date", Sequelize.col("procurement_lot_date")),
-          {
-            [Op.between]: [
-              new Date(from_date || null),
-              new Date(to_date || null),
-            ],
-          }
-        ),
-      };
-
-      const output_data = await models.ProcurementProducts.findAll({
-        attributes: [
-          [
-            Sequelize.literal(`DATE(procurement_lot_date)`),
-            "procurement_lot_date",
           ],
           [
             sequelize.fn("sum", sequelize.col("procurement_quantity")),
@@ -675,9 +643,18 @@ export const GetProcurementQuantityByDateData = ({ from_date, to_date }) => {
             "total_adjusted_quantity",
           ],
         ],
+        include: [
+          {
+            attributes: [],
+            model: models.ProcurementLots,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where,
-        order: [["procurement_lot_date", "asc"]],
-        group: ["procurement_lot_date"],
+        order: [["procurement_date", "asc"]],
+        group: ["procurement_date"],
       });
 
       resolve(output_data);

@@ -52,9 +52,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      procurement_lot_date: {
-        type: DataTypes.DATE,
-      },
       procurement_product_type: {
         type: DataTypes.STRING,
       },

@@ -48,17 +48,6 @@ export const Update = (
         }
       }
 
-      if (!procurement_product_data?.procurement_product_type) {
-        return reject({
-          statusCode: 420,
-          message: "Procurement date must not be empty!",
-        });
-      }
-
-      procurement_product_data["procurement_lot_date"] = new Date(
-        procurement_product_data?.procurement_date
-      );
-
       const updated_data = await ProcurementProducts.Update(
         profile_id,
         procurement_product_id,

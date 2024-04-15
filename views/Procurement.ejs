@@ -992,9 +992,12 @@
         "days",
         $("#procurementSpendChartFilter").val()
       );
-      loadProcurementSpendByDateChart(
+      loadProcurementByDateChart(
         "days",
-        $("#procurementAnalysisByDateChartFilter").val()
+        $("#procurementAnalysisByDateChartFilter").val(),
+        null,
+        null,
+        "price"
       );
       loadInventoryAgeingAnalysisChart();
       loadSupplierPerformanceScorecardChart();
@@ -1010,9 +1013,21 @@
 
       $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
         if ($(".spendByDateFilter").hasClass("btn-danger")) {
-          loadProcurementSpendByDateChart("days", $(e.target).val());
+          loadProcurementByDateChart(
+            "days",
+            $(e.target).val(),
+            null,
+            null,
+            "price"
+          );
         } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
-          loadProcurementQuantityByDateChart("days", $(e.target).val());
+          loadProcurementByDateChart(
+            "days",
+            $(e.target).val(),
+            null,
+            null,
+            "quantity"
+          );
         }
       });
 
@@ -1050,9 +1065,12 @@
         $(".quantityByDateFilter").addClass("btn-outline-danger");
         $(".spendByDateFilter").addClass("btn-danger");
 
-        loadProcurementSpendByDateChart(
+        loadProcurementByDateChart(
           "days",
-          $("#procurementAnalysisByDateChartFilter").val()
+          $("#procurementAnalysisByDateChartFilter").val(),
+          null,
+          null,
+          "price"
         );
       });
 
@@ -1063,9 +1081,12 @@
         $(".spendByDateFilter").addClass("btn-outline-danger");
         $(".quantityByDateFilter").addClass("btn-danger");
 
-        loadProcurementQuantityByDateChart(
+        loadProcurementByDateChart(
           "days",
-          $("#procurementAnalysisByDateChartFilter").val()
+          $("#procurementAnalysisByDateChartFilter").val(),
+          null,
+          null,
+          "quantity"
         );
       });
 
@@ -1254,11 +1275,12 @@
         });
       }
 
-      function loadProcurementSpendByDateChart(
+      function loadProcurementByDateChart(
         filter_type,
         filter_days,
         from_date,
-        to_date
+        to_date,
+        type
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -1303,17 +1325,23 @@
             let dataPoints = [];
 
             data?.data.map((item) => {
-              let procurement_lot_date = new Date(item?.procurement_lot_date);
+              let procurement_date = new Date(item?.procurement_date);
 
               dataPoints.push({
                 // label: "₹ " + item.total_amount,
 
                 x: new Date(
-                  procurement_lot_date.getFullYear(),
-                  procurement_lot_date.getMonth(),
-                  procurement_lot_date.getDate()
+                  procurement_date.getFullYear(),
+                  procurement_date.getMonth(),
+                  procurement_date.getDate()
                 ),
-                y: parseFloat(item.total_amount) || 0,
+                y:
+                  parseFloat(
+                    type == "price"
+                      ? item.total_amount
+                      : item?.total_adjusted_quantity ||
+                          item?.total_procurement_quantity
+                  ) || 0,
               });
             });
 
@@ -1342,120 +1370,6 @@
                 {
                   toolTipContent: "{x}: <strong>₹ {y}</strong>",
                   // indexLabel: "₹ {y}",
-                  type: "line",
-                  xValueFormatString: "DD-MMM-YYYY",
-                  dataPoints,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "procurementAnalysisByDateChart",
-              procurementAnalysisByDateChartOptions
-            ).render();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadProcurementQuantityByDateChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/quantity/by/date?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPoints = [];
-
-            data?.data.map((item) => {
-              let procurement_lot_date = new Date(item?.procurement_lot_date);
-
-              dataPoints.push({
-                // label: "₹ " + item.total_amount,
-
-                x: new Date(
-                  procurement_lot_date.getFullYear(),
-                  procurement_lot_date.getMonth(),
-                  procurement_lot_date.getDate()
-                ),
-                y:
-                  parseFloat(
-                    item.total_adjusted_quantity ||
-                      item.total_procurement_quantity
-                  ) || 0,
-              });
-            });
-
-            let procurementAnalysisByDateChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                valueFormatString: "DD-MMM-YYYY",
-                // crosshair: {
-                //   enabled: true,
-                //   snapToDataPoint: true,
-                // },
-                // minimum: 0,
-              },
-              axisY: {
-                suffix: " kg",
-                // crosshair: {
-                //   enabled: true,
-                //   // snapToDataPoint: true,
-                // },
-                minimum: 0,
-              },
-              data: [
-                {
-                  toolTipContent: "{x}: <strong>{y} kg</strong>",
-                  // indexLabel: "{y} kg",
                   type: "line",
                   xValueFormatString: "DD-MMM-YYYY",
                   dataPoints,
