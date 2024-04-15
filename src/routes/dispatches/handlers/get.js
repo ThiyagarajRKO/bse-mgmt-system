@@ -10,7 +10,7 @@ export const Get = ({ dispatch_id }, session, fastify) => {
       if (!dispatch) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

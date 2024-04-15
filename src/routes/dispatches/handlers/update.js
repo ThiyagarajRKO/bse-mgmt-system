@@ -14,16 +14,20 @@ export const Update = (
             message: "procurement product id must not be empty",
           });
         }
-        const { procurement_quantity } = await ProcurementProducts.GetQuantity({
-          id: dispatch_data?.procurement_product_id,
-        });
+        const { procurement_quantity, adjusted_quantity } =
+          await ProcurementProducts.GetQuantity({
+            id: dispatch_data?.procurement_product_id,
+          });
 
-        if (!procurement_quantity) {
+        if (!procurement_quantity && !adjusted_quantity) {
           return reject({
             statusCode: 420,
             message: "Invalid product quantity",
           });
-        } else if (procurement_quantity < dispatch_data?.dispatch_quantity) {
+        } else if (
+          (adjusted_quantity || procurement_quantity) <
+          dispatch_data?.dispatch_quantity
+        ) {
           return reject({
             statusCode: 420,
             message: "Dispatched quantity is grater than Procurement quantity",

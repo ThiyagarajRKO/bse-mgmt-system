@@ -452,13 +452,6 @@
 
         <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
           <hr
-            id="preprocessingDispatchHR"
-            style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
-          />
-        </div>
-
-        <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
-          <hr
             id="peeledDispatchHR"
             style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
           />
@@ -1076,8 +1069,9 @@
         </div>
 
         <!-- Peeling Container Ends -->
+
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------- Peeled Dispatch Container ---------------------------------------------------- -->
+        <!-- ------------------------------------- Peeled Dispatch Container --------------------------------------------- -->
         <!-- ------------------------------------------------------------------------------------------------------------- -->
         <div class="menu-container peeledDispatchContainer d-none">
           <!-- Slide-in Panel -->
@@ -1094,7 +1088,7 @@
                   <div class="col my-auto d-flex justify-content-end">
                     <i
                       class="fa-solid fa-circle-xmark my-auto panelClose"
-                      id="closepeeledDispatchPanelBtn"
+                      id="closePeeledDispatchPanelBtn"
                     ></i>
                   </div>
                 </div>
@@ -1228,8 +1222,7 @@
                     <th style="border-radius: 4px 0 0 0"></th>
                     <th class="fw-bold"><span>Peeled Date</span></th>
                     <th class="fw-bold"><span>Peeled Lot</span></th>
-                    <th class="fw-bold"><span>Total Products Items</span></th>
-                    <th class="fw-bold"><span>Total Peeled Weight</span></th>
+                    <th class="fw-bold"><span>Total Yielded Weight</span></th>
                     <th class="fw-bold">
                       <span>Total Dispatched Items</span>
                     </th>
@@ -1246,7 +1239,7 @@
         <!-- modal-dialog-centered modal-dialog-scrollable -->
         <!-- Modal -->
         <div
-          id="PeeledDispatchModal"
+          id="peeledDispatchModal"
           class="modal hide fade modal-xl"
           tabindex="-1"
           role="dialog"
@@ -1265,7 +1258,7 @@
                 <div class="d-flex justify-content-between">
                   <div class="form-group">
                     <label class="fw-bold" for="lot_no">Lot No:</label>
-                    <span id="view_lot_no"></span>
+                    <span id="view_peeled_dispatch_lot_no"></span>
                   </div>
 
                   <div class="form-group">
@@ -1318,7 +1311,6 @@
             </div>
           </div>
         </div>
-
         <!-- Peeled Dispatch Container Ends -->
       </div>
     </div>
@@ -3366,9 +3358,10 @@
 
       $("#resetPeelingDataBtn").on("click", resetAllInputs);
       // -------------------- End of Peeling -----------------
-      // ---------------------------------------------------------
+
+      // -----------------------------------------------------------------
       // ----------------------- Peeled Dispatches -----------------------
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------
 
       // // Open panel
       $("#openPeeledDispatchPanelBtn").click(function () {
@@ -3388,7 +3381,7 @@
       $("#closePeeledDispatchPanelBtn").click(function () {
         closeSlidePanel("peeledDispatchSlideInPanel");
 
-        //view_peeled_product_id = "";
+        view_peeled_product_id = "";
       });
 
       $(".peeledDispatchMenu").click(async function () {
@@ -3398,7 +3391,7 @@
         $(".peeledDispatchContainer").addClass("d-block");
 
         // loadPercentages();
-        loadDropdowns();
+        loadPeeledDropdowns();
         loadPeeledDispatchTableData();
       });
 
@@ -3410,10 +3403,9 @@
         }
       );
 
-      function loadDropdowns() {
+      function loadPeeledDropdowns() {
         // Pre loading dropdown data
         loadPeeledLotNumber();
-        loadPeeledProducts();
         loadUnits();
         loadVehicles();
         loadDrivers();
@@ -3460,12 +3452,11 @@
           },
           columns: [
             { data: null },
-            { data: "peelingProducts.created_at" },
+            { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "total_product_count" },
-            { data: "total_peeled_quantity" },
-            { data: "total_peeled_dispatched_count" },
-            { data: "total_peeled_dispatched_quantity" },
+            { data: "total_yield_quantity" },
+            { data: "total_peeled_dispatch_count" },
+            { data: "total_peeled_dispatch_quantity" },
           ],
           columnDefs: [
             {
@@ -3479,7 +3470,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                const date = new Date(row?.created_at);
+                const date = new Date(row?.procurement_date);
 
                 var months = [
                   "Jan",
@@ -3529,13 +3520,6 @@
                 return data || 0;
               },
             },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
           ],
           drawCallback: () => {},
         });
@@ -3561,14 +3545,17 @@
         const view_total_peeled_dispatch_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(6)
+          .eq(3)
           .text();
 
-        $("#view_lot_no").text(
+        $("#view_peeled_dispatch_lot_no").text(
           $(e.target).closest("tr").children("td").eq(2).text()
         );
 
-        $("#view_lot_no").attr("procurement_lot_id", view_lot_no);
+        $("#view_peeled_dispatch_lot_no").attr(
+          "procurement_lot_id",
+          view_lot_no
+        );
 
         $("#view_total_peeled_dispatches").text(view_total_peeled_dispatches);
 
@@ -3622,18 +3609,14 @@
           },
           columns: [
             { data: null },
-            { data: null },
-            { data: "PeeledProducts.created_at" },
-            {
-              data: "PeeledProducts->Peeling->Dispatches->ProcurementProducts->ProcurementLots.procurement_lots",
-            },
-            { data: "PeeledProducts.peeled_quantity" },
+            { data: "PeelingProduct.ProductMaster.product_name" },
+            { data: "total_yield_quantity" },
             { data: "peeled_dispatch_quantity" },
-            { data: "peeled_dispatch_temperature" },
+            { data: "temperature" },
             { data: "UnitMaster.unit_code" },
             { data: "VehicleMaster.vehicle_number" },
             { data: "DriverMaster.driver_name" },
-            { data: "peeled_delivery_notes" },
+            { data: "delivery_notes" },
             { data: "delivery_status" },
             { data: "created_at" },
           ],
@@ -3653,7 +3636,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row["PeeledProducts"]?.id}'>${row["PeeledProducts"]?.["ProductMaster"]?.product_name}.replaceAll(" ", "")}</i>`;
+                return `<span peeled_product_id='${row["PeeledProducts"]?.id}'>${data}-${row.peeled_dispatch_quantity}</i>`;
               },
             },
             {
@@ -3681,6 +3664,13 @@
                     ? row["DriverMaster"]?.phone
                     : `+91${row["DriverMaster"]?.phone}`
                 }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: (data, type, row) => {
+                return data || "-";
               },
             },
             {
@@ -3867,13 +3857,69 @@
           loadPeeledProducts(lot_no);
         }
       });
+
+      let peeledProductNamesArray = [];
+      function loadPeeledProducts(lot_no) {
+        $("#peeledProductNames").empty();
+
+        if (!lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            peeledProductNamesArray = [];
+
+            data?.data?.forEach((item) => {
+              peeledProductNamesArray.push({
+                id: item.id,
+                product_master_id: item?.ProductMaster.id,
+                quantity:
+                  (parseFloat(item?.yield_quantity) || 0) -
+                  (parseFloat(item?.peeled_quantity) || 0),
+                text:
+                  item?.ProductMaster.product_name + "-" + item.yield_quantity,
+              });
+            });
+
+            $("#peeledProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: true,
+              data: peeledProductNamesArray,
+            });
+
+            if (view_peeled_product_id) {
+              $("#peeledProductNames")
+                .val(view_peeled_product_id)
+                .trigger("change");
+            } else {
+              $("#peeledProductNames").val(null).trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
       let balance_peeled_quantity = 0;
       $(document).on("change", "#peeledProductNames", () => {
         $("#balance_peeled_quantity").text("");
 
         if ($("#peeledProductNames").val()) {
           balance_peeled_quantity = $("#peeledProductNames").select2("data")[0]
-            ?.yield_quantity;
+            ?.quantity;
 
           if (!isNaN(balance_peeled_quantity)) {
             $("#balance_peeled_quantity").text(
@@ -3883,14 +3929,14 @@
             $("#balance_peeled_quantity").css({ color: "white" });
           }
 
-          $("#peeled_quantity").keyup();
+          $("#peeled_dispatch_quantity").keyup();
         }
       });
 
-      $(document).on("keyup", "#peeled_quantity", (e) => {
+      $(document).on("keyup", "#peeled_dispatch_quantity", (e) => {
         const currentPeeledDispatchedQuantity = $(e.target).val();
         const peeledQuantity = parseFloat(
-          $("#peeledProductNames").select2("data")[0]?.yield_quantity
+          $("#peeledProductNames").select2("data")[0]?.quantity
         );
 
         if (!currentPeeledDispatchedQuantity) {
@@ -3915,82 +3961,6 @@
         }
       });
 
-      let peeledProductNamesArray = [];
-      function loadPeeledProducts(lot_no) {
-        $("#peeledProductNames").empty();
-
-        if (!lot_no) {
-          toastr["warning"]("Invalid lot number!");
-          return;
-        }
-
-        $.ajax({
-          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            peeledProductNamesArray = [];
-
-            data?.data?.forEach((item) => {
-              peeledProductNamesArray.push({
-                id: item.id,
-                product_master_id:
-                  item?.Peeling?.Dispatch?.ProcurementProduct?.ProductMaster.id,
-                quantity:
-                  (parseFloat(item?.yield_quantity) || 0) -
-                  (parseFloat(item?.peeled_dispatched_quantity) || 0),
-                text: item.Peeling?.Dispatch?.ProcurementProduct?.ProductMaster
-                  .product_name,
-              });
-            });
-            $("#peeledProductNames").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: peeledProductNamesArray,
-            });
-
-            $("#peeledProductNames").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-      $(document).on("keyup", "#peeled_quantity", (e) => {
-        e.preventDefault();
-
-        const currentPeeledQuantity = $(e.target).val();
-        const peeledQuantity = parseFloat(
-          $("#peeledProductNames").select2("data")[0]?.yield_quantity
-        );
-
-        if (!currentPeeledQuantity) {
-          $("#balance_peeled_dispatched_quantity").text(
-            balance_peeled_dispatched_quantity
-          );
-          $("#balance_peeled_dispatched_quantity").css({ color: "white" });
-          return;
-        }
-
-        let balanceQuantity = peeledQuantity - currentPeeledQuantity;
-
-        $("#balance_peeled_dispatched_quantity").text(
-          !isNaN(balanceQuantity) ? balanceQuantity : currentPeeledQuantity
-        );
-
-        if (balanceQuantity > 0) {
-          $("#balance_peeled_dispatched_quantity").css({ color: "yellow" });
-        } else {
-          $("#balance_peeled_dispatched_quantity").css({ color: "red" });
-        }
-      });
       function loadUnits() {
         $.ajax({
           url: "/api/v1/master/unit/get/all?unit_type=Distribution Center",
@@ -4142,7 +4112,9 @@
             if (jqXhr["status"] == 420) {
               toastr["warning"](jqXhr["responseJSON"]["message"]);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](
+                jqXhr["responseJSON"]?.message || jqXhr["responseJSON"]
+              );
             }
           },
         });

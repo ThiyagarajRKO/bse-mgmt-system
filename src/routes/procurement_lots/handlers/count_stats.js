@@ -10,7 +10,7 @@ export const CountStats = ({ procurement_lot_id }, session, fastify) => {
       if (!procurement) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

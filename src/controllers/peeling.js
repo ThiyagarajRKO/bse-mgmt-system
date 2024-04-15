@@ -156,17 +156,24 @@ export const GetAll = ({
               [Op.iLike]: `%${search}%`,
             }
           ),
-          { peeling_notes: { [Op.iLike]: `%${search}%` } },
-          sequelize.where(
-            sequelize.cast(sequelize.col("peeling_status"), "varchar"),
-            {
-              [Op.iLike]: `%${search}%`,
-            }
-          ),
+          // {
+          //   "$PeelingProducts.peeling_notes$": {
+          //     [Op.iLike]: `%${search}%`,
+          //   },
+          // },
+          // sequelize.where(
+          //   sequelize.cast(
+          //     sequelize.col("PeelingProducts.peeling_status"),
+          //     "varchar"
+          //   ),
+          //   {
+          //     [Op.iLike]: `%${search}%`,
+          //   }
+          // ),
           sequelize.where(
             sequelize.cast(
               sequelize.col(
-                "Dispatches.ProcurementProduct.ProductMaster.product_name"
+                "Dispatch.ProcurementProduct.ProductMaster.product_name"
               ),
               "varchar"
             ),
@@ -174,11 +181,28 @@ export const GetAll = ({
               [Op.iLike]: `%${search}%`,
             }
           ),
-          {
-            "$ProductMaster.product_name$": {
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col(
+                "Dispatch.ProcurementProduct.procurement_product_type"
+              ),
+              "varchar"
+            ),
+            {
               [Op.iLike]: `%${search}%`,
-            },
-          },
+            }
+          ),
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col(
+                "Dispatch.ProcurementProduct.VendorMaster.vendor_name"
+              ),
+              "varchar"
+            ),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
         ];
       }
@@ -198,6 +222,20 @@ export const GetAll = ({
                     attributes: [],
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
+                  },
+                  {
+                    attributes: [],
+                    model: models.ProductMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                  {
+                    attributes: [],
+                    model: models.VendorMaster,
+                    where: {
+                      is_active: true,
+                    },
                   },
                 ],
                 where: {

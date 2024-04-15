@@ -10,7 +10,7 @@ export const Get = ({ vehicle_master_id }, session, fastify) => {
       if (!vehicle_master) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

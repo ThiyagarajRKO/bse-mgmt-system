@@ -26,7 +26,7 @@ export const GetProductNames = (
       if (!dispatch) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

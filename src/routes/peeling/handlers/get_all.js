@@ -18,7 +18,7 @@ export const GetAll = (
       if (!peeling) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

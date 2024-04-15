@@ -11,10 +11,10 @@ export const Insert = async (profile_id, peeled_dispatch_data) => {
         });
       }
 
-      if (!peeled_dispatch_data?.peeled_dispatch_id) {
+      if (!peeled_dispatch_data?.peeled_product_id) {
         return reject({
           statusCode: 420,
-          message: "peeled dispatch data must not be empty!",
+          message: "Peeled product data must not be empty!",
         });
       }
 
@@ -126,10 +126,7 @@ export const GetAll = ({ start, length, search }) => {
             }
           ),
           sequelize.where(
-            sequelize.cast(
-              sequelize.col("peeled_dispatch_temperature"),
-              "varchar"
-            ),
+            sequelize.cast(sequelize.col("temperature"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
             }
@@ -142,10 +139,9 @@ export const GetAll = ({ start, length, search }) => {
             }
           ),
           {
-            "$PeelingProducts->Peeling->Dispatch->ProcurementProduct->PeelingProducts.product_name$":
-              {
-                [Op.iLike]: `%${search}%`,
-              },
+            "$PeelingProducts->ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
           },
           { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
           { "$VehicleMaster.vehicle_number$": { [Op.iLike]: `%${search}%` } },
@@ -153,17 +149,100 @@ export const GetAll = ({ start, length, search }) => {
         ];
       }
 
-      const peeling_dispatches = await models.PeeledDispatches.findAndCountAll({
+      const peeled_dispatches_count = await models.PeeledDispatches.count({
+        raw: true,
+        subQuery: false,
+        include: [
+          {
+            model: models.PeelingProducts,
+            attributes: ["id"],
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                model: models.Peeling,
+                attributes: [],
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    model: models.Dispatches,
+                    attributes: [],
+                    where: {
+                      is_active: true,
+                    },
+                    include: [
+                      {
+                        model: models.ProcurementProducts,
+                        attributes: [],
+                        where: {
+                          is_active: true,
+                        },
+                        include: [
+                          {
+                            attributes: [],
+                            model: models.ProcurementLots,
+                            where: procurementLotsWhere,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                model: models.ProductMaster,
+                attributes: ["id", "product_name"],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+          },
+          {
+            model: models.UnitMaster,
+            attributes: [],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.VehicleMaster,
+            attributes: [],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.DriverMaster,
+            attributes: [],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      const peeled_dispatches_rows = await models.PeeledDispatches.findAll({
         subQuery: false,
         attributes: [
           "id",
           "created_at",
           "peeled_dispatch_quantity",
+          "temperature",
+          "delivery_notes",
+          "delivery_status",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END)`
+              `(SELECT CASE WHEN SUM(yield_quantity) IS NULL THEN 0 ELSE SUM(yield_quantity) END FROM peeling_products WHERE id = "PeeledDispatches".peeled_product_id and is_active = true)`
             ),
-            "peeled_dispatch_quantity",
+            "total_yield_quantity",
           ],
         ],
         include: [
@@ -176,50 +255,29 @@ export const GetAll = ({ start, length, search }) => {
             include: [
               {
                 model: models.Peeling,
-                attributes: ["id"],
+                attributes: [],
                 where: {
                   is_active: true,
                 },
                 include: [
                   {
                     model: models.Dispatches,
-                    attributes: ["id"],
+                    attributes: [],
                     where: {
                       is_active: true,
                     },
                     include: [
                       {
                         model: models.ProcurementProducts,
-                        attributes: ["id"],
+                        attributes: [],
                         where: {
                           is_active: true,
                         },
                         include: [
                           {
-                            model: models.UnitMaster,
-                            attributes: ["id", "unit_code"],
-
-                            where: {
-                              is_active: true,
-                              unit_type: "Peeling Center",
-                            },
-                          },
-                        ],
-                        include: [
-                          {
+                            attributes: [],
                             model: models.ProcurementLots,
                             where: procurementLotsWhere,
-                            attributes: ["id", "procurement_lot"],
-                            where: {
-                              is_active: true,
-                            },
-                          },
-                          {
-                            model: models.ProductMaster,
-                            attributes: ["id", "product_name"],
-                            where: {
-                              is_active: true,
-                            },
                           },
                         ],
                       },
@@ -227,7 +285,35 @@ export const GetAll = ({ start, length, search }) => {
                   },
                 ],
               },
+              {
+                model: models.ProductMaster,
+                attributes: ["id", "product_name"],
+                where: {
+                  is_active: true,
+                },
+              },
             ],
+          },
+          {
+            model: models.UnitMaster,
+            attributes: ["id", "unit_code"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.VehicleMaster,
+            attributes: ["id", "vehicle_number"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.DriverMaster,
+            attributes: ["id", "driver_name"],
+            where: {
+              is_active: true,
+            },
           },
         ],
         where,
@@ -236,17 +322,20 @@ export const GetAll = ({ start, length, search }) => {
         order: [["created_at", "desc"]],
         group: [
           "PeeledDispatches.id",
-          "PeelingProducts.id",
-          "Peeling->Dispatch.id",
-          "Peeling->Dispatch->ProcurementProduct.id",
-          "Peeling->Dispatch->ProcurementProduct->ProcurementLot.id",
-          "Peeling->Dispatch->ProcurementProduct->ProductMaster.id",
-          "Peeling.id",
+          "PeelingProduct.id",
+          "PeelingProduct.ProductMaster.id",
           "UnitMaster.id",
+          "VehicleMaster.id",
+          "DriverMaster.id",
         ],
       });
 
-      resolve(peeled_dispatch);
+      let data = {
+        count: peeled_dispatches_count,
+        rows: peeled_dispatches_rows,
+      };
+
+      resolve(data);
     } catch (err) {
       reject(err);
     }

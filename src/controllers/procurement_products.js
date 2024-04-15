@@ -1,6 +1,5 @@
 import { Op } from "sequelize";
-import models, { sequelize } from "../../models";
-import procurementLotsRoute from "../routes/procurement_lots";
+import models, { Sequelize, sequelize } from "../../models";
 
 export const Insert = async (profile_id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
@@ -188,7 +187,7 @@ export const GetQuantity = ({ id }) => {
       }
 
       const product = await models.ProcurementProducts.findOne({
-        attributes: ["procurement_quantity"],
+        attributes: ["procurement_quantity", "adjusted_quantity"],
         where: {
           id,
           is_active: true,
@@ -313,7 +312,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [[sequelize.col(`"ProcurementLot".procurement_date`), "desc"]],
       });
 
       resolve(procurements);
@@ -326,6 +325,7 @@ export const GetAll = ({
 // Retrive Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,
+  dispatch_id,
   start = 0,
   length = 10,
   search,
@@ -349,9 +349,14 @@ export const GetNames = ({
           "id",
           "procurement_product_type",
           "procurement_quantity",
+          "adjusted_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and dispatches.is_active = true)`
+              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and ${
+                dispatch_id != "null" && dispatch_id != undefined
+                  ? "dispatches.id != '" + dispatch_id + "' and"
+                  : ""
+              } dispatches.is_active = true)`
             ),
             "dispatched_quantity",
           ],
@@ -498,6 +503,161 @@ export const Delete = ({ profile_id, id }) => {
       });
 
       resolve(procurement);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// --------------------------------------------------------------------------------
+// ----------------------------------- Charts -------------------------------------
+// --------------------------------------------------------------------------------
+
+export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("ProcurementProducts.created_at")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          "vendor_master_id",
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+        ],
+        include: [
+          {
+            attributes: ["id", "vendor_name"],
+            model: models.VendorMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        order: [["total_amount", "asc"]],
+        group: ["vendor_master_id", "VendorMaster.id"],
+      });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.fn("date", Sequelize.col("ProcurementProducts.created_at")),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          "product_master_id",
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+        ],
+        include: [
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        order: [["total_amount", "asc"]],
+        group: ["product_master_id", "ProductMaster.id"],
+      });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: Sequelize.where(
+          Sequelize.literal(`CAST("ProcurementLot".procurement_date AS DATE)`),
+          {
+            [Op.between]: [
+              new Date(from_date || null),
+              new Date(to_date || null),
+            ],
+          }
+        ),
+      };
+
+      const output_data = await models.ProcurementProducts.findAll({
+        subQuery: false,
+        attributes: [
+          [
+            Sequelize.literal(
+              `CAST("ProcurementLot".procurement_date AS DATE)`
+            ),
+            "procurement_date",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("procurement_totalamount")),
+            "total_amount",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("procurement_quantity")),
+            "total_procurement_quantity",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("adjusted_quantity")),
+            "total_adjusted_quantity",
+          ],
+        ],
+        include: [
+          {
+            attributes: [],
+            model: models.ProcurementLots,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        order: [["procurement_date", "asc"]],
+        group: ["procurement_date"],
+      });
+
+      resolve(output_data);
     } catch (err) {
       reject(err);
     }

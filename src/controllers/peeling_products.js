@@ -268,47 +268,37 @@ export const GetNames = ({
           "yield_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(yield_quantity) IS NULL THEN 0 ELSE SUM(yield_quantity) END)`
+              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id)`
             ),
             "peeled_quantity",
           ],
         ],
         include: [
           {
+            attributes: [],
             model: models.Peeling,
-            attributes: ["id"],
             where: {
               is_active: true,
             },
             include: [
               {
+                attributes: [],
                 model: models.Dispatches,
-                attributes: ["id"],
                 where: {
                   is_active: true,
                 },
                 include: [
                   {
+                    attributes: [],
                     model: models.ProcurementProducts,
-                    attributes: ["id"],
                     where: {
                       is_active: true,
                     },
                     include: [
                       {
+                        attributes: [],
                         model: models.ProcurementLots,
                         where: procurementLotsWhere,
-                        attributes: ["id", "procurement_lot"],
-                        where: {
-                          is_active: true,
-                        },
-                      },
-                      {
-                        model: models.ProductMaster,
-                        attributes: ["id", "product_name"],
-                        where: {
-                          is_active: true,
-                        },
                       },
                     ],
                   },
@@ -316,19 +306,19 @@ export const GetNames = ({
               },
             ],
           },
+          {
+            model: models.ProductMaster,
+            attributes: ["id", "product_name"],
+            where: {
+              is_active: true,
+            },
+          },
         ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
-        group: [
-          "PeelingProducts.id",
-          "Peeling->Dispatch.id",
-          "Peeling->Dispatch->ProcurementProduct.id",
-          "Peeling->Dispatch->ProcurementProduct->ProcurementLot.id",
-          "Peeling->Dispatch->ProcurementProduct->ProductMaster.id",
-          "Peeling.id",
-        ],
+        group: ["PeelingProducts.id", "Peeling.id", "ProductMaster.id"],
       });
 
       resolve(peelings);

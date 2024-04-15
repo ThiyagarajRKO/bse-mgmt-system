@@ -12,7 +12,7 @@ export const GetAll = (
 
       if (!role_master) {
         return reject({
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

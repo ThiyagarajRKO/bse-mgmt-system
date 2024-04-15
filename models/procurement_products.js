@@ -105,6 +105,9 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   ProcurementProducts.beforeCreate(async (data, options) => {
     try {
+      data.procurement_totalamount =
+        data.procurement_quantity * data.procurement_price;
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
@@ -119,6 +122,10 @@ module.exports = (sequelize, DataTypes) => {
     try {
       data.procurement_totalamount =
         data.procurement_quantity * data.procurement_price;
+
+      if (adjusted_quantity && data.adjusted_price)
+        data.procurement_totalamount =
+          data.adjusted_quantity * data.adjusted_price;
 
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;

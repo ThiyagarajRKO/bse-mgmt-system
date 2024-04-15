@@ -28,7 +28,7 @@ export const GetAll = (
       if (!species_master) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No data found!",
         });
       }
 

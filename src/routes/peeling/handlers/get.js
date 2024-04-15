@@ -10,7 +10,7 @@ export const Get = ({ peeling_id }, session, fastify) => {
       if (!peeling) {
         return reject({
           statusCode: 420,
-          message: "No rows found!",
+          message: "No data found!",
         });
       }
 

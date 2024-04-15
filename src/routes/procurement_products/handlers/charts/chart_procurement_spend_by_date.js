@@ -1,16 +1,18 @@
-import { ProcurementLots } from "../../../controllers";
+import { ProcurementProducts } from "../../../../controllers";
 
-export const GetDispatchStats = (
-  { procurement_lot_id, "search[value]": search },
+export const GetProcurementSpendByDate = (
+  { from_date, to_date },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementLots.GetDispatchStats({
-        procurement_lot_id,
-        search,
-      });
+      let procurement = await ProcurementProducts.GetProcurementSpendByDateData(
+        {
+          from_date,
+          to_date,
+        }
+      );
 
       if (!procurement) {
         return reject({
