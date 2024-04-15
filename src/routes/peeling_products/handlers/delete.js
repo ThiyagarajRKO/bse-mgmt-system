@@ -1,15 +1,11 @@
 import { PeelingProducts } from "../../../controllers";
 
-export const Delete = (
-  { profile_id, peeling_product_id },
-  session,
-  fastify
-) => {
+export const Delete = ({ profile_id, peeled_product_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       const peeling_product = await PeelingProducts.Delete({
         profile_id,
-        id: peeling_product_id,
+        id: peeled_product_id,
       });
 
       if (peeling_product > 0) {

@@ -1,7 +1,7 @@
 import { Dispatches, Peeling } from "../../../controllers";
 
 export const Update = (
-  { profile_id, peeling_product_id, peeling_product_data },
+  { profile_id, peeled_product_id, peeling_product_data },
   session,
   fastify
 ) => {
@@ -9,7 +9,7 @@ export const Update = (
     try {
       const updated_data = await Peeling.Update(
         profile_id,
-        peeling_product_id,
+        peeled_product_id,
         peeling_product_data
       );
 

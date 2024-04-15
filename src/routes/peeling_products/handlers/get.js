@@ -1,10 +1,10 @@
 import { Peeling } from "../../../controllers";
 
-export const Get = ({ peeling_product_id }, session, fastify) => {
+export const Get = ({ peeled_product_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       let peeling_product = await Peeling.Get({
-        id: peeling_product_id,
+        id: peeled_product_id,
       });
 
       if (!peeling_product) {

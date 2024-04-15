@@ -3,43 +3,22 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { BulkCreateOrUpdate } from "./handlers/create-upsert";
-import { GetNames } from "./handlers/get_names";
+import { GetProductNames } from "./handlers/get_product_names";
 
 // Schema
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
-import { bulkCreateOrUpdateSchema } from "./schema/create-upsert";
-import { getNamesSchema } from "./schema/get_names";
+import { getProductNamesSchema } from "./schema/get_product_names";
 
-export const peelingProductRoute = (fastify, opts, done) => {
+export const peeledDispatchRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
       const result = await Create(params, req?.session, fastify);
-
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
-    }
-  });
-
-  fastify.post("/upsert/bulk", bulkCreateOrUpdateSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
-
-      const result = await BulkCreateOrUpdate(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,
@@ -111,24 +90,28 @@ export const peelingProductRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/names/all", getNamesSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get(
+    "/get/product/names/all",
+    getProductNamesSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
 
-      const result = await GetNames(params, req?.session, fastify);
+        const result = await GetProductNames(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
     }
-  });
+  );
 
   fastify.post("/delete", deleteSchema, async (req, reply) => {
     try {
@@ -152,4 +135,4 @@ export const peelingProductRoute = (fastify, opts, done) => {
   done();
 };
 
-export default peelingProductRoute;
+export default peeledDispatchRoute;

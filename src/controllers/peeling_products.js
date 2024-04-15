@@ -148,7 +148,7 @@ export const GetAll = ({ start, length, search }) => {
       if (search) {
         where[Op.or] = [
           sequelize.where(
-            sequelize.cast(sequelize.col("peeling_quantity"), "varchar"),
+            sequelize.cast(sequelize.col("yield_quantity"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
             }
@@ -210,6 +210,118 @@ export const GetAll = ({ start, length, search }) => {
       });
 
       resolve(peeling_products);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetQuantity = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Peeling product ID field must not be empty!",
+        });
+      }
+
+      const product = await models.PeelingProducts.findOne({
+        attributes: ["yield_quantity"],
+        where: {
+          id,
+          is_active: true,
+        },
+      });
+
+      resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetNames = ({
+  procurement_lot_id,
+  start = 0,
+  length = 10,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      let procurementLotsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
+
+      const peelings = await models.PeelingProducts.findAll({
+        attributes: [
+          "id",
+          "created_at",
+          "yield_quantity",
+          [
+            sequelize.literal(
+              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id)`
+            ),
+            "peeled_quantity",
+          ],
+        ],
+        include: [
+          {
+            attributes: [],
+            model: models.Peeling,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: [],
+                model: models.Dispatches,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    attributes: [],
+                    model: models.ProcurementProducts,
+                    where: {
+                      is_active: true,
+                    },
+                    include: [
+                      {
+                        attributes: [],
+                        model: models.ProcurementLots,
+                        where: procurementLotsWhere,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: models.ProductMaster,
+            attributes: ["id", "product_name"],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: ["PeelingProducts.id", "Peeling.id", "ProductMaster.id"],
+      });
+
+      resolve(peelings);
     } catch (err) {
       reject(err);
     }

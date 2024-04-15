@@ -8,7 +8,9 @@ import { CountStats } from "./handlers/count_stats";
 import { GetLots } from "./handlers/get_lots";
 import { GetDispatchStats } from "./handlers/get_dispatch_stats";
 import { GetPeelingStats } from "./handlers/get_peeling_stats";
+import { GetPeeledDispatchStats } from "./handlers/get_peeling_dispatch_stats";
 import { GetDispatchLots } from "./handlers/get_dispatch_lots";
+import { GetPeeledLots } from "./handlers/get_peeled_lots";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -20,7 +22,9 @@ import { getStatsSchema } from "./schema/get_lot_stats";
 import { countStatsSchema } from "./schema/count_stats";
 import { getDispatchStatsSchema } from "./schema/get_dispatch_stats";
 import { getPeelingStatsSchema } from "./schema/get_peeling_stats";
+import { getPeeledDispatchStatsSchema } from "./schema/get_peeling_dispatch_stats";
 import { getDispatchLotsSchema } from "./schema/get_dispatch_lots";
+import { getPeeledLotsSchema } from "./schema/get_peeled_lots";
 
 export const procurementLotsRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -183,6 +187,29 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   );
 
+  fastify.get(
+    "/get/lots/peeled/all",
+    getPeeledLotsSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetPeeledLots(params, req?.session, fastify);
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
   // ----------------------------------------------------------------------
   // ------------------------------- Stats --------------------------------
   // ----------------------------------------------------------------------
@@ -252,7 +279,29 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   );
 
+  fastify.get(
+    '/get/stats/peeled/dispatch',
+    { schema: getPeeledDispatchStatsSchema },
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetPeeledDispatchStats(params, req?.session, fastify);
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
   done();
 };
-
 export default procurementLotsRoute;
