@@ -318,6 +318,7 @@
         );
         color: white;
       }
+
       /* 
       #appendOutput {
         color: rgba(98, 114, 147, 0.6) !important;
@@ -456,13 +457,20 @@
           />
         </div>
 
+        <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
+          <hr
+            id="peeledDispatchHR"
+            style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
+          />
+        </div>
+
         <div
-          class="topMenu-item preprocessingDispatchMenu col-lg-1 d-flex justify-content-center"
+          class="topMenu-item peeledDispatchMenu col-lg-1 d-flex justify-content-center"
         >
           <div class="d-flex flex-column text-center align-items-center">
             <svg
               class="radial-progress"
-              id="preprocessingDispatchCircle"
+              id="peeledDispatchCircle"
               data-percentage="0"
               viewBox="0 0 80 80"
             >
@@ -475,7 +483,7 @@
                 style="stroke-dashoffset: 0"
               ></circle>
               <text
-                id="preprocessingDispatchPercentage"
+                id="peeledDispatchPercentage"
                 class="percentage"
                 x="50%"
                 y="57%"
@@ -487,7 +495,7 @@
             <span class="heading fw-bold fs-6">Dispatch</span>
             <span
               style="font-family: sans-serif"
-              class="fs-6 weight fw-bold preprocessingDispatchWeight"
+              class="fs-6 weight fw-bold peeledDispatchWeight"
               style="font-weight: RedditMono-Regular"
               >0</span
             >
@@ -1068,6 +1076,250 @@
         </div>
 
         <!-- Peeling Container Ends -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Peeled Dispatch Container ---------------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container peeledDispatchContainer d-none">
+          <!-- Slide-in Panel -->
+          <div
+            id="peeledDispatchSlideInPanel"
+            class="slideInPanel px-4 overflow-auto"
+          >
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="peeledDispatchPanelHeading" class="fw-bold fs-5"
+                    >Add Dispatch Data</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closepeeledDispatchPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group mt-4">
+                  <label for="lot_no">Lot No:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="peeledLotNumbers"
+                    name="peeledLotNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product_name">Product Name:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="peeledProductNames"
+                    name="peeledProductNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="distribution_location">Destination</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="distributionLocation"
+                    name="distributionLocation"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="peeled_dispatch_quantity">Quantity</label>
+                  <input
+                    id="peeled_dispatch_quantity"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 10"
+                    name="peeled_dispatch_quantity"
+                    required
+                  />
+                  <span style="font-size: 12px"
+                    >Balance Peeled Quantity :
+                    <span class="fw-bold" id="balance_peeled_quantity"></span
+                  ></span>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="peeled_dispatch_temperature">Temperature</label>
+                  <input
+                    id="peeled_dispatch_temperature"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 12.9"
+                    name="peeled_dispatch_temperature"
+                    required
+                  />
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="vehicleNumbers">Vehicle Number</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="prodVehicleNumbers"
+                    name="prodVehicleNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="driverNames">Driver Name</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="prodDriverNames"
+                    name="prodDriverNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="delivery_notes">Delivery Notes</label>
+                  <textarea
+                    row="3"
+                    class="form-control input-dropdown w-100"
+                    id="peeled_delivery_notes"
+                    name="peeled_delivery_notes"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div
+                    id="submitPeeledDispatch"
+                    class="col-lg-5 btn btn-danger"
+                  >
+                    Save
+                  </div>
+                  <div
+                    id="resetPeeledDispatchDataBtn"
+                    class="col-lg-5 btn btn-outline-danger"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openPeeledDispatchPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Dispatch</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="peeledDispatchTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Peeled Date</span></th>
+                    <th class="fw-bold"><span>Peeled Lot</span></th>
+                    <th class="fw-bold"><span>Total Products Items</span></th>
+                    <th class="fw-bold"><span>Total Peeled Weight</span></th>
+                    <th class="fw-bold">
+                      <span>Total Dispatched Items</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Dispatched Weight</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="PeeledDispatchModal"
+          class="modal hide fade modal-xl"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Dispatched Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_products"
+                      >Total Dispatches:</label
+                    >
+                    <span id="view_total_peeled_dispatches"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_peeled_dispatch_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="peeledDispatchProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Peeled Quantity</span></th>
+                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                      <th class="fw-bold"><span>Temperature</span></th>
+                      <th class="fw-bold"><span>Destination</span></th>
+                      <th class="fw-bold"><span>Vehicle Name</span></th>
+                      <th class="fw-bold"><span>Driver Name</span></th>
+                      <th class="fw-bold"><span>Delivery Notes</span></th>
+                      <th class="fw-bold"><span>Delivery Status</span></th>
+                      <th class="fw-bold"><span>Dispatched Date</span></th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="close btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Peeled Dispatch Container Ends -->
       </div>
     </div>
   </body>
@@ -1157,8 +1409,9 @@
         $("#lotNumbers").val(null).trigger("change");
         $("#productNames").val(null).trigger("change");
         $("#destinationLocation").val(null).trigger("change");
-        $("#vehicleNumbers").val(null).trigger("change");
-        $("#driverNames").val(null).trigger("change");
+        $("#distributionLocation").val(null).trigger("change");
+        $("#prodVehicleNumbers").val(null).trigger("change");
+        $("#prodDriverNames").val(null).trigger("change");
 
         $("#productNames").select2({
           placeholder: "Choose a product",
@@ -1166,7 +1419,7 @@
         });
 
         // Peeling
-        $("#peelingLotNumbers").val(null).trigger("change");
+        $("#peeledLotNumbers").val(null).trigger("change");
         $("#peelingCenters").val(null).trigger("change");
         $("#rawMaterials").val(null).trigger("change");
         $(".peelingProductNames").val(null).trigger("change");
@@ -1182,6 +1435,28 @@
         });
         $(".peelingProductNames").select2({
           placeholder: "Choose a product",
+          allowClear: true,
+        });
+
+        // Peeled Dispatch
+        $("#peeledLotNumbers").val(null).trigger("change");
+        $("#distributionLocation").val(null).trigger("change");
+        $(".peeledProductNames").val(null).trigger("change");
+
+        $(".peeledProductNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
+        $("#distributionLocation").select2({
+          placeholder: "Choose a production center",
+          allowClear: true,
+        });
+        $("#prodVehicleNumbers").select2({
+          placeholder: "Choose a Dispatch Vehicle",
+          allowClear: true,
+        });
+        $("#prodDriverNames").select2({
+          placeholder: "Choose a Dispatch Driver",
           allowClear: true,
         });
 
@@ -1239,9 +1514,9 @@
               data?.data?.total_purchased_weight || 0;
             const dispatch_percentage =
               data?.data?.total_dispatched_weight || 0;
-            const peeling_percentage = data?.data?.total_peeled_weight || 0;
-            const peeling_dispatch_percentage =
-              data?.data?.total_peeling_dispatched_weight || 0;
+            const peeled_percentage = data?.data?.total_peeled_weight || 0;
+            const peeled_dispatch_percentage =
+              data?.data?.total_peeled_dispatched_weight || 0;
             const packing_percentage = data?.data?.total_packed_weight || 0;
 
             changePercentage(
@@ -1260,19 +1535,19 @@
               "preprocessingPercentage",
               "preprocessingHR",
               "preprocessingWeight",
-              parseInt((peeling_percentage / dispatch_percentage) * 100) || 0,
-              peeling_percentage
+              parseInt((peeled_percentage / dispatch_percentage) * 100) || 0,
+              peeled_percentage
             );
             changePercentage(
-              "preprocessingDispatchMenu",
-              "preprocessingDispatchCircle",
-              "preprocessingDispatchPercentage",
-              "preprocessingDispatchHR",
-              "preprocessingDispatchWeight",
+              "peeledDispatchMenu",
+              "peeledDispatchCircle",
+              "peeledDispatchPercentage",
+              "peeledDispatchHR",
+              "peeledDispatchWeight",
               parseInt(
-                (peeling_dispatch_percentage / peeling_percentage) * 100
+                (peeled_dispatch_percentage / peeled_percentage) * 100
               ) || 0,
-              peeling_dispatch_percentage
+              peeled_dispatch_percentage
             );
 
             changePercentage(
@@ -1282,7 +1557,7 @@
               "packingHR",
               "packingWeight",
               parseInt(
-                (packing_percentage / peeling_dispatch_percentage) * 100
+                (packing_percentage / peeled_dispatch_percentage) * 100
               ) || 0,
               packing_percentage
             );
@@ -1309,7 +1584,7 @@
       loadDispatchTableData();
 
       // ---------------------------------------------------------
-      // ----------------------- Dispatchs -----------------------
+      // ----------------------- Dispatches -----------------------
       // ---------------------------------------------------------
 
       // // Open panel
@@ -1694,11 +1969,11 @@
           $(e.target).closest("tr").children("td").eq(3).text()
         );
 
-        $("#dispatch_temperature").val(
+        $("#peeled_dispatch_temperature").val(
           $(e.target).closest("tr").children("td").eq(4).text()
         );
 
-        $("#destinationLocation")
+        $("#distributionLocation")
           .val(
             $(e.target)
               .closest("tr")
@@ -1731,7 +2006,7 @@
           )
           .trigger("change");
 
-        $("#delivery_notes").val(
+        $("#peeled_delivery_notes").val(
           $(e.target).closest("tr").children("td").eq(8).text()
         );
 
@@ -2008,10 +2283,10 @@
           procurement_product_id: $("#productNames").val(),
           unit_master_id: $("#destinationLocation").val(),
           dispatch_quantity: $("#dispatch_quantity").val(),
-          temperature: $("#dispatch_temperature").val(),
-          delivery_notes: $("#delivery_notes").val(),
+          temperature: $("#temperature").val(),
           vehicle_master_id: $("#vehicleNumbers").val(),
           driver_master_id: $("#driverNames").val(),
+          delivery_notes: $("#delivery_notes").val(),
         };
 
         if (dispatch_id && dispatch_id != "null") {
@@ -2151,7 +2426,7 @@
 
       function addOutput(
         index,
-        peeling_product_id,
+        peeled_product_id,
         product_master_id,
         yield_quantity,
         peeling_notes
@@ -2170,7 +2445,7 @@
                           <label for="product_name">Product Name:</label>
                           <select
                             class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${index}"
-                            peeling_product_id=${peeling_product_id}
+                            peeled_product_id=${peeled_product_id}
                             name="peelingProductNames"
                           ></select>
                         </div>
@@ -2660,7 +2935,7 @@
               $(".peelingProductNames_" + i)
                 .parent()
                 .find("select")
-                .attr("peeling_product_id", product?.id);
+                .attr("peeled_product_id", product?.id);
               $(".yield_quantity_" + i).val(product?.yield_quantity);
               $(".peeling_notes_" + i).val(product?.peeling_notes);
             } else {
@@ -2998,7 +3273,7 @@
             .find(`.peelingProductNames_${i + 1}`)
             .parent()
             .find("select")
-            .attr("peeling_product_id");
+            .attr("peeled_product_id");
 
           let product_master_id = $(obj)
             .find(`.peelingProductNames_${i + 1}`)
@@ -3091,6 +3366,790 @@
 
       $("#resetPeelingDataBtn").on("click", resetAllInputs);
       // -------------------- End of Peeling -----------------
+      // ---------------------------------------------------------
+      // ----------------------- Peeled Dispatches -----------------------
+      // ---------------------------------------------------------
+
+      // // Open panel
+      $("#openPeeledDispatchPanelBtn").click(function () {
+        // $("#dispatchModal").modal("show");
+        openSlidePanel(
+          "peeledDispatchSlideInPanel",
+          "peeledDispatchPanelHeading",
+          "Peeled Dispatch",
+          "submitPeeledDispatch",
+          "peeled_dispatch_id"
+        );
+
+        $("#balance_peeled_quantity").text("").css({ color: "white" });
+      });
+
+      // Close panel
+      $("#closePeeledDispatchPanelBtn").click(function () {
+        closeSlidePanel("peeledDispatchSlideInPanel");
+
+        //view_peeled_product_id = "";
+      });
+
+      $(".peeledDispatchMenu").click(async function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".peeledDispatchContainer").removeClass("d-none");
+        $(".peeledDispatchContainer").addClass("d-block");
+
+        // loadPercentages();
+        loadDropdowns();
+        loadPeeledDispatchTableData();
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#peeledDispatchModal").modal("hide");
+        }
+      );
+
+      function loadDropdowns() {
+        // Pre loading dropdown data
+        loadPeeledLotNumber();
+        loadPeeledProducts();
+        loadUnits();
+        loadVehicles();
+        loadDrivers();
+      }
+
+      $("#submitPeeledDispatch").click(function () {
+        savePeeledDispatch();
+      });
+
+      function loadPeeledDispatchTableData() {
+        $("#peeledDispatchTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/procurement/lot/get/stats/peeled/dispatch",
+            error: function (xhr, error, code) {
+              $("#peeledDispatchTable").DataTable().destroy();
+              $("#peeledDispatchTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "peelingProducts.created_at" },
+            { data: "procurement_lot" },
+            { data: "total_product_count" },
+            { data: "total_peeled_quantity" },
+            { data: "total_peeled_dispatched_count" },
+            { data: "total_peeled_dispatched_quantity" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewPeeledDispatches" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewPeeledDispatches", (e) => {
+        // Changing panel input fields data
+        $("#closePeeledDispatchPanelBtn").click();
+
+        // Changing panel input fields data
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("procurement_lot_id");
+
+        const view_total_peeled_dispatches = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+        const view_total_peeled_dispatch_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .text();
+
+        $("#view_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_lot_no").attr("procurement_lot_id", view_lot_no);
+
+        $("#view_total_peeled_dispatches").text(view_total_peeled_dispatches);
+
+        $("#view_total_peeled_dispatch_weight").text(
+          view_total_peeled_dispatch_weight
+        );
+
+        // Opening Slied Panel
+        $("#peeledDispatchModal").modal("show");
+
+        loadPeeledDispatchProductTableData(view_lot_no);
+      });
+
+      function loadPeeledDispatchProductTableData(lot_no) {
+        if (!lot_no) {
+          toastr["warning"]("Lot no should not be empty!");
+        }
+        $("#peeledDispatchProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/peeled/dispatch/get/all?procurement_lot_id=${lot_no}`,
+            error: function (xhr, error, code) {
+              $("#peeledDispatchProductTable").DataTable().destroy();
+              $("#peeledDispatchProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "PeeledProducts.created_at" },
+            {
+              data: "PeeledProducts->Peeling->Dispatches->ProcurementProducts->ProcurementLots.procurement_lots",
+            },
+            { data: "PeeledProducts.peeled_quantity" },
+            { data: "peeled_dispatch_quantity" },
+            { data: "peeled_dispatch_temperature" },
+            { data: "UnitMaster.unit_code" },
+            { data: "VehicleMaster.vehicle_number" },
+            { data: "DriverMaster.driver_name" },
+            { data: "peeled_delivery_notes" },
+            { data: "delivery_status" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editPeeledDispatch" peeled_dispatch_id=${
+                  row?.id || null
+                } procurement_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span peeled_product_id='${row["PeeledProducts"]?.id}'>${row["PeeledProducts"]?.["ProductMaster"]?.product_name}.replaceAll(" ", "")}</i>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<a href="tel:${
+                  row["DriverMaster"]?.phone?.startsWith("91")
+                    ? `+${row["DriverMaster"]?.phone}`
+                    : row["DriverMaster"]?.phone?.startsWith("+91")
+                    ? row["DriverMaster"]?.phone
+                    : `+91${row["DriverMaster"]?.phone}`
+                }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: (data, type, row) => {
+                return `<span class=${
+                  data == "In Transit" ? "text-warning" : "text-success"
+                }>${data} <i class="fa-solid ${
+                  data == "In Transit"
+                    ? "fa-truck-fast fa-fade"
+                    : "fa-circle-check"
+                }"></i></span>`;
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      let view_peeled_product_id = "";
+      $(document).on("click", ".editPeeledDispatch", (e) => {
+        // Changing panel input fields data
+
+        $("#peeledlotNumbers")
+          .val($("#view_lot_no").attr("procurement_lot_id"))
+          .trigger("change");
+
+        view_peeled_product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(1)
+          .find("span")
+          .attr("peeled_product_id");
+
+        $("#peeledProductNames").val(view_peeled_product_id).trigger("change");
+
+        $("#peeled_dispatch_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#peeled_dispatch_temperature").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#distributionLocation")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#prodVehicleNumbers")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("vehicle_master_id")
+          )
+          .trigger("change");
+
+        $("#prodDriverNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(7)
+              .find("a")
+              .attr("driver_master_id")
+          )
+          .trigger("change");
+
+        $("#peeled_delivery_notes").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening Slide Panel
+        $("#openPeeledDispatchPanelBtn").click();
+
+        // Changing panel heading
+        $("#peeledDispatchPanelHeading").text("Edit Dispatch Data");
+
+        // Changing panel button label
+        $("#submitPeeledDispatch").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPeeledDispatch").attr(
+          "peeled_dispatch_id",
+          $(e.target).attr("peeled_dispatch_id")
+        );
+
+        $("#peeledDispatchModal").modal("hide");
+      });
+
+      function loadPeeledLotNumber() {
+        $.ajax({
+          url: `/api/v1/procurement/lot/get/lots/peeled/all`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#peeledLotNumbers").select2({
+              placeholder: "Choose a lot",
+              allowClear: true,
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.procurement_lot,
+                };
+              }),
+            });
+
+            $("#peeledLotNumbers").val(null).trigger("change");
+
+            // Call loadPeeledProducts here
+            let lot_no = $("#peeledLotNumbers").val();
+            if (lot_no) {
+              loadPeeledProducts(lot_no);
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#peeledLotNumbers", () => {
+        $("#balance_peeled_quantity").text("");
+
+        let lot_no = $("#peeledLotNumbers").val();
+
+        // $("#peelingCenters").empty();
+        // $("#rawMaterials").empty();
+        $("#peeledProductNames").empty();
+        //productNamesArray = [];
+
+        if (lot_no) {
+          loadPeeledProducts(lot_no);
+        }
+      });
+      let balance_peeled_quantity = 0;
+      $(document).on("change", "#peeledProductNames", () => {
+        $("#balance_peeled_quantity").text("");
+
+        if ($("#peeledProductNames").val()) {
+          balance_peeled_quantity = $("#peeledProductNames").select2("data")[0]
+            ?.yield_quantity;
+
+          if (!isNaN(balance_peeled_quantity)) {
+            $("#balance_peeled_quantity").text(
+              parseFloat(balance_peeled_quantity)
+            );
+
+            $("#balance_peeled_quantity").css({ color: "white" });
+          }
+
+          $("#peeled_quantity").keyup();
+        }
+      });
+
+      $(document).on("keyup", "#peeled_quantity", (e) => {
+        const currentPeeledDispatchedQuantity = $(e.target).val();
+        const peeledQuantity = parseFloat(
+          $("#peeledProductNames").select2("data")[0]?.yield_quantity
+        );
+
+        if (!currentPeeledDispatchedQuantity) {
+          $("#balance_peeled_quantity").text(balance_peeled_quantity);
+          $("#balance_peeled_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balancePeeledQuantity =
+          peeledQuantity - currentPeeledDispatchedQuantity;
+
+        $("#balance_peeled_quantity").text(
+          !isNaN(balancePeeledQuantity)
+            ? balancePeeledQuantity
+            : currentPeeledDispatchedQuantity
+        );
+
+        if (balancePeeledQuantity > 0) {
+          $("#balance_peeled_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_peeled_quantity").css({ color: "red" });
+        }
+      });
+
+      let peeledProductNamesArray = [];
+      function loadPeeledProducts(lot_no) {
+        $("#peeledProductNames").empty();
+
+        if (!lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            peeledProductNamesArray = [];
+
+            data?.data?.forEach((item) => {
+              peeledProductNamesArray.push({
+                id: item.id,
+                product_master_id:
+                  item?.Peeling?.Dispatch?.ProcurementProduct?.ProductMaster.id,
+                quantity:
+                  (parseFloat(item?.yield_quantity) || 0) -
+                  (parseFloat(item?.peeled_dispatched_quantity) || 0),
+                text: item.Peeling?.Dispatch?.ProcurementProduct?.ProductMaster
+                  .product_name,
+              });
+            });
+            $("#peeledProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: true,
+              data: peeledProductNamesArray,
+            });
+
+            $("#peeledProductNames").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+      $(document).on("keyup", "#peeled_quantity", (e) => {
+        e.preventDefault();
+
+        const currentPeeledQuantity = $(e.target).val();
+        const peeledQuantity = parseFloat(
+          $("#peeledProductNames").select2("data")[0]?.yield_quantity
+        );
+
+        if (!currentPeeledQuantity) {
+          $("#balance_peeled_dispatched_quantity").text(
+            balance_peeled_dispatched_quantity
+          );
+          $("#balance_peeled_dispatched_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balanceQuantity = peeledQuantity - currentPeeledQuantity;
+
+        $("#balance_peeled_dispatched_quantity").text(
+          !isNaN(balanceQuantity) ? balanceQuantity : currentPeeledQuantity
+        );
+
+        if (balanceQuantity > 0) {
+          $("#balance_peeled_dispatched_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_peeled_dispatched_quantity").css({ color: "red" });
+        }
+      });
+      function loadUnits() {
+        $.ajax({
+          url: "/api/v1/master/unit/get/all?unit_type=Distribution Center",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#distributionLocation").select2({
+              placeholder: "Choose a destination",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            $("#distributionLocation").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadVehicles() {
+        $.ajax({
+          url: "/api/v1/master/vehicle/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#prodVehicleNumbers").select2({
+              placeholder: "Choose a vehicle",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.vehicle_number,
+                };
+              }),
+            });
+
+            $("#prodVehicleNumbers").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadDrivers() {
+        $.ajax({
+          url: "/api/v1/master/driver/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#prodDriverNames").select2({
+              placeholder: "Choose a driver",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.driver_name,
+                };
+              }),
+            });
+
+            $("#prodDriverNames").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function savePeeledDispatch() {
+        const peeled_dispatch_id = $("#submitPeeledDispatch").attr(
+          "peeled_dispatch_id"
+        );
+        const current_weight_balance = $("#balance_peeled_quantity").text();
+
+        if (parseFloat(current_weight_balance) <= -1) {
+          toastr["warning"]("Invalid dispatch quantity");
+          return;
+        }
+
+        let input_params = {
+          peeled_product_id: $("#peeledProductNames").val(),
+          unit_master_id: $("#distributionLocation").val(),
+          peeled_dispatch_quantity: $("#peeled_dispatch_quantity").val(),
+          temperature: $("#peeled_dispatch_temperature").val(),
+          vehicle_master_id: $("#prodVehicleNumbers").val(),
+          driver_master_id: $("#prodDriverNames").val(),
+          delivery_notes: $("#peeled_delivery_notes").val(),
+        };
+
+        if (peeled_dispatch_id && peeled_dispatch_id != "null") {
+          url = "/api/v1/peeled/dispatch/update";
+
+          input_params = {
+            peeled_dispatch_id,
+            peeled_dispatch_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url: "/api/v1/peeled/dispatch/create",
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closePeeledDispatchPanelBtn").click();
+
+            loadPercentages();
+
+            loadPeeledDispatchTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetPeeledDispatchDataBtn").on("click", resetAllInputs);
+      // -------------------- End of Dispatch -----------------
 
       function changePercentage(
         main_id,

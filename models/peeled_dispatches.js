@@ -2,74 +2,71 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class PeelingProducts extends Model {
+  class PeeledDispatches extends Model {
     static associate(models) {
-      PeelingProducts.belongsTo(models.UserProfiles, {
+      PeeledDispatches.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.UserProfiles, {
+      PeeledDispatches.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.UserProfiles, {
+      PeeledDispatches.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.Peeling, {
-        foreignKey: "peeling_id",
+      PeeledDispatches.belongsTo(models.PeelingProducts, {
+        foreignKey: "peeled_product_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.Dispatches, {
-        foreignKey: "dispatch_id",
+      PeeledDispatches.belongsTo(models.UnitMaster, {
+        foreignKey: "unit_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.ProcurementProducts, {
-        foreignKey: "procurement_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-      PeelingProducts.belongsTo(models.ProcurementLots, {
-        foreignKey: "id",
+      PeeledDispatches.belongsTo(models.VehicleMaster, {
+        foreignKey: "vehicle_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.ProductMaster, {
-        foreignKey: "product_master_id",
+      PeeledDispatches.belongsTo(models.DriverMaster, {
+        foreignKey: "driver_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  PeelingProducts.init(
+  PeeledDispatches.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      yield_quantity: {
+      peeled_dispatch_quantity: {
         type: DataTypes.FLOAT,
       },
-      peeling_status: {
-        type: DataTypes.STRING,
-        defaultValue: "In Progress",
+      temperature: {
+        type: DataTypes.FLOAT,
       },
-      peeling_notes: {
+      delivery_status: {
+        type: DataTypes.STRING,
+      },
+      delivery_notes: {
         type: DataTypes.TEXT,
       },
       is_active: {
@@ -87,7 +84,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "PeelingProducts",
+      modelName: "PeeledDispatches",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -96,66 +93,39 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Bulk Create Hook
-  PeelingProducts.beforeBulkCreate(async (data, options) => {
-    try {
-      data?.map((item) => {
-        item.peeling_status = item.yield_quantity ? "Completed" : "In Progress";
-
-        item.is_active = true;
-
-        item.created_by = options?.profile_id;
-      });
-    } catch (err) {
-      console.log(
-        "Error while appending an peeling products data",
-        err?.message || err
-      );
-    }
-  });
-
   // Create Hook
-  PeelingProducts.beforeCreate(async (data, options) => {
+  PeeledDispatches.beforeCreate(async (data, options) => {
     try {
-      data.peeling_status = data.yield_quantity ? "Completed" : "In Progress";
-      data.is_active = true;
-
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while appending an peeling products data",
+        "Error while appending an dispatch data",
         err?.message || err
       );
     }
   });
 
   // Update Hook
-  PeelingProducts.beforeUpdate(async (data, options) => {
+  PeeledDispatches.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
     } catch (err) {
-      console.log(
-        "Error while updating an peeling products data",
-        err?.message || err
-      );
+      console.log("Error while updating an dispatch data", err?.message || err);
     }
   });
 
   // Delete Hook
-  PeelingProducts.afterDestroy(async (data, options) => {
+  PeeledDispatches.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log(
-        "Error while deleting an peeling products data",
-        err?.message || err
-      );
+      console.log("Error while deleting an dispatch data", err?.message || err);
     }
   });
 
-  return PeelingProducts;
+  return PeeledDispatches;
 };

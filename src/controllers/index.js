@@ -21,3 +21,5 @@ export * as AuditLogs from "./audit_logs";
 export * as Dispatches from "./dispatches";
 export * as Peeling from "./peeling";
 export * as PeelingProducts from "./peeling_products";
+export * as PeeledDispatches from "./peeled_dispatches";
+

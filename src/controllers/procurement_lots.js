@@ -545,7 +545,7 @@ export const GetDispatchStats = ({
             sequelize.literal(
               `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
-            "total_purchased_quantity",
+            "total_yield_quantity",
           ],
         ],
         where: {
@@ -581,6 +581,62 @@ export const GetDispatchStats = ({
 // --------------------------------------------------------------------------------
 // ---------------------------------- Peeling -------------------------------------
 // --------------------------------------------------------------------------------
+
+export const GetPeeledLots = ({ start = 0, length = 10 }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const procurements = await models.ProcurementLots.findAll({
+        subQuery: false,
+        logging: console.log,
+        attributes: ["id", "procurement_lot"],
+        include: [
+          {
+            attributes: ["id"],
+            model: models.ProcurementProducts,
+            include: [
+              {
+                attributes: ["id"],
+                model: models.Dispatches,
+                include: [
+                  {
+                    attributes: ["id"],
+                    model: models.Peeling,
+                    include: [
+                      {
+                        required: false,
+                        attributes: [],
+                        model: models.PeelingProducts,
+                        where: {
+                          is_active: true,
+                        },
+                      },
+                    ],
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
 
 export const GetPeelingStats = ({
   procurement_lot_id,
@@ -669,6 +725,202 @@ export const GetPeelingStats = ({
             Sequelize.where(
               sequelize.literal(
                 `(SELECT COUNT(peeling.id) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`
+              ),
+              ">",
+              0
+            ),
+          ],
+        },
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: ["ProcurementLots.id"],
+      });
+
+      const output = {
+        count: procurementCount,
+        rows: procurementRows,
+      };
+
+      resolve(output);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+// ---------------------------------------------------------------------------------------
+// ---------------------------------- Peeled Dispatch ------------------------------------
+// ---------------------------------------------------------------------------------------
+
+export const GetPeeledDispatchLots = ({ start = 0, length = 10 }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const procurements = await models.ProcurementLots.findAll({
+        subQuery: false,
+        attributes: ["id", "procurement_lot"],
+        include: [
+          {
+            required: true,
+            attributes: [],
+            model: models.ProcurementProducts,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.Dispatches,
+                include: [
+                  {
+                    required: true,
+                    attributes: [],
+                    model: models.Peeling,
+                    include: [
+                      {
+                        required: true,
+                        attributes: [],
+                        model: models.PeelingProducts,
+                        include: [
+                          {
+                            required: true,
+                            attributes: [],
+                            model: models.PeelingDispatches,
+                            where: {
+                              is_active: true,
+                            },
+                          },
+                        ],
+                        where: {
+                          is_active: true,
+                        },
+                      },
+                    ],
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetPeeledDispatchStats = ({
+  procurement_lot_id,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        where.id = procurement_lot_id;
+      }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("peeled_date"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { procurement_lot: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const procurementCount = await models.ProcurementLots.count({
+        where: {
+          is_active: true,
+          [Op.and]: [
+            Sequelize.where(
+              sequelize.literal(
+                `(SELECT count(pp.product_master_id) FROM public.peeling_products pp
+	          	JOIN peeling p on p.id=pp.peeling_id and p.is_active=true
+	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
+	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+	              WHERE prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+              ),
+              ">",
+              0
+            ),
+          ],
+        },
+        raw: true,
+      });
+
+      const procurementRows = await models.ProcurementLots.findAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "procurement_date",
+          "procurement_lot",
+          [
+            sequelize.literal(
+              `(SELECT count(pp.product_master_id) FROM public.peeling_products pp
+	          	  JOIN peeling p on p.id=pp.peeling_id and p.is_active=true
+	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
+	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+	              WHERE prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+            ),
+            "total_product_count",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT count(p.peeling_quantity) FROM public.peeling p
+	              JOIN peeling_products pp on p.id=pp.peeling_id and p.is_active=true
+	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
+	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+	              WHERE prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+            ),
+            "total_peeled_count",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT sum(p.peeling_quantity) FROM public.peeling p
+	              JOIN peeling_products pp on p.id=pp.peeling_id and p.is_active=true
+	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
+	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+	              WHERE prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+            ),
+            "total_peeled_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT sum(pp.yield_quantity) FROM public.peeling_products pp
+	              JOIN peeling p on p.id=pp.peeling_id and p.is_active=true
+	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
+	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+	              WHERE prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+            ),
+            "total_yield_quantity",
+          ],
+        ],
+        where: {
+          ...where,
+          [Op.and]: [
+            Sequelize.where(
+              sequelize.literal(
+                `(SELECT COUNT(dispatches.id) as total_dispatched_count FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
               ),
               ">",
               0

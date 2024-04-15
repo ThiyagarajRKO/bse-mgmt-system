@@ -18,7 +18,7 @@ export const Create = (
       resolve({
         message: "Peeling product data has been inserted successfully",
         data: {
-          peeling_product_id: peeling_product?.id,
+          peeled_product_id: peeling_product?.id,
         },
       });
     } catch (err) {

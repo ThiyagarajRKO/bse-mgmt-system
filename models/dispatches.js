@@ -48,6 +48,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      Dispatches.hasMany(models.Peeling, {
+        foreignKey: "dispatch_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   Dispatches.init(
