@@ -1,7 +1,13 @@
 import { PeelingProducts } from "../../../controllers";
 
 export const GetNames = (
-  { procurement_lot_id, start, length, "search[value]": search },
+  {
+    procurement_lot_id,
+    peeled_dispatch_id,
+    start,
+    length,
+    "search[value]": search,
+  },
   session,
   fastify
 ) => {
@@ -9,6 +15,7 @@ export const GetNames = (
     try {
       let procurement = await PeelingProducts.GetNames({
         procurement_lot_id,
+        peeled_dispatch_id,
         start,
         length,
         search,

@@ -243,6 +243,7 @@ export const GetQuantity = ({ id }) => {
 
 export const GetNames = ({
   procurement_lot_id,
+  peeled_dispatch_id,
   start = 0,
   length = 10,
   search,
@@ -268,7 +269,11 @@ export const GetNames = ({
           "yield_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id)`
+              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id and ${
+                peeled_dispatch_id != "null" && peeled_dispatch_id != undefined
+                  ? "pd.id != '" + peeled_dispatch_id + "' and"
+                  : ""
+              } pd.is_active = true)`
             ),
             "peeled_quantity",
           ],

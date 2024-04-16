@@ -537,12 +537,6 @@ export const GetDispatchStats = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT COUNT(procurement_products.id) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
-            ),
-            "total_product_count",
-          ],
-          [
-            sequelize.literal(
               `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
             ),
             "total_dispatched_count",
@@ -557,7 +551,7 @@ export const GetDispatchStats = ({
             sequelize.literal(
               `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
-            "total_yield_quantity",
+            "total_purchased_quantity",
           ],
           [
             sequelize.literal(

@@ -689,7 +689,6 @@
                     <th style="border-radius: 4px 0 0 0"></th>
                     <th class="fw-bold"><span>Procurement Date</span></th>
                     <th class="fw-bold"><span>Procurement Lot</span></th>
-                    <th class="fw-bold"><span>Total Products Items</span></th>
                     <th class="fw-bold"><span>Total Purchased Weight</span></th>
                     <th class="fw-bold">
                       <span>Total Dispatched Items</span>
@@ -1598,6 +1597,7 @@
         closeSlidePanel("dispatchSlideInPanel");
 
         view_procurement_product_id = "";
+        view_dispatch_id = "";
       });
 
       $(".dispatchMenu").click(async function () {
@@ -1667,7 +1667,6 @@
             { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
-            { data: "total_product_count" },
             { data: "total_purchased_quantity" },
             { data: "total_dispatched_count" },
             { data: "total_dispatched_quantity" },
@@ -1734,13 +1733,6 @@
                 return data || 0;
               },
             },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
           ],
           drawCallback: () => {},
         });
@@ -1766,7 +1758,7 @@
         const view_total_dispatch_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(6)
+          .eq(5)
           .text();
 
         $("#view_lot_no").text(
@@ -1944,6 +1936,8 @@
       $(document).on("click", ".editDispatch", (e) => {
         // Changing panel input fields data
 
+        view_dispatch_id = $(e.target).attr("dispatch_id");
+
         $("#lotNumbers")
           .val($("#view_lot_no").attr("procurement_lot_id"))
           .trigger("change");
@@ -1961,11 +1955,11 @@
           $(e.target).closest("tr").children("td").eq(3).text()
         );
 
-        $("#peeled_dispatch_temperature").val(
+        $("#dispatch_temperature").val(
           $(e.target).closest("tr").children("td").eq(4).text()
         );
 
-        $("#distributionLocation")
+        $("#destinationLocation")
           .val(
             $(e.target)
               .closest("tr")
@@ -1998,7 +1992,7 @@
           )
           .trigger("change");
 
-        $("#peeled_delivery_notes").val(
+        $("#delivery_notes").val(
           $(e.target).closest("tr").children("td").eq(8).text()
         );
 
@@ -2012,10 +2006,7 @@
         $("#submitDispatch").text("Update");
 
         // Changing panel button attribute
-        $("#submitDispatch").attr(
-          "dispatch_id",
-          $(e.target).attr("dispatch_id")
-        );
+        $("#submitDispatch").attr("dispatch_id", view_dispatch_id);
 
         $("#dispatchModal").modal("hide");
       });
@@ -2064,51 +2055,6 @@
         }
       });
 
-      let balance_procure_quantity = 0;
-      $(document).on("change", "#productNames", () => {
-        $("#balance_procure_quantity").text("");
-
-        if ($("#productNames").val()) {
-          balance_procure_quantity =
-            $("#productNames").select2("data")[0]?.quantity;
-
-          if (!isNaN(balance_procure_quantity)) {
-            $("#balance_procure_quantity").text(
-              parseFloat(balance_procure_quantity)
-            );
-
-            $("#balance_procure_quantity").css({ color: "white" });
-          }
-
-          $("#dispatch_quantity").keyup();
-        }
-      });
-
-      $(document).on("keyup", "#dispatch_quantity", (e) => {
-        const currentDispatchedQuantity = $(e.target).val();
-        const procurementQuantity = parseFloat(
-          $("#productNames").select2("data")[0]?.quantity
-        );
-
-        if (!currentDispatchedQuantity) {
-          $("#balance_procure_quantity").text(balance_procure_quantity);
-          $("#balance_procure_quantity").css({ color: "white" });
-          return;
-        }
-
-        let balanceQuantity = procurementQuantity - currentDispatchedQuantity;
-
-        $("#balance_procure_quantity").text(
-          !isNaN(balanceQuantity) ? balanceQuantity : currentDispatchedQuantity
-        );
-
-        if (balanceQuantity > 0) {
-          $("#balance_procure_quantity").css({ color: "yellow" });
-        } else {
-          $("#balance_procure_quantity").css({ color: "red" });
-        }
-      });
-
       function loadProducts(lot_no) {
         $("#productNames").empty();
 
@@ -2118,7 +2064,9 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}`,
+          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}&dispatch_id=${
+            view_dispatch_id || null
+          }`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2164,6 +2112,51 @@
           },
         });
       }
+
+      let balance_procure_quantity = 0;
+      $(document).on("change", "#productNames", () => {
+        $("#balance_procure_quantity").text("");
+
+        if ($("#productNames").val()) {
+          balance_procure_quantity =
+            $("#productNames").select2("data")[0]?.quantity;
+
+          if (!isNaN(balance_procure_quantity)) {
+            $("#balance_procure_quantity").text(
+              parseFloat(balance_procure_quantity)
+            );
+
+            $("#balance_procure_quantity").css({ color: "white" });
+          }
+
+          $("#dispatch_quantity").keyup();
+        }
+      });
+
+      $(document).on("keyup", "#dispatch_quantity", (e) => {
+        const currentDispatchedQuantity = $(e.target).val();
+        const procurementQuantity = parseFloat(
+          $("#productNames").select2("data")[0]?.quantity
+        );
+
+        if (!currentDispatchedQuantity) {
+          $("#balance_procure_quantity").text(balance_procure_quantity);
+          $("#balance_procure_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balanceQuantity = procurementQuantity - currentDispatchedQuantity;
+
+        $("#balance_procure_quantity").text(
+          !isNaN(balanceQuantity) ? balanceQuantity : currentDispatchedQuantity
+        );
+
+        if (balanceQuantity > 0) {
+          $("#balance_procure_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_procure_quantity").css({ color: "red" });
+        }
+      });
 
       function loadUnits() {
         $.ajax({
@@ -2275,7 +2268,7 @@
           procurement_product_id: $("#productNames").val(),
           unit_master_id: $("#destinationLocation").val(),
           dispatch_quantity: $("#dispatch_quantity").val(),
-          temperature: $("#temperature").val(),
+          temperature: $("#dispatch_temperature").val(),
           vehicle_master_id: $("#vehicleNumbers").val(),
           driver_master_id: $("#driverNames").val(),
           delivery_notes: $("#delivery_notes").val(),
@@ -3381,7 +3374,8 @@
       $("#closePeeledDispatchPanelBtn").click(function () {
         closeSlidePanel("peeledDispatchSlideInPanel");
 
-        //view_peeled_product_id = "";
+        view_peeled_product_id = "";
+        view_peeled_dispatch_id = "";
       });
 
       $(".peeledDispatchMenu").click(async function () {
@@ -3406,9 +3400,9 @@
       function loadPeeledDropdowns() {
         // Pre loading dropdown data
         loadPeeledLotNumber();
-        loadUnits();
-        loadVehicles();
-        loadDrivers();
+        loadPeeledUnits();
+        loadPeeledVehicles();
+        loadPeeledDrivers();
       }
 
       $("#submitPeeledDispatch").click(function () {
@@ -3610,7 +3604,7 @@
           columns: [
             { data: null },
             { data: "PeelingProduct.ProductMaster.product_name" },
-            { data: "total_yield_quantity" },
+            { data: "PeelingProduct.yield_quantity" },
             { data: "peeled_dispatch_quantity" },
             { data: "temperature" },
             { data: "UnitMaster.unit_code" },
@@ -3627,8 +3621,6 @@
               render: function (data, type, row) {
                 return `<i class="fa fa-pen-to-square edit editPeeledDispatch" peeled_dispatch_id=${
                   row?.id || null
-                } procurement_id=${
-                  row?.id
                 } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
@@ -3636,7 +3628,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row["PeeledProducts"]?.id}'>${data}-${row.peeled_dispatch_quantity}</i>`;
+                return `<span peeled_product_id='${row["PeelingProduct"]?.id}'>${data}-${row?.["PeelingProduct"]?.yield_quantity}</i>`;
               },
             },
             {
@@ -3726,32 +3718,35 @@
       }
 
       let view_peeled_product_id = "";
+      let view_peeled_dispatch_id = "";
       $(document).on("click", ".editPeeledDispatch", (e) => {
         // Changing panel input fields data
 
-        $("#peeledLotNumbers")
-          .val($("#view_peeled_dispatch_lot_no").attr("procurement_lot_id"))
-          .trigger("change");
+        view_peeled_dispatch_id = $(e.target).attr("peeled_dispatch_id");
 
-        /*view_peeled_product_id = $(e.target)
+        view_peeled_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(1)
           .find("span")
           .attr("peeled_product_id");
 
-        $("#peeledProductNames").val(view_peeled_product_id).trigger("change");*/
-
-        $("#peeledProductNames")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("peeled_dispatch_data")
-          )
+        $("#peeledLotNumbers")
+          .val($("#view_peeled_dispatch_lot_no").attr("procurement_lot_id"))
           .trigger("change");
+
+        // $("#peeledProductNames").val(view_peeled_product_id).trigger("change");
+
+        // $("#peeledProductNames")
+        //   .val(
+        //     $(e.target)
+        //       .closest("tr")
+        //       .children("td")
+        //       .eq(1)
+        //       .find("span")
+        //       .attr("peeled_dispatch_data")
+        //   )
+        //   .trigger("change");
 
         $("#peeled_dispatch_quantity").val(
           $(e.target).closest("tr").children("td").eq(3).text()
@@ -3810,7 +3805,7 @@
         // Changing panel button attribute
         $("#submitPeeledDispatch").attr(
           "peeled_dispatch_id",
-          $(e.target).attr("peeled_dispatch_id")
+          view_peeled_dispatch_id
         );
 
         $("#peeledDispatchModal").modal("hide");
@@ -3879,7 +3874,9 @@
         }
 
         $.ajax({
-          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}`,
+          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}&peeled_dispatch_id=${
+            view_peeled_dispatch_id || null
+          }`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3896,9 +3893,7 @@
                   (parseFloat(item?.yield_quantity) || 0) -
                   (parseFloat(item?.peeled_quantity) || 0),
                 text:
-                  item?.ProductMaster.product_name +
-                  "-" +
-                  item.balance_peeled_quantity,
+                  item?.ProductMaster.product_name + "-" + item.yield_quantity,
               });
             });
 
@@ -3908,13 +3903,13 @@
               data: peeledProductNamesArray,
             });
 
-            /* if (view_peeled_product_id) {
+            if (view_peeled_product_id) {
               $("#peeledProductNames")
                 .val(view_peeled_product_id)
                 .trigger("change");
             } else {
               $("#peeledProductNames").val(null).trigger("change");
-            }*/
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -3974,7 +3969,7 @@
         }
       });
 
-      function loadUnits() {
+      function loadPeeledUnits() {
         $.ajax({
           url: "/api/v1/master/unit/get/all?unit_type=Distribution Center",
           method: "GET",
@@ -4006,7 +4001,7 @@
         });
       }
 
-      function loadVehicles() {
+      function loadPeeledVehicles() {
         $.ajax({
           url: "/api/v1/master/vehicle/get/all",
           method: "GET",
@@ -4038,7 +4033,7 @@
         });
       }
 
-      function loadDrivers() {
+      function loadPeeledDrivers() {
         $.ajax({
           url: "/api/v1/master/driver/get/all",
           method: "GET",
