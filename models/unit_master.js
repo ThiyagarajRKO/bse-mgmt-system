@@ -6,6 +6,7 @@ const UnitTypes = {
   "Peeling Center": "PC",
   "Cooking Center": "COC",
   "Distribution Center": "DC",
+  "Cold Storage": "CS",
 };
 
 module.exports = (sequelize, DataTypes) => {

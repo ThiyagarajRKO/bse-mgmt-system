@@ -3381,7 +3381,7 @@
       $("#closePeeledDispatchPanelBtn").click(function () {
         closeSlidePanel("peeledDispatchSlideInPanel");
 
-        view_peeled_product_id = "";
+        //view_peeled_product_id = "";
       });
 
       $(".peeledDispatchMenu").click(async function () {
@@ -3733,14 +3733,25 @@
           .val($("#view_peeled_dispatch_lot_no").attr("procurement_lot_id"))
           .trigger("change");
 
-        view_peeled_product_id = $(e.target)
+        /*view_peeled_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(1)
           .find("span")
           .attr("peeled_product_id");
 
-        $("#peeledProductNames").val(view_peeled_product_id).trigger("change");
+        $("#peeledProductNames").val(view_peeled_product_id).trigger("change");*/
+
+        $("#peeledProductNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(1)
+              .find("span")
+              .attr("peeled_dispatch_data")
+          )
+          .trigger("change");
 
         $("#peeled_dispatch_quantity").val(
           $(e.target).closest("tr").children("td").eq(3).text()
@@ -3885,7 +3896,9 @@
                   (parseFloat(item?.yield_quantity) || 0) -
                   (parseFloat(item?.peeled_quantity) || 0),
                 text:
-                  item?.ProductMaster.product_name + "-" + item.yield_quantity,
+                  item?.ProductMaster.product_name +
+                  "-" +
+                  item.balance_peeled_quantity,
               });
             });
 
@@ -3895,13 +3908,13 @@
               data: peeledProductNamesArray,
             });
 
-            if (view_peeled_product_id) {
+            /* if (view_peeled_product_id) {
               $("#peeledProductNames")
                 .val(view_peeled_product_id)
                 .trigger("change");
             } else {
               $("#peeledProductNames").val(null).trigger("change");
-            }
+            }*/
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -4068,6 +4081,7 @@
           return;
         }
 
+        let url = "/api/v1/peeled/dispatch/create";
         let input_params = {
           peeled_product_id: $("#peeledProductNames").val(),
           unit_master_id: $("#distributionLocation").val(),
@@ -4079,6 +4093,7 @@
         };
 
         if (peeled_dispatch_id && peeled_dispatch_id != "null") {
+          //if (peeled_product_id && peeled_product_id != "null") {
           url = "/api/v1/peeled/dispatch/update";
 
           input_params = {
@@ -4090,7 +4105,7 @@
         }
 
         $.ajax({
-          url: "/api/v1/peeled/dispatch/create",
+          url,
           method: "POST",
           dataType: "json",
           contentType: "application/json",

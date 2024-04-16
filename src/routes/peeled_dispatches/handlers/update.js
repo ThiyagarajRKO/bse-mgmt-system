@@ -1,4 +1,4 @@
-import { PeeledDispatches, PeeledProducts } from "../../../controllers";
+import { PeeledDispatches, PeelingProducts } from "../../../controllers";
 
 export const Update = (
   { profile_id, peeled_dispatch_id, peeled_dispatch_data },
@@ -7,28 +7,28 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (peeled_dispatch_data?.peeled_dispatch_quantity) {
-        if (!peeled_dispatch_data?.peeled_product_id) {
+      if (!peeled_dispatch_data?.peeled_dispatch_quantity) {
+        if (!peeled_dispatch_data?.peeling_product_id) {
           return reject({
             statusCode: 420,
-            message: "Peeled product id must not be empty",
+            message: "peeled and dispatched product id must not be empty",
           });
         }
-        const { peeled_quantity } = await PeeledProducts.GetQuantity({
+        const { yield_quantity } = await PeelingProducts.GetQuantity({
           id: peeled_dispatch_data?.peeled_product_id,
         });
 
-        if (!peeled_quantity) {
+        if (!yield_quantity) {
           return reject({
             statusCode: 420,
             message: "Invalid product quantity",
           });
         } else if (
-          peeled_quantity < peeled_dispatch_data?.peeled_dispatch_quantity
+          yield_quantity < peeled_dispatch_data?.peeled_dispatch_quantity
         ) {
           return reject({
             statusCode: 420,
-            message: "Dispatched quantity is grater than Peeled quantity",
+            message: "Dispatched quantity is grater than Procurement quantity",
           });
         }
       }

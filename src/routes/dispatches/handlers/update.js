@@ -7,7 +7,7 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (dispatch_data?.dispatch_quantity) {
+      if (!dispatch_data?.dispatch_quantity) {
         if (!dispatch_data?.procurement_product_id) {
           return reject({
             statusCode: 420,

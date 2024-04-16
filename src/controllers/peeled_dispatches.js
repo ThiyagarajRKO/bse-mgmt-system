@@ -54,7 +54,7 @@ export const Update = async (profile_id, id, peeled_dispatch_data) => {
         });
       }
 
-      if (!peeling_product_data) {
+      if (!peeled_dispatch_data) {
         return reject({
           statusCode: 420,
           message: "Peeled dispatch product data must not be empty!",
