@@ -1311,6 +1311,242 @@
           </div>
         </div>
         <!-- Peeled Dispatch Container Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Peeled Dispatch Container --------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container packingContainer d-none">
+          <!-- Slide-in Panel -->
+          <div id="packingSlideInPanel" class="slideInPanel px-4 overflow-auto">
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="packingPanelHeading" class="fw-bold fs-5"
+                    >Add Packing Data</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closePackingPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div class="form-group mt-4">
+                  <label for="lot_no">Lot No:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingLotNumbers"
+                    name="packingLotNumbers"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="product_name">Product Name:</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingProductNames"
+                    name="packingProductNames"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="distribution_location">Distribution Center</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingDistributionLocation"
+                    name="packingDistributionLocation"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packingGrade">Grade</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingGrade"
+                    name="packingGrade"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packingSize">Size</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingSize"
+                    name="packingSize"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packingPackage">Packing Container</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingPackage"
+                    name="packingPackage"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packing_quantity">Quantity</label>
+                  <input
+                    id="packing_quantity"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 10"
+                    name="packing_quantity"
+                    required
+                  />
+                  <span style="font-size: 12px"
+                    >Balance Packed Quantity :
+                    <span class="fw-bold" id="balance_packed_quantity"></span
+                  ></span>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packing_notes">Packing Notes</label>
+                  <textarea
+                    row="3"
+                    class="form-control input-dropdown w-100"
+                    id="packing_delivery_notes"
+                    name="packing_delivery_notes"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitPacking" class="col-lg-5 btn btn-danger">
+                    Save
+                  </div>
+                  <div
+                    id="resetPackingDataBtn"
+                    class="col-lg-5 btn btn-outline-danger"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openPackingPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Packing</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="packingTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Peeled Date</span></th>
+                    <th class="fw-bold"><span>Peeled Lot</span></th>
+                    <th class="fw-bold">
+                      <span>Total Dispatched Weight</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Packed Items</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Packed Weight</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="packingModal"
+          class="modal hide fade modal-xl"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Packed Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_packing_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_packing_products"
+                      >Total Packed:</label
+                    >
+                    <span id="view_total_packing"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_packed_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="packingProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                      <th class="fw-bold"><span>Packed Quantity</span></th>
+                      <th class="fw-bold"><span>Packing Location</span></th>
+                      <th class="fw-bold"><span>Grade</span></th>
+                      <th class="fw-bold"><span>Size</span></th>
+                      <th class="fw-bold"><span>Package Container</span></th>
+                      <th class="fw-bold"><span>Packing Notes</span></th>
+                      <th class="fw-bold"><span>Packing Status</span></th>
+                      <th class="fw-bold"><span>Packed Date</span></th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="close btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Packing Container Ends -->
       </div>
     </div>
   </body>
@@ -1434,20 +1670,34 @@
         $("#distributionLocation").val(null).trigger("change");
         $(".peeledProductNames").val(null).trigger("change");
 
-        $(".peeledProductNames").select2({
+        //Packing
+         $("#packingLotNumbers").val(null).trigger("change");
+        $("#packingProductNames").val(null).trigger("change");
+        $("#packingDistributionLocation").val(null).trigger("change");
+        $("#packingGrade").val(null).trigger("change");
+        $("#packingSize").val(null).trigger("change");
+        $("#packingPackages").val(null).trigger("change");
+
+
+        $(".packingProductNames").select2({
           placeholder: "Choose a product",
           allowClear: true,
         });
-        $("#distributionLocation").select2({
+        $("#packingDistributionLocation").select2({
           placeholder: "Choose a production center",
           allowClear: true,
         });
-        $("#prodVehicleNumbers").select2({
-          placeholder: "Choose a Dispatch Vehicle",
+        $("#packingGrade").select2({
+          placeholder: "Choose a Grade",
           allowClear: true,
         });
-        $("#prodDriverNames").select2({
-          placeholder: "Choose a Dispatch Driver",
+        $("#packingSize").select2({
+          placeholder: "Choose a Size",
+          allowClear: true,
+        });
+
+        $("#packingSize").select2({
+          placeholder: "Choose a Package",
           allowClear: true,
         });
 
@@ -4131,7 +4381,818 @@
       }
 
       $("#resetPeeledDispatchDataBtn").on("click", resetAllInputs);
-      // -------------------- End of Dispatch -----------------
+      // -------------------- End of PeeledDispatch -----------------
+
+       // -----------------------------------------------------------------
+      // --------------------------- Packing ------------------------------
+      // -----------------------------------------------------------------
+
+      // // Open panel
+      $("#openPackingPanelBtn").click(function () {
+        // $("#dispatchModal").modal("show");
+        openSlidePanel(
+          "packingSlideInPanel",
+          "packingPanelHeading",
+          "Packing",
+          "submitPacking",
+          "packing_id"
+        );
+
+        $("#balance_packed_quantity").text("").css({ color: "white" });
+      });
+
+      // Close panel
+      $("#closePackingPanelBtn").click(function () {
+        closeSlidePanel("packingSlideInPanel");
+
+        view_packing_product_id = "";
+        view_packing_id = "";
+      });
+
+      $(".packingMenu").click(async function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".packingContainer").removeClass("d-none");
+        $(".packingContainer").addClass("d-block");
+
+        // loadPercentages();
+        loadPackingDropdowns();
+        loadPackingTableData();
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#packingModal").modal("hide");
+        }
+      );
+
+      function loadPackingDropdowns() {
+        // Pre loading dropdown data
+        loadPackingLotNumber();
+        loadPackingProductNames();
+        loadPackingUnits();
+        loadPackingGrade();
+        loadPackingSize();
+        loadPackingPackage();
+      }
+
+      $("#submitPacking").click(function () {
+        savePacking();
+      });
+
+      function loadPackingTableData() {
+        $("#packingTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/procurement/lot/get/stats/packing",
+            error: function (xhr, error, code) {
+              $("#packingTable").DataTable().destroy();
+              $("#packingTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "peeling_date" },
+            { data: "procurement_lot" },
+            { data: "total_peeled_dispatch_quantity" },
+            { data: "total_packing_count" },
+            { data: "total_packing_quantity" },
+
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewPacking" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.procurement_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewPacking", (e) => {
+        // Changing panel input fields data
+        $("#closePackingPanelBtn").click();
+
+        // Changing panel input fields data
+        const view_packing_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("procurement_lot_id");
+
+        const view_total_packing = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+        const view_total_packing_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+
+        $("#view_packing_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_packing_lot_no").attr(
+          "procurement_lot_id",
+          view_packing_lot_no
+        );
+
+        $("#view_total_packing").text(view_total_packing);
+
+        $("#view_total_packing_weight").text(
+          view_total_packing_weight
+        );
+
+        // Opening Slied Panel
+        $("#packingModal").modal("show");
+
+        loadPackingProductTableData(view_packing_lot_no);
+      });
+
+      function loadPackingProductTableData(packing_lot_no) {
+        if (!packinglot_no) {
+          toastr["warning"]("Lot no should not be empty!");
+        }
+        $("#packingProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/packing/get/all?procurement_lot_id=${packing_lot_no}`,
+            error: function (xhr, error, code) {
+              $("#packingProductTable").DataTable().destroy();
+              $("#packingProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "PeeledDispatches.PeelingProduct.ProductMaster.product_name" },
+            { data: "PeeledDispatches.peeled_dispatch_quantity" },
+            { data: "UnitMaster.unit_code" },
+            { data: "GradeMaster.grade_name" },
+            { data: "SizeMaster.size" },
+            { data: "PackagingMaster.packaging_code" },
+            { data: "packing_notes" },
+            { data: "packing_status" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editPacking" packing_id=${
+                  row?.id || null
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span peeled_product_id='${row["PeeledDispatches"]?.id}'>${data}-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>`;
+              },
+            },
+
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span grade_master_id='${row["GradeMaster"]?.id}'>${data}</i>`;
+              },
+            },
+             {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span size_master_id='${row["SizeMaster"]?.id}'>${data}</i>`;
+              },
+            },
+             {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span packaging_master_id='${row["PackagingMaster"]?.id}'>${data}</i>`;
+              },
+            },
+
+            {
+              targets: [9],
+              className: "text-left",
+              render: (data, type, row) => {
+                return data || "-";
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: (data, type, row) => {
+                return `<span class=${
+                  data == "In Progress" ? "text-warning" : "text-success"
+                }>${data} <i class="fa-solid ${
+                  data == "In Progress"
+                   ? "fa-spinner fa-spin"
+              : "fa-circle-check"
+                }"></i></span>`;
+              },
+            },
+            {
+              targets: [11],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      let view_packing_product_id = "";
+      let view_packing_id = "";
+      $(document).on("click", ".editPacking", (e) => {
+        // Changing panel input fields data
+
+        view_packing_id = $(e.target).attr("packing_id");
+
+        view_packing_product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(1)
+          .find("span")
+          .attr("peeled_dispatch_id");
+
+        $("#packingLotNumbers")
+          .val($("#view_packing_lot_no").attr("procurement_lot_id"))
+          .trigger("change");
+
+        $("#packing_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#packingDistributionLocation")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#packingGrade")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("grade_master_id")
+          )
+          .trigger("change");
+
+          $("#packingSize")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("size_master_id")
+          )
+          .trigger("change");
+
+        $("#packingPackages")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(7)
+              .find("a")
+              .attr("packaging_master_id")
+          )
+          .trigger("change");
+
+        $("#packing_notes").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening Slide Panel
+        $("#openPackingPanelBtn").click();
+
+        // Changing panel heading
+        $("#packingPanelHeading").text("Edit Packing Data");
+
+        // Changing panel button label
+        $("#submitPacking").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPacking").attr(
+          "packing_id",
+          view_packing_id
+        );
+
+        $("#packingModal").modal("hide");
+      });
+
+      function loadPackingLotNumber() {
+        $.ajax({
+          url: `/api/v1/procurement/lot/get/lots/packing/all`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#packingLotNumbers").select2({
+              placeholder: "Choose a lot",
+              allowClear: true,
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.procurement_lot,
+                };
+              }),
+            });
+
+            $("#packingLotNumbers").val(null).trigger("change");
+
+            // Call loadPeeledProducts here
+            let packing_lot_no = $("#packingLotNumbers").val();
+            if (packing_lot_no) {
+              loadPackingProducts(packing_lot_no);
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#packingLotNumbers", () => {
+        $("#balance_peeled_quantity").text("");
+
+        let packing_lot_no = $("#packingLotNumbers").val();
+
+        $("#packingProductNames").empty();
+
+
+        if (packing_lot_no) {
+          loadPackingProductNames(lot_no);
+        }
+      });
+
+      let packingProductNamesArray = [];
+      function loadPackingProductNames(packing_lot_no) {
+        $("#packingProductNames").empty();
+
+        if (!packing_lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/packing/get/names/all?procurement_lot_id=${lot_no}&packing_id=${
+            view_packing_id || null
+          }`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            packingProductNamesArray = [];
+
+            data?.data?.forEach((item) => {
+              packingProductNamesArray.push({
+                id: item.id,
+                product_master_id: item?.ProductMaster.id,
+                quantity:
+                  (parseFloat(item?.peeled_dispatch_quantity) || 0) -
+                  (parseFloat(item?.yield_quantity) || 0),
+                text:
+                  item?.ProductMaster.product_name + "-" + item.peeled_dispatch_quantity,
+              });
+            });
+
+            $("#packingProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: true,
+              data: packingProductNamesArray,
+            });
+
+            if (view_peeled_dispatch_id) {
+              $("#packingProductNames")
+                .val(view_peeled_dispatch_id)
+                .trigger("change");
+            } else {
+              $("#packingProductNames").val(null).trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      let balance_peeled_dispatch_quantity = 0;
+      $(document).on("change", "#packingProductNames", () => {
+        $("#balance_peeled_dispatch_quantity").text("");
+
+        if ($("#packingProductNames").val()) {
+          balance_peeled_dispatch_quantity = $("#packingProductNames").select2("data")[0]
+            ?.quantity;
+
+          if (!isNaN(balance_peeled_dispatch_quantity)) {
+            $("#balance_peeled_dispatch_quantity").text(
+              parseFloat(balance_peeled_dispatch_quantity)
+            );
+
+            $("#balance_peeled_dispatch_quantity").css({ color: "white" });
+          }
+
+          $("#packing_quantity").keyup();
+        }
+      });
+
+      $(document).on("keyup", "#packing_quantity", (e) => {
+        const currentPackingQuantity = $(e.target).val();
+        const peeledDispatchQuantity = parseFloat(
+          $("#packingProductNames").select2("data")[0]?.quantity
+        );
+
+        if (!currentPackingQuantity) {
+          $("#balance_peeled_dispatch_quantity").text(balance_peeled_dispatch_quantity);
+          $("#balance_peeled_dispatch_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balancePeeledDispatchQuantity =
+          peeledDispatchQuantity - currentPackingQuantity;
+
+        $("#balance_peeled_dispatch_quantity").text(
+          !isNaN(balancePeeledDispatchQuantity)
+            ? balancePeeledDispatchQuantity
+            : currentPackingQuantity
+        );
+
+        if (balancePackingQuantity > 0) {
+          $("#balance_peeled_dispatch_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_peeled_dispatch_quantity").css({ color: "red" });
+        }
+      });
+
+      function loadPackingUnits() {
+        $.ajax({
+          url: "/api/v1/master/unit/get/all?unit_type=Distribution Center",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#peelingDistributionLocation").select2({
+              placeholder: "Choose a Production Center",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            $("#packingDistributionLocation").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadPackingGrade() {
+        $.ajax({
+          url: "/api/v1/master/grade/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#packingGrade").select2({
+              placeholder: "Choose a Grade",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.grade_name,
+                };
+              }),
+            });
+
+            $("#packingGrade").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadPackingSize() {
+        $.ajax({
+          url: "/api/v1/master/size/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#packingSize").select2({
+              placeholder: "Choose a size",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.size,
+                };
+              }),
+            });
+
+            $("#packingSize").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function loadPackingPackage() {
+        $.ajax({
+          url: "/api/v1/master/packaging/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#packingPackage").select2({
+              placeholder: "Choose a package",
+              allowClear: "true",
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.size,
+                };
+              }),
+            });
+
+            $("#packingPackage").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+
+      function savePacking() {
+        const packing_id = $("#submitPacking").attr(
+          "packing_id"
+        );
+        const current_packing_weight_balance = $("#balance_peeled_dispatch_quantity").text();
+
+        if (parseFloat(current_packing_weight_balance) <= -1) {
+          toastr["warning"]("Invalid packing quantity");
+          return;
+        }
+
+        let url = "/api/v1/packing/create";
+        let input_params = {
+          peeled_dispatch_id: $("#packingProductNames").val(),
+          packing_quantity: $("#peeled_dispatch_quantity").val(),
+          unit_master_id: $("#packingDistributionLocation").val(),
+          grade_master_id: $("#packingGrade").val(),
+          size_master_id: $("#packingSize").val(),
+          packaging_master_id: $("#packingPackage").val(),
+          packing_delivery_notes: $("#packing_delivery_notes").val(),
+        };
+
+        if (packing_id && packing_id != "null") {
+          //if (peeled_product_id && peeled_product_id != "null") {
+          url = "/api/v1/packing/update";
+
+          input_params = {
+            packing_id,
+            packing_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url,
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closePackingPanelBtn").click();
+
+            loadPercentages();
+
+            loadPackingTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](
+                jqXhr["responseJSON"]?.message || jqXhr["responseJSON"]
+              );
+            }
+          },
+        });
+      }
+
+      $("#resetPackingDataBtn").on("click", resetAllInputs);
+      <!--End of Packing Container-->
 
       function changePercentage(
         main_id,

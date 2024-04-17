@@ -8,6 +8,7 @@ import dispatchRoute from "./dispatches";
 import peelingRoute from "./peeling";
 import peelingProductRoute from "./peeling_products";
 import peeledDispatchRoute from "./peeled_dispatches";
+import packingRoute from "./packing";
 import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
@@ -59,7 +60,7 @@ export const PrivateRouters = (fastify, opts, done) => {
       const module_name = url_path.split("/")[0];
       const module_master_id =
         module_master_ids[
-        module_name == "master" ? "master_data" : module_name
+          module_name == "master" ? "master_data" : module_name
         ];
 
       if (!module_master_id) {
@@ -96,6 +97,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(peelingProductRoute, { prefix: "/peeling/product" });
 
   fastify.register(peeledDispatchRoute, { prefix: "/peeled/dispatch" });
+
+  fastify.register(packingRoute, { prefix: "/packing" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 

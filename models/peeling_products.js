@@ -53,6 +53,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      PeelingProducts.hasMany(models.PeeledDispatches, {
+        foreignKey: "peeled_product_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   PeelingProducts.init(
