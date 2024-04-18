@@ -537,9 +537,9 @@
 
           <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
-              <span class="fw-bold">Inventory Ageing Analysis</span>
+              <span class="fw-bold">Product Ageing Analysis</span>
               <select
-                id="inventoryAgeingAnalysisChartFilter"
+                id="procurementAgeByProductsFilter"
                 class="form-select form-select-sm me-2"
                 style="
                   height: 28px !important;
@@ -556,7 +556,10 @@
               </select>
             </div>
             <div class="dashboardCard-Body py-4" style="height: 50vh">
-              <div id="inventoryAgeingAnalysisChart" style="height: 100%"></div>
+              <div
+                id="procurementAgeByProductsChart"
+                style="height: 100%"
+              ></div>
             </div>
           </div>
 
@@ -1017,7 +1020,14 @@
         null,
         "price"
       );
-      loadInventoryAgeingAnalysisChart();
+
+      loadProcurementAgeByProductsChart(
+        "days",
+        $("#procurementAgeByProductsFilter").val(),
+        null,
+        null
+      );
+
       loadSupplierPerformanceScorecardChart(
         "days",
         $("#supplierPerformanceScorecardChartFilter").val(),
@@ -1073,6 +1083,15 @@
             "quantity"
           );
         }
+      });
+
+      $(document).on("change", "#procurementAgeByProductsFilter", (e) => {
+        loadProcurementAgeByProductsChart(
+          "days",
+          $(e.target).val(),
+          null,
+          null
+        );
       });
 
       $(document).on(
@@ -1494,40 +1513,96 @@
         });
       }
 
-      function loadInventoryAgeingAnalysisChart() {
-        let inventoryAgeingAnalysisChartOptions = {
-          backgroundColor: "#f7f9fd",
-          animationEnabled: true,
-          zoomEnabled: true,
-          theme: "light2",
-          axisX: {
-            interval: 1,
-          },
-          data: [
-            {
-              type: "spline",
-              dataPoints: [
-                { label: "AJs", y: 25060 },
-                { label: "AJs", y: 27980 },
-                { label: "AJs", y: 33800 },
-                { label: "AJs", y: 49400 },
-                { label: "AJs", y: 40260 },
-                { label: "AJs", y: 33900 },
-                { label: "AJs", y: 48000 },
-                { label: "AJs", y: 31500 },
-                { label: "AJs", y: 32300 },
-                { label: "AJs", y: 42000 },
-                { label: "AJs", y: 52160 },
-                { label: "AJs", y: 49400 },
-              ],
-            },
-          ],
-        };
+      function loadProcurementAgeByProductsChart(
+        filter_type,
+        filter_days,
+        from_date,
+        to_date
+      ) {
+        if (filter_type == "days") {
+          switch (filter_days) {
+            case "7":
+              var d = new Date();
+              d.setDate(d.getDate() - 7);
 
-        new CanvasJS.Chart(
-          "inventoryAgeingAnalysisChart",
-          inventoryAgeingAnalysisChartOptions
-        ).render();
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "90":
+              var d = new Date();
+              d.setDate(d.getDate() - 90);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            case "180":
+              var d = new Date();
+              d.setDate(d.getDate() - 180);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+              break;
+            default:
+              var d = new Date();
+              d.setDate(d.getDate() - 30);
+
+              from_date = formatDate(d);
+              to_date = formatDate(new Date());
+          }
+        }
+
+        $.ajax({
+          url: `/api/v1/procurement/product/chart/age/by/product?from_date=${from_date}&to_date=${to_date}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            let dataPoints = [];
+
+            data?.data.map((item) => {
+              dataPoints.push({
+                quantity: item?.quantity || 0,
+                label: item?.product_name,
+                y: parseFloat(item.days_old) || 0,
+              });
+            });
+
+            let procurementAgeByProductsChartOptions = {
+              backgroundColor: "#f7f9fd",
+              animationEnabled: true,
+              zoomEnabled: true,
+              theme: "light2",
+              axisX: {
+                interval: 1,
+              },
+              axisY: {
+                title: "Age (Days)",
+              },
+              data: [
+                {
+                  toolTipContent: "{label}: <strong>{y} days</strong>",
+                  indexLabel: "{y} days ({quantity} kg)",
+                  type: "line",
+                  dataPoints,
+                },
+              ],
+            };
+
+            new CanvasJS.Chart(
+              "procurementAgeByProductsChart",
+              procurementAgeByProductsChartOptions
+            ).render();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
       }
 
       function loadSupplierPerformanceScorecardChart(
@@ -1570,7 +1645,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/performance/by/vendors?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/v1/procurement/product/chart/performance/by/vendor?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
