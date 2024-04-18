@@ -268,3 +268,80 @@ export const GetDispatches = ({
     }
   });
 };
+
+export const GetPeeledDispatches = ({
+  procurement_lot_id,
+  start = 0,
+  length = 10,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let procurementProductsWhere = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        procurementProductsWhere.procurement_lot_id = procurement_lot_id;
+      }
+
+      const procurements = await models.UnitMaster.findAll({
+        subQuery: false,
+        attributes: ["id", "unit_code"],
+        include: [
+          {
+            attributes: [],
+            model: models.PeeledDispatches,
+            include: [
+              {
+                attributes: [],
+                model: models.PeelingProducts,
+                include: [
+                  {
+                    attributes: [],
+                    model: models.Peeling,
+                    include: [
+                      {
+                        attributes: [],
+                        model: models.Dispatches,
+                        include: [
+                          {
+                            attributes: [],
+                            model: models.ProcurementProducts,
+                            where: procurementProductsWhere,
+                          },
+                        ],
+                        where: {
+                          is_active: true,
+                        },
+                      },
+                    ],
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          is_active: true,
+          unit_type: "Distribution Center",
+        },
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

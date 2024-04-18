@@ -4,6 +4,7 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetDispatches } from "./handlers/get_dispatch_destinations";
+import { GetPeeledDispatches } from "./handlers/get_peeled_dispatch_destinations";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -12,6 +13,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
 import { getDispatchesSchema } from "./schema/get_dispatch_destinations";
+import { getPeeledDispatchesSchema } from "./schema/get_peeled_dispatch_destinations";
 
 export const unitMasterRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -117,6 +119,29 @@ export const unitMasterRoute = (fastify, opts, done) => {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
         const result = await GetDispatches(params, req?.session, fastify);
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/get/peeled/dispatch/destination/all",
+    getPeeledDispatchesSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetPeeledDispatches(params, req?.session, fastify);
 
         reply.code(result.statusCode || 200).send({
           success: true,
