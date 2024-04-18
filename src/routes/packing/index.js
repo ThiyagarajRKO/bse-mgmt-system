@@ -3,7 +3,7 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { GetProductNames } from "./handlers/get_product_names";
+import { GetPackingProductNames } from "./handlers/get_packing_product_names";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -11,7 +11,7 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
-import { getProductNamesSchema } from "./schema/get_product_names";
+import { getPackingProductNamesSchema } from "./schema/get_packing_product_names";
 
 export const packingRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
@@ -91,13 +91,17 @@ export const packingRoute = (fastify, opts, done) => {
   });
 
   fastify.get(
-    "/get/product/names/all",
-    getProductNamesSchema,
+    "/get/packing/product/names/all",
+    getPackingProductNamesSchema,
     async (req, reply) => {
       try {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetProductNames(params, req?.session, fastify);
+        const result = await GetPackingProductNames(
+          params,
+          req?.session,
+          fastify
+        );
 
         reply.code(result.statusCode || 200).send({
           success: true,

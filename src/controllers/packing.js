@@ -542,10 +542,9 @@ export const GetDestinations = ({
   });
 };
 
-// Retrive Dispatched Products names, along with quantity
-export const GetProductNames = ({
+export const GetPackingProductNames = ({
   procurement_lot_id,
-  peeling_id,
+  peeled_dispatch_id,
   unit_master_id,
   start = 0,
   length = 10,
@@ -572,19 +571,6 @@ export const GetProductNames = ({
       if (unit_master_id) {
         unitWhere.id = unit_master_id;
       }
-      let gradeWhere = {
-        is_active: true,
-      };
-
-      if (grade_master_id) {
-        gradeWhere.id = grade_master_id;
-      }
-      if (size_master_id) {
-        sizeWhere.id = size_master_id;
-      }
-      if (packaging_master_id) {
-        packagingWhere.id = packaging_master_id;
-      }
 
       const peeled = await models.PeeledDispatches.findAll({
         subQuery: false,
@@ -593,11 +579,13 @@ export const GetProductNames = ({
           "packing_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(packing_quantity) IS NULL THEN 0 ELSE SUM(packing_quantity) END FROM peeled_dispatches WHERE ${
-                peeling_id != "null" ? "id != '" + peeling_id + "' and" : ""
-              } peeled_dispatched_product_id = "PeeledProducts".id and peeled_dispatches.is_active = true)`
+              `(SELECT CASE WHEN SUM(packing_quantity) IS NULL THEN 0 ELSE SUM(packing_quantity) END FROM packing WHERE ${
+                peeled_dispatch_id != "null"
+                  ? "id != '" + peeled_dispatch_id + "' and"
+                  : ""
+              } packing_id = "PeeledDispatch".id and packing.is_active = true)`
             ),
-            "total_peeled_dispatch_quantity",
+            "total_packing_quantity",
           ],
         ],
         include: [
@@ -613,10 +601,11 @@ export const GetProductNames = ({
         limit: length,
         order: [["created_at", "desc"]],
         group: [
+          "PeeledDispatches.id",
           "Peeling.id",
           "PeeledProducts.id",
-          "PeeledProducts->ProductMaster.id",
-          "PeeledProducts->ProductMaster->ProductCategoryMaster.id",
+          "PeeledDispatches->Peeling->PeeledProducts->ProductMaster.id",
+          "PeeledDispatches->Peeling->PeeledProducts->ProductMaster->ProductCategoryMaster.id",
           // "ProcurementProduct->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
         ],
       });

@@ -54,6 +54,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      PeeledDispatches.belongsTo(models.ProductMaster, {
+        foreignKey: "peeled_product_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   PeeledDispatches.init(

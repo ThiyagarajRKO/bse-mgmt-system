@@ -1,4 +1,4 @@
-export const getProductNamesSchema = {
+export const getPackingProductNamesSchema = {
   schema: {
     query: {
       type: "object",
@@ -6,7 +6,7 @@ export const getProductNamesSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
-        packing_id: { type: "string" },
+        peeled_dispatch_id: { type: "string" },
         procurement_lot_id: { type: "string" },
         unit_master_id: { type: "string" },
         "search[value]": { type: "string" },

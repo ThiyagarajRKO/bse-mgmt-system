@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
+import { PeeledDispatches } from ".";
 
 export const Insert = async (profile_id, peeled_dispatch_data) => {
   return new Promise(async (resolve, reject) => {
@@ -487,11 +488,9 @@ export const GetDestinations = ({
   });
 };
 
-// Retrive Dispatched Products names, along with quantity
 export const GetProductNames = ({
   procurement_lot_id,
-  peeling_id,
-  unit_master_id,
+  packing_id,
   start = 0,
   length = 10,
   search,
@@ -509,56 +508,88 @@ export const GetProductNames = ({
       if (procurement_lot_id) {
         procurementLotsWhere.id = procurement_lot_id;
       }
-
-      let unitWhere = {
-        is_active: true,
-      };
-
-      if (unit_master_id) {
-        unitWhere.id = unit_master_id;
-      }
-
-      const peeled = await models.PeeledProducts.findAll({
-        subQuery: false,
+      const packings = await models.PeeledDispatches.findAll({
         attributes: [
           "id",
+          "created_at",
           "peeled_dispatch_quantity",
           [
-            sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatch WHERE ${
-                peeling_id != "null" ? "id != '" + peeling_id + "' and" : ""
-              } peeled_dispatch_id = "PeeledProducts".id and peeled_dispatch.is_active = true)`
-            ),
-            "total_peeled_dispatch_quantity",
+            sequelize.literal(`
+        (SELECT
+          CASE
+            WHEN SUM("packing"."packing_quantity") IS NULL THEN 0
+            ELSE SUM("packing"."packing_quantity")
+          END
+        FROM "packing"
+        WHERE
+          "packing"."peeled_dispatch_id" = "PeeledDispatches"."id" AND
+          "packing"."is_active" = true AND
+          "PeeledDispatches"."is_active" = true
+      ) 
+      `),
+            "packed_quantity",
           ],
         ],
         include: [
           {
-            required: true,
-            attributes: [],
-            model: models.UnitMaster,
-            where: unitWhere,
+            model: models.Packing,
+            where: { is_active: true },
+            required: false,
+          },
+          {
+            model: models.PeelingProducts,
+            where: { is_active: true },
+            include: [
+              {
+                model: models.Peeling,
+                where: { is_active: true },
+                include: [
+                  {
+                    model: models.Dispatches,
+                    attributes: [],
+                    where: { is_active: true },
+                    include: [
+                      {
+                        model: models.ProcurementProducts,
+                        attributes: [],
+                        where: { is_active: true },
+                        include: [
+                          {
+                            model: models.ProcurementLots,
+                            where: procurementLotsWhere,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: models.ProductMaster,
+            attributes: ["id", "product_name"],
+            where: { is_active: true },
           },
         ],
-        where,
-        offset: start,
-        limit: length,
-        order: [["created_at", "desc"]],
+        where: where, // Using the where condition you defined earlier
         group: [
-          "Peeling.id",
-          "PeeledProducts.id",
-          "PeeledProducts->ProductMaster.id",
-          "PeeledProducts->ProductMaster->ProductCategoryMaster.id",
-          // "ProcurementProduct->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
+          "PeeledDispatches.id",
+          "PeeledDispatches.created_at",
+          "ProductMaster.product_name",
+          "PeelingProducts.ProcurementProduct.ProcurementLot.id",
         ],
+      }).then((result) => {
+        console.log(result);
       });
 
-      resolve(peeled);
+      resolve(packings);
     } catch (err) {
       reject(err);
     }
   });
 };
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {

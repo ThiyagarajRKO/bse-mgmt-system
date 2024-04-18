@@ -1,9 +1,9 @@
 import { Packing } from "../../../controllers";
 
-export const GetProductNames = (
+export const GetPackingProductNames = (
   {
     procurement_lot_id,
-    packing_id,
+    peeled_dispatch_id,
     unit_master_id,
     start,
     length,
@@ -14,9 +14,9 @@ export const GetProductNames = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let packing = await Packing.GetProductNames({
+      let packing = await Packing.GetPackingProductNames({
         procurement_lot_id,
-        packing_id,
+        peeled_dispatch_id,
         unit_master_id,
         start,
         length,

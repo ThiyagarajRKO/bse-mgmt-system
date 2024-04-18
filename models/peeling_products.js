@@ -31,14 +31,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
-      PeelingProducts.belongsTo(models.Dispatches, {
+      /*PeelingProducts.belongsTo(models.Dispatches, {
         foreignKey: "dispatch_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
-      });
+      });*/
 
       PeelingProducts.belongsTo(models.ProcurementProducts, {
-        foreignKey: "procurement_master_id",
+        foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });

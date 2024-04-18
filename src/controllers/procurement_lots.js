@@ -979,62 +979,71 @@ export const GetPeeledDispatchStats = ({
 export const GetPackingLots = ({ start = 0, length = 10 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const procurements = await getProcurementLotsWithDetails(start, length);
+      const procurements = await models.ProcurementLots.findAll({
+        subQuery: false,
+        attributes: ["id", "procurement_lot"],
+        include: [
+          {
+            required: true,
+            attributes: [],
+            model: models.ProcurementProducts,
+            include: [
+              {
+                required: true,
+                attributes: [],
+                model: models.Dispatches,
+                include: [
+                  {
+                    required: true,
+                    attributes: [],
+                    model: models.Peeling,
+                    include: [
+                      {
+                        required: true,
+                        attributes: [],
+                        model: models.PeelingProducts,
+                        include: [
+                          {
+                            required: true,
+                            attributes: [],
+                            model: models.PeeledDispatches,
+
+                            where: {
+                              is_active: true,
+                            },
+                          },
+                        ],
+                        where: {
+                          is_active: true,
+                        },
+                      },
+                    ],
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
       resolve(procurements);
     } catch (err) {
       reject(err);
     }
   });
 };
-
-async function getProcurementLotsWithDetails(start, length) {
-  return models.ProcurementLots.findAll({
-    attributes: ["id", "procurement_lot"],
-    include: [
-      {
-        model: models.ProcurementProducts,
-        include: [await getDispatchesWithPeelingDetails()],
-        where: { is_active: true },
-      },
-    ],
-    offset: start,
-    limit: length,
-    order: [["created_at", "desc"]],
-  });
-}
-
-async function getDispatchesWithPeelingDetails() {
-  return {
-    model: models.Dispatches,
-    include: [
-      {
-        model: models.Peeling,
-        include: [await getPeelingProductsWithPeeledDispatches()],
-        where: { is_active: true },
-      },
-    ],
-    where: { is_active: true },
-  };
-}
-
-async function getPeelingProductsWithPeeledDispatches() {
-  return {
-    model: models.PeelingProducts,
-    include: [
-      {
-        model: models.PeeledDispatches,
-        include: [
-          {
-            model: models.Packing,
-            where: { is_active: true },
-          },
-        ],
-        where: { is_active: true },
-      },
-    ],
-    where: { is_active: true },
-  };
-}
 
 export const GetPackingStats = ({
   procurement_lot_id,

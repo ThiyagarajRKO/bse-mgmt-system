@@ -3,7 +3,7 @@ import { PeeledDispatches } from "../../../controllers";
 export const GetProductNames = (
   {
     procurement_lot_id,
-    peeling_id,
+    packing_id,
     unit_master_id,
     start,
     length,
@@ -14,16 +14,16 @@ export const GetProductNames = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let dispatch = await PeeledDispatches.GetProductNames({
+      let pack = await PeeledDispatches.GetProductNames({
         procurement_lot_id,
-        peeling_id,
+        packing_id,
         unit_master_id,
         start,
         length,
         search,
       });
 
-      if (!dispatch) {
+      if (!pack) {
         return reject({
           statusCode: 420,
           message: "No roles found!",
@@ -31,7 +31,7 @@ export const GetProductNames = (
       }
 
       resolve({
-        data: dispatch,
+        data: pack,
       });
     } catch (err) {
       fastify.log.error(err);

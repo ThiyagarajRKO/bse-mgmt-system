@@ -4888,7 +4888,7 @@
 
 
         if (packing_lot_no) {
-          loadPackingProductNames(lot_no);
+          loadPackingProductNames(packing_lot_no);
         }
       });
 
@@ -4902,7 +4902,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/packing/get/names/all?procurement_lot_id=${lot_no}&packing_id=${
+          url: `/api/v1/peeled/dispatch/get/product/names/all?procurement_lot_id=${packing_lot_no}&packing_id=${
             view_packing_id || null
           }`,
           method: "GET",
