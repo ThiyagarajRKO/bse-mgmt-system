@@ -17,7 +17,7 @@ export const GetAll = (
       if (!dispatch) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No rows found!",
         });
       }
 

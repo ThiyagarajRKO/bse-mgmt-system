@@ -26,7 +26,7 @@ export const GetProductNames = (
       if (!pack) {
         return reject({
           statusCode: 420,
-          message: "No roles found!",
+          message: "No rows found!",
         });
       }
 

@@ -389,7 +389,6 @@ export const GetDestinations = ({
 
       const peeled_dispatch = await models.PeeledDispatches.findAll({
         subQuery: false,
-        attributes: ["id"],
         attributes: [
           "id",
           "created_at",
@@ -506,41 +505,38 @@ export const GetProductNames = ({
       };
 
       if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
+        procurementLotsWhere.procurement_lot_id = procurement_lot_id;
       }
       const packings = await models.PeeledDispatches.findAll({
+        subQuery: false,
         attributes: [
           "id",
           "created_at",
           "peeled_dispatch_quantity",
           [
             sequelize.literal(`
-        (SELECT
-          CASE
-            WHEN SUM("packing"."packing_quantity") IS NULL THEN 0
-            ELSE SUM("packing"."packing_quantity")
-          END
-        FROM "packing"
-        WHERE
-          "packing"."peeled_dispatch_id" = "PeeledDispatches"."id" AND
-          "packing"."is_active" = true AND
-          "PeeledDispatches"."is_active" = true
-      ) 
-      `),
+            (SELECT
+              CASE
+                WHEN SUM(packing_quantity) IS NULL THEN 0
+                ELSE SUM(packing_quantity)
+              END
+            FROM "packing"
+            WHERE
+              peeled_dispatch_id = "PeeledDispatches"."id" AND
+              is_active = true
+          )
+          `),
             "packed_quantity",
           ],
         ],
         include: [
           {
-            model: models.Packing,
-            where: { is_active: true },
-            required: false,
-          },
-          {
+            attributes: ["id"],
             model: models.PeelingProducts,
             where: { is_active: true },
             include: [
               {
+                attributes: [],
                 model: models.Peeling,
                 where: { is_active: true },
                 include: [
@@ -552,35 +548,29 @@ export const GetProductNames = ({
                       {
                         model: models.ProcurementProducts,
                         attributes: [],
-                        where: { is_active: true },
-                        include: [
-                          {
-                            model: models.ProcurementLots,
-                            where: procurementLotsWhere,
-                          },
-                        ],
+                        where: procurementLotsWhere,
                       },
                     ],
                   },
                 ],
               },
+              {
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                where: { is_active: true },
+              },
             ],
           },
-          {
-            model: models.ProductMaster,
-            attributes: ["id", "product_name"],
-            where: { is_active: true },
-          },
         ],
-        where: where, // Using the where condition you defined earlier
+        where,
         group: [
           "PeeledDispatches.id",
-          "PeeledDispatches.created_at",
-          "ProductMaster.product_name",
-          "PeelingProducts.ProcurementProduct.ProcurementLot.id",
+          "PeelingProduct.id",
+          "PeelingProduct->Peeling.id",
+          "PeelingProduct->Peeling->Dispatch.id",
+          "PeelingProduct->Peeling->Dispatch->ProcurementProduct.id",
+          "PeelingProduct->ProductMaster.id",
         ],
-      }).then((result) => {
-        console.log(result);
       });
 
       resolve(packings);

@@ -49,14 +49,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      // Has Many
       PeeledDispatches.hasMany(models.Packing, {
         foreignKey: "peeled_dispatch_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      PeeledDispatches.belongsTo(models.ProductMaster, {
-        foreignKey: "peeled_product_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });

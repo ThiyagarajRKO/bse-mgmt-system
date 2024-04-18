@@ -4431,8 +4431,6 @@
       function loadPackingDropdowns() {
         // Pre loading dropdown data
         loadPackingLotNumber();
-        loadPackingProductNames();
-        loadPackingUnits();
         loadPackingGrade();
         loadPackingSize();
         loadPackingPackage();
@@ -4964,6 +4962,8 @@
 
             $("#balance_peeled_dispatch_quantity").css({ color: "white" });
           }
+
+          loadPackingUnits();
 
           $("#packing_quantity").keyup();
         }
