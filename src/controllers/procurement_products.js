@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import models, { Sequelize, sequelize } from "../../models";
 
 export const Insert = async (profile_id, procurement_data) => {
@@ -733,6 +733,95 @@ export const GetProcurementPerformanceByVendorsData = ({
         ],
         group: ["VendorMaster.id"],
       });
+
+      resolve(output_data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetProcurementAgebyProductsData = ({ from_date, to_date }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+        [Op.and]: [
+          Sequelize.where(
+            Sequelize.fn(
+              "date",
+              Sequelize.col("ProcurementProducts.created_at")
+            ),
+            {
+              [Op.between]: [
+                new Date(from_date || null),
+                new Date(to_date || null),
+              ],
+            }
+          ),
+        ],
+      };
+
+      const output_data = await sequelize.query(
+        `SELECT 
+          SUM(
+            EXTRACT(
+              DAY 
+              FROM 
+                AGE(
+                  now(), "ProcurementLot".procurement_date
+                )
+            )
+          ) AS "days_old", 
+          (
+            CASE WHEN SUM(adjusted_quantity) IS NOT NULL THEN SUM(adjusted_quantity) ELSE SUM(procurement_quantity) END - SUM(dispatch_quantity)
+          ) AS "quantity", 
+          "ProductMaster"."product_name" AS "product_name" 
+        FROM 
+          "procurement_products" AS "ProcurementProducts" 
+          INNER JOIN "procurement_lots" AS "ProcurementLot" ON "ProcurementProducts"."procurement_lot_id" = "ProcurementLot"."id" 
+          AND (
+            "ProcurementLot"."deleted_at" IS NULL 
+            AND "ProcurementLot"."is_active" = true
+          ) 
+          INNER JOIN "dispatches" AS "Dispatches" ON "ProcurementProducts"."id" = "Dispatches"."procurement_product_id" 
+          AND (
+            "Dispatches"."deleted_at" IS NULL 
+            AND "Dispatches"."is_active" = true
+          ) 
+          INNER JOIN "product_master" AS "ProductMaster" ON "ProcurementProducts"."product_master_id" = "ProductMaster"."id" 
+          AND (
+            "ProductMaster"."deleted_at" IS NULL 
+            AND "ProductMaster"."is_active" = true
+          ) 
+        WHERE 
+          (
+            "ProcurementProducts"."deleted_at" IS NULL 
+            AND (
+              (
+                date(
+                  "ProcurementProducts"."created_at"
+                ) BETWEEN '${from_date} 00:00:00.000 +00:00' 
+                AND '${to_date} 00:00:00.000 +00:00'
+              ) 
+              AND "ProcurementProducts"."is_active" = true
+            )
+          ) 
+        GROUP BY  
+          "ProductMaster"."id" 
+        HAVING 
+          (
+            (
+              CASE WHEN SUM(adjusted_quantity) IS NOT NULL THEN SUM(adjusted_quantity) ELSE SUM(procurement_quantity) END
+            ) - SUM(dispatch_quantity)
+          ) > '0' 
+        ORDER BY 
+          "ProductMaster"."product_name" ASC;
+      `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
 
       resolve(output_data);
     } catch (err) {

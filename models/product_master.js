@@ -36,6 +36,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      ProductMaster.hasOne(models.ProcurementProducts, {
+        foreignKey: "product_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   ProductMaster.init(
