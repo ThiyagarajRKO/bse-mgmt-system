@@ -155,6 +155,7 @@ export const GetAll = ({ start, length, search }) => {
         subQuery: false,
         include: [
           {
+            as: "pp",
             model: models.PeelingProducts,
             attributes: ["id"],
             where: {
@@ -162,6 +163,7 @@ export const GetAll = ({ start, length, search }) => {
             },
             include: [
               {
+                as: "pln",
                 model: models.Peeling,
                 attributes: [],
                 where: {
@@ -169,6 +171,7 @@ export const GetAll = ({ start, length, search }) => {
                 },
                 include: [
                   {
+                    as: "dis",
                     model: models.Dispatches,
                     attributes: [],
                     where: {
@@ -176,6 +179,7 @@ export const GetAll = ({ start, length, search }) => {
                     },
                     include: [
                       {
+                        as: "pp",
                         model: models.ProcurementProducts,
                         attributes: [],
                         where: {
@@ -184,6 +188,7 @@ export const GetAll = ({ start, length, search }) => {
                         include: [
                           {
                             attributes: [],
+                            as: "pl",
                             model: models.ProcurementLots,
                             where: procurementLotsWhere,
                           },
@@ -248,6 +253,7 @@ export const GetAll = ({ start, length, search }) => {
         ],
         include: [
           {
+            as: "pp",
             model: models.PeelingProducts,
             attributes: ["id", "yield_quantity"],
             where: {
@@ -255,6 +261,7 @@ export const GetAll = ({ start, length, search }) => {
             },
             include: [
               {
+                as: "pln",
                 model: models.Peeling,
                 attributes: [],
                 where: {
@@ -262,6 +269,7 @@ export const GetAll = ({ start, length, search }) => {
                 },
                 include: [
                   {
+                    as: "dis",
                     model: models.Dispatches,
                     attributes: [],
                     where: {
@@ -269,6 +277,7 @@ export const GetAll = ({ start, length, search }) => {
                     },
                     include: [
                       {
+                        as: "pp",
                         model: models.ProcurementProducts,
                         attributes: [],
                         where: {
@@ -277,6 +286,7 @@ export const GetAll = ({ start, length, search }) => {
                         include: [
                           {
                             attributes: [],
+                            as: "pl",
                             model: models.ProcurementLots,
                             where: procurementLotsWhere,
                           },
@@ -323,8 +333,8 @@ export const GetAll = ({ start, length, search }) => {
         order: [["created_at", "desc"]],
         group: [
           "PeeledDispatches.id",
-          "PeelingProduct.id",
-          "PeelingProduct.ProductMaster.id",
+          "pp.id",
+          "pp->ProductMaster.id",
           "UnitMaster.id",
           "VehicleMaster.id",
           "DriverMaster.id",
@@ -402,6 +412,7 @@ export const GetDestinations = ({
         ],
         include: [
           {
+            as: "pp",
             model: models.PeelingProducts,
             attributes: ["id"],
             where: {
@@ -409,6 +420,7 @@ export const GetDestinations = ({
             },
             include: [
               {
+                as: "pln",
                 model: models.Peeling,
                 attributes: ["id"],
                 where: {
@@ -416,6 +428,7 @@ export const GetDestinations = ({
                 },
                 include: [
                   {
+                    as: "dis",
                     model: models.Dispatches,
                     attributes: ["id"],
                     where: {
@@ -423,6 +436,7 @@ export const GetDestinations = ({
                     },
                     include: [
                       {
+                        as: "pp",
                         model: models.ProcurementProducts,
                         attributes: ["id"],
                         where: {
@@ -505,7 +519,7 @@ export const GetProductNames = ({
       };
 
       if (procurement_lot_id) {
-        procurementLotsWhere.procurement_lot_id = procurement_lot_id;
+        procurementLotsWhere.id = procurement_lot_id;
       }
       const packings = await models.PeeledDispatches.findAll({
         subQuery: false,
@@ -532,23 +546,37 @@ export const GetProductNames = ({
         include: [
           {
             attributes: ["id"],
+            as: "pp",
             model: models.PeelingProducts,
             where: { is_active: true },
             include: [
               {
                 attributes: [],
+                as: "pln",
                 model: models.Peeling,
                 where: { is_active: true },
                 include: [
                   {
+                    as: "dis",
                     model: models.Dispatches,
                     attributes: [],
                     where: { is_active: true },
                     include: [
                       {
+                        as: "pp",
                         model: models.ProcurementProducts,
                         attributes: [],
-                        where: procurementLotsWhere,
+                        include: [
+                          {
+                            as: "pl",
+                            model: models.ProcurementLots,
+                            attributes: [],
+                            where: procurementLotsWhere,
+                          },
+                        ],
+                        where: {
+                          is_active: true,
+                        },
                       },
                     ],
                   },
@@ -564,12 +592,12 @@ export const GetProductNames = ({
         ],
         where,
         group: [
-          "PeeledDispatches.id",
-          "PeelingProduct.id",
-          "PeelingProduct->Peeling.id",
-          "PeelingProduct->Peeling->Dispatch.id",
-          "PeelingProduct->Peeling->Dispatch->ProcurementProduct.id",
-          "PeelingProduct->ProductMaster.id",
+          "pd.id",
+          "pp.id",
+          "pp->pln.id",
+          "pp->pln->dis.id",
+          "pp->pln->dis->pp.id",
+          "pp->ProductMaster.id",
         ],
       });
 

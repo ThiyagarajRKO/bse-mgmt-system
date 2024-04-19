@@ -2068,7 +2068,7 @@
           columns: [
             { data: null },
             { data: null },
-            { data: "ProcurementProduct.procurement_quantity" },
+            { data: "pp.procurement_quantity" },
             { data: "dispatch_quantity" },
             { data: "temperature" },
             { data: "UnitMaster.unit_code" },
@@ -2092,7 +2092,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span procurement_product_id='${row["ProcurementProduct"]?.id
+                return `<span procurement_product_id='${row["pp"]?.id
                   }'>${row["ProcurementProduct"]?.["ProductMaster"]?.product_name
                   }-${row["ProcurementProduct"]?.procurement_product_type}-${row[
                     "ProcurementProduct"
@@ -2929,7 +2929,7 @@
             { data: null },
             { data: "PeelingProducts" },
             { data: null },
-            { data: "Dispatch.dispatch_quantity" },
+            { data: "dis.dispatch_quantity" },
             { data: "peeling_quantity" },
             { data: "total_yield_quantity" },
             { data: null },
@@ -2950,7 +2950,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span dispatch_id='${row["Dispatch"]?.id}'>${row?.["Dispatch"]?.["ProcurementProduct"]?.["ProductMaster"]?.product_name}-${row?.["Dispatch"]?.["ProcurementProduct"]?.procurement_product_type}-${row?.["Dispatch"]?.["ProcurementProduct"]?.["VendorMaster"]?.vendor_name}-${row?.["Dispatch"]?.dispatch_quantity}</i>`;
+                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["VendorMaster"]?.vendor_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
               },
             },
             {
@@ -3323,14 +3323,14 @@
                 return {
                   id: item?.id,
                   species_id:
-                    item?.ProcurementProduct?.ProductMaster
-                      .ProductCategoryMaster.species_,
+                    item?.pp?.ProductMaster
+                      .ProductCategoryMaster.species_master_id,
                   quantity:
                     (parseFloat(item?.dispatch_quantity) || 0) -
                     (parseFloat(item?.peeling_quantity) || 0),
-                  text: `${item?.ProcurementProduct?.ProductMaster?.product_name
-                    }-${item?.ProcurementProduct?.procurement_product_type
-                    }-${item?.ProcurementProduct?.VendorMaster?.vendor_name?.replaceAll(
+                  text: `${item?.pp?.ProductMaster?.product_name
+                    }-${item?.pp?.procurement_product_type
+                    }-${item?.pp?.VendorMaster?.vendor_name?.replaceAll(
                       " ",
                       ""
                     )}-${item?.dispatch_quantity || 0}`,
@@ -3839,8 +3839,8 @@
           },
           columns: [
             { data: null },
-            { data: "PeelingProduct.ProductMaster.product_name" },
-            { data: "PeelingProduct.yield_quantity" },
+            { data: "pp.ProductMaster.product_name" },
+            { data: "pp.yield_quantity" },
             { data: "peeled_dispatch_quantity" },
             { data: "temperature" },
             { data: "UnitMaster.unit_code" },
@@ -3863,7 +3863,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row["PeelingProduct"]?.id}'>${data}-${row?.["PeelingProduct"]?.yield_quantity}</i>`;
+                return `<span peeled_product_id='${row["pp"]?.id}'>${data}-${row?.["pp"]?.yield_quantity}</i>`;
               },
             },
             {
@@ -4577,7 +4577,7 @@
       });
 
       function loadPackingProductTableData(packing_lot_no) {
-        if (!packinglot_no) {
+        if (!packing_lot_no) {
           toastr["warning"]("Lot no should not be empty!");
         }
         $("#packingProductTable").DataTable({

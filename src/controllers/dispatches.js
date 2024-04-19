@@ -177,13 +177,13 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             }
           ),
           {
-            "$ProcurementProduct->ProductMaster.product_name$": {
+            "$pp->ProductMaster.product_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
           sequelize.where(
             sequelize.cast(
-              sequelize.col("ProcurementProduct.procurement_product_type"),
+              sequelize.col("pp.procurement_product_type"),
               "varchar"
             ),
             {
@@ -191,7 +191,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             }
           ),
           {
-            "$ProcurementProduct->VendorMaster.vendor_name$": {
+            "$pp->VendorMaster.vendor_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
@@ -210,10 +210,12 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
               "adjusted_quantity",
               "procurement_product_type",
             ],
+            as: "pp",
             model: models.ProcurementProducts,
             include: [
               {
                 attributes: ["id", "procurement_lot"],
+                as: "pl",
                 model: models.ProcurementLots,
                 where: procurementLotsWhere,
               },
@@ -298,11 +300,13 @@ export const GetDestinations = ({
           {
             required: true,
             attributes: [],
+            as: "pp",
             model: models.ProcurementProducts,
             include: [
               {
                 required: true,
                 attributes: [],
+                as: "pl",
                 model: models.ProcurementLots,
                 where: procurementLotsWhere,
               },
@@ -385,11 +389,13 @@ export const GetProductNames = ({
           {
             required: true,
             attributes: ["procurement_product_type"],
+            as: "pp",
             model: models.ProcurementProducts,
             include: [
               {
                 required: true,
                 attributes: [],
+                as: "pl",
                 model: models.ProcurementLots,
                 where: procurementLotsWhere,
               },
@@ -436,11 +442,11 @@ export const GetProductNames = ({
         order: [["created_at", "desc"]],
         group: [
           "Dispatches.id",
-          "ProcurementProduct.id",
-          "ProcurementProduct->ProductMaster.id",
-          "ProcurementProduct->ProductMaster->ProductCategoryMaster.id",
-          // "ProcurementProduct->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
-          "ProcurementProduct->VendorMaster.id",
+          "pp.id",
+          "pp->ProductMaster.id",
+          "pp->ProductMaster->ProductCategoryMaster.id",
+          // "pp->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
+          "pp->VendorMaster.id",
         ],
       });
 

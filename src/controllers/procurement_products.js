@@ -118,6 +118,7 @@ export const Get = ({ id }) => {
       const unit = await models.ProcurementProducts.findOne({
         include: [
           {
+            as: "pl",
             model: models.ProcurementLots,
             where: {
               is_active: true,
@@ -260,6 +261,7 @@ export const GetAll = ({
       const procurements = await models.ProcurementProducts.findAndCountAll({
         include: [
           {
+            as: "pl",
             model: models.ProcurementLots,
             include: [
               {
@@ -312,7 +314,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [[sequelize.col(`"ProcurementLot".procurement_date`), "desc"]],
+        order: [[sequelize.col(`"pl".procurement_date`), "desc"]],
       });
 
       resolve(procurements);
@@ -365,6 +367,7 @@ export const GetNames = ({
           {
             required: true,
             attributes: [],
+            as: "pl",
             model: models.ProcurementLots,
             where: procurementLotsWhere,
           },
@@ -611,7 +614,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
       let where = {
         is_active: true,
         [Op.and]: Sequelize.where(
-          Sequelize.literal(`CAST("ProcurementLot".procurement_date AS DATE)`),
+          Sequelize.literal(`CAST("pl".procurement_date AS DATE)`),
           {
             [Op.between]: [
               new Date(from_date || null),
@@ -625,9 +628,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
         subQuery: false,
         attributes: [
           [
-            Sequelize.literal(
-              `CAST("ProcurementLot".procurement_date AS DATE)`
-            ),
+            Sequelize.literal(`CAST("pl".procurement_date AS DATE)`),
             "procurement_date",
           ],
           [
@@ -646,6 +647,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
         include: [
           {
             attributes: [],
+            as: "pl",
             model: models.ProcurementLots,
             where: {
               is_active: true,

@@ -227,18 +227,18 @@ export const GetDispatches = ({
         attributes: ["id", "unit_code"],
         include: [
           {
-            required: true,
             attributes: [],
+            as: "dis",
             model: models.Dispatches,
             include: [
               {
-                required: true,
                 attributes: [],
+                as: "pp",
                 model: models.ProcurementProducts,
                 include: [
                   {
-                    required: true,
                     attributes: [],
+                    as: "pl",
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
                   },
@@ -276,12 +276,12 @@ export const GetPeeledDispatches = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurementProductsWhere = {
+      let procurementLotsWhere = {
         is_active: true,
       };
 
       if (procurement_lot_id) {
-        procurementProductsWhere.procurement_lot_id = procurement_lot_id;
+        procurementLotsWhere.id = procurement_lot_id;
       }
 
       const procurements = await models.UnitMaster.findAll({
@@ -290,24 +290,37 @@ export const GetPeeledDispatches = ({
         include: [
           {
             attributes: [],
+            as: "pd",
             model: models.PeeledDispatches,
             include: [
               {
                 attributes: [],
+                as: "pp",
                 model: models.PeelingProducts,
                 include: [
                   {
                     attributes: [],
+                    as: "pln",
                     model: models.Peeling,
                     include: [
                       {
                         attributes: [],
+                        as: "dis",
                         model: models.Dispatches,
                         include: [
                           {
                             attributes: [],
+                            as: "pp",
                             model: models.ProcurementProducts,
-                            where: procurementProductsWhere,
+                            include: [
+                              {
+                                attributes: [],
+                                as: "pl",
+                                model: models.ProcurementLots,
+                                where: procurementLotsWhere,
+                              },
+                            ],
+                            where: { is_active: true },
                           },
                         ],
                         where: {

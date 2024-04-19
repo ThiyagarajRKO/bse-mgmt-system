@@ -212,14 +212,17 @@ export const GetAll = ({
         include: [
           {
             attributes: [],
+            as: "dis",
             model: models.Dispatches,
             include: [
               {
                 attributes: [],
+                as: "pp",
                 model: models.ProcurementProducts,
                 include: [
                   {
                     attributes: [],
+                    as: "pl",
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
                   },
@@ -275,14 +278,17 @@ export const GetAll = ({
         include: [
           {
             attributes: ["id", "dispatch_quantity"],
+            as: "dis",
             model: models.Dispatches,
             include: [
               {
                 attributes: ["id", "procurement_product_type"],
+                as: "pp",
                 model: models.ProcurementProducts,
                 include: [
                   {
                     attributes: ["id", "procurement_lot"],
+                    as: "pl",
                     model: models.ProcurementLots,
                     where: procurementLotsWhere,
                   },

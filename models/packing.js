@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Packing.belongsTo(models.PeeledDispatches, {
+        as: "pd",
         foreignKey: "peeled_dispatch_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

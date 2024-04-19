@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Dispatches.belongsTo(models.ProcurementProducts, {
+        as: "pp",
         foreignKey: "procurement_product_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

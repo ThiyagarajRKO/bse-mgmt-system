@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       PeeledDispatches.belongsTo(models.PeelingProducts, {
+        as: "pp",
         foreignKey: "peeled_product_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

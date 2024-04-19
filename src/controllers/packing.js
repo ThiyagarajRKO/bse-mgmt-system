@@ -108,52 +108,55 @@ export const GetAll = ({ start, length, search }) => {
         is_active: true,
       };
 
-      if (search) {
-        where[Op.or] = [
-          sequelize.where(
-            sequelize.cast(sequelize.col("packing_quantity"), "varchar"),
-            {
-              [Op.iLike]: `%${search}%`,
-            }
-          ),
-          { packing_notes: { [Op.iLike]: `%${search}%` } },
-          sequelize.where(
-            sequelize.cast(sequelize.col("packing_status"), "varchar"),
-            {
-              [Op.iLike]: `%${search}%`,
-            }
-          ),
-          {
-            "$PeeledDispatches->PeelingProducts->ProductMaster.product_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
-          { "$GradeMaster.grade_name$": { [Op.iLike]: `%${search}%` } },
-          { "$SizeMaster.size$": { [Op.iLike]: `%${search}%` } },
-          { "$PackagingMaster.packaging_code$": { [Op.iLike]: `%${search}%` } },
-        ];
-      }
+      // if (search) {
+      //   where[Op.or] = [
+      //     sequelize.where(
+      //       sequelize.cast(sequelize.col("packing_quantity"), "varchar"),
+      //       {
+      //         [Op.iLike]: `%${search}%`,
+      //       }
+      //     ),
+      //     { packing_notes: { [Op.iLike]: `%${search}%` } },
+      //     sequelize.where(
+      //       sequelize.cast(sequelize.col("packing_status"), "varchar"),
+      //       {
+      //         [Op.iLike]: `%${search}%`,
+      //       }
+      //     ),
+      //     {
+      //       "$PeeledDispatches->PeelingProducts->ProductMaster.product_name$": {
+      //         [Op.iLike]: `%${search}%`,
+      //       },
+      //     },
+      //     { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
+      //     { "$GradeMaster.grade_name$": { [Op.iLike]: `%${search}%` } },
+      //     { "$SizeMaster.size$": { [Op.iLike]: `%${search}%` } },
+      //     { "$PackagingMaster.packaging_code$": { [Op.iLike]: `%${search}%` } },
+      //   ];
+      // }
 
       const packing_count = await models.Packing.count({
         raw: true,
         subQuery: false,
         include: [
           {
+            as: "pd",
             model: models.PeeledDispatches,
-            attributes: ["id"],
+            attributes: [],
             where: {
               is_active: true,
             },
             include: [
               {
+                as: "pp",
                 model: models.PeelingProducts,
-                attributes: ["id"],
+                attributes: [],
                 where: {
                   is_active: true,
                 },
                 include: [
                   {
+                    as: "pln",
                     model: models.Peeling,
                     attributes: [],
                     where: {
@@ -161,6 +164,7 @@ export const GetAll = ({ start, length, search }) => {
                     },
                     include: [
                       {
+                        as: "dis",
                         model: models.Dispatches,
                         attributes: [],
                         where: {
@@ -168,6 +172,7 @@ export const GetAll = ({ start, length, search }) => {
                         },
                         include: [
                           {
+                            as: "pp",
                             model: models.ProcurementProducts,
                             attributes: [],
                             where: {
@@ -175,6 +180,7 @@ export const GetAll = ({ start, length, search }) => {
                             },
                             include: [
                               {
+                                as: "pl",
                                 attributes: [],
                                 model: models.ProcurementLots,
                                 where: procurementLotsWhere,
@@ -185,14 +191,14 @@ export const GetAll = ({ start, length, search }) => {
                       },
                     ],
                   },
+                  {
+                    model: models.ProductMaster,
+                    attributes: ["id", "product_name"],
+                    where: {
+                      is_active: true,
+                    },
+                  },
                 ],
-              },
-              {
-                model: models.ProductMaster,
-                attributes: ["id", "product_name"],
-                where: {
-                  is_active: true,
-                },
               },
             ],
           },
@@ -233,15 +239,10 @@ export const GetAll = ({ start, length, search }) => {
 
       const packing_rows = await models.Packing.findAll({
         subQuery: false,
-        attributes: [
-          "id",
-          "created_at",
-          "packing_id",
-          "packing_notes",
-          "packing_status",
-        ],
+        attributes: ["id", "created_at", "packing_notes", "packing_status"],
         include: [
           {
+            as: "pd",
             model: models.PeeledDispatches,
             attributes: ["id", "peeled_dispatch_quantity"],
             where: {
@@ -249,6 +250,7 @@ export const GetAll = ({ start, length, search }) => {
             },
             include: [
               {
+                as: "pp",
                 model: models.PeelingProducts,
                 attributes: [],
                 where: {
@@ -256,6 +258,7 @@ export const GetAll = ({ start, length, search }) => {
                 },
                 include: [
                   {
+                    as: "pln",
                     model: models.Peeling,
                     attributes: [],
                     where: {
@@ -263,6 +266,7 @@ export const GetAll = ({ start, length, search }) => {
                     },
                     include: [
                       {
+                        as: "dis",
                         model: models.Dispatches,
                         attributes: [],
                         where: {
@@ -270,6 +274,7 @@ export const GetAll = ({ start, length, search }) => {
                         },
                         include: [
                           {
+                            as: "pp",
                             model: models.ProcurementProducts,
                             attributes: [],
                             where: {
@@ -277,6 +282,7 @@ export const GetAll = ({ start, length, search }) => {
                             },
                             include: [
                               {
+                                as: "pl",
                                 attributes: [],
                                 model: models.ProcurementLots,
                                 where: procurementLotsWhere,
@@ -287,14 +293,14 @@ export const GetAll = ({ start, length, search }) => {
                       },
                     ],
                   },
+                  {
+                    model: models.ProductMaster,
+                    attributes: ["id", "product_name"],
+                    where: {
+                      is_active: true,
+                    },
+                  },
                 ],
-              },
-              {
-                model: models.ProductMaster,
-                attributes: ["id", "product_name"],
-                where: {
-                  is_active: true,
-                },
               },
             ],
           },
@@ -332,9 +338,10 @@ export const GetAll = ({ start, length, search }) => {
         limit: length,
         order: [["created_at", "desc"]],
         group: [
-          "PeeledDispatches.id",
-          "PeelingProduct.id",
-          "PeelingProduct.ProductMaster.id",
+          "Packing.id",
+          "pd.id",
+          "pd->pp.id",
+          "pd->pp->ProductMaster.id",
           "UnitMaster.id",
           "GradeMaster.id",
           "SizeMaster.id",

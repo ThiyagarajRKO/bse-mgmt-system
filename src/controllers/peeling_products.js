@@ -190,6 +190,7 @@ export const GetAll = ({ start, length, search }) => {
         include: [
           {
             attributes: ["id"],
+            as: "pln",
             model: models.Peeling,
             where: {
               is_active: true,
@@ -281,6 +282,7 @@ export const GetNames = ({
         include: [
           {
             attributes: [],
+            as: "pln",
             model: models.Peeling,
             where: {
               is_active: true,
@@ -288,6 +290,7 @@ export const GetNames = ({
             include: [
               {
                 attributes: [],
+                as: "dis",
                 model: models.Dispatches,
                 where: {
                   is_active: true,
@@ -295,6 +298,7 @@ export const GetNames = ({
                 include: [
                   {
                     attributes: [],
+                    as: "pp",
                     model: models.ProcurementProducts,
                     where: {
                       is_active: true,
@@ -302,6 +306,7 @@ export const GetNames = ({
                     include: [
                       {
                         attributes: [],
+                        as: "pl",
                         model: models.ProcurementLots,
                         where: procurementLotsWhere,
                       },
@@ -323,7 +328,7 @@ export const GetNames = ({
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
-        group: ["PeelingProducts.id", "Peeling.id", "ProductMaster.id"],
+        group: ["PeelingProducts.id", "pln.id", "ProductMaster.id"],
       });
 
       resolve(peelings);

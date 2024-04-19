@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
       ProcurementProducts.belongsTo(models.ProcurementLots, {
+        as: "pl",
         foreignKey: "procurement_lot_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

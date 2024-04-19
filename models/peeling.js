@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Peeling.belongsTo(models.Dispatches, {
+        as: "dis",
         foreignKey: "dispatch_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

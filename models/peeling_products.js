@@ -26,24 +26,8 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       PeelingProducts.belongsTo(models.Peeling, {
+        as: "pln",
         foreignKey: "peeling_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      /*PeelingProducts.belongsTo(models.Dispatches, {
-        foreignKey: "dispatch_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });*/
-
-      PeelingProducts.belongsTo(models.ProcurementProducts, {
-        foreignKey: "product_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-      PeelingProducts.belongsTo(models.ProcurementLots, {
-        foreignKey: "id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -54,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      // Has Many
       PeelingProducts.hasMany(models.PeeledDispatches, {
         foreignKey: "peeled_product_id",
         onUpdate: "CASCADE",
