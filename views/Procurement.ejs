@@ -489,6 +489,34 @@
 
           <div class="dashboardCard mt-3 border rounded pt-4 px-4">
             <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Product Ageing Analysis</span>
+              <select
+                id="procurementAgeByProductsFilter"
+                class="form-select form-select-sm me-2"
+                style="
+                  height: 28px !important;
+                  padding-top: 5px;
+                  right: 0;
+                  width: 7rem;
+                "
+              >
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div
+                id="procurementAgeByProductsChart"
+                style="height: 100%"
+              ></div>
+            </div>
+          </div>
+
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
               <span class="fw-bold">Procurement Analysis</span>
               <div class="btn-group btn-group-sm">
                 <div
@@ -530,34 +558,6 @@
             <div class="dashboardCard-Body py-4" style="height: 50vh">
               <div
                 id="procurementAnalysisByDateChart"
-                style="height: 100%"
-              ></div>
-            </div>
-          </div>
-
-          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
-            <div class="dashboardCard-Header d-flex justify-content-between">
-              <span class="fw-bold">Product Ageing Analysis</span>
-              <select
-                id="procurementAgeByProductsFilter"
-                class="form-select form-select-sm me-2"
-                style="
-                  height: 28px !important;
-                  padding-top: 5px;
-                  right: 0;
-                  width: 7rem;
-                "
-              >
-                <option value="7" selected>7 days</option>
-                <option value="30">30 days</option>
-                <option value="90">3 months</option>
-                <option value="180">6 months</option>
-                <!-- <option value="Date Range">Custom Range</option> -->
-              </select>
-            </div>
-            <div class="dashboardCard-Body py-4" style="height: 50vh">
-              <div
-                id="procurementAgeByProductsChart"
                 style="height: 100%"
               ></div>
             </div>
@@ -1584,7 +1584,7 @@
                 {
                   toolTipContent: "{label}: <strong>{y} days</strong>",
                   indexLabel: "{y} days ({quantity} kg)",
-                  type: "line",
+                  type: "area",
                   dataPoints,
                 },
               ],
