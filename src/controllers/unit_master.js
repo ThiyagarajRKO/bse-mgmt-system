@@ -290,7 +290,6 @@ export const GetPeeledDispatches = ({
         include: [
           {
             attributes: [],
-            as: "pd",
             model: models.PeeledDispatches,
             include: [
               {

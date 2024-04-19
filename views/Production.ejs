@@ -4893,12 +4893,12 @@
             data?.data?.forEach((item) => {
               packingProductNamesArray.push({
                 id: item.id,
-                product_master_id: item?.PeelingProduct?.ProductMaster.id,
+                product_master_id: item?.pp?.ProductMaster.id,
                 quantity:
                   (parseFloat(item?.peeled_dispatch_quantity) || 0) -
                   (parseFloat(item?.packed_quantity) || 0),
                 text:
-                  item?.PeelingProduct?.ProductMaster.product_name + "-" + item?.peeled_dispatch_quantity,
+                  item?.pp?.ProductMaster.product_name + "-" + item?.peeled_dispatch_quantity,
               });
             });
 

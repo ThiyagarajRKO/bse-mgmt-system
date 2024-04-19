@@ -484,12 +484,12 @@ export const GetDestinations = ({
         order: [["created_at", "desc"]],
         group: [
           "PeelingDispatch.id",
-          "PeelingProducts.id",
-          "Peeling->Dispatch.id",
-          "Peeling->Dispatch->ProcurementProduct.id",
-          "Peeling->Dispatch->ProcurementProduct->ProcurementLot.id",
-          "Peeling->Dispatch->ProcurementProduct->ProductMaster.id",
-          "Peeling.id",
+          "pp.id",
+          "pln->dis.id",
+          "pln->dis->pp.id",
+          "pln->dis->pp->pl.id",
+          "pln->dis->pp->ProductMaster.id",
+          "pln.id",
           "UnitMaster.id",
         ],
       });
@@ -592,7 +592,7 @@ export const GetProductNames = ({
         ],
         where,
         group: [
-          "pd.id",
+          "PeeledDispatches.id",
           "pp.id",
           "pp->pln.id",
           "pp->pln->dis.id",
