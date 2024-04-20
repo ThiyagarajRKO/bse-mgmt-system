@@ -537,6 +537,11 @@ export const GetProductNames = ({
             FROM "packing"
             WHERE
               peeled_dispatch_id = "PeeledDispatches"."id" AND
+              ${
+                packing_id != "null" && packing_id != undefined
+                  ? "id != '" + packing_id + "' and"
+                  : ""
+              }
               is_active = true
           )
           `),

@@ -1409,8 +1409,8 @@
                   <textarea
                     row="3"
                     class="form-control input-dropdown w-100"
-                    id="packing_delivery_notes"
-                    name="packing_delivery_notes"
+                    id="packing_notes"
+                    name="packing_notes"
                   ></textarea>
                 </div>
 
@@ -4796,7 +4796,7 @@
           )
           .trigger("change");
 
-        $("#packing_delivery_notes").val(
+        $("#packing_notes").val(
           $(e.target).closest("tr").children("td").eq(8).text()
         );
 
@@ -4956,24 +4956,24 @@
         );
 
         if (!currentPackingQuantity) {
-          $("#balance_peeled_dispatch_quantity").text(balance_peeled_dispatch_quantity);
-          $("#balance_peeled_dispatch_quantity").css({ color: "white" });
+          $("#balance_packed_quantity").text(balance_peeled_dispatch_quantity);
+          $("#balance_packed_quantity").css({ color: "white" });
           return;
         }
 
         let balancePeeledDispatchQuantity =
           peeledDispatchQuantity - currentPackingQuantity;
 
-        $("#balance_peeled_dispatch_quantity").text(
+        $("#balance_packed_quantity").text(
           !isNaN(balancePeeledDispatchQuantity)
             ? balancePeeledDispatchQuantity
             : currentPackingQuantity
         );
 
         if (balancePeeledDispatchQuantity > 0) {
-          $("#balance_peeled_dispatch_quantity").css({ color: "yellow" });
+          $("#balance_packed_quantity").css({ color: "yellow" });
         } else {
-          $("#balance_peeled_dispatch_quantity").css({ color: "red" });
+          $("#balance_packed_quantity").css({ color: "red" });
         }
       });
 
@@ -5135,7 +5135,7 @@
           grade_master_id: $("#packingGrade").val(),
           size_master_id: $("#packingSize").val(),
           packaging_master_id: $("#packingPackage").val(),
-          packing_delivery_notes: $("#packing_delivery_notes").val(),
+          packing_notes: $("#packing_notes").val(),
         };
 
         if (packing_id && packing_id != "null") {
