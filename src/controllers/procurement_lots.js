@@ -222,6 +222,19 @@ export const CountStats = ({ procurement_lot_id }) => {
             ),
             "total_peeled_dispatched_weight",
           ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pkg.packing_quantity)
+                FROM packing pkg
+	              JOIN peeled_dispatches pd on pd.id = pkg.peeled_dispatch_id and pd.is_active = true
+                JOIN peeling_products pp on pp.id = pd.peeled_product_id and pp.is_active = true
+	              JOIN peeling p on p.id = pp.peeling_id and p.is_active = true
+	              JOIN dispatches d on d.id = p.dispatch_id and d.is_active = true
+	              JOIN procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
+                )`
+            ),
+            "total_packed_weight",
+          ],
         ],
         where,
       });
