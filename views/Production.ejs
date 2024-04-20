@@ -4616,8 +4616,9 @@
           },
           columns: [
             { data: null },
-            { data: "PeeledDispatches.PeelingProduct.ProductMaster.product_name" },
-            { data: "PeeledDispatches.peeled_dispatch_quantity" },
+            { data: "pd.pp.ProductMaster.product_name" },
+            { data: "pd.peeled_dispatch_quantity" },
+            { data: "packing_quantity" },
             { data: "UnitMaster.unit_code" },
             { data: "GradeMaster.grade_name" },
             { data: "SizeMaster.size" },
@@ -4639,33 +4640,34 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row["PeeledDispatches"]?.id}'>${data}-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>`;
+                return `<span peeled_dispatch_id='${row["PeekedDispatches"]?.id}'>${data}</i>`;
+                  /*-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>;*/
               },
             },
 
             {
-              targets: [5],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
               },
             },
             {
-              targets: [6],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span grade_master_id='${row["GradeMaster"]?.id}'>${data}</i>`;
               },
             },
             {
-              targets: [7],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span size_master_id='${row["SizeMaster"]?.id}'>${data}</i>`;
               },
             },
             {
-              targets: [8],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span packaging_master_id='${row["PackagingMaster"]?.id}'>${data}</i>`;
@@ -4673,14 +4675,14 @@
             },
 
             {
-              targets: [9],
+              targets: [8],
               className: "text-left",
               render: (data, type, row) => {
                 return data || "-";
               },
             },
             {
-              targets: [10],
+              targets: [9],
               className: "text-left",
               render: (data, type, row) => {
                 return `<span class=${data == "In Progress" ? "text-warning" : "text-success"
@@ -4691,7 +4693,7 @@
               },
             },
             {
-              targets: [11],
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row?.created_at);
@@ -5129,7 +5131,7 @@
 
         let url = "/api/v1/packing/create";
         let input_params = {
-          peeled_dispatch_id: $("#packingProductNames").val(),
+          packed_name: $("#packingProductNames").val(),
           packing_quantity: $("#peeled_dispatch_quantity").val(),
           unit_master_id: $("#packingDistributionLocation").val(),
           grade_master_id: $("#packingGrade").val(),

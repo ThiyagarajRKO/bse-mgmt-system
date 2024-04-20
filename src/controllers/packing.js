@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
+import { ProcurementLots } from ".";
 
 export const Insert = async (profile_id, packing_data) => {
   return new Promise(async (resolve, reject) => {
@@ -239,7 +240,13 @@ export const GetAll = ({ start, length, search }) => {
 
       const packing_rows = await models.Packing.findAll({
         subQuery: false,
-        attributes: ["id", "created_at", "packing_notes", "packing_status"],
+        attributes: [
+          "id",
+          "created_at",
+          "packing_notes",
+          "packing_status",
+          "packing_quantity",
+        ],
         include: [
           {
             as: "pd",
@@ -251,8 +258,8 @@ export const GetAll = ({ start, length, search }) => {
             include: [
               {
                 as: "pp",
+                attributes: ["id"],
                 model: models.PeelingProducts,
-                attributes: [],
                 where: {
                   is_active: true,
                 },
@@ -275,17 +282,19 @@ export const GetAll = ({ start, length, search }) => {
                         include: [
                           {
                             as: "pp",
-                            model: models.ProcurementProducts,
                             attributes: [],
+                            model: models.ProcurementProducts,
                             where: {
                               is_active: true,
                             },
                             include: [
                               {
                                 as: "pl",
-                                attributes: [],
                                 model: models.ProcurementLots,
-                                where: procurementLotsWhere,
+                                attributes: [],
+                                where: {
+                                  is_active: true,
+                                },
                               },
                             ],
                           },
@@ -342,6 +351,7 @@ export const GetAll = ({ start, length, search }) => {
           "pd.id",
           "pd->pp.id",
           "pd->pp->ProductMaster.id",
+          //"pd->pp->pln.id",
           "UnitMaster.id",
           "GradeMaster.id",
           "SizeMaster.id",
