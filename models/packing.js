@@ -67,7 +67,6 @@ module.exports = (sequelize, DataTypes) => {
       packing_quantity: {
         type: DataTypes.FLOAT,
       },
-
       packing_status: {
         type: DataTypes.STRING,
       },

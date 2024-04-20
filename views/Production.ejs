@@ -2118,10 +2118,10 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<a href="tel:${row["DriverMaster"]?.phone?.startsWith("91")
-                    ? `+${row["DriverMaster"]?.phone}`
-                    : row["DriverMaster"]?.phone?.startsWith("+91")
-                      ? row["DriverMaster"]?.phone
-                      : `+91${row["DriverMaster"]?.phone}`
+                  ? `+${row["DriverMaster"]?.phone}`
+                  : row["DriverMaster"]?.phone?.startsWith("+91")
+                    ? row["DriverMaster"]?.phone
+                    : `+91${row["DriverMaster"]?.phone}`
                   }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
               },
             },
@@ -2660,43 +2660,43 @@
         $(
           "#outputContainer"
         ).append(`<div class="vl-top vl-top-${index}"></div><fieldset
-                          class="form-group border p-3 mt-3 peelingOutput peelingOutput_${index}"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                            margin-top: 2.2rem !important;
-                          "
-                        >
-                          <legend class="mb-2 w-auto px-2">Output ${index}</legend>
-                          <div class="form-group">
-                            <label for="product_name">Product Name:</label>
-                            <select
-                              class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${index}"
-                              peeled_product_id=${peeled_product_id}
-                              name="peelingProductNames"
-                            ></select>
-                          </div>
+                              class="form-group border p-3 mt-3 peelingOutput peelingOutput_${index}"
+                              style="
+                                border-color: rgba(129, 145, 179, 0.6) !important;
+                                margin-top: 2.2rem !important;
+                              "
+                            >
+                              <legend class="mb-2 w-auto px-2">Output ${index}</legend>
+                              <div class="form-group">
+                                <label for="product_name">Product Name:</label>
+                                <select
+                                  class="form-control input-dropdown w-100 peelingProductNames peelingProductNames_${index}"
+                                  peeled_product_id=${peeled_product_id}
+                                  name="peelingProductNames"
+                                ></select>
+                              </div>
 
-                          <div class="form-group mt-4">
-                            <label for="yield_quantity">Yield Quantity</label>
-                            <input
-                              class="form-control yield_quantity yield_quantity_${index}"
-                              type="number"
-                              placeholder="eg. 10"
-                              name="yield_quantity"
-                              required
-                            />
-                          </div>
+                              <div class="form-group mt-4">
+                                <label for="yield_quantity">Yield Quantity</label>
+                                <input
+                                  class="form-control yield_quantity yield_quantity_${index}"
+                                  type="number"
+                                  placeholder="eg. 10"
+                                  name="yield_quantity"
+                                  required
+                                />
+                              </div>
 
-                          <div class="form-group mt-4 mb-4">
-                            <label for="peeling_notes">Peeling Notes</label>
-                            <textarea
-                              row="3"
-                              class="form-control input-dropdown w-100 peeling_notes peeling_notes_${index}"
-                              name="peeling_notes"
-                            ></textarea>
-                          </div>
+                              <div class="form-group mt-4 mb-4">
+                                <label for="peeling_notes">Peeling Notes</label>
+                                <textarea
+                                  row="3"
+                                  class="form-control input-dropdown w-100 peeling_notes peeling_notes_${index}"
+                                  name="peeling_notes"
+                                ></textarea>
+                              </div>
 
-                        </fieldset>`);
+                            </fieldset>`);
 
         $(`.peelingProductNames_${index}`).select2({
           placeholder: "Choose a product",
@@ -3077,30 +3077,30 @@
 
         JSON.parse(product_data)?.forEach((row) => {
           html_content += `<tr>
-                        <td>${row["ProductMaster"]?.product_name}</td>
-                        <td>${row?.yield_quantity}</td>
-                        <td><span class=${row?.peeling_status == "In Progress"
+                            <td>${row["ProductMaster"]?.product_name}</td>
+                            <td>${row?.yield_quantity}</td>
+                            <td><span class=${row?.peeling_status == "In Progress"
               ? "text-warning"
               : "text-success"
             }>${row?.peeling_status} <i class="fa-solid ${row?.peeling_status == "In Progress"
               ? "fa-spinner fa-spin"
               : "fa-circle-check"
             }"></i></span></td>
-                        <td>${row?.peeling_notes || "-"}</td>
-                      </tr>`;
+                            <td>${row?.peeling_notes || "-"}</td>
+                          </tr>`;
         });
 
         return `<table class="table border rounded nowrap w-50">
-                    <tbody>
-                      <tr>
-                        <th class="fw-bold">Product Name</th>
-                        <th class="fw-bold">Yield Quantity</th>
-                        <th class="fw-bold">Status</th>
-                        <th class="fw-bold">Peeling Notes</th>
-                      </tr>
-                      ${html_content}
-                    </tbody>
-                  </table>`;
+                        <tbody>
+                          <tr>
+                            <th class="fw-bold">Product Name</th>
+                            <th class="fw-bold">Yield Quantity</th>
+                            <th class="fw-bold">Status</th>
+                            <th class="fw-bold">Peeling Notes</th>
+                          </tr>
+                          ${html_content}
+                        </tbody>
+                      </table>`;
       }
 
       let view_peeling_center_id = "";
@@ -3885,10 +3885,10 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<a href="tel:${row["DriverMaster"]?.phone?.startsWith("91")
-                    ? `+${row["DriverMaster"]?.phone}`
-                    : row["DriverMaster"]?.phone?.startsWith("+91")
-                      ? row["DriverMaster"]?.phone
-                      : `+91${row["DriverMaster"]?.phone}`
+                  ? `+${row["DriverMaster"]?.phone}`
+                  : row["DriverMaster"]?.phone?.startsWith("+91")
+                    ? row["DriverMaster"]?.phone
+                    : `+91${row["DriverMaster"]?.phone}`
                   }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
               },
             },
@@ -4388,6 +4388,7 @@
 
         view_packing_product_id = "";
         view_packing_id = "";
+        view_packing_location_id = ""
       });
 
       $(".packingMenu").click(async function () {
@@ -4460,7 +4461,7 @@
             { data: null },
             { data: "peeling_date" },
             { data: "procurement_lot" },
-            { data: "total_peeled_dispatch_quantity" },
+            { data: "total_peeled_dispatched_quantity" },
             { data: "total_packing_count" },
             { data: "total_packing_quantity" },
 
@@ -4547,12 +4548,13 @@
         const view_total_packing = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(5)
+          .eq(4)
           .text();
+
         const view_total_packing_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(3)
+          .eq(5)
           .text();
 
         $("#view_packing_lot_no").text(
@@ -4566,7 +4568,7 @@
 
         $("#view_total_packing").text(view_total_packing);
 
-        $("#view_total_packing_weight").text(
+        $("#view_total_packed_weight").text(
           view_total_packing_weight
         );
 
@@ -4640,8 +4642,8 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_dispatch_id='${row["PeekedDispatches"]?.id}'>${data}</i>`;
-                  /*-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>;*/
+                return `<span peeled_product_id='${row?.pd?.id}'>${data}</i>`;
+                /*-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>;*/
               },
             },
 
@@ -4733,6 +4735,7 @@
 
       let view_packing_product_id = "";
       let view_packing_id = "";
+      let view_packing_location_id = ""
       $(document).on("click", ".editPacking", (e) => {
         // Changing panel input fields data
 
@@ -4743,7 +4746,14 @@
           .children("td")
           .eq(1)
           .find("span")
-          .attr("peeled_dispatch_id");
+          .attr("peeled_product_id");
+
+        view_packing_location_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .find("span")
+          .attr("unit_master_id");
 
         $("#packingLotNumbers")
           .val($("#view_packing_lot_no").attr("procurement_lot_id"))
@@ -4753,23 +4763,12 @@
           $(e.target).closest("tr").children("td").eq(3).text()
         );
 
-        $("#packingDistributionLocation")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
         $("#packingGrade")
           .val(
             $(e.target)
               .closest("tr")
               .children("td")
-              .eq(6)
+              .eq(5)
               .find("span")
               .attr("grade_master_id")
           )
@@ -4786,18 +4785,18 @@
           )
           .trigger("change");
 
-        $("#packingPackages")
+        $("#packingPackage")
           .val(
             $(e.target)
               .closest("tr")
               .children("td")
               .eq(7)
-              .find("a")
+              .find("span")
               .attr("packaging_master_id")
           )
           .trigger("change");
 
-        $("#packing_notes").val(
+        $("#packing_delivery_notes").val(
           $(e.target).closest("tr").children("td").eq(8).text()
         );
 
@@ -4840,12 +4839,6 @@
             });
 
             $("#packingLotNumbers").val(null).trigger("change");
-
-            // Call loadPeeledProducts here
-            let packing_lot_no = $("#packingLotNumbers").val();
-            if (packing_lot_no) {
-              loadPackingProducts(packing_lot_no);
-            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -4910,9 +4903,9 @@
               data: packingProductNamesArray,
             });
 
-            if (view_peeled_dispatch_id) {
+            if (view_packing_product_id) {
               $("#packingProductNames")
-                .val(view_peeled_dispatch_id)
+                .val(view_packing_product_id)
                 .trigger("change");
             } else {
               $("#packingProductNames").val(null).trigger("change");
@@ -4977,7 +4970,7 @@
             : currentPackingQuantity
         );
 
-        if (balancePackingQuantity > 0) {
+        if (balancePeeledDispatchQuantity > 0) {
           $("#balance_peeled_dispatch_quantity").css({ color: "yellow" });
         } else {
           $("#balance_peeled_dispatch_quantity").css({ color: "red" });
@@ -5009,7 +5002,12 @@
               }),
             });
 
-            $("#packingDistributionLocation").val(null).trigger("change");
+            if (view_packing_location_id) {
+              $("#packingDistributionLocation").val(view_packing_location_id).trigger("change");
+            } else {
+              $("#packingDistributionLocation").val(null).trigger("change");
+
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -5131,8 +5129,8 @@
 
         let url = "/api/v1/packing/create";
         let input_params = {
-          packed_name: $("#packingProductNames").val(),
-          packing_quantity: $("#peeled_dispatch_quantity").val(),
+          peeled_dispatch_id: $("#packingProductNames").val(),
+          packing_quantity: $("#packing_quantity").val(),
           unit_master_id: $("#packingDistributionLocation").val(),
           grade_master_id: $("#packingGrade").val(),
           size_master_id: $("#packingSize").val(),
