@@ -16,6 +16,7 @@ export * as ProductCategoryMaster from "./product_category_master";
 export * as ProductMaster from "./product_master";
 export * as VehicleMaster from "./vehicle_master";
 export * as DriverMaster from "./driver_master";
+export * as CustomerMaster from "./customer_master";
 export * as ModuleMasters from "./module_master";
 export * as AuditLogs from "./audit_logs";
 export * as Dispatches from "./dispatches";
