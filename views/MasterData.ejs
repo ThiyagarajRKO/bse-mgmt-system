@@ -65,18 +65,18 @@
   <script src="/public/plugins/tippy/popper.min.js"></script>
   <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
+  <!-- International Phone Input -->
+  <!-- <link
+    rel="stylesheet"
+    href="public/plugins/international-phoneno/css/international-telephone-input.css"
+  />
+  <script src="public/plugins/international-phoneno/js/international-telephone-input.js"></script> -->
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/public/css/style.css" />
 
   <!-- Custom Script -->
   <script src="/public/custom/App.js"></script>
-
-  <!-- International Phone Input -->
-  <link
-    rel="stylesheet"
-    href="public/plugins/international-phoneno/css/international-telephone-input.css"
-  />
-  <script src="public/plugins/international-phoneno/js/international-telephone-input.js"></script>
 
   <head>
     <meta charset="UTF-8" />
@@ -158,12 +158,14 @@
         /* font-weight: bold; */
       }
 
-      .topSubMenu-item {
+      .topSubMenu-item,
+      .topSalesSubMenu-item {
         /* color: #14274e !important; */
         width: 100px;
       }
 
-      .topSubMenu-item:hover:not(.topSubMenu-item-active) {
+      .topSubMenu-item:hover:not(.topSubMenu-item-active),
+      .topSalesSubMenu-item:hover:not(.topSubMenu-item-active) {
         border-bottom: 1px solid #ea5455;
         color: #ea5455 !important;
         /* font-weight: bold; */
@@ -305,1703 +307,1687 @@
   </head>
 
   <body>
-    <div class="">
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="topMenu-container d-flex justify-content-center mt-0">
-        <div
-          class="topMenu-item topMenu-item-active divisionMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-table-cells-large"></i>
-          </div>
-          <div class="pt-2">
-            <span>Division</span>
-          </div>
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div
+      class="topMenu-container d-flex justify-content-start mt-0 overflow-auto"
+    >
+      <div
+        class="topMenu-item topMenu-item-active divisionMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-table-cells-large"></i>
         </div>
-
-        <div
-          class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-location-dot"></i>
-          </div>
-          <div class="pt-2">
-            <span>Location</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item unitMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-warehouse"></i>
-          </div>
-          <div class="pt-2">
-            <span>Units</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item vendorMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div class="pt-2">
-            <span>Vendors</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item packagingMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-boxes-packing"></i>
-          </div>
-          <div class="pt-2">
-            <span>Packaging</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item inventoryMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-layer-group"></i>
-          </div>
-          <div class="pt-2">
-            <span>Inventory</span>
-          </div>
-        </div>
-
-        <div
-          class="topSubMenuContainer productTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-shrimp"></i>
-          </div>
-          <div class="pt-2">
-            <span>Products</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item vehicleMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-truck"></i>
-          </div>
-          <div class="pt-2">
-            <span>Vehicles</span>
-          </div>
-        </div>
-
-        <div
-          class="topMenu-item driverMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-regular fa-id-card"></i>
-          </div>
-          <div class="pt-2">
-            <span>Drivers</span>
-          </div>
-        </div>
-
-        <div
-          class="topSubMenuContainer salesTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-        >
-          <div class="fs-6">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-          </div>
-          <div class="pt-2">
-            <span>Sales</span>
-          </div>
+        <div class="pt-2">
+          <span>Division</span>
         </div>
       </div>
-      <!-- Top Menu Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Division Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container divisionContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="divisionSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="divisionPanelHeading" class="fw-bold fs-5"
-                  >Add Division Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeDivisionPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="division-name">Division Name</label>
-                <input
-                  id="division_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Chennai"
-                  name="division-name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Description">Description</label>
-                <input
-                  id="description"
-                  class="form-control"
-                  placeholder="eg. AJs"
-                  type="text"
-                  name="Description"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitDivision" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetDivisionDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item locationMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-location-dot"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openDivisionPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="divisionTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Division Name</span></th>
-                  <th class="fw-bold"><span>Description</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Location</span>
         </div>
       </div>
-      <!-- Division Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Location Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container locationContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="locationSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="locationPanelHeading" class="fw-bold fs-5"
-                  >Add Location Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeLocationPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="location-name">Location Name</label>
-                <input
-                  id="location_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Chennai"
-                  name="location-name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Description">Description</label>
-                <input
-                  id="description"
-                  class="form-control"
-                  placeholder="eg. AJs"
-                  type="text"
-                  name="Description"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitLocation" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetLocationDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item unitMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-warehouse"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openLocationPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="locationTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Location Name</span></th>
-                  <th class="fw-bold"><span>Description</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Units</span>
         </div>
       </div>
-      <!-- Location Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Unit Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container unitContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="unitSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="unitPanelHeading" class="fw-bold fs-5"
-                  >Add Unit Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeUnitPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="unit-name">Unit Name</label>
-                <input
-                  id="unit_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Chennai"
-                  name="unit-name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Description">Location</label>
-                <select
-                  class="form-control input-dropdown w-100"
-                  id="unitLocations"
-                  name="unitLocation"
-                ></select>
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="unit-type">Unit Type</label>
-                <select
-                  class="form-control input-dropdown w-100"
-                  id="unitType"
-                  name="unitType"
-                ></select>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitUnit" class="col-lg-5 btn btn-danger">Save</div>
-                <div
-                  id="resetUnitDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item vendorMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-users"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openUnitPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="unitTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Unit Code</span></th>
-                  <th class="fw-bold"><span>Unit Name</span></th>
-                  <th class="fw-bold"><span>Unit Type</span></th>
-                  <th class="fw-bold"><span>Location Name</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Vendors</span>
         </div>
       </div>
-      <!-- Unit Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Vendor Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container vendorContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="vendorSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="vendorPanelHeading" class="fw-bold fs-5"
-                  >Add Vendor Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeVendorPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="vendor-name">Vendor Name</label>
-                <input
-                  id="vendor_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Jone"
-                  name="vendor-name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="vendor-location">Location</label>
-                <select
-                  class="form-control input-dropdown"
-                  id="vendorLocations"
-                  name="location"
-                ></select>
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Representative">Representative</label>
-                <input
-                  id="representative"
-                  class="form-control"
-                  placeholder="eg. AJs"
-                  type="text"
-                  name="Representative"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="phoneno">Phone No</label>
-                <input
-                  id="phone"
-                  class="form-control"
-                  type="tel"
-                  pattern="[6789][0-9]{9}"
-                  placeholder="eg. 9876543210"
-                  name="phoneno"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="email">Email</label>
-                <input
-                  id="email"
-                  class="form-control"
-                  type="email"
-                  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                  title="Enter a valid email address"
-                  placeholder="eg. xyz@gmail.com"
-                  name="email"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="address">Address</label>
-                <textarea
-                  id="address"
-                  class="form-control"
-                  placeholder="eg. xyz"
-                  type="text"
-                  name="address"
-                  rows="4"
-                ></textarea>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitVendor" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetVendorDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item packagingMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-boxes-packing"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openVendorPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="vendorTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Vendor Name</span></th>
-                  <th class="fw-bold"><span>Location</span></th>
-                  <th class="fw-bold"><span>Representative</span></th>
-                  <th class="fw-bold"><span>Phone</span></th>
-                  <th class="fw-bold"><span>Email</span></th>
-                  <th class="fw-bold"><span>Address</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Packaging</span>
         </div>
       </div>
-      <!-- Vendor Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Packaging Container ------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container packagingContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="packagingSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="packagingPanelHeading" class="fw-bold fs-5"
-                  >Add Packaging Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closePackagingPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="">
-                <div class="form-group my-3">
-                  <label for="packaging_type">Type</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="packagingType"
-                    name="packagingType"
-                    required
-                  ></select>
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingLength">Length (cm)</label>
-                  <input
-                    id="packagingLength"
-                    maxlength="12"
-                    class="form-control"
-                    placeholder="eg. 12"
-                    type="number"
-                    name="packagingLength"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingWidth">Width (cm)</label>
-                  <input
-                    id="packagingWidth"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 12"
-                    type="number"
-                    name="packagingWidth"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingHeight">Height (cm)</label>
-                  <input
-                    id="packagingHeight"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="packagingHeight"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingWeight">Weight (kgs)</label>
-                  <input
-                    id="packagingWeight"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 24"
-                    type="number"
-                    name="packagingWeight"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingMaterialComposition"
-                    >Material Composition</label
-                  >
-                  <select
-                    id="packagingMaterialComposition"
-                    class="form-control input-dropdown w-100"
-                    name="packagingMaterialComposition"
-                    required
-                  ></select>
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="packagingSupplier">Supplier</label>
-                  <select
-                    id="packagingSupplier"
-                    class="form-control input-dropdown w-100"
-                    name="packagingSupplier"
-                    required
-                  ></select>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitPackaging" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetPackagingDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item inventoryMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-layer-group"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openPackagingPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="packagingTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Code</span></th>
-                  <th class="fw-bold"><span>Type</span></th>
-                  <th class="fw-bold"><span>Length (cms)</span></th>
-                  <th class="fw-bold"><span>Width (cms)</span></th>
-                  <th class="fw-bold"><span>Height (cms)</span></th>
-                  <th class="fw-bold"><span>Weight (kgs)</span></th>
-                  <th class="fw-bold"><span>Material Composition</span></th>
-                  <th class="fw-bold"><span>Supplier</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Inventory</span>
         </div>
       </div>
-      <!-- Packaging Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container speciesContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="speciesSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="speciesPanelHeading" class="fw-bold fs-5"
-                  >Add Species Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeSpeciesPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="species-name">Species Name</label>
-                <input
-                  id="species_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Cuttle Fish"
-                  name="species_name"
-                  required
-                />
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="species-code">Species Code</label>
-                <input
-                  id="species_code"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. CF"
-                  name="species_code"
-                  required
-                />
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="speciesDivision">Division Name</label>
-                <select
-                  id="speciesDivision"
-                  class="form-control input-dropdown w-100"
-                  name="speciesDivision"
-                  required
-                ></select>
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="species-code">Scientific Name</label>
-                <input
-                  id="scientific_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Sepia officinalis"
-                  name="scientific_name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="species_description">Description</label>
-                <input
-                  id="species_description"
-                  class="form-control"
-                  placeholder="eg. Cuttlefish, or cuttles, are marine molluscs of the order Sepiida."
-                  type="text"
-                  name="species_description"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitSpecies" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetSpeciesDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topSubMenuContainer productTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-shrimp"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openSpeciesPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="speciesTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Species Code</span></th>
-                  <th class="fw-bold"><span>Division Name</span></th>
-                  <th class="fw-bold"><span>Species Name</span></th>
-                  <th class="fw-bold"><span>Scientific Name</span></th>
-                  <th class="fw-bold"><span>Description</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Products</span>
         </div>
       </div>
-      <!-- Species Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------- Grade Container ------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container gradeContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="gradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="gradePanelHeading" class="fw-bold fs-5"
-                  >Add Grade Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeGradePanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="species-name">Grade Name</label>
-                <input
-                  id="grade_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. A"
-                  name="grade_name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="grade_description">Description</label>
-                <input
-                  id="grade_description"
-                  class="form-control"
-                  placeholder="eg. 1st grade quality"
-                  type="text"
-                  name="grade_description"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitGrade" class="col-lg-5 btn btn-danger">Save</div>
-                <div
-                  id="resetGradeDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item vehicleMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-truck"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openGradePanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="gradeTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Grade Name</span></th>
-                  <th class="fw-bold"><span>Description</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Vehicles</span>
         </div>
       </div>
-      <!-- Grade Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------- Size Container ------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container sizeContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="sizeSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="sizePanelHeading" class="fw-bold fs-5"
-                  >Add Size Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeSizePanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="species-name">Size Name</label>
-                <input
-                  id="size"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. 1/2"
-                  name="size_name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="size_description">Description</label>
-                <input
-                  id="size_description"
-                  class="form-control"
-                  placeholder="eg. half size"
-                  type="text"
-                  name="size_description"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitSize" class="col-lg-5 btn btn-danger">Save</div>
-                <div
-                  id="resetSizeDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topMenu-item driverMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-regular fa-id-card"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openSizePanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="sizeTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Size</span></th>
-                  <th class="fw-bold"><span>Description</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Drivers</span>
         </div>
       </div>
-      <!-- Size Container Ends -->
 
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Product Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container productContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="productSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="productPanelHeading" class="fw-bold fs-5"
-                  >Add Product Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeProductPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="product-name">Species Name</label>
-                <select
-                  id="productSpecies"
-                  class="form-control input-dropdown"
-                  name="productSpecies"
-                ></select>
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="product-name">Product Category</label>
-                <input
-                  id="product_category"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. HEAD"
-                  name="product_category"
-                  required
-                />
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="productSizes">Sizes</label>
-                <select
-                  id="productSizes"
-                  class="form-control input-dropdown"
-                  name="productSizes"
-                ></select>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitProduct" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetProductDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        class="topSubMenuContainer salesTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openProductPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="productTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Product Name</span></th>
-                  <th class="fw-bold"><span>Species Name</span></th>
-                  <th class="fw-bold"><span>Product Category</span></th>
-                  <th class="fw-bold"><span>Size</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div class="pt-2">
+          <span>Sales</span>
         </div>
       </div>
-      <!-- Product Container Ends -->
-
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Inventory Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container inventoryContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="inventorySlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="inventoryPanelHeading" class="fw-bold fs-5"
-                  >Add Inventory Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeInventoryPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="inventory_name">Inventory Name</label>
-                <input
-                  id="inventory_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Salt"
-                  name="inventoryName"
-                  required
-                />
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="inventory_uom">Unit of Measure</label>
-                <input
-                  id="inventory_uom"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Pack"
-                  name="inventoryUom"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-4">
-                <label for="inventory-category">Category</label>
-                <select
-                  id="inventory_category"
-                  class="form-control input-dropdown"
-                  name="inventoryCategory"
-                ></select>
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="vendor">Supplier</label>
-                <select
-                  id="inventory_supplier"
-                  class="form-control input-dropdown w-100"
-                  name="inventorySupplier"
-                ></select>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitInventory" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetInventoryDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openInventoryPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="inventoryTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Inventory Name</span></th>
-                  <th class="fw-bold"><span>Unit of Measure</span></th>
-                  <th class="fw-bold"><span>Category</span></th>
-                  <th class="fw-bold"><span>Supplier</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- Inventory Container Ends -->
-
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container vehicleContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="vehicleSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="vehiclePanelHeading" class="fw-bold fs-5"
-                  >Add Vehicle Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeVehiclePanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="vehicle-number">Vehicle Number</label>
-                <input
-                  id="vehicle_number"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. TN65A1234"
-                  name="vehicle-name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Description">Vehicle Brand</label>
-                <input
-                  id="vehicle_brand"
-                  class="form-control"
-                  placeholder="eg. Ashok Leyland"
-                  type="text"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="Description">Model Number</label>
-                <input
-                  id="model_number"
-                  class="form-control"
-                  placeholder="eg. 4020 - 4x2 Tractor"
-                  type="text"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="InsuranceProvider">Insurance Provider</label>
-                <input
-                  id="insurance_provider"
-                  class="form-control"
-                  placeholder="eg. Bajaj"
-                  type="text"
-                  name="InsuranceProvider"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="InsuranceNumber">Insurance Number</label>
-                <input
-                  id="insurance_number"
-                  class="form-control"
-                  placeholder="eg. BJ0123456"
-                  type="text"
-                  name="InsuranceNumber"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="InsuranceExpiringOn">Insurance Expiring On</label>
-                <input
-                  id="insurance_expiring_on"
-                  class="form-control"
-                  placeholder="27-02-2024"
-                  type="date"
-                  name="InsuranceExpiringOn"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="LastFCDate">Last FC Date</label>
-                <input
-                  id="last_fc_date"
-                  class="form-control"
-                  placeholder="27-02-2024"
-                  type="date"
-                  name="LastFCDate"
-                />
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitVehicle" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetVehicleDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openVehiclePanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="vehicleTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Vehicle Number</span></th>
-                  <th class="fw-bold"><span>Vehicle Brand</span></th>
-                  <th class="fw-bold"><span>Model Number</span></th>
-                  <th class="fw-bold"><span>Insurance Provider</span></th>
-                  <th class="fw-bold"><span>Insurance Number</span></th>
-                  <th class="fw-bold"><span>Insurance Expiring On</span></th>
-                  <th class="fw-bold"><span>Last FC Date</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- Vehicle Container Ends -->
-
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------------ Driver Container ------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container driverContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="driverSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="driverPanelHeading" class="fw-bold fs-5"
-                  >Add Driver Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeDriverPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="">
-                <div class="form-group mt-4">
-                  <label for="driver-number">Driver Name</label>
-                  <input
-                    id="driver_name"
-                    class="form-control"
-                    type="text"
-                    placeholder="eg. xyz"
-                    name="driver-name"
-                    required
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Description">License Number</label>
-                  <input
-                    id="license_number"
-                    class="form-control"
-                    placeholder="eg. TN201902032323"
-                    type="text"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Aadhar">Aadhar Number</label>
-                  <input
-                    id="aadhar_number"
-                    maxlength="12"
-                    class="form-control"
-                    placeholder="eg. 123456789012"
-                    type="text"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Description">Contact Number</label>
-                  <input
-                    id="driver_phone"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 9876543210"
-                    type="text"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Description">Emergency Contact</label>
-                  <input
-                    id="emergency_contact"
-                    maxlength="10"
-                    class="form-control"
-                    placeholder="eg. 9876543210"
-                    type="text"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Description">Blood Group</label>
-                  <input
-                    id="blood_group"
-                    class="form-control"
-                    placeholder="eg. B+"
-                    type="text"
-                  />
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="HealthHistory">Health History</label>
-                  <textarea
-                    id="health_history"
-                    rows="3"
-                    class="form-control"
-                    placeholder="eg. Diabetes"
-                    name="Health History"
-                  >
-                  </textarea>
-                </div>
-
-                <div class="form-group my-3">
-                  <label for="Address">Address</label>
-                  <textarea
-                    id="driver_address"
-                    rows="3"
-                    class="form-control"
-                    placeholder="eg. Address"
-                    name="Health History"
-                  >
-                  </textarea>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitDriver" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetDriverDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openDriverPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="driverTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Driver Name</span></th>
-                  <th class="fw-bold"><span>License Number</span></th>
-                  <th class="fw-bold"><span>Phone</span></th>
-                  <th class="fw-bold"><span>Emergency Contact</span></th>
-                  <th class="fw-bold"><span>Aadhar Number</span></th>
-                  <th class="fw-bold"><span>Blood Group</span></th>
-                  <th class="fw-bold"><span>Health History</span></th>
-                  <th class="fw-bold"><span>Address</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- Driver Container Ends -->
-
-      <!-- Driver Container Ends -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <!-- ------------------------------------- Customer Container ---------------------------------------------------- -->
-      <!-- ------------------------------------------------------------------------------------------------------------- -->
-      <div class="menu-container customerContainer d-none">
-        <!-- Slide-in Panel -->
-        <div id="customerSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="customerPanelHeading" class="fw-bold fs-5"
-                  >Add Customer Data</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeCustomerPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="form-group mt-4">
-                <label for="customer-name">Customer Name</label>
-                <input
-                  id="customer_name"
-                  class="form-control"
-                  type="text"
-                  placeholder="eg. Jone"
-                  name="customer_name"
-                  required
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-address">Address</label>
-                <textarea
-                  id="customer_address"
-                  class="form-control"
-                  placeholder="eg. xyz"
-                  type="text"
-                  name="customer_address"
-                  rows="4"
-                ></textarea>
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-country">Country</label>
-                <select
-                  class="form-control input-dropdown"
-                  id="customer_country"
-                  name="customer_country"
-                ></select>
-              </div>
-
-              <div class="form-group my-3">
-                <div
-                  class="input-phone"
-                  id="customer_phone"
-                  name="customer_phone"
-                >
-                  <label for="phoneno">Phone No</label>
-                  <input
-                    id="customer_phone"
-                    class="form-control"
-                    title="Enter a valid Phone Number"
-                    placeholder="eg. 3128601946"
-                    type="tel"
-                    name="phone"
-                  />
-                </div>
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-email">Email</label>
-                <input
-                  id="customer_email"
-                  class="form-control"
-                  type="email"
-                  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                  title="Enter a valid email address"
-                  placeholder="eg. xyz@gmail.com"
-                  name="customer_email"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-paymentterms">Payment Terms</label>
-                <input
-                  id="customer_paymentterms"
-                  class="form-control"
-                  placeholder="eg. payment in 15 days"
-                  type="text"
-                  name="customer_paymentterms"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-credit">Credit Limit</label>
-                <input
-                  id="customer_credit"
-                  class="form-control"
-                  placeholder="eg. 123222321223"
-                  type="text"
-                  name="customer_credit"
-                />
-              </div>
-
-              <div class="form-group my-3">
-                <label for="customer-type">Type</label>
-                <select
-                  class="form-control input-dropdown"
-                  id="customer_type"
-                  name="customer_type"
-                ></select>
-              </div>
-
-              <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                <div id="submitCustomer" class="col-lg-5 btn btn-danger">
-                  Save
-                </div>
-                <div
-                  id="resetCustomerDataBtn"
-                  class="col-lg-5 btn btn-outline-danger"
-                >
-                  Clear
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Content -->
-        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-          <div class="border p-4 w-100">
-            <!-- Add Button -->
-            <div class="d-flex rounded-2 justify-content-end pb-4">
-              <div
-                id="openCustomerPanelBtn"
-                class="btn btn-outline-danger d-flex justify-content-around"
-                style="width: 100px"
-              >
-                <i class="fa-solid fa-circle-plus my-auto"></i>
-                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
-              </div>
-            </div>
-
-            <table id="customerTable" class="table table-hover nowrap w-100">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="fw-bold"><span>Name</span></th>
-                  <th class="fw-bold"><span>Address</span></th>
-                  <th class="fw-bold"><span>Country</span></th>
-                  <th class="fw-bold"><span>Phone</span></th>
-                  <th class="fw-bold"><span>Email</span></th>
-                  <th class="fw-bold"><span>Payment Terms</span></th>
-                  <th class="fw-bold"><span>Credit Limit</span></th>
-                  <th class="fw-bold"><span>Types</span></th>
-                  <th class="fw-bold"><span>Created At</span></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- Customer Container Ends -->
     </div>
+    <!-- Top Menu Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Division Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container divisionContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="divisionSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="divisionPanelHeading" class="fw-bold fs-5"
+                >Add Division Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeDivisionPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="division-name">Division Name</label>
+              <input
+                id="division_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Chennai"
+                name="division-name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Description</label>
+              <input
+                id="description"
+                class="form-control"
+                placeholder="eg. AJs"
+                type="text"
+                name="Description"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitDivision" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetDivisionDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openDivisionPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="divisionTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Division Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Division Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Location Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container locationContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="locationSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="locationPanelHeading" class="fw-bold fs-5"
+                >Add Location Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeLocationPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="location-name">Location Name</label>
+              <input
+                id="location_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Chennai"
+                name="location-name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Description</label>
+              <input
+                id="description"
+                class="form-control"
+                placeholder="eg. AJs"
+                type="text"
+                name="Description"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitLocation" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetLocationDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openLocationPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="locationTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Location Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Location Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Unit Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container unitContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="unitSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="unitPanelHeading" class="fw-bold fs-5"
+                >Add Unit Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeUnitPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="unit-name">Unit Name</label>
+              <input
+                id="unit_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Chennai"
+                name="unit-name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Location</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="unitLocations"
+                name="unitLocation"
+              ></select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="unit-type">Unit Type</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="unitType"
+                name="unitType"
+              ></select>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitUnit" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetUnitDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openUnitPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="unitTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Unit Code</span></th>
+                <th class="fw-bold"><span>Unit Name</span></th>
+                <th class="fw-bold"><span>Unit Type</span></th>
+                <th class="fw-bold"><span>Location Name</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Unit Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Vendor Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container vendorContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="vendorSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="vendorPanelHeading" class="fw-bold fs-5"
+                >Add Vendor Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeVendorPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="vendor-name">Vendor Name</label>
+              <input
+                id="vendor_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Jone"
+                name="vendor-name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="vendor-location">Location</label>
+              <select
+                class="form-control input-dropdown"
+                id="vendorLocations"
+                name="location"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Representative">Representative</label>
+              <input
+                id="representative"
+                class="form-control"
+                placeholder="eg. AJs"
+                type="text"
+                name="Representative"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="vendor_phoneno">Phone No</label>
+              <input
+                id="vendor_phone"
+                class="form-control"
+                type="tel"
+                pattern="[6789][0-9]{9}"
+                placeholder="eg. 9876543210"
+                name="vendor_phoneno"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="email">Email</label>
+              <input
+                id="vendor_email"
+                class="form-control"
+                type="email"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Enter a valid email address"
+                placeholder="eg. xyz@gmail.com"
+                name="email"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="address">Address</label>
+              <textarea
+                id="vendor_address"
+                class="form-control"
+                placeholder="eg. xyz"
+                type="text"
+                name="address"
+                rows="4"
+              ></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitVendor" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetVendorDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openVendorPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="vendorTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Vendor Name</span></th>
+                <th class="fw-bold"><span>Location</span></th>
+                <th class="fw-bold"><span>Representative</span></th>
+                <th class="fw-bold"><span>Phone</span></th>
+                <th class="fw-bold"><span>Email</span></th>
+                <th class="fw-bold"><span>Address</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Vendor Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Packaging Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container packagingContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="packagingSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="packagingPanelHeading" class="fw-bold fs-5"
+                >Add Packaging Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closePackagingPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="">
+              <div class="form-group my-3">
+                <label for="packaging_type">Type</label>
+                <select
+                  class="form-control input-dropdown w-100"
+                  id="packagingType"
+                  name="packagingType"
+                  required
+                ></select>
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingLength">Length (cm)</label>
+                <input
+                  id="packagingLength"
+                  maxlength="12"
+                  class="form-control"
+                  placeholder="eg. 12"
+                  type="number"
+                  name="packagingLength"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingWidth">Width (cm)</label>
+                <input
+                  id="packagingWidth"
+                  maxlength="10"
+                  class="form-control"
+                  placeholder="eg. 12"
+                  type="number"
+                  name="packagingWidth"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingHeight">Height (cm)</label>
+                <input
+                  id="packagingHeight"
+                  maxlength="10"
+                  class="form-control"
+                  placeholder="eg. 24"
+                  type="number"
+                  name="packagingHeight"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingWeight">Weight (kgs)</label>
+                <input
+                  id="packagingWeight"
+                  maxlength="10"
+                  class="form-control"
+                  placeholder="eg. 24"
+                  type="number"
+                  name="packagingWeight"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingMaterialComposition"
+                  >Material Composition</label
+                >
+                <select
+                  id="packagingMaterialComposition"
+                  class="form-control input-dropdown w-100"
+                  name="packagingMaterialComposition"
+                  required
+                ></select>
+              </div>
+
+              <div class="form-group my-3">
+                <label for="packagingSupplier">Supplier</label>
+                <select
+                  id="packagingSupplier"
+                  class="form-control input-dropdown w-100"
+                  name="packagingSupplier"
+                  required
+                ></select>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitPackaging" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetPackagingDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openPackagingPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="packagingTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Code</span></th>
+                <th class="fw-bold"><span>Type</span></th>
+                <th class="fw-bold"><span>Length (cms)</span></th>
+                <th class="fw-bold"><span>Width (cms)</span></th>
+                <th class="fw-bold"><span>Height (cms)</span></th>
+                <th class="fw-bold"><span>Weight (kgs)</span></th>
+                <th class="fw-bold"><span>Material Composition</span></th>
+                <th class="fw-bold"><span>Supplier</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Packaging Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Species Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container speciesContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="speciesSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="speciesPanelHeading" class="fw-bold fs-5"
+                >Add Species Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeSpeciesPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Species Name</label>
+              <input
+                id="species_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Cuttle Fish"
+                name="species_name"
+                required
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Species Code</label>
+              <input
+                id="species_code"
+                class="form-control"
+                type="text"
+                placeholder="eg. CF"
+                name="species_code"
+                required
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="speciesDivision">Division Name</label>
+              <select
+                id="speciesDivision"
+                class="form-control input-dropdown w-100"
+                name="speciesDivision"
+                required
+              ></select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="species-code">Scientific Name</label>
+              <input
+                id="scientific_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Sepia officinalis"
+                name="scientific_name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="species_description">Description</label>
+              <input
+                id="species_description"
+                class="form-control"
+                placeholder="eg. Cuttlefish, or cuttles, are marine molluscs of the order Sepiida."
+                type="text"
+                name="species_description"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSpecies" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetSpeciesDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openSpeciesPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="speciesTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Species Code</span></th>
+                <th class="fw-bold"><span>Division Name</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Scientific Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Species Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------- Grade Container ------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container gradeContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="gradeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="gradePanelHeading" class="fw-bold fs-5"
+                >Add Grade Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeGradePanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Grade Name</label>
+              <input
+                id="grade_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. A"
+                name="grade_name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="grade_description">Description</label>
+              <input
+                id="grade_description"
+                class="form-control"
+                placeholder="eg. 1st grade quality"
+                type="text"
+                name="grade_description"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitGrade" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetGradeDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openGradePanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="gradeTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Grade Name</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Grade Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------- Size Container ------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container sizeContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="sizeSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="sizePanelHeading" class="fw-bold fs-5"
+                >Add Size Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeSizePanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="species-name">Size Name</label>
+              <input
+                id="size"
+                class="form-control"
+                type="text"
+                placeholder="eg. 1/2"
+                name="size_name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="size_description">Description</label>
+              <input
+                id="size_description"
+                class="form-control"
+                placeholder="eg. half size"
+                type="text"
+                name="size_description"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitSize" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetSizeDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openSizePanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="sizeTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Size</span></th>
+                <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Size Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Product Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container productContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="productSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="productPanelHeading" class="fw-bold fs-5"
+                >Add Product Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeProductPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="product-name">Species Name</label>
+              <select
+                id="productSpecies"
+                class="form-control input-dropdown"
+                name="productSpecies"
+              ></select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="product-name">Product Category</label>
+              <input
+                id="product_category"
+                class="form-control"
+                type="text"
+                placeholder="eg. HEAD"
+                name="product_category"
+                required
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="productSizes">Sizes</label>
+              <select
+                id="productSizes"
+                class="form-control input-dropdown"
+                name="productSizes"
+              ></select>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitProduct" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetProductDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openProductPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="productTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Product Name</span></th>
+                <th class="fw-bold"><span>Species Name</span></th>
+                <th class="fw-bold"><span>Product Category</span></th>
+                <th class="fw-bold"><span>Size</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Product Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Inventory Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container inventoryContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="inventorySlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="inventoryPanelHeading" class="fw-bold fs-5"
+                >Add Inventory Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeInventoryPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="inventory_name">Inventory Name</label>
+              <input
+                id="inventory_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Salt"
+                name="inventoryName"
+                required
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="inventory_uom">Unit of Measure</label>
+              <input
+                id="inventory_uom"
+                class="form-control"
+                type="text"
+                placeholder="eg. Pack"
+                name="inventoryUom"
+                required
+              />
+            </div>
+
+            <div class="form-group my-4">
+              <label for="inventory-category">Category</label>
+              <select
+                id="inventory_category"
+                class="form-control input-dropdown"
+                name="inventoryCategory"
+              ></select>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="vendor">Supplier</label>
+              <select
+                id="inventory_supplier"
+                class="form-control input-dropdown w-100"
+                name="inventorySupplier"
+              ></select>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitInventory" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetInventoryDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openInventoryPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="inventoryTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Inventory Name</span></th>
+                <th class="fw-bold"><span>Unit of Measure</span></th>
+                <th class="fw-bold"><span>Category</span></th>
+                <th class="fw-bold"><span>Supplier</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Inventory Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Vehicle Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container vehicleContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="vehicleSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="vehiclePanelHeading" class="fw-bold fs-5"
+                >Add Vehicle Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeVehiclePanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="vehicle-number">Vehicle Number</label>
+              <input
+                id="vehicle_number"
+                class="form-control"
+                type="text"
+                placeholder="eg. TN65A1234"
+                name="vehicle-name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Vehicle Brand</label>
+              <input
+                id="vehicle_brand"
+                class="form-control"
+                placeholder="eg. Ashok Leyland"
+                type="text"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="Description">Model Number</label>
+              <input
+                id="model_number"
+                class="form-control"
+                placeholder="eg. 4020 - 4x2 Tractor"
+                type="text"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="InsuranceProvider">Insurance Provider</label>
+              <input
+                id="insurance_provider"
+                class="form-control"
+                placeholder="eg. Bajaj"
+                type="text"
+                name="InsuranceProvider"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="InsuranceNumber">Insurance Number</label>
+              <input
+                id="insurance_number"
+                class="form-control"
+                placeholder="eg. BJ0123456"
+                type="text"
+                name="InsuranceNumber"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="InsuranceExpiringOn">Insurance Expiring On</label>
+              <input
+                id="insurance_expiring_on"
+                class="form-control"
+                placeholder="27-02-2024"
+                type="date"
+                name="InsuranceExpiringOn"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="LastFCDate">Last FC Date</label>
+              <input
+                id="last_fc_date"
+                class="form-control"
+                placeholder="27-02-2024"
+                type="date"
+                name="LastFCDate"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitVehicle" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetVehicleDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openVehiclePanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="vehicleTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Vehicle Number</span></th>
+                <th class="fw-bold"><span>Vehicle Brand</span></th>
+                <th class="fw-bold"><span>Model Number</span></th>
+                <th class="fw-bold"><span>Insurance Provider</span></th>
+                <th class="fw-bold"><span>Insurance Number</span></th>
+                <th class="fw-bold"><span>Insurance Expiring On</span></th>
+                <th class="fw-bold"><span>Last FC Date</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Vehicle Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------------ Driver Container ------------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container driverContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="driverSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="driverPanelHeading" class="fw-bold fs-5"
+                >Add Driver Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeDriverPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="">
+              <div class="form-group mt-4">
+                <label for="driver-number">Driver Name</label>
+                <input
+                  id="driver_name"
+                  class="form-control"
+                  type="text"
+                  placeholder="eg. xyz"
+                  name="driver-name"
+                  required
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Description">License Number</label>
+                <input
+                  id="license_number"
+                  class="form-control"
+                  placeholder="eg. TN201902032323"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Aadhar">Aadhar Number</label>
+                <input
+                  id="aadhar_number"
+                  maxlength="12"
+                  class="form-control"
+                  placeholder="eg. 123456789012"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Description">Contact Number</label>
+                <input
+                  id="driver_phone"
+                  maxlength="10"
+                  class="form-control"
+                  placeholder="eg. 9876543210"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Description">Emergency Contact</label>
+                <input
+                  id="emergency_contact"
+                  maxlength="10"
+                  class="form-control"
+                  placeholder="eg. 9876543210"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Description">Blood Group</label>
+                <input
+                  id="blood_group"
+                  class="form-control"
+                  placeholder="eg. B+"
+                  type="text"
+                />
+              </div>
+
+              <div class="form-group my-3">
+                <label for="HealthHistory">Health History</label>
+                <textarea
+                  id="health_history"
+                  rows="3"
+                  class="form-control"
+                  placeholder="eg. Diabetes"
+                  name="Health History"
+                >
+                </textarea>
+              </div>
+
+              <div class="form-group my-3">
+                <label for="Address">Address</label>
+                <textarea
+                  id="driver_address"
+                  rows="3"
+                  class="form-control"
+                  placeholder="eg. Address"
+                  name="Health History"
+                >
+                </textarea>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitDriver" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetDriverDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openDriverPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="driverTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Driver Name</span></th>
+                <th class="fw-bold"><span>License Number</span></th>
+                <th class="fw-bold"><span>Phone</span></th>
+                <th class="fw-bold"><span>Emergency Contact</span></th>
+                <th class="fw-bold"><span>Aadhar Number</span></th>
+                <th class="fw-bold"><span>Blood Group</span></th>
+                <th class="fw-bold"><span>Health History</span></th>
+                <th class="fw-bold"><span>Address</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Driver Container Ends -->
+
+    <!-- Driver Container Ends -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Customer Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container customerContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="customerSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="customerPanelHeading" class="fw-bold fs-5"
+                >Add Customer Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeCustomerPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="customer-name">Customer Name</label>
+              <input
+                id="customer_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Jone"
+                name="customer_name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-address">Address</label>
+              <textarea
+                id="customer_address"
+                class="form-control"
+                placeholder="eg. xyz"
+                type="text"
+                name="customer_address"
+                rows="4"
+              ></textarea>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-country">Country</label>
+              <select
+                class="form-control input-dropdown"
+                id="customer_country"
+                name="customer_country"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="phoneno">Phone No</label>
+              <input
+                id="customer_phone"
+                class="form-control"
+                title="Enter a valid Phone Number"
+                placeholder="eg. 3128601946"
+                type="tel"
+                name="phone"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-email">Email</label>
+              <input
+                id="customer_email"
+                class="form-control"
+                type="email"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Enter a valid email address"
+                placeholder="eg. xyz@gmail.com"
+                name="customer_email"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-paymentterms">Payment Terms</label>
+              <input
+                id="customer_paymentterms"
+                class="form-control"
+                placeholder="eg. payment in 15 days"
+                type="text"
+                name="customer_paymentterms"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-credit">Credit Limit</label>
+              <input
+                id="customer_credit"
+                class="form-control"
+                placeholder="eg. 123222321223"
+                type="text"
+                name="customer_credit"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="customer-type">Type</label>
+              <select
+                class="form-control input-dropdown"
+                id="customer_type"
+                name="customer_type"
+              ></select>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitCustomer" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetCustomerDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openCustomerPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="customerTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Address</span></th>
+                <th class="fw-bold"><span>Country</span></th>
+                <th class="fw-bold"><span>Phone</span></th>
+                <th class="fw-bold"><span>Email</span></th>
+                <th class="fw-bold"><span>Payment Terms</span></th>
+                <th class="fw-bold"><span>Credit Limit</span></th>
+                <th class="fw-bold"><span>Type</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Customer Container Ends -->
   </body>
 
   <script type="text/javascript">
@@ -2043,52 +2029,43 @@
       // Menu navigation
       $(".topMenu-item").click(function () {
         $(".topMenu-item").removeClass("topMenu-item-active");
+        $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
 
         $(this).addClass("topMenu-item-active");
         $(".productTopMenu").removeClass("topMenu-item-active");
-        $(".panelClose").click();
-
-        loadDropdowns();
-        resetAllInputs();
-      });
-
-      $(".topMenu-item").click(function () {
-        $(".topMenu-item").removeClass("topMenu-item-active");
-        $(".topSubMenu-item").removeClass("topSubMenu-item-active");
-
-        $(this).addClass("topMenu-item-active");
         $(".salesTopMenu").removeClass("topMenu-item-active");
         $(".panelClose").click();
 
-        loadDropdowns();
         resetAllInputs();
       });
 
       // Sub Menu navigation
       $(document).on("click", ".topSubMenu-item", function () {
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topMenu-item").removeClass("topMenu-item-active");
+        $(".salesTopMenu").removeClass("topMenu-item-active");
 
         $(".productTopMenu").addClass("topMenu-item-active");
         $(this).addClass("topSubMenu-item-active");
 
         $(".panelClose").click();
 
-        loadDropdowns();
         resetAllInputs();
       });
 
-      $(document).on("click", ".topSubMenu-item", function () {
+      $(document).on("click", ".topSalesSubMenu-item", function () {
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topMenu-item").removeClass("topMenu-item-active");
+        $(".productTopMenu").removeClass("topMenu-item-active");
 
         $(".salesTopMenu").addClass("topMenu-item-active");
         $(this).addClass("topSubMenu-item-active");
 
         $(".panelClose").click();
 
-        loadDropdowns();
         resetAllInputs();
       });
 
@@ -2123,11 +2100,11 @@
       const salesSubMenus = document.getElementById("salesSubMenus");
       tippy(".salesTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-users mb-2"></i>Customer</div>
-        <div class="topSubMenu-item pricelistMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSalesSubMenu-item pricelistMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-barcode mb-2"></i>Price list</div>
-        <div class="topSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSalesSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-truck-arrow-right" mb-2"></i>Shipping Container</div>
       </div>`,
         placement: "bottom",
@@ -2226,23 +2203,6 @@
 
         // Destroying select2 all the dropdowns
         // $('select.select2-hidden-accessible').select2('destroy');
-      }
-
-      function loadDropdowns() {
-        // Pre loading dropdown data
-        loadUnitLocations();
-        loadUnitType();
-        loadVendorLocations();
-        loadPackagingType();
-        loadPackagingMaterialComposition();
-        loadPackagingVendor();
-        loadSpeciesDivision();
-        loadInventoryVendors();
-        loadInventoryCategory();
-        loadProductSpecies();
-        loadProductSizes();
-        loadCustomerCountry();
-        loadCustomerType();
       }
 
       // ---------------------------------------------------------
@@ -2799,12 +2759,19 @@
         $(".unitContainer").removeClass("d-none");
         $(".unitContainer").addClass("d-block");
 
+        loadUnitDropdowns();
         loadUnitTableData();
       });
 
       $("#submitUnit").click(function () {
         saveUnit();
       });
+
+      function loadUnitDropdowns() {
+        // Pre loading dropdown data
+        loadUnitLocations();
+        loadUnitType();
+      }
 
       function loadUnitTableData() {
         $("#unitTable").DataTable({
@@ -3156,12 +3123,18 @@
         $(".productContainer").removeClass("d-none");
         $(".productContainer").addClass("d-block");
 
+        loadProductDropdowns();
         loadProductTableData();
       });
 
       $("#submitProduct").click(function () {
         saveProduct();
       });
+
+      function loadProductDropdowns() {
+        loadProductSpecies();
+        loadProductSizes();
+      }
 
       function loadProductTableData() {
         $("#productTable").DataTable({
@@ -3543,8 +3516,6 @@
           "submitVendor",
           "vendor_master_id"
         );
-
-        // loadVendorLocations()
       });
 
       // Close panel
@@ -3558,12 +3529,17 @@
         $(".vendorContainer").removeClass("d-none");
         $(".vendorContainer").addClass("d-block");
 
+        loadVendorDropdowns();
         loadVendorsTableData();
       });
 
       $("#submitVendor").click(function () {
         saveVendor();
       });
+
+      function loadVendorDropdowns() {
+        loadVendorLocations();
+      }
 
       function loadVendorsTableData() {
         $("#vendorTable").DataTable({
@@ -3697,9 +3673,13 @@
         $("#representative").val(
           $(e.target).closest("tr").children("td").eq(4).text()
         );
-        $("#phone").val($(e.target).closest("tr").children("td").eq(5).text());
-        $("#email").val($(e.target).closest("tr").children("td").eq(6).text());
-        $("#address").val(
+        $("#vendor_phone").val(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+        $("#vendor_email").val(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+        $("#vendor_address").val(
           $(e.target).closest("tr").children("td").eq(7).text()
         );
 
@@ -3812,9 +3792,9 @@
         let input_params = {
           vendor_name: $("#vendor_name").val(),
           representative: $("#representative").val(),
-          address: $("#address").val(),
-          phone: $("#phone").val(),
-          email: $("#email").val(),
+          address: $("#vendor_address").val(),
+          phone: $("#vendor_phone").val(),
+          email: $("#vendor_email").val(),
           location_master_id: $("#vendorLocations").val(),
         };
 
@@ -3872,7 +3852,6 @@
           "submitPackaging",
           "packaging_master_id"
         );
-        $("#packagingSlideInPanel").css("right", "0");
       });
 
       // Close panel
@@ -3886,12 +3865,19 @@
         $(".packagingContainer").removeClass("d-none");
         $(".packagingContainer").addClass("d-block");
 
+        loadPackagingDropdowns();
         loadPackagingTableData();
       });
 
       $("#submitPackaging").click(function () {
         savePackaging();
       });
+
+      function loadPackagingDropdowns() {
+        loadPackagingType();
+        loadPackagingMaterialComposition();
+        loadPackagingVendor();
+      }
 
       function loadPackagingTableData() {
         $("#packagingTable").DataTable({
@@ -4262,7 +4248,13 @@
 
       // Open panel
       $("#openInventoryPanelBtn").click(function () {
-        $("#inventorySlideInPanel").css("right", "0");
+        openSlidePanel(
+          "inventorySlideInPanel",
+          "inventoryPanelHeading",
+          "Inventory",
+          "submitInventory",
+          "inventory_master_id"
+        );
       });
 
       // Close panel
@@ -4278,12 +4270,18 @@
         $(".inventoryContainer").removeClass("d-none");
         $(".inventoryContainer").addClass("d-block");
 
+        loadInventoryDropdowns();
         loadInventoryTableData();
       });
 
       $("#submitInventory").click(function () {
         saveInventory();
       });
+
+      function loadInventoryDropdowns() {
+        loadInventoryVendors();
+        loadInventoryCategory();
+      }
 
       function loadInventoryTableData() {
         $("#inventoryTable").DataTable({
@@ -4633,12 +4631,17 @@
         $(".speciesContainer").removeClass("d-none");
         $(".speciesContainer").addClass("d-block");
 
+        loadSpeciesDropdown();
         loadSpeciesTableData();
       });
 
       $("#submitSpecies").click(function () {
         saveSpecies();
       });
+
+      function loadSpeciesDropdown() {
+        loadSpeciesDivision();
+      }
 
       function loadSpeciesTableData() {
         $("#speciesTable").DataTable({
@@ -6094,7 +6097,7 @@
       $("#resetDriverDataBtn").on("click", resetAllInputs);
 
       // ---------------------------------------------------------
-      // ------------------------- Customer -----------------------
+      // ------------------------- Customer ----------------------
       // ---------------------------------------------------------
 
       // Open panel
@@ -6106,8 +6109,6 @@
           "submitCustomer",
           "customer_master_id"
         );
-
-        // loadVendorLocations()
       });
 
       // Close panel
@@ -6121,12 +6122,19 @@
         $(".customerContainer").removeClass("d-none");
         $(".customerContainer").addClass("d-block");
 
+        loadCustomerDropdowns();
         loadCustomerTableData();
       });
 
       $("#submitCustomer").click(function () {
         saveCustomer();
       });
+
+      function loadCustomerDropdowns() {
+        // Pre loading dropdown data
+        loadCustomerCountry();
+        loadCustomerType();
+      }
 
       function loadCustomerTableData() {
         $("#customerTable").DataTable({
@@ -6197,7 +6205,7 @@
               },
             },
             {
-              targets: [9],
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -6237,8 +6245,15 @@
         });
       }
 
+      let view_customer_phone = "";
       $(document).on("click", ".editCustomer", (e) => {
         // Changing panel input fields data
+        view_customer_phone = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
         $("#customer_name").val(
           $(e.target).closest("tr").children("td").eq(2).text()
         );
@@ -6248,9 +6263,7 @@
         $("#customer_country")
           .val($(e.target).closest("tr").children("td").eq(4).text())
           .trigger("change");
-        $("#customer_phone").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
-        );
+
         $("#customer_email").val(
           $(e.target).closest("tr").children("td").eq(6).text()
         );
@@ -6260,9 +6273,9 @@
         $("#customer_credit").val(
           $(e.target).closest("tr").children("td").eq(8).text()
         );
-        $("#customer_type").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
+        $("#customer_type")
+          .val($(e.target).closest("tr").children("td").eq(9).text())
+          .trigger("change");
 
         // Opening slide panel
         $("#openCustomerPanelBtn").click();
@@ -6333,7 +6346,7 @@
 
       function loadCustomerCountry() {
         $.ajax({
-          url: "https://restcountries.com/v3.1/all",
+          url: "https://restcountries.com/v3.1/all?fields=cca3,name,idd",
           dataType: "json",
 
           success: function (data) {
@@ -6341,18 +6354,48 @@
               placeholder: "Choose a country",
               allowClear: true,
               data: $.map(data, function (item) {
+                let suffixes = item?.idd?.suffixes;
+
+                if (suffixes.length > 1) {
+                  suffixes = "";
+                } else {
+                  suffixes = item?.idd?.suffixes[0];
+                }
                 return {
-                  id: item.cca3,
+                  id: item.name.common,
                   text: item.name.common,
+                  isd_code: `${item?.idd?.root}${suffixes}`,
                 };
               }),
             });
+
+            $("#customer_country").val(null).trigger("change");
           },
           error: function (jqXHR, textStatus, errorThrown) {
             console.error("Error loading country list:", errorThrown);
           },
         });
       }
+
+      $(document).on("change", "#customer_country", (e) => {
+        if (!$(e.target).val()) {
+          return;
+        }
+
+        let current_code = $(e.target).select2("data")[0]?.isd_code;
+        let current_customer_phone =
+          view_customer_phone || $("#customer_phone").val();
+        let customer_phone_splited = current_customer_phone?.split(" ");
+
+        if (customer_phone_splited?.length > 1) {
+          $("#customer_phone").val(
+            `${current_code} ${customer_phone_splited[1]}`
+          );
+          return;
+        }
+
+        $("#customer_phone").val(current_code + " ");
+      });
 
       function loadCustomerType() {
         $("#customer_type").select2({
