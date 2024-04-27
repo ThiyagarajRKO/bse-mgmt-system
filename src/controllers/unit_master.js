@@ -228,7 +228,6 @@ export const GetDispatches = ({
         include: [
           {
             attributes: [],
-            as: "dis",
             model: models.Dispatches,
             include: [
               {
