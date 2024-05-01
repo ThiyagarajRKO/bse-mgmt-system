@@ -187,6 +187,10 @@
         color: white;
       }
 
+      #tippy-2 .tippy-box {
+        max-width: 400px !important;
+      }
+
       .edit,
       .del {
         cursor: pointer;
@@ -2031,6 +2035,7 @@
         $(".topMenu-item").removeClass("topMenu-item-active");
         $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".salesTopMenu").removeClass("topMenu-item-active");
 
         $(this).addClass("topMenu-item-active");
         $(".productTopMenu").removeClass("topMenu-item-active");
@@ -2104,9 +2109,11 @@
             class="fa-solid fa-users mb-2"></i>Customer</div>
         <div class="topSalesSubMenu-item pricelistMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-barcode mb-2"></i>Price list</div>
+        <div class="topSalesSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i 
+            class="fa-solid fa-dolly mb-2"></i>Carrier</div>
         <div class="topSalesSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-truck-arrow-right" mb-2"></i>Shipping Container</div>
-      </div>`,
+            class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
+        </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -2118,7 +2125,7 @@
         onMount(instance) {
           if (!$(".salesTopMenu").hasClass("topMenu-item-active")) {
             // Resetting Buttons
-            $(".topSubMenu-item").removeClass("topSubMenu-item-active");
+            $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
           }
         },
       });
