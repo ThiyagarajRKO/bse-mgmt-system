@@ -1,6 +1,6 @@
-export const deleteSchema = {
+export const getSchema = {
   schema: {
-    body: {
+    query: {
       type: "object",
       required: ["customer_master_id"],
       properties: {

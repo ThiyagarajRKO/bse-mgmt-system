@@ -1992,6 +1992,284 @@
       </div>
     </div>
     <!-- Customer Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Carrier Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container carrierContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="carrierSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="carrierPanelHeading" class="fw-bold fs-5"
+                >Add Carrier Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeCarrierPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="carrier_name">Carrier Name</label>
+              <input
+                id="carrier_name"
+                class="form-control"
+                type="text"
+                placeholder="eg. Jone"
+                name="carrier_name"
+                required
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_address">Address</label>
+              <textarea
+                id="carrier_address"
+                class="form-control"
+                placeholder="eg. xyz"
+                type="text"
+                name="carrier_address"
+                rows="4"
+              ></textarea>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_country">Country</label>
+              <select
+                class="form-control input-dropdown"
+                id="carrier_country"
+                name="carrier_country"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_phoneno">Phone No</label>
+              <input
+                id="carrier_phone"
+                class="form-control"
+                title="Enter a valid Phone Number"
+                placeholder="eg. 3128601946"
+                type="tel"
+                name="phone"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_email">Email</label>
+              <input
+                id="carrier_email"
+                class="form-control"
+                type="email"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                title="Enter a valid email address"
+                placeholder="eg. xyz@gmail.com"
+                name="carrier_email"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_paymentterms">Payment Terms</label>
+              <input
+                id="carrier_paymentterms"
+                class="form-control"
+                placeholder="eg. payment in 15 days"
+                type="text"
+                name="carrier_paymentterms"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="carrier_credit">Credit Limit</label>
+              <input
+                id="carrier_credit"
+                class="form-control"
+                placeholder="eg. 123222321223"
+                type="text"
+                name="carrier_credit"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitCarrier" class="col-lg-5 btn btn-danger">Save</div>
+              <div
+                id="resetCarrierDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openCarrierPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="carrierTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Address</span></th>
+                <th class="fw-bold"><span>Country</span></th>
+                <th class="fw-bold"><span>Phone</span></th>
+                <th class="fw-bold"><span>Email</span></th>
+                <th class="fw-bold"><span>Payment Terms</span></th>
+                <th class="fw-bold"><span>Credit Limit</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Carrier Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Shipping Container ---------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container shippingContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="shippingSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="shippingPanelHeading" class="fw-bold fs-5"
+                >Add Shipping Data</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeShippingPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group mt-4">
+              <label for="shipping_carrier_code">Carrier Name</label>
+              <select
+                class="form-control input-dropdown"
+                id="shipping_carrier_name"
+                name="shipping_carrier_name"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="shipping_source">Source</label>
+              <input
+                id="shipping_source"
+                class="form-control"
+                placeholder="eg. xyz"
+                type="text"
+                name="shipping_source"
+                rows="4"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="shipping_destination">Destination</label>
+              <input
+                id="shipping_destination"
+                class="form-control"
+                placeholder="eg. xyz"
+                type="text"
+                name="shipping_destination"
+                rows="4"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="shipping_price">Shipping Price</label>
+              <input
+                id="shipping_price"
+                class="form-control"
+                title="Enter a valid Phone Number"
+                placeholder="eg. 3128601946"
+                type="number"
+                name="shipping_price"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="shipping_notes">Notes</label>
+              <input
+                id="shipping_notes"
+                class="form-control"
+                type="text"
+                placeholder="eg. xyz"
+                name="shipping_notes"
+              />
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div id="submitShipping" class="col-lg-5 btn btn-danger">
+                Save
+              </div>
+              <div
+                id="resetShippingDataBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                Clear
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openShippingPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="shippingTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Carrier Code</span></th>
+                <th class="fw-bold"><span>Shipping Source</span></th>
+                <th class="fw-bold"><span>Shipping Destination</span></th>
+                <th class="fw-bold"><span>Price</span></th>
+                <th class="fw-bold"><span>Notes</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Shipping Container Ends -->
   </body>
 
   <script type="text/javascript">
@@ -2109,9 +2387,9 @@
             class="fa-solid fa-users mb-2"></i>Customer</div>
         <div class="topSalesSubMenu-item pricelistMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-barcode mb-2"></i>Price list</div>
-        <div class="topSalesSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i 
+        <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i 
             class="fa-solid fa-dolly mb-2"></i>Carrier</div>
-        <div class="topSalesSubMenu-item containerMenu d-flex flex-column text-center mx-2"><i
+        <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
         </div>`,
         placement: "bottom",
@@ -2175,6 +2453,7 @@
         $("#productSizes").val(null).trigger("change");
         $("#customer_country").val(null).trigger("change");
         $("#customer_type").val(null).trigger("change");
+        $("#carrier_country").val(null).trigger("change");
       }
 
       function openSlidePanel(
@@ -6288,7 +6567,7 @@
         $("#openCustomerPanelBtn").click();
 
         // Changing panel heading
-        $("#CustomerPanelHeading").text("Edit Vendor Data");
+        $("#CustomerPanelHeading").text("Edit Customer Data");
 
         // Changing panel button label
         $("#submitCustomer").text("Update");
@@ -6331,7 +6610,7 @@
                 })
                   .done(function (response) {
                     //loading data to table
-                    loadVendorsTableData();
+                    loadCustomerTableData();
 
                     toastr.success("Customer deleted successfully", "Deleted");
                   })
@@ -6480,6 +6759,357 @@
       }
 
       $("#resetCustomerDataBtn").on("click", resetAllInputs);
+
+      // ---------------------------------------------------------
+      // ------------------------- Carrier ----------------------
+      // ---------------------------------------------------------
+
+      // Open panel
+      $("#openCarrierPanelBtn").click(function () {
+        openSlidePanel(
+          "carrierSlideInPanel",
+          "carrierPanelHeading",
+          "Carrier",
+          "submitCarrier",
+          "carrier_master_id"
+        );
+      });
+
+      // Close panel
+      $("#closeCarrierPanelBtn").click(function () {
+        closeSlidePanel("carrierSlideInPanel");
+      });
+
+      $(document).on("click", ".carrierMenu", function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".carrierContainer").removeClass("d-none");
+        $(".carrierContainer").addClass("d-block");
+
+        loadCarrierDropdowns();
+        loadCarrierTableData();
+      });
+
+      $("#submitCarrier").click(function () {
+        saveCarrier();
+      });
+
+      function loadCarrierDropdowns() {
+        // Pre loading dropdown data
+        loadCarrierCountry();
+      }
+
+      function loadCarrierTableData() {
+        $("#carrierTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/master/carrier/get/all",
+            error: function (xhr, error, code) {
+              $("#carrierTable").DataTable().destroy();
+              $("#carrierTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "carrier_name" },
+            { data: "carrier_address" },
+            { data: "carrier_country" },
+            { data: "carrier_phone" },
+            { data: "carrier_email" },
+            { data: "carrier_paymentterms" },
+            { data: "carrier_credit" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-pen-to-square edit editCarrier" carrier_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this row"></i>'
+                );
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-trash del delCarrier" carrier_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this row"></i>'
+                );
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row["created_at"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          // "infoCallback": function (settings, start, end, max, total, pre) {
+          //   return start + " to " + end;
+          // }
+        });
+      }
+
+      let view_carrier_phone = "";
+      $(document).on("click", ".editCarrier", (e) => {
+        // Changing panel input fields data
+        view_carrier_phone = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
+        $("#carrier_name").val(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+        $("#carrier_address").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+        $("#carrier_country")
+          .val($(e.target).closest("tr").children("td").eq(4).text())
+          .trigger("change");
+
+        $("#carrier_email").val(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+        $("#carrier_paymentterms").val(
+          $(e.target).closest("tr").children("td").eq(7).text()
+        );
+        $("#carrier_credit").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening slide panel
+        $("#openCarrierPanelBtn").click();
+
+        // Changing panel heading
+        $("#CarrierPanelHeading").text("Edit Carrier Data");
+
+        // Changing panel button label
+        $("#submitCarrier").text("Update");
+
+        // Changing panel button attribute
+        $("#submitCarrier").attr(
+          "carrier_master_id",
+          $(e.target).attr("carrier_master_id")
+        );
+      });
+
+      $(document).on("click", ".delCarrier", (e) => {
+        let carrier_master_id = $(e.target).attr("carrier_master_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Carrier?",
+          content: "Are you sure, do you want to remove this carrier?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/v1/master/carrier/delete",
+                  method: "post",
+                  dataType: "json",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                    carrier_master_id,
+                  }),
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadCarrierTableData();
+
+                    toastr.success("Carrier deleted successfully", "Deleted");
+                  })
+                  .fail(function (err) {
+                    if (err["status"] == 420) {
+                      toastr["warning"](err["responseJSON"]["message"]);
+                    } else {
+                      toastr["error"](err["responseJSON"]["message"]);
+                    }
+                  });
+              },
+            },
+            no: function () {
+              toastr.info(" is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      function loadCarrierCountry() {
+        $.ajax({
+          url: "https://restcountries.com/v3.1/all?fields=cca3,name,idd",
+          dataType: "json",
+
+          success: function (data) {
+            $("#carrier_country").select2({
+              placeholder: "Choose a country",
+              allowClear: true,
+              data: $.map(data, function (item) {
+                let suffixes = item?.idd?.suffixes;
+
+                if (suffixes.length > 1) {
+                  suffixes = "";
+                } else {
+                  suffixes = item?.idd?.suffixes[0];
+                }
+                return {
+                  id: item.name.common,
+                  text: item.name.common,
+                  isd_code: `${item?.idd?.root}${suffixes}`,
+                };
+              }),
+            });
+
+            $("#carrier_country").val(null).trigger("change");
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error loading country list:", errorThrown);
+          },
+        });
+      }
+
+      $(document).on("change", "#carrier_country", (e) => {
+        if (!$(e.target).val()) {
+          return;
+        }
+
+        let current_code = $(e.target).select2("data")[0]?.isd_code;
+        let current_carrier_phone =
+          view_carrier_phone || $("#carrier_phone").val();
+        let carrier_phone_splited = current_carrier_phone?.split(" ");
+
+        if (carrier_phone_splited?.length > 1) {
+          $("#carrier_phone").val(
+            `${current_code} ${carrier_phone_splited[1]}`
+          );
+          return;
+        }
+
+        $("#carrier_phone").val(current_code + " ");
+      });
+
+      function saveCarrier() {
+        const carrier_master_id = $("#submitCarrier").attr("carrier_master_id");
+
+        let url = "/api/v1/master/carrier/create";
+        let input_params = {
+          carrier_name: $("#carrier_name").val(),
+          carrier_address: $("#carrier_address").val(),
+          carrier_country: $("#carrier_country").val(),
+          carrier_phone: $("#carrier_phone").val(),
+          carrier_email: $("#carrier_email").val(),
+          carrier_paymentterms: $("#carrier_paymentterms").val(),
+          carrier_credit: $("#carrier_credit").val(),
+        };
+
+        if (carrier_master_id) {
+          url = "/api/v1/master/carrier/update";
+
+          input_params = {
+            carrier_master_id,
+            carrier_master_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        // Load Roles
+        $.ajax({
+          url,
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closeCarrierPanelBtn").click();
+
+            loadCarrierTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetCarrierDataBtn").on("click", resetAllInputs);
     });
   </script>
 </html>
