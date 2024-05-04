@@ -3,7 +3,6 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { GetPrices } from "./handlers/get_prices";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -11,9 +10,8 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
-import { getPricesSchema } from "./schema/get _prices";
 
-export const productMasterRoute = (fastify, opts, done) => {
+export const priceListMasterRoute = (fastify, opts, done) => {
   fastify.post("/create", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -22,6 +20,7 @@ export const productMasterRoute = (fastify, opts, done) => {
 
       reply.code(result.statusCode || 200).send({
         success: true,
+        statusCode: result?.statusCode,
         message: result.message,
         data: result?.data,
       });
@@ -90,25 +89,6 @@ export const productMasterRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/prices", getPricesSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
-
-      const result = await GetPrices(params, req?.session, fastify);
-
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
-    }
-  });
-
   fastify.post("/delete", deleteSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -131,4 +111,4 @@ export const productMasterRoute = (fastify, opts, done) => {
   done();
 };
 
-export default productMasterRoute;
+export default priceListMasterRoute;

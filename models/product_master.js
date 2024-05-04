@@ -37,7 +37,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      // Has-One and Has-Many
       ProductMaster.hasOne(models.ProcurementProducts, {
+        foreignKey: "product_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      ProductMaster.hasMany(models.PriceListMaster, {
         foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

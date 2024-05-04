@@ -50,7 +50,7 @@ export const Update = async (profile_id, id, price_list_master_data) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Customer id must not be empty!",
+          message: "Price List id must not be empty!",
         });
       }
 
@@ -64,7 +64,7 @@ export const Update = async (profile_id, id, price_list_master_data) => {
       if (!price_list_master_data) {
         return reject({
           statusCode: 420,
-          message: "Customer data must not be empty!",
+          message: "Price list data must not be empty!",
         });
       }
 
@@ -96,35 +96,36 @@ export const Get = ({ id }) => {
         });
       }
 
-      const customer = await models.PriceListMaster.findOne({
+      const price_list = await models.PriceListMaster.findOne({
         where: {
           id,
           is_active: true,
         },
       });
 
-      resolve(customer);
+      resolve(price_list);
     } catch (err) {
       reject(err);
     }
   });
 };
 
-export const GetAll = ({ start, length, customer_name, search }) => {
+export const GetAll = ({ start, length, price_list_name, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
 
-      if (customer_name) {
-        where.customer_name = { [Op.iLike]: `%${customer_name}%` };
+      if (price_list_name) {
+        where.price_list_name = { [Op.iLike]: `%${price_list_name}%` };
       }
 
       if (search) {
         where[Op.or] = [
           { price_list_name: { [Op.iLike]: `%${search}%` } },
           { currency: { [Op.iLike]: `%${search}%` } },
+          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
           sequelize.where(
             sequelize.cast(sequelize.col("price_value"), "varchar"),
             {
@@ -134,14 +135,31 @@ export const GetAll = ({ start, length, customer_name, search }) => {
         ];
       }
 
-      const customers = await models.PriceListMaster.findAndCountAll({
+      const price_lists = await models.PriceListMaster.findAndCountAll({
+        attributes: [
+          "id",
+          "price_list_name",
+          "currency",
+          "price_value",
+          "product_master_id",
+          "created_at",
+        ],
+        include: [
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(customers);
+      resolve(price_lists);
     } catch (err) {
       reject(err);
     }
