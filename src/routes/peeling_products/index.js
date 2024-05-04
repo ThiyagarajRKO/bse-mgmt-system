@@ -3,7 +3,6 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { BulkCreateOrUpdate } from "./handlers/create-upsert";
 import { GetNames } from "./handlers/get_names";
 
 // Schema
@@ -12,7 +11,6 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
-import { bulkCreateOrUpdateSchema } from "./schema/create-upsert";
 import { getNamesSchema } from "./schema/get_names";
 
 export const peelingProductRoute = (fastify, opts, done) => {
@@ -21,25 +19,6 @@ export const peelingProductRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
       const result = await Create(params, req?.session, fastify);
-
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
-    }
-  });
-
-  fastify.post("/upsert/bulk", bulkCreateOrUpdateSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
-
-      const result = await BulkCreateOrUpdate(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,

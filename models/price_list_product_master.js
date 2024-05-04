@@ -1,49 +1,51 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class PriceListMaster extends Model {
+  class PriceListProductMaster extends Model {
     static associate(models) {
-      PriceListMaster.belongsTo(models.UserProfiles, {
+      PriceListProductMaster.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PriceListMaster.belongsTo(models.UserProfiles, {
+      PriceListProductMaster.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      PriceListMaster.belongsTo(models.UserProfiles, {
+      PriceListProductMaster.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      // Has Many
-      PriceListMaster.hasMany(models.PriceListProductMaster, {
+      PriceListProductMaster.belongsTo(models.PriceListMaster, {
         foreignKey: "price_list_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      PriceListProductMaster.belongsTo(models.ProductMaster, {
+        foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  PriceListMaster.init(
+  PriceListProductMaster.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      price_list_name: {
-        type: DataTypes.TEXT,
-      },
-      currency: {
-        type: DataTypes.TEXT,
+      price_value: {
+        type: DataTypes.FLOAT,
       },
       is_active: {
         type: DataTypes.BOOLEAN,
@@ -60,8 +62,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "PriceListMaster",
-      tableName: "price_list_master",
+      modelName: "PriceListProductMaster",
+      tableName: "price_list_product_master",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -70,8 +72,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  // Bulk Create Hook
+  PriceListProductMaster.beforeBulkCreate(async (data, options) => {
+    try {
+      data?.map((item) => {
+        item.is_active = true;
+
+        item.created_by = options?.profile_id;
+      });
+    } catch (err) {
+      console.log(
+        "Error while appending an price list products data",
+        err?.message || err
+      );
+    }
+  });
+
   // Create Hook
-  PriceListMaster.beforeCreate(async (data, options) => {
+  PriceListProductMaster.beforeCreate(async (data, options) => {
     try {
       data.created_by = options.profile_id;
     } catch (err) {
@@ -83,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Update Hook
-  PriceListMaster.beforeUpdate(async (data, options) => {
+  PriceListProductMaster.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
@@ -93,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Delete Hook
-  PriceListMaster.afterDestroy(async (data, options) => {
+  PriceListProductMaster.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
@@ -104,5 +122,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  return PriceListMaster;
+  return PriceListProductMaster;
 };

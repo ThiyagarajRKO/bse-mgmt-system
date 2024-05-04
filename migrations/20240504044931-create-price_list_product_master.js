@@ -1,23 +1,31 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("price_list_master", {
+    await queryInterface.createTable("price_list_product_master", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      price_list_name: {
-        type: Sequelize.TEXT,
+      price_list_master_id: {
+        type: Sequelize.UUID,
         allowNull: false,
-      },
-      currency: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "price_list_master" },
+          key: "id",
+        },
       },
       product_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "product_master" },
+          key: "id",
+        },
       },
       price_value: {
         type: Sequelize.FLOAT,
@@ -68,6 +76,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("price_list_master");
+    await queryInterface.dropTable("price_list_product_master");
   },
 };
