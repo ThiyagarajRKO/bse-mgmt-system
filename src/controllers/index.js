@@ -19,6 +19,7 @@ export * as DriverMaster from "./driver_master";
 export * as CustomerMaster from "./customer_master";
 export * as CarrierMaster from "./carrier_master";
 export * as PriceListMaster from "./price_list_master";
+export * as PriceListProductMaster from "./price_list_product_master";
 export * as ModuleMasters from "./module_master";
 export * as AuditLogs from "./audit_logs";
 export * as Dispatches from "./dispatches";

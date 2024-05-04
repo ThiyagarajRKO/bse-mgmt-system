@@ -1,4 +1,4 @@
-import { PriceListMaster } from "../../../controllers";
+import { PriceListMaster, PriceListProductMaster } from "../../../controllers";
 
 export const Update = (
   { profile_id, price_list_master_id, price_list_master_data },
@@ -14,6 +14,11 @@ export const Update = (
       );
 
       if (updated_data?.[0] > 0) {
+        await PriceListProductMaster.BulkUpsert(
+          profile_id,
+          price_list_master_data?.PriceListProductMasters
+        ).catch(console.log);
+
         return resolve({
           message: "Price list master has been updated successfully",
         });
@@ -24,7 +29,6 @@ export const Update = (
         message: "Price List master didn't update",
       });
     } catch (err) {
-      fastify.log.error(err);
       reject(err);
     }
   });

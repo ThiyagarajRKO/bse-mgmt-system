@@ -91,6 +91,7 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PriceListProductMaster.beforeCreate(async (data, options) => {
     try {
+      data.is_active = true;
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(

@@ -6,7 +6,7 @@ export const createSchema = {
       properties: {
         price_list_name: { type: "string" },
         currency: { type: "string" },
-        PriceListProductMaster: { type: "array" },
+        PriceListProductMasters: { type: "array" },
       },
     },
   },

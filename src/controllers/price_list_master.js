@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (
   profile_id,
@@ -209,6 +209,38 @@ export const Delete = ({ profile_id, id }) => {
         },
         individualHooks: true,
         profile_id,
+      });
+
+      resolve(price_list);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const CheckName = ({ price_list_name }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!price_list_name) {
+        return reject({
+          statusCode: 420,
+          message: "Price List Master name field must not be empty!",
+        });
+      }
+
+      const price_list = await models.PriceListMaster.findOne({
+        attributes: ["id"],
+        where: {
+          is_active: true,
+          [Op.and]: [
+            sequelize.where(
+              sequelize.fn("LOWER", sequelize.col("price_list_name")),
+              {
+                [Op.eq]: price_list_name.toLowerCase(),
+              }
+            ),
+          ],
+        },
       });
 
       resolve(price_list);

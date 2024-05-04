@@ -191,6 +191,7 @@
         max-width: 400px !important;
       }
 
+      .view,
       .edit,
       .del {
         cursor: pointer;
@@ -2037,6 +2038,15 @@
             </div>
 
             <div class="form-group my-3">
+              <label for="priceList_product">Product Name</label>
+              <select
+                class="form-control input-dropdown"
+                id="priceList_product"
+                name="priceList_product"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
               <label for="priceList_value">Amount</label>
               <input
                 id="priceList_value"
@@ -2046,15 +2056,6 @@
                 name="priceList_value"
                 required
               />
-            </div>
-
-            <div class="form-group my-3">
-              <label for="priceList_product">Product Name</label>
-              <select
-                class="form-control input-dropdown"
-                id="priceList_product"
-                name="priceList_product"
-              ></select>
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
@@ -2496,7 +2497,7 @@
             class="fa-solid fa-users mb-2"></i>Customer</div>
         <div class="topSalesSubMenu-item priceListMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-barcode mb-2"></i>Price list</div>
-        <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i 
+        <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-dolly mb-2"></i>Carrier</div>
         <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
@@ -2566,6 +2567,8 @@
         $("#productSizes").val(null).trigger("change");
         $("#customer_country").val(null).trigger("change");
         $("#customer_type").val(null).trigger("change");
+        $("#priceList_currency").val(null).trigger("change");
+        $("#priceList_product").val(null).trigger("change");
         $("#carrier_country").val(null).trigger("change");
         $("#shipping_carrier_name").val(null).trigger("change");
       }
@@ -6892,6 +6895,10 @@
       // Close panel
       $("#closePriceListPanelBtn").click(function () {
         closeSlidePanel("priceListSlideInPanel");
+
+        $("#submitPriceList").attr("price_list_master_id", null);
+
+        $("#submitPriceList").attr("price_list_product_master_id", null);
       });
 
       $(document).on("click", ".priceListMenu", function () {
@@ -6928,7 +6935,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/product/get/prices",
+            url: "/api/v1/master/pricelist/get/all",
             error: function (xhr, error, code) {
               $("#priceListTable").DataTable().destroy();
               $("#priceListTable").DataTable({
@@ -6952,7 +6959,7 @@
           },
           columns: [
             { data: null },
-            { data: "product_name_list" },
+            { data: "price_list_name" },
             { data: "currency" },
             { data: null },
           ],
@@ -6961,24 +6968,21 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-eye view viewPriceList" product_master_id='${
+                return `<i class="fa fa-eye view viewPriceList" price_list_master_id='${
                   row["id"]
-                }' price_list_data='${JSON.stringify(
-                  row["PriceListMasters"]
+                }' price_list_product_data='${JSON.stringify(
+                  row["PriceListProductMasters"]
                 )}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view price list"></i>`;
               },
             },
             {
-              targets: [2],
+              targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return row["PriceListMasters"]?.length;
+                return row["PriceListProductMasters"]?.length;
               },
             },
           ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
         });
       }
 
@@ -6994,7 +6998,9 @@
           // Open this row
           row
             .child(
-              formatPriceListChildTable($(e.target).attr("price_list_data"))
+              formatPriceListChildTable(
+                $(e.target).attr("price_list_product_data")
+              )
             )
             .show();
           // $(e.target).text("Hide");
@@ -7008,13 +7014,15 @@
 
         JSON.parse(product_data)?.forEach((row) => {
           html_content += `<tr>
-                            <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_master_id='${
+                            <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_product_master_id='${
                               row["id"]
                             }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit price list"></i></td>
-                            <td><i class="fa fa-trash del delPriceList" price_list_master_id='${
+                            <td><i class="fa fa-trash del delPriceList" price_list_product_master_id='${
                               row["id"]
                             }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete price list"></i></td>
-                            <td>${row?.price_list_name}</td>
+                            <td product_master_id='${row?.ProductMaster?.id}'>${
+            row?.ProductMaster?.product_name
+          }</td>
                             <td>${row?.price_value}</td>
                             <td>${formatDate(
                               new Date(row?.created_at),
@@ -7039,21 +7047,45 @@
 
       $(document).on("click", ".editPriceList", (e) => {
         // Changing panel input fields data
+        let currentRowPosition =
+          $(e.target).parents("tr").parents("tr").index() - 1;
 
-        $("#priceList_name").val(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-
-        $("#priceList_currency")
-          .val($(e.target).closest("tr").children("td").eq(3).text())
+        $("#priceList_product")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(2)
+              .attr("product_master_id")
+          )
           .trigger("change");
 
         $("#priceList_value").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
+          $(e.target).closest("tr").children("td").eq(3).text()
         );
 
-        $("#priceList_product")
-          .val($(e.target).closest("tr").children("td").eq(4).text())
+        $("#priceList_name").val(
+          $(e.target)
+            .parents("#priceListTable")
+            .find("tbody")
+            .find("tr")
+            .eq(currentRowPosition)
+            .find("td")
+            .eq(1)
+            .text()
+        );
+
+        $("#priceList_currency")
+          .val(
+            $(e.target)
+              .parents("#priceListTable")
+              .find("tbody")
+              .find("tr")
+              .eq(currentRowPosition)
+              .find("td")
+              .eq(2)
+              .text()
+          )
           .trigger("change");
 
         // Opening slide panel
@@ -7068,7 +7100,20 @@
         // Changing panel button attribute
         $("#submitPriceList").attr(
           "price_list_master_id",
-          $(e.target).attr("price_list_master_id")
+          $(e.target)
+            .parents("#priceListTable")
+            .find("tbody")
+            .find("tr")
+            .eq(currentRowPosition)
+            .find("td")
+            .eq(0)
+            .find("i")
+            .attr("price_list_master_id")
+        );
+
+        $("#submitPriceList").attr(
+          "price_list_product_master_id",
+          $(e.target).attr("price_list_product_master_id")
         );
       });
 
@@ -7192,16 +7237,26 @@
           "price_list_master_id"
         );
 
-        let url = "/api/v1/master/priceList/create";
+        const price_list_product_master_id = $("#submitPriceList").attr(
+          "price_list_product_master_id"
+        );
+
+        let url = "/api/v1/master/pricelist/create";
         let input_params = {
           price_list_name: $("#priceList_name").val(),
           currency: $("#priceList_currency").val(),
-          price_value: $("#priceList_value").val(),
-          product_master_id: $("#priceList_product").val(),
+          PriceListProductMasters: [
+            {
+              id: price_list_product_master_id,
+              price_list_master_id,
+              price_value: $("#priceList_value").val(),
+              product_master_id: $("#priceList_product").val(),
+            },
+          ],
         };
 
         if (price_list_master_id) {
-          url = "/api/v1/master/priceList/update";
+          url = "/api/v1/master/pricelist/update";
 
           input_params = {
             price_list_master_id,
