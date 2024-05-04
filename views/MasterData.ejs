@@ -2454,6 +2454,7 @@
         $("#customer_country").val(null).trigger("change");
         $("#customer_type").val(null).trigger("change");
         $("#carrier_country").val(null).trigger("change");
+        $("#shipping_carrier_name").val(null).trigger("change");
       }
 
       function openSlidePanel(
@@ -7110,6 +7111,340 @@
       }
 
       $("#resetCarrierDataBtn").on("click", resetAllInputs);
+
+      // ---------------------------------------------------------
+      // ------------------------ Shipping -----------------------
+      // ---------------------------------------------------------
+
+      // Open panel
+      $("#openShippingPanelBtn").click(function () {
+        openSlidePanel(
+          "shippingSlideInPanel",
+          "shippingPanelHeading",
+          "Shipping",
+          "submitShipping",
+          "shipping_master_id"
+        );
+      });
+
+      // Close panel
+      $("#closeShippingPanelBtn").click(function () {
+        closeSlidePanel("shippingSlideInPanel");
+      });
+
+      $(document).on("click", ".shippingMenu", function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".shippingContainer").removeClass("d-none");
+        $(".shippingContainer").addClass("d-block");
+
+        loadShippingDropdown();
+        loadShippingTableData();
+      });
+
+      $("#submitShipping").click(function () {
+        saveShipping();
+      });
+
+      function loadShippingDropdown() {
+        loadShippingCarrier();
+      }
+
+      function loadShippingTableData() {
+        $("#shippingTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/master/shipping/get/all",
+            error: function (xhr, error, code) {
+              $("#shippingTable").DataTable().destroy();
+              $("#shippingTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "shipping_carrier_name" },
+            { data: "shipping_source" },
+            { data: "shipping_destination" },
+            { data: "shipping_price" },
+            { data: "shipping_notes" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-pen-to-square edit editShipping" shipping_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this row"></i>'
+                );
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-trash del delShipping" shipping_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this row"></i>'
+                );
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span carrier_master_id='${row["CarrierMasterMaster"].id}'>${data}</span>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row["created_at"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          // "infoCallback": function (settings, start, end, max, total, pre) {
+          //   return start + " to " + end;
+          // }
+        });
+      }
+
+      $(document).on("click", ".editShipping", (e) => {
+        // Changing panel input fields data
+        $("#shippingCarrier")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(3)
+              .find("span")
+              .attr("carrier_master_id")
+          )
+          .trigger("change");
+        $("#shipping_source").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+        $("#shipping_destination").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+        $("#shipping_price").val(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+        $("#shipping_notes").val(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        // Opening Slied Panel
+        $("#openShippingPanelBtn").click();
+
+        // Changing panel heading
+        $("#shippingPanelHeading").text("Edit Shipping Data");
+
+        // Changing panel button label
+        $("#submitShipping").text("Update");
+
+        // Changing panel button attribute
+        $("#submitShipping").attr(
+          "shipping_master_id",
+          $(e.target).attr("shipping_master_id")
+        );
+      });
+
+      $(document).on("click", ".delShipping", (e) => {
+        let shipping_master_id = $(e.target).attr("shipping_master_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Shipping info?",
+          content: "Are you sure, do you want to remove this shipping info?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/v1/master/shipping/delete",
+                  method: "post",
+                  dataType: "json",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                    species_master_id,
+                  }),
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadShippingTableData();
+
+                    toastr.success(
+                      "Shipping info deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (err) {
+                    if (err["status"] == 420) {
+                      toastr["warning"](err["responseJSON"]["message"]);
+                    } else {
+                      toastr["error"](err["responseJSON"]["message"]);
+                    }
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Shipping info is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      function loadShippingCarrier() {
+        // Load Roles
+        $.ajax({
+          url: "/api/v1/master/carrier/get/all",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            // Loading data
+            $("#shippingCarrier").select2({
+              placeholder: "Choose a carrier company",
+              allowClear: true,
+              data: $.map(data?.data?.rows, function (item) {
+                return {
+                  id: item.id,
+                  text: item.carrier_name,
+                };
+              }),
+            });
+
+            // Clearing selected value
+            $("#shippingCarrier").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      function saveShipping() {
+        const shipping_master_id =
+          $("#submitShipping").attr("shipping_master_id");
+
+        let url = "/api/v1/master/shipping/create";
+        let input_params = {
+          carrier_master_id: $("#shippingCarrier").val(),
+          shipping_source: $("#shipping_source").val(),
+          shipping_destination: $("#shipping_destination").val(),
+          shipping_price: $("#shipping_price").val(),
+          shipping_notes: $("#shipping_notes").val(),
+        };
+
+        if (species_master_id) {
+          url = "/api/v1/master/shipping/update";
+
+          input_params = {
+            shipping_master_id,
+            shipping_master_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url,
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closeShippingPanelBtn").click();
+
+            loadShippingTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetShippingDataBtn").on("click", resetAllInputs);
     });
   </script>
 </html>
