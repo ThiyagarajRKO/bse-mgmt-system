@@ -124,7 +124,7 @@ module.exports = (sequelize, DataTypes) => {
       data.procurement_totalamount =
         data.procurement_quantity * data.procurement_price;
 
-      if (adjusted_quantity && data.adjusted_price)
+      if (data.adjusted_quantity && data.adjusted_price)
         data.procurement_totalamount =
           data.adjusted_quantity * data.adjusted_price;
 

@@ -28,7 +28,7 @@ import { getProcurementPerformanceByVendorsSchema } from "./schema/charts/chart_
 import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
-  fastify.post("/create", createSchema, async (req, reply) => {
+  fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -47,7 +47,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/update", updateSchema, async (req, reply) => {
+  fastify.put("/", updateSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -66,9 +66,9 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get", getSchema, async (req, reply) => {
+  fastify.get("/:procurement_product_id", getSchema, async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
+      const params = { profile_id: req?.token_profile_id, ...req.params };
 
       const result = await Get(params, req?.session, fastify);
 
@@ -85,7 +85,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/all", getAllSchema, async (req, reply) => {
+  fastify.get("/", getAllSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -104,7 +104,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/names/all", getNamesSchema, async (req, reply) => {
+  fastify.get("/names", getNamesSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -123,9 +123,9 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/delete", deleteSchema, async (req, reply) => {
+  fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await Delete(params, req?.session, fastify);
 

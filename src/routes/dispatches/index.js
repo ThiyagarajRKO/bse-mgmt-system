@@ -14,7 +14,7 @@ import { deleteSchema } from "./schema/delete";
 import { getProductNamesSchema } from "./schema/get_product_names";
 
 export const dispatchRoute = (fastify, opts, done) => {
-  fastify.post("/create", createSchema, async (req, reply) => {
+  fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -33,7 +33,7 @@ export const dispatchRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/update", updateSchema, async (req, reply) => {
+  fastify.put("/", updateSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -52,9 +52,9 @@ export const dispatchRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get", getSchema, async (req, reply) => {
+  fastify.get("/:dispatch_id", getSchema, async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
+      const params = { profile_id: req?.token_profile_id, ...req.params };
 
       const result = await Get(params, req?.session, fastify);
 
@@ -71,7 +71,7 @@ export const dispatchRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/all", getAllSchema, async (req, reply) => {
+  fastify.get("/", getAllSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -90,30 +90,26 @@ export const dispatchRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get(
-    "/get/product/names/all",
-    getProductNamesSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/names", getProductNamesSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetProductNames(params, req?.session, fastify);
+      const result = await GetProductNames(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
-  fastify.post("/delete", deleteSchema, async (req, reply) => {
+  fastify.delete("/delete", deleteSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 

@@ -1,6 +1,6 @@
 export const getSchema = {
   schema: {
-    query: {
+    params: {
       type: "object",
       required: ["peeled_dispatch_id"],
       properties: {

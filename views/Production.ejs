@@ -1894,7 +1894,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/dispatch",
+            url: "/api/v1/procurement/lot/stats/dispatch",
             error: function (xhr, error, code) {
               $("#dispatchTable").DataTable().destroy();
               $("#dispatchTable").DataTable({ scrollX: true, ordering: false });
@@ -2043,7 +2043,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/dispatch/get/all?procurement_lot_id=${lot_no}`,
+            url: `/api/v1/dispatch?procurement_lot_id=${lot_no}`,
             error: function (xhr, error, code) {
               $("#dispatchProductTable").DataTable().destroy();
               $("#dispatchProductTable").DataTable({
@@ -2093,9 +2093,9 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span procurement_product_id='${row["pp"]?.id
-                  }'>${row["ProcurementProduct"]?.["ProductMaster"]?.product_name
-                  }-${row["ProcurementProduct"]?.procurement_product_type}-${row[
-                    "ProcurementProduct"
+                  }'>${row["pp"]?.["ProductMaster"]?.product_name
+                  }-${row["pp"]?.procurement_product_type}-${row[
+                    "pp"
                   ]?.["VendorMaster"]?.vendor_name?.replaceAll(" ", "")}</i>`;
               },
             },
@@ -2256,7 +2256,7 @@
 
       function loadLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/lots/all`,
+          url: `/api/v1/procurement/lot/lots`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2307,7 +2307,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/get/names/all?procurement_lot_id=${lot_no}&dispatch_id=${view_dispatch_id || null
+          url: `/api/v1/procurement/product/names?procurement_lot_id=${lot_no}&dispatch_id=${view_dispatch_id || null
             }`,
           method: "GET",
           dataType: "json",
@@ -2504,7 +2504,8 @@
           return;
         }
 
-        let url = "/api/v1/dispatch/create";
+        let url = "/api/v1/dispatch";
+        let method = "POST"
         let input_params = {
           procurement_product_id: $("#productNames").val(),
           unit_master_id: $("#destinationLocation").val(),
@@ -2516,7 +2517,8 @@
         };
 
         if (dispatch_id && dispatch_id != "null") {
-          url = "/api/v1/dispatch/update";
+          url = "/api/v1/dispatch";
+          method = "PUT"
 
           input_params = {
             dispatch_id,
@@ -2528,7 +2530,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -2730,7 +2732,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/peeling",
+            url: "/api/v1/procurement/lot/stats/peeling",
             error: function (xhr, error, code) {
               $("#peelingTable").DataTable().destroy();
               $("#peelingTable").DataTable({ scrollX: true, ordering: false });
@@ -2902,7 +2904,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/peeling/get/all?procurement_lot_id=${procurement_lot_id}`,
+            url: `/api/v1/peeling?procurement_lot_id=${procurement_lot_id}`,
             error: function (xhr, error, code) {
               $("#peelingProductTable").DataTable().destroy();
               $("#peelingProductTable").DataTable({
@@ -3191,7 +3193,7 @@
 
       function loadPeelingLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/lots/dispatch/all`,
+          url: `/api/v1/procurement/lot/lots/dispatch`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3308,8 +3310,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/dispatch/get/product/names/all?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${$("#submitPeeling").attr("peeling_id") || null
-            }`,
+          url: `/api/v1/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${$("#submitPeeling").attr("peeling_id") || null}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3528,7 +3529,8 @@
           }
         });
 
-        let url = "/api/v1/peeling/create";
+        let url = "/api/v1/peeling";
+        let method= "POST"
         let input_params = {
           dispatch_id: $("#rawMaterials").val(),
           product_master_id: $(".peelingProductNames").val(),
@@ -3539,7 +3541,8 @@
         };
 
         if (peeling_id && peeling_id != "null") {
-          url = "/api/v1/peeling/update";
+          url = "/api/v1/peeling";
+          method = "PUT"
 
           input_params = {
             peeling_id,
@@ -3558,7 +3561,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -3658,7 +3661,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/peeled/dispatch",
+            url: "/api/v1/procurement/lot/stats/peeled/dispatch",
             error: function (xhr, error, code) {
               $("#peeledDispatchTable").DataTable().destroy();
               $("#peeledDispatchTable").DataTable({
@@ -3815,7 +3818,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/peeled/dispatch/get/all?procurement_lot_id=${lot_no}`,
+            url: `/api/v1/peeled/dispatch?procurement_lot_id=${lot_no}`,
             error: function (xhr, error, code) {
               $("#peeledDispatchProductTable").DataTable().destroy();
               $("#peeledDispatchProductTable").DataTable({
@@ -4045,7 +4048,7 @@
 
       function loadPeeledLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/lots/peeled/all`,
+          url: `/api/v1/procurement/lot/lots/peeled`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4106,7 +4109,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/peeling/product/get/names/all?procurement_lot_id=${lot_no}&peeled_dispatch_id=${view_peeled_dispatch_id || null
+          url: `/api/v1/peeling/product/names?procurement_lot_id=${lot_no}&peeled_dispatch_id=${view_peeled_dispatch_id || null
             }`,
           method: "GET",
           dataType: "json",
@@ -4307,7 +4310,8 @@
           return;
         }
 
-        let url = "/api/v1/peeled/dispatch/create";
+        let url = "/api/v1/peeled/dispatch";
+        let method = "POST"
         let input_params = {
           peeled_product_id: $("#peeledProductNames").val(),
           unit_master_id: $("#distributionLocation").val(),
@@ -4320,7 +4324,8 @@
 
         if (peeled_dispatch_id && peeled_dispatch_id != "null") {
           //if (peeled_product_id && peeled_product_id != "null") {
-          url = "/api/v1/peeled/dispatch/update";
+          url = "/api/v1/peeled/dispatch";
+          method = "PUT"
 
           input_params = {
             peeled_dispatch_id,
@@ -4332,7 +4337,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -4435,7 +4440,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/packing",
+            url: "/api/v1/procurement/lot/stats/packing",
             error: function (xhr, error, code) {
               $("#packingTable").DataTable().destroy();
               $("#packingTable").DataTable({
@@ -4594,7 +4599,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/packing/get/all?procurement_lot_id=${packing_lot_no}`,
+            url: `/api/v1/packing?procurement_lot_id=${packing_lot_no}`,
             error: function (xhr, error, code) {
               $("#packingProductTable").DataTable().destroy();
               $("#packingProductTable").DataTable({
@@ -4820,7 +4825,7 @@
 
       function loadPackingLotNumber() {
         $.ajax({
-          url: `/api/v1/procurement/lot/get/lots/packing/all`,
+          url: `/api/v1/procurement/lot/lots/packing`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4875,7 +4880,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/peeled/dispatch/get/product/names/all?procurement_lot_id=${packing_lot_no}&packing_id=${view_packing_id || null
+          url: `/api/v1/peeled/dispatch/names?procurement_lot_id=${packing_lot_no}&packing_id=${view_packing_id || null
             }`,
           method: "GET",
           dataType: "json",
@@ -5127,7 +5132,8 @@
           return;
         }
 
-        let url = "/api/v1/packing/create";
+        let url = "/api/v1/packing";
+        let method = "POST"
         let input_params = {
           peeled_dispatch_id: $("#packingProductNames").val(),
           packing_quantity: $("#packing_quantity").val(),
@@ -5140,7 +5146,8 @@
 
         if (packing_id && packing_id != "null") {
           //if (peeled_product_id && peeled_product_id != "null") {
-          url = "/api/v1/packing/update";
+          url = "/api/v1/packing";
+          method = "PUT"
 
           input_params = {
             packing_id,
@@ -5152,7 +5159,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),

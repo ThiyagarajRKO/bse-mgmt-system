@@ -1804,7 +1804,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/get/stats/all",
+            url: "/api/v1/procurement/lot/stats",
             error: function (xhr, error, code) {
               $("#procurementTable").DataTable().destroy();
               $("#procurementTable").DataTable({
@@ -1973,13 +1973,10 @@
                 btnClass: "btn-red",
                 action: function () {
                   $.ajax({
-                    url: "/api/v1/procurement/product/delete",
-                    method: "post",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify({
+                    url:
+                      "/api/v1/procurement/product?procurement_id=" +
                       procurement_id,
-                    }),
+                    method: "delete",
                   })
                     .done(function (response) {
                       //loading data to table
@@ -2022,7 +2019,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product/get/all?procurement_lot=${lot_no}`,
+            url: `/api/v1/procurement/product?procurement_lot=${lot_no}`,
             error: function (xhr, error, code) {
               $("#procurementProductTable").DataTable().destroy();
               $("#procurementProductTable").DataTable({
@@ -2319,7 +2316,8 @@
           "procurement_product_id"
         );
 
-        let url = "/api/v1/procurement/product/create";
+        let url = "/api/v1/procurement/product";
+        let method = "POST";
         let input_params = {
           procurement_date: $("#procurement_date").val(),
           unit_master_id: $("#procurement_unit").val(),
@@ -2337,8 +2335,8 @@
             return;
           }
 
-          url = "/api/v1/procurement/product/update";
-
+          url = "/api/v1/procurement/product";
+          method = "PUT";
           input_params = {
             procurement_product_id,
             procurement_product_data: {
@@ -2350,7 +2348,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -2407,7 +2405,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/product/get/all",
+            url: "/api/v1/procurement/product",
             error: function (xhr, error, code) {
               $("#adjustmentTable").DataTable().destroy();
               $("#adjustmentTable").DataTable({
@@ -2426,7 +2424,7 @@
             },
           },
           columns: [
-            { data: "ProcurementLot.procurement_lot" },
+            { data: "pl.procurement_lot" },
             { data: "ProductMaster.product_name" },
             { data: "procurement_quantity" },
             { data: "adjusted_quantity" },
@@ -2620,8 +2618,8 @@
         };
 
         $.ajax({
-          url: "/api/v1/procurement/product/update",
-          method: "POST",
+          url: "/api/v1/procurement/product",
+          method: "PUT",
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),

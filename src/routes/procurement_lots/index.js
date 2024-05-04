@@ -31,7 +31,7 @@ import { getPackingLotsSchema } from "./schema/get_packing_lots";
 import { getPackingStatsSchema } from "./schema/get_packing_stats";
 
 export const procurementLotsRoute = (fastify, opts, done) => {
-  fastify.post("/create", createSchema, async (req, reply) => {
+  fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -50,7 +50,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/update", updateSchema, async (req, reply) => {
+  fastify.put("/", updateSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -69,9 +69,9 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get", getSchema, async (req, reply) => {
+  fastify.get("/:procurement_lot_id", getSchema, async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
+      const params = { profile_id: req?.token_profile_id, ...req.params };
 
       const result = await Get(params, req?.session, fastify);
 
@@ -107,7 +107,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/delete", deleteSchema, async (req, reply) => {
+  fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -126,7 +126,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/get/all", getAllSchema, async (req, reply) => {
+  fastify.get("/", getAllSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -149,7 +149,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
   // ------------------------------ Lots ----------------------------------
   // ----------------------------------------------------------------------
 
-  fastify.get("/get/lots/all", getStatsSchema, async (req, reply) => {
+  fastify.get("/lots", getStatsSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -168,80 +168,68 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get(
-    "/get/lots/dispatch/all",
-    getDispatchLotsSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/lots/dispatch", getDispatchLotsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetDispatchLots(params, req?.session, fastify);
+      const result = await GetDispatchLots(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
-  fastify.get(
-    "/get/lots/peeled/all",
-    getPeeledLotsSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/lots/peeled", getPeeledLotsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetPeeledLots(params, req?.session, fastify);
+      const result = await GetPeeledLots(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
-  fastify.get(
-    "/get/lots/packing/all",
-    getPackingLotsSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/lots/packing", getPackingLotsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetPackingLots(params, req?.session, fastify);
+      const result = await GetPackingLots(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
   // ----------------------------------------------------------------------
   // ------------------------------- Stats --------------------------------
   // ----------------------------------------------------------------------
 
-  fastify.get("/get/stats/all", getStatsSchema, async (req, reply) => {
+  fastify.get("/stats", getStatsSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -260,54 +248,46 @@ export const procurementLotsRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get(
-    "/get/stats/dispatch",
-    getDispatchStatsSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/stats/dispatch", getDispatchStatsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetDispatchStats(params, req?.session, fastify);
+      const result = await GetDispatchStats(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
-  fastify.get(
-    "/get/stats/peeling",
-    getPeelingStatsSchema,
-    async (req, reply) => {
-      try {
-        const params = { profile_id: req?.token_profile_id, ...req.query };
+  fastify.get("/stats/peeling", getPeelingStatsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetPeelingStats(params, req?.session, fastify);
+      const result = await GetPeelingStats(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
-          success: true,
-          message: result.message,
-          data: result?.data,
-        });
-      } catch (err) {
-        reply.code(err?.statusCode || 400).send({
-          success: false,
-          message: err?.message || err,
-        });
-      }
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
-  );
+  });
 
   fastify.get(
-    "/get/stats/peeled/dispatch",
+    "/stats/peeled/dispatch",
     { schema: getPeeledDispatchStatsSchema },
     async (req, reply) => {
       try {
@@ -334,7 +314,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
   );
 
   fastify.get(
-    "/get/stats/packing",
+    "/stats/packing",
     { schema: getPackingStatsSchema },
     async (req, reply) => {
       try {

@@ -1,6 +1,6 @@
 export const getSchema = {
   schema: {
-    query: {
+    params: {
       type: "object",
       required: ["procurement_lot_id"],
       properties: {
