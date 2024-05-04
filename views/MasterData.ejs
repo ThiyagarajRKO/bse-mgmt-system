@@ -7118,7 +7118,9 @@
       });
 
       $(document).on("click", ".delPriceList", (e) => {
-        let price_list_master_id = $(e.target).attr("price_list_master_id");
+        let price_list_product_master_id = $(e.target).attr(
+          "price_list_product_master_id"
+        );
         $.confirm({
           title: "Delete PriceList?",
           content: "Are you sure, do you want to remove this priceList?",
@@ -7137,13 +7139,8 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/priceList/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    price_list_master_id,
-                  }),
+                  url: `/api/v1/master/pricelist/product?price_list_product_master_id=${price_list_product_master_id}`,
+                  method: "delete",
                 })
                   .done(function (response) {
                     //loading data to table

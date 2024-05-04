@@ -43,7 +43,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Price List ID field must not be empty!",
+          message: "Price list product master id field must not be empty!",
         });
       }
 
