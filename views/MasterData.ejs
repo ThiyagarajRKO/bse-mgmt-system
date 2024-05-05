@@ -7907,8 +7907,8 @@
         };
 
         if (shipping_master_id) {
-          url = "/api/v1/master/shipping/update";
-
+          url = "/api/v1/master/shipping";
+          method = "PUT";
           input_params = {
             shipping_master_id,
             shipping_master_data: {
