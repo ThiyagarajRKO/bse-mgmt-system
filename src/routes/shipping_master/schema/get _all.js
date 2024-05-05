@@ -6,8 +6,7 @@ export const getAllSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
-        carrier_name: { type: "string" },
-        carrier_country: { type: "string" },
+        carrier_master_id: { type: "string" },
         "search[value]": { type: "string" },
       },
     },

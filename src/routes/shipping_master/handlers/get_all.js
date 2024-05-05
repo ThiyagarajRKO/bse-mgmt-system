@@ -1,22 +1,21 @@
-import { CarrierMaster } from "../../../controllers";
+import { ShippingMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, carrier_name, "search[value]": search },
+  { start, length, carrier_master_id, "search[value]": search },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Creating User
-      let carrier_master = await CarrierMaster.GetAll({
+      let shipping_master = await ShippingMaster.GetAll({
         start,
         length,
-        carrier_name,
-        carrier_country,
+        carrier_master_id,
         search,
       });
 
-      if (!carrier_master) {
+      if (!shipping_master) {
         return reject({
           statusCode: 420,
           message: "No data found!",
@@ -24,7 +23,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: carrier_master,
+        data: shipping_master,
       });
     } catch (err) {
       fastify.log.error(err);

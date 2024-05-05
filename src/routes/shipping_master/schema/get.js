@@ -1,10 +1,10 @@
 export const getSchema = {
   schema: {
-    params: {
+    query: {
       type: "object",
-      required: ["carrier_master_id"],
+      required: ["shipping_master_id"],
       properties: {
-        carrier_master_id: { type: "string" },
+        shipping_master_id: { type: "string" },
       },
     },
   },

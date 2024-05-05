@@ -7687,7 +7687,7 @@
           columns: [
             { data: null },
             { data: null },
-            { data: "shipping_carrier_name" },
+            { data: "shipping_carrier_names" },
             { data: "shipping_source" },
             { data: "shipping_destination" },
             { data: "shipping_price" },
@@ -7721,7 +7721,7 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span carrier_master_id='${row["CarrierMasterMaster"].id}'>${data}</span>`;
+                return `<span carrier_master_id='${row["CarrierMaster"].id}'>${data}</span>`;
               },
             },
             {
@@ -7767,7 +7767,7 @@
 
       $(document).on("click", ".editShipping", (e) => {
         // Changing panel input fields data
-        $("#shippingCarrier")
+        $("#shipping_carrier_name")
           .val(
             $(e.target)
               .closest("tr")
@@ -7868,7 +7868,7 @@
           processData: false,
           success: (data) => {
             // Loading data
-            $("#shippingCarrier").select2({
+            $("#shipping_carrier_name").select2({
               placeholder: "Choose a carrier company",
               allowClear: true,
               data: $.map(data?.data?.rows, function (item) {
@@ -7880,7 +7880,7 @@
             });
 
             // Clearing selected value
-            $("#shippingCarrier").val(null).trigger("change");
+            $("#shipping_carrier_name").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -7899,16 +7899,16 @@
         let url = "/api/v1/master/shipping";
         let method = "POST";
         let input_params = {
-          carrier_master_id: $("#shippingCarrier").val(),
+          carrier_master_id: $("#shipping_carrier_name").val(),
           shipping_source: $("#shipping_source").val(),
           shipping_destination: $("#shipping_destination").val(),
           shipping_price: $("#shipping_price").val(),
           shipping_notes: $("#shipping_notes").val(),
         };
 
-        if (species_master_id) {
-          url = "/api/v1/master/shipping";
-          method = "PUT";
+        if (shipping_master_id) {
+          url = "/api/v1/master/shipping/update";
+
           input_params = {
             shipping_master_id,
             shipping_master_data: {
