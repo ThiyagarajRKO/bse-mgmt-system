@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
           return `${this.CarrierMaster?.carrier_name
             ?.trim()
             ?.replaceAll(" ", "")
-            ?.toUpperCase()}-${this.carrier_master?.carrier_country
+            ?.toUpperCase()}-${this.CarrierMaster?.carrier_country
             ?.trim()
             ?.replaceAll(" ", "")
             ?.toUpperCase()}`;

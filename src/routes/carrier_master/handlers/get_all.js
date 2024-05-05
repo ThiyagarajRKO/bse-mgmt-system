@@ -1,7 +1,7 @@
 import { CarrierMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, carrier_name, "search[value]": search },
+  { start, length, carrier_name, carrier_country, "search[value]": search },
   session,
   fastify
 ) => {

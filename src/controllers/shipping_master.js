@@ -132,19 +132,12 @@ export const GetAll = ({
         is_active: true,
       };
 
-      /*if (shipping_carrier_name) {
-        carrierWhere.carrier_name = {
-          [Op.iLike]: `%${shipping_carrier_name}%`,
-        };
-
-        
-      }*/
-
       if (search) {
         where[Op.or] = [
           { shipping_source: { [Op.iLike]: `%${search}%` } },
           { shipping_destination: { [Op.iLike]: `%${search}%` } },
           { "$CarrierMaster.carrier_name$": { [Op.iLike]: `%${search}%` } },
+          { "$CarrierMaster.carrier_country$": { [Op.iLike]: `%${search}%` } },
         ];
       }
 
