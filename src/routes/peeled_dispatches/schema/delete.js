@@ -1,6 +1,6 @@
 export const deleteSchema = {
   schema: {
-    body: {
+    query: {
       type: "object",
       required: ["peeled_dispatch_id"],
       properties: {

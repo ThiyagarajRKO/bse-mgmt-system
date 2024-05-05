@@ -2207,7 +2207,7 @@
       function loadProcurementProducts() {
         // Load Products
         $.ajax({
-          url: "/api/v1/master/product/get/all",
+          url: "/api/v1/master/product",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2242,7 +2242,7 @@
       function loadProcurementUnits() {
         // Load Products
         $.ajax({
-          url: `/api/v1/master/unit/get/all?unit_type=Collection Center`,
+          url: `/api/v1/master/unit?unit_type=Collection Center`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2277,7 +2277,7 @@
       function loadProcurementSuppliers() {
         // Load Suppliers
         $.ajax({
-          url: "/api/v1/master/vendor/get/all",
+          url: "/api/v1/master/vendor",
           method: "GET",
           dataType: "json",
           contentType: "application/json",

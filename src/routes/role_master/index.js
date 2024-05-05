@@ -4,7 +4,7 @@ import { GetAll } from "./handlers/get_all";
 import { getAllSchema } from "./schema/get _all";
 
 export const roleMasterRoute = (fastify, opts, done) => {
-  fastify.get("/get/all", getAllSchema, async (req, reply) => {
+  fastify.get("/", getAllSchema, async (req, reply) => {
     try {
       let result = await GetAll(
         { profile_id: req?.token_profile_id },

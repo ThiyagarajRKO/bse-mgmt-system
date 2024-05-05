@@ -1,6 +1,6 @@
 export const deleteSchema = {
   schema: {
-    body: {
+    query: {
       type: "object",
       required: ["vehicle_master_id"],
       properties: {

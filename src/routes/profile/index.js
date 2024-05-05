@@ -24,7 +24,7 @@ export const profileRoutes = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/update", async (req, reply) => {
+  fastify.put("/", async (req, reply) => {
     try {
       let params = {
         ...req.body,

@@ -111,7 +111,7 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
+      const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await Delete(params, req?.session, fastify);
 

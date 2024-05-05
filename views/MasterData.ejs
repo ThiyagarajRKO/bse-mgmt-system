@@ -2654,7 +2654,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/division/get/all",
+            url: "/api/v1/master/division",
             error: function (xhr, error, code) {
               $("#divisionTable").DataTable().destroy();
               $("#divisionTable").DataTable({ scrollX: true, ordering: false });
@@ -2790,13 +2790,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/division/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/division?division_master_id=" +
                     division_master_id,
-                  }),
+                  method: "delete",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -2824,15 +2821,16 @@
         const division_master_id =
           $("#submitDivision").attr("division_master_id");
 
-        let url = "/api/v1/master/division/create";
+        let url = "/api/v1/master/division";
+        let method = "POST";
         let input_params = {
           division_name: $("#division_name").val(),
           description: $("#description").val(),
         };
 
         if (division_master_id) {
-          url = "/api/v1/master/division/update";
-
+          url = "/api/v1/master/division";
+          method = "PUT";
           input_params = {
             division_master_id,
             division_master_data: {
@@ -2843,7 +2841,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -2916,7 +2914,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/location/get/all",
+            url: "/api/v1/master/location",
             error: function (xhr, error, code) {
               $("#locationTable").DataTable().destroy();
               $("#locationTable").DataTable({ scrollX: true, ordering: false });
@@ -3052,13 +3050,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/location/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/location?location_master_id=" +
                     location_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -3086,14 +3081,16 @@
         const location_master_id =
           $("#submitLocation").attr("location_master_id");
 
-        let url = "/api/v1/master/location/create";
+        let url = "/api/v1/master/location";
+        let method = "POST";
         let input_params = {
           location_name: $("#location_name").val(),
           description: $("#description").val(),
         };
 
         if (location_master_id) {
-          url = "/api/v1/master/location/update";
+          url = "/api/v1/master/location";
+          method = "PUT";
 
           input_params = {
             location_master_id,
@@ -3105,7 +3102,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -3189,7 +3186,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/unit/get/all",
+            url: "/api/v1/master/unit",
             error: function (xhr, error, code) {
               $("#unitTable").DataTable().destroy();
               $("#unitTable").DataTable({
@@ -3347,13 +3344,8 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/unit/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    unit_master_id,
-                  }),
+                  url: "/api/v1/master/unit?unit_master_id=" + unit_master_id,
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -3412,7 +3404,7 @@
       function loadUnitLocations() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/location/get/all",
+          url: "/api/v1/master/location",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3449,7 +3441,8 @@
       function saveUnit() {
         const unit_master_id = $("#submitUnit").attr("unit_master_id");
 
-        let url = "/api/v1/master/unit/create";
+        let url = "/api/v1/master/unit";
+        let method = "POST";
         let input_params = {
           unit_name: $("#unit_name").val(),
           unit_type: $("#unitType").val(),
@@ -3457,8 +3450,8 @@
         };
 
         if (unit_master_id) {
-          url = "/api/v1/master/unit/update";
-
+          url = "/api/v1/master/unit";
+          method = "PUT";
           input_params = {
             unit_master_id,
             unit_master_data: {
@@ -3469,7 +3462,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -3552,7 +3545,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/product/get/all",
+            url: "/api/v1/master/product",
             error: function (xhr, error, code) {
               $("#productTable").DataTable().destroy();
               $("#productTable").DataTable({
@@ -3748,13 +3741,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/product/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/product?product_master_id=" +
                     product_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -3781,7 +3771,7 @@
       function loadProductSpecies() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/species/get/all",
+          url: "/api/v1/master/species",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3818,7 +3808,7 @@
       function loadProductSizes() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/size/get/all",
+          url: "/api/v1/master/size",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3856,7 +3846,8 @@
       function saveProduct() {
         const product_master_id = $("#submitProduct").attr("product_master_id");
 
-        let url = "/api/v1/master/product/create";
+        let url = "/api/v1/master/product";
+        let method = "POST";
         let input_params = {
           product_category: $("#product_category").val(),
           species_master_id: $("#productSpecies").val(),
@@ -3867,8 +3858,8 @@
         };
 
         if (product_master_id) {
-          url = "/api/v1/master/product/update";
-
+          url = "/api/v1/master/product";
+          method = "PUT";
           input_params = {
             product_master_id,
             product_master_data: {
@@ -3879,7 +3870,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -3957,7 +3948,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/vendor/get/all",
+            url: "/api/v1/master/vendor",
             error: function (xhr, error, code) {
               $("#vendorTable").DataTable().destroy();
               $("#vendorTable").DataTable({ scrollX: true, ordering: false });
@@ -4123,13 +4114,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/vendor/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/vendor?vendor_master_id=" +
                     vendor_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -4156,7 +4144,7 @@
       function loadVendorLocations() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/location/get/all",
+          url: "/api/v1/master/location",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4191,7 +4179,8 @@
       function saveVendor() {
         const vendor_master_id = $("#submitVendor").attr("vendor_master_id");
 
-        let url = "/api/v1/master/vendor/create";
+        let url = "/api/v1/master/vendor";
+        let method = "POST";
         let input_params = {
           vendor_name: $("#vendor_name").val(),
           representative: $("#representative").val(),
@@ -4202,7 +4191,8 @@
         };
 
         if (vendor_master_id) {
-          url = "/api/v1/master/vendor/update";
+          url = "/api/v1/master/vendor";
+          method = "PUT";
 
           input_params = {
             vendor_master_id,
@@ -4215,7 +4205,7 @@
         // Load Roles
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -4295,7 +4285,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/packaging/get/all",
+            url: "/api/v1/master/packaging",
             error: function (xhr, error, code) {
               $("#packagingTable").DataTable().destroy();
               $("#packagingTable").DataTable({
@@ -4469,13 +4459,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/packaging/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/packaging?packaging_master_id=" +
                     packaging_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -4553,7 +4540,7 @@
       function loadPackagingVendor() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/vendor/get/all",
+          url: "/api/v1/master/vendor",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4592,7 +4579,8 @@
           "packaging_master_id"
         );
 
-        let url = "/api/v1/master/packaging/create";
+        let url = "/api/v1/master/packaging";
+        let method = "POST";
         let input_params = {
           packaging_type: $("#packagingType").val(),
           packaging_length: $("#packagingLength").val() || 0,
@@ -4606,8 +4594,8 @@
         };
 
         if (packaging_master_id) {
-          url = "/api/v1/master/packaging/update";
-
+          url = "/api/v1/master/packaging";
+          method = "PUT";
           input_params = {
             packaging_master_id,
             packaging_master_data: {
@@ -4618,7 +4606,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -4699,7 +4687,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/inventory/get/all",
+            url: "/api/v1/master/inventory",
             error: function (xhr, error, code) {
               $("#inventoryTable").DataTable().destroy();
               $("#inventoryTable").DataTable({
@@ -4860,13 +4848,9 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/inventory/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    unit_master_id,
-                  }),
+                  url:
+                    "/api/v1/master/inventory?unit_master_id=" + unit_master_id,
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -4921,7 +4905,7 @@
       function loadInventoryVendors() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/vendor/get/all",
+          url: "/api/v1/master/vendor",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4960,7 +4944,8 @@
           "inventory_master_id"
         );
 
-        let url = "/api/v1/master/inventory/create";
+        let url = "/api/v1/master/inventory";
+        let method = "POST";
         let input_params = {
           inventory_name: $("#inventory_name").val(),
           inventory_uom: $("#inventory_uom").val(),
@@ -4969,8 +4954,8 @@
         };
 
         if (inventory_master_id) {
-          url = "/api/v1/master/inventory/update";
-
+          url = "/api/v1/master/inventory";
+          method = "PUT";
           input_params = {
             inventory_master_id,
             inventory_master_data: {
@@ -4981,7 +4966,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -5059,7 +5044,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/species/get/all",
+            url: "/api/v1/master/species",
             error: function (xhr, error, code) {
               $("#speciesTable").DataTable().destroy();
               $("#speciesTable").DataTable({ scrollX: true, ordering: false });
@@ -5221,13 +5206,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/species/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/species?species_master_id=" +
                     species_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -5254,7 +5236,7 @@
       function loadSpeciesDivision() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/division/get/all",
+          url: "/api/v1/master/division",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -5291,7 +5273,8 @@
       function saveSpecies() {
         const species_master_id = $("#submitSpecies").attr("species_master_id");
 
-        let url = "/api/v1/master/species/create";
+        let url = "/api/v1/master/species";
+        let method = "POST";
         let input_params = {
           division_master_id: $("#speciesDivision").val(),
           species_name: $("#species_name").val(),
@@ -5301,7 +5284,8 @@
         };
 
         if (species_master_id) {
-          url = "/api/v1/master/species/update";
+          url = "/api/v1/master/species";
+          method = "PUT";
 
           input_params = {
             species_master_id,
@@ -5313,7 +5297,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -5386,7 +5370,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/grade/get/all",
+            url: "/api/v1/master/grade",
             error: function (xhr, error, code) {
               $("#gradeTable").DataTable().destroy();
               $("#gradeTable").DataTable({
@@ -5525,13 +5509,9 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/grade/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    grade_master_id,
-                  }),
+                  url:
+                    "/api/v1/master/grade?grade_master_id=" + grade_master_id,
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -5558,15 +5538,16 @@
       function saveGrade() {
         const grade_master_id = $("#submitGrade").attr("grade_master_id");
 
-        let url = "/api/v1/master/grade/create";
+        let url = "/api/v1/master/grade";
+        let method = "POST";
         let input_params = {
           grade_name: $("#grade_name").val(),
           description: $("#grade_description").val(),
         };
 
         if (grade_master_id) {
-          url = "/api/v1/master/grade/update";
-
+          url = "/api/v1/master/grade";
+          method = "PUT";
           input_params = {
             grade_master_id,
             grade_master_data: {
@@ -5577,7 +5558,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -5650,7 +5631,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/size/get/all",
+            url: "/api/v1/master/size",
             error: function (xhr, error, code) {
               $("#sizeTable").DataTable().destroy();
               $("#sizeTable").DataTable({
@@ -5787,13 +5768,8 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/size/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
-                    size_master_id,
-                  }),
+                  url: "/api/v1/master/size?size_master_id=" + size_master_id,
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -5820,15 +5796,16 @@
       function saveSize() {
         const size_master_id = $("#submitSize").attr("size_master_id");
 
-        let url = "/api/v1/master/size/create";
+        let url = "/api/v1/master/size";
+        let method = "POST";
         let input_params = {
           size: $("#size").val(),
           description: $("#size_description").val(),
         };
 
         if (size_master_id) {
-          url = "/api/v1/master/size/update";
-
+          url = "/api/v1/master/size";
+          method = "PUT";
           input_params = {
             size_master_id,
             size_master_data: {
@@ -5839,7 +5816,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -5912,7 +5889,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/vehicle/get/all",
+            url: "/api/v1/master/vehicle",
             error: function (xhr, error, code) {
               $("#vehicleTable").DataTable().destroy();
               $("#vehicleTable").DataTable({ scrollX: true, ordering: false });
@@ -6124,13 +6101,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/vehicle/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/vehicle?vehicle_master_id=" +
                     vehicle_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -6157,7 +6131,8 @@
       function saveVehicle() {
         const vehicle_master_id = $("#submitVehicle").attr("vehicle_master_id");
 
-        let url = "/api/v1/master/vehicle/create";
+        let url = "/api/v1/master/vehicle";
+        let method = "POST";
         let input_params = {
           vehicle_number: $("#vehicle_number").val(),
           vehicle_brand: $("#vehicle_brand").val(),
@@ -6169,8 +6144,8 @@
         };
 
         if (vehicle_master_id) {
-          url = "/api/v1/master/vehicle/update";
-
+          url = "/api/v1/master/vehicle";
+          method = "PUT";
           input_params = {
             vehicle_master_id,
             vehicle_master_data: {
@@ -6181,7 +6156,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -6254,7 +6229,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/driver/get/all",
+            url: "/api/v1/master/driver",
             error: function (xhr, error, code) {
               $("#driverTable").DataTable().destroy();
               $("#driverTable").DataTable({ scrollX: true, ordering: false });
@@ -6414,13 +6389,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/driver/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/driver?driver_master_id=" +
                     driver_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -6447,7 +6419,8 @@
       function saveDriver() {
         const driver_master_id = $("#submitDriver").attr("driver_master_id");
 
-        let url = "/api/v1/master/driver/create";
+        let url = "/api/v1/master/driver";
+        let method = "POST";
         let input_params = {
           driver_name: $("#driver_name").val(),
           license_number: $("#license_number").val(),
@@ -6460,8 +6433,8 @@
         };
 
         if (driver_master_id) {
-          url = "/api/v1/master/driver/update";
-
+          url = "/api/v1/master/driver";
+          method = "PUT";
           input_params = {
             driver_master_id,
             driver_master_data: {
@@ -6472,7 +6445,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -6552,7 +6525,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/customer/get/all",
+            url: "/api/v1/master/customer",
             error: function (xhr, error, code) {
               $("#customerTable").DataTable().destroy();
               $("#customerTable").DataTable({ scrollX: true, ordering: false });
@@ -6717,13 +6690,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/customer/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/customer?vendor_master_id=" +
                     vendor_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -6824,7 +6794,8 @@
         const customer_master_id =
           $("#submitCustomer").attr("customer_master_id");
 
-        let url = "/api/v1/master/customer/create";
+        let url = "/api/v1/master/customer";
+        let method = "POST";
         let input_params = {
           customer_name: $("#customer_name").val(),
           customer_address: $("#customer_address").val(),
@@ -6837,8 +6808,8 @@
         };
 
         if (customer_master_id) {
-          url = "/api/v1/master/customer/update";
-
+          url = "/api/v1/master/customer";
+          method = "PUT";
           input_params = {
             customer_master_id,
             customer_master_data: {
@@ -6850,7 +6821,7 @@
         // Load Roles
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -6935,7 +6906,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/pricelist/get/all",
+            url: "/api/v1/master/pricelist",
             error: function (xhr, error, code) {
               $("#priceListTable").DataTable().destroy();
               $("#priceListTable").DataTable({
@@ -7166,7 +7137,7 @@
 
       function loadPriceListProduct() {
         $.ajax({
-          url: "/api/v1/master/product/get/all",
+          url: "/api/v1/master/product",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -7238,7 +7209,8 @@
           "price_list_product_master_id"
         );
 
-        let url = "/api/v1/master/pricelist/create";
+        let url = "/api/v1/master/pricelist";
+        let method = "POST";
         let input_params = {
           price_list_name: $("#priceList_name").val(),
           currency: $("#priceList_currency").val(),
@@ -7253,8 +7225,8 @@
         };
 
         if (price_list_master_id) {
-          url = "/api/v1/master/pricelist/update";
-
+          url = "/api/v1/master/pricelist";
+          method = "PUT";
           input_params = {
             price_list_master_id,
             price_list_master_data: {
@@ -7266,7 +7238,7 @@
         // Load Roles
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -7345,7 +7317,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/carrier/get/all",
+            url: "/api/v1/master/carrier",
             error: function (xhr, error, code) {
               $("#carrierTable").DataTable().destroy();
               $("#carrierTable").DataTable({ scrollX: true, ordering: false });
@@ -7506,13 +7478,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/carrier/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/carrier?carrier_master_id=" +
                     carrier_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -7592,7 +7561,8 @@
       function saveCarrier() {
         const carrier_master_id = $("#submitCarrier").attr("carrier_master_id");
 
-        let url = "/api/v1/master/carrier/create";
+        let url = "/api/v1/master/carrier";
+        let method = "POST";
         let input_params = {
           carrier_name: $("#carrier_name").val(),
           carrier_address: $("#carrier_address").val(),
@@ -7604,8 +7574,8 @@
         };
 
         if (carrier_master_id) {
-          url = "/api/v1/master/carrier/update";
-
+          url = "/api/v1/master/carrier";
+          method = "PUT";
           input_params = {
             carrier_master_id,
             carrier_master_data: {
@@ -7617,7 +7587,7 @@
         // Load Roles
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),
@@ -7695,7 +7665,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/shipping/get/all",
+            url: "/api/v1/master/shipping",
             error: function (xhr, error, code) {
               $("#shippingTable").DataTable().destroy();
               $("#shippingTable").DataTable({ scrollX: true, ordering: false });
@@ -7857,13 +7827,10 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/v1/master/shipping/delete",
-                  method: "post",
-                  dataType: "json",
-                  contentType: "application/json",
-                  data: JSON.stringify({
+                  url:
+                    "/api/v1/master/shipping?species_master_id=" +
                     species_master_id,
-                  }),
+                  method: "DELETE",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -7893,7 +7860,7 @@
       function loadShippingCarrier() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/carrier/get/all",
+          url: "/api/v1/master/carrier",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -7929,7 +7896,8 @@
         const shipping_master_id =
           $("#submitShipping").attr("shipping_master_id");
 
-        let url = "/api/v1/master/shipping/create";
+        let url = "/api/v1/master/shipping";
+        let method = "POST";
         let input_params = {
           carrier_master_id: $("#shippingCarrier").val(),
           shipping_source: $("#shipping_source").val(),
@@ -7939,8 +7907,8 @@
         };
 
         if (species_master_id) {
-          url = "/api/v1/master/shipping/update";
-
+          url = "/api/v1/master/shipping";
+          method = "PUT";
           input_params = {
             shipping_master_id,
             shipping_master_data: {
@@ -7951,7 +7919,7 @@
 
         $.ajax({
           url,
-          method: "POST",
+          method,
           dataType: "json",
           contentType: "application/json",
           data: JSON.stringify(input_params),

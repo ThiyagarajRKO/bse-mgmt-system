@@ -2401,7 +2401,7 @@
 
       function loadUnits() {
         $.ajax({
-          url: "/api/v1/master/unit/get/all?unit_type=Peeling Center",
+          url: "/api/v1/master/unit?unit_type=Peeling Center",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2433,7 +2433,7 @@
 
       function loadVehicles() {
         $.ajax({
-          url: "/api/v1/master/vehicle/get/all",
+          url: "/api/v1/master/vehicle",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2465,7 +2465,7 @@
 
       function loadDrivers() {
         $.ajax({
-          url: "/api/v1/master/driver/get/all",
+          url: "/api/v1/master/driver",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3390,7 +3390,7 @@
         }
 
         $.ajax({
-          url: "/api/v1/master/product/get/all?species_id=" + species_id,
+          url: "/api/v1/master/product?species_id=" + species_id,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4205,7 +4205,7 @@
 
       function loadPeeledUnits() {
         $.ajax({
-          url: "/api/v1/master/unit/get/all?unit_type=Distribution Center",
+          url: "/api/v1/master/unit?unit_type=Distribution Center",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4237,7 +4237,7 @@
 
       function loadPeeledVehicles() {
         $.ajax({
-          url: "/api/v1/master/vehicle/get/all",
+          url: "/api/v1/master/vehicle",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4269,7 +4269,7 @@
 
       function loadPeeledDrivers() {
         $.ajax({
-          url: "/api/v1/master/driver/get/all",
+          url: "/api/v1/master/driver",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -5026,7 +5026,7 @@
 
       function loadPackingGrade() {
         $.ajax({
-          url: "/api/v1/master/grade/get/all",
+          url: "/api/v1/master/grade",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -5058,7 +5058,7 @@
 
       function loadPackingSize() {
         $.ajax({
-          url: "/api/v1/master/size/get/all",
+          url: "/api/v1/master/size",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -5090,7 +5090,7 @@
 
       function loadPackingPackage() {
         $.ajax({
-          url: "/api/v1/master/packaging/get/all",
+          url: "/api/v1/master/packaging",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
