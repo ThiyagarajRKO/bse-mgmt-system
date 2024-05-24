@@ -7,7 +7,7 @@ module.exports = fp(async function (fastify, opts) {
     max:
       process.env.RATE_LIMIT && typeof process.env.RATE_LIMIT == "string"
         ? parseInt(process.env.RATE_LIMIT)
-        : 80,
+        : 120,
     timeWindow: process.env.RATE_LIMIT_TIME,
     allowList: ["/public"],
   });
