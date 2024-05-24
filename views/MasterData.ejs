@@ -159,13 +159,15 @@
       }
 
       .topSubMenu-item,
-      .topSalesSubMenu-item {
+      .topSalesSubMenu-item,
+      .topProcurementSubMenu-item {
         /* color: #14274e !important; */
         width: 100px;
       }
 
       .topSubMenu-item:hover:not(.topSubMenu-item-active),
-      .topSalesSubMenu-item:hover:not(.topSubMenu-item-active) {
+      .topSalesSubMenu-item:hover:not(.topSubMenu-item-active),
+      .topProcurementSubMenu-item:hover:not(.topSubMenu-item-active) {
         border-bottom: 1px solid #ea5455;
         color: #ea5455 !important;
         /* font-weight: bold; */
@@ -188,6 +190,10 @@
       }
 
       #tippy-2 .tippy-box {
+        max-width: 450px !important;
+      }
+
+      #tippy-3 .tippy-box {
         max-width: 400px !important;
       }
 
@@ -316,7 +322,7 @@
     <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <div
-      class="topMenu-container d-flex justify-content-start mt-0 overflow-auto"
+      class="topMenu-container d-flex justify-content-center mt-0 overflow-auto"
     >
       <div
         class="topMenu-item topMenu-item-active divisionMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
@@ -352,35 +358,13 @@
       </div>
 
       <div
-        class="topMenu-item vendorMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+        class="topSubMenuContainer procurementTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
       >
         <div class="fs-6">
-          <i class="fa-solid fa-users"></i>
+          <i class="fa-solid fa-cart-shopping"></i>
         </div>
         <div class="pt-2">
-          <span>Vendors</span>
-        </div>
-      </div>
-
-      <div
-        class="topMenu-item packagingMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-      >
-        <div class="fs-6">
-          <i class="fa-solid fa-boxes-packing"></i>
-        </div>
-        <div class="pt-2">
-          <span>Packaging</span>
-        </div>
-      </div>
-
-      <div
-        class="topMenu-item inventoryMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-      >
-        <div class="fs-6">
-          <i class="fa-solid fa-layer-group"></i>
-        </div>
-        <div class="pt-2">
-          <span>Inventory</span>
+          <span>Procurement</span>
         </div>
       </div>
 
@@ -391,7 +375,18 @@
           <i class="fa-solid fa-shrimp"></i>
         </div>
         <div class="pt-2">
-          <span>Products</span>
+          <span>Production</span>
+        </div>
+      </div>
+
+      <div
+        class="topSubMenuContainer salesTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
+      >
+        <div class="fs-6">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div class="pt-2">
+          <span>Sales</span>
         </div>
       </div>
 
@@ -414,17 +409,6 @@
         </div>
         <div class="pt-2">
           <span>Drivers</span>
-        </div>
-      </div>
-
-      <div
-        class="topSubMenuContainer salesTopMenu d-flex flex-column justify-content-center align-items-center mx-3 p-2"
-      >
-        <div class="fs-6">
-          <i class="fa-solid fa-hand-holding-dollar"></i>
-        </div>
-        <div class="pt-2">
-          <span>Sales</span>
         </div>
       </div>
     </div>
@@ -2423,11 +2407,11 @@
         $(".topMenu-item").removeClass("topMenu-item-active");
         $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
-        $(".salesTopMenu").removeClass("topMenu-item-active");
 
         $(this).addClass("topMenu-item-active");
         $(".productTopMenu").removeClass("topMenu-item-active");
         $(".salesTopMenu").removeClass("topMenu-item-active");
+        $(".procurementTopMenu").removeClass("topMenu-item-active");
         $(".panelClose").click();
 
         resetAllInputs();
@@ -2437,8 +2421,10 @@
       $(document).on("click", ".topSubMenu-item", function () {
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topProcurementSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topMenu-item").removeClass("topMenu-item-active");
         $(".salesTopMenu").removeClass("topMenu-item-active");
+        $(".procurementTopMenu").removeClass("topMenu-item-active");
 
         $(".productTopMenu").addClass("topMenu-item-active");
         $(this).addClass("topSubMenu-item-active");
@@ -2451,8 +2437,10 @@
       $(document).on("click", ".topSalesSubMenu-item", function () {
         $(".topSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topProcurementSubMenu-item").removeClass("topSubMenu-item-active");
         $(".topMenu-item").removeClass("topMenu-item-active");
         $(".productTopMenu").removeClass("topMenu-item-active");
+        $(".procurementTopMenu").removeClass("topMenu-item-active");
 
         $(".salesTopMenu").addClass("topMenu-item-active");
         $(this).addClass("topSubMenu-item-active");
@@ -2462,7 +2450,46 @@
         resetAllInputs();
       });
 
-      const productSubMenus = document.getElementById("productSubMenus");
+      $(document).on("click", ".topProcurementSubMenu-item", function () {
+        $(".topSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topSalesSubMenu-item").removeClass("topSubMenu-item-active");
+        $(".topMenu-item").removeClass("topMenu-item-active");
+        $(".productTopMenu").removeClass("topMenu-item-active");
+        $(".salesTopMenu").removeClass("topMenu-item-active");
+
+        $(".procurementTopMenu").addClass("topMenu-item-active");
+        $(this).addClass("topSubMenu-item-active");
+
+        $(".panelClose").click();
+
+        resetAllInputs();
+      });
+
+      tippy(".procurementTopMenu", {
+        content: `<div class="d-flex justify-content-between p-3 fs-6">
+        <div class="topProcurementSubMenu-item vendorMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-users mb-2"></i>Vendors</div>
+        <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
+        </div>`,
+        placement: "bottom",
+        arrow: true,
+        trigger: "click",
+        interactive: true,
+        allowHTML: true,
+        theme: "tomato",
+        hideOnClick: true,
+        animation: "shift-toward",
+        onMount(instance) {
+          if (!$(".procurementTopMenu").hasClass("topMenu-item-active")) {
+            // Resetting Buttons
+            $(".topProcurementSubMenu-item").removeClass(
+              "topSubMenu-item-active"
+            );
+          }
+        },
+      });
+
       tippy(".productTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
         <div class="topSubMenu-item speciesMenu d-flex flex-column text-center mx-2"><i
@@ -2473,6 +2500,8 @@
             class="fa-solid fa-ruler-combined mb-2"></i>Sizes</div>
         <div class="topSubMenu-item productMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-shrimp mb-2"></i>Product</div>
+        <div class="topSubMenu-item packagingMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-boxes-packing mb-2"></i>Packaging</div>
       </div>`,
         placement: "bottom",
         arrow: true,
@@ -2490,7 +2519,6 @@
         },
       });
 
-      const salesSubMenus = document.getElementById("salesSubMenus");
       tippy(".salesTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
         <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
@@ -3490,7 +3518,7 @@
       $("#resetUnitDataBtn").on("click", resetAllInputs);
 
       // ---------------------------------------------------------
-      // ----------------------- Products ------------------------
+      // ----------------------- Production ----------------------
       // ---------------------------------------------------------
 
       // Open panel
@@ -3917,7 +3945,7 @@
         closeSlidePanel("vendorSlideInPanel");
       });
 
-      $(".vendorMenu").click(function () {
+      $(document).on("click", ".vendorMenu", function () {
         $(".menu-container").addClass("d-none");
 
         $(".vendorContainer").removeClass("d-none");
@@ -4252,7 +4280,7 @@
         closeSlidePanel("packagingSlideInPanel");
       });
 
-      $(".packagingMenu").click(function () {
+      $(document).on("click", ".packagingMenu", function () {
         $(".menu-container").addClass("d-none");
 
         $(".packagingContainer").removeClass("d-none");
@@ -4655,7 +4683,7 @@
         // $('select.select2-hidden-accessible').select2('destroy');
       });
 
-      $(".inventoryMenu").click(function () {
+      $(document).on("click", ".inventoryMenu", function () {
         $(".menu-container").addClass("d-none");
 
         $(".inventoryContainer").removeClass("d-none");
