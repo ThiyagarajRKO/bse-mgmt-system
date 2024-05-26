@@ -391,13 +391,13 @@
                       <a class="nav-link">Input</a>
                     </li>
                     <li>
-                      <a class="nav-link">Output</a>
+                      <a class="nav-link">Products</a>
                     </li>
                   </ul>
 
                   <div class="tab-content">
                     <div id="tab-1" class="tab-pane p-0" role="tabpanel">
-                      <div class="form-group mt-4">
+                      <div class="form-group mt-2">
                         <label for="order_date">Order Date</label>
                         <input
                           id="order_date"
@@ -501,6 +501,7 @@
                               id="shipping_address"
                               class="form-control input-dropdown w-100"
                               name="shipping_address"
+                              placeholder="Shipping address"
                               readonly
                             ></textarea>
                           </div>
@@ -538,7 +539,7 @@
                             ></select>
                           </div>
 
-                          <div class="form-group mt-4">
+                          <div class="form-group mt-2">
                             <label for="product_unit">Unit</label>
                             <input
                               class="form-control product_unit product_unit_1"
@@ -549,7 +550,7 @@
                             />
                           </div>
 
-                          <div class="form-group mt-4 mb-4">
+                          <div class="form-group mt-2 mb-2">
                             <label for="product_price_1">Price</label>
                             <input
                               class="form-control product_price product_price_1"
@@ -989,23 +990,23 @@
                                 ></select>
                               </div>
 
-                              <div class="form-group mt-4">
-                                <label for="yield_quantity">Yield Quantity</label>
+                              <div class="form-group mt-2">
+                                <label for="product_unit">Unit</label>
                                 <input
-                                  class="form-control yield_quantity yield_quantity_${index}"
+                                  class="form-control product_unit product_unit_${index}"
                                   type="number"
                                   placeholder="eg. 10"
-                                  name="yield_quantity"
+                                  name="product_unit"
                                   required
                                 />
                               </div>
 
-                              <div class="form-group mt-4 mb-4">
-                                <label for="sales_notes">Sales Notes</label>
+                              <div class="form-group mt-2 mb-2">
+                                <label for="product_price_1">Price</label>
                                 <textarea
                                   row="3"
-                                  class="form-control input-dropdown w-100 sales_notes sales_notes_${index}"
-                                  name="sales_notes"
+                                  class="form-control input-dropdown w-100 product_price_1 product_price_${index}"
+                                  name="product_price_1"
                                 ></textarea>
                               </div>
 
