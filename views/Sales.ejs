@@ -427,6 +427,7 @@
                           id="payment_terms"
                           class="form-control"
                           type="text"
+                          placeholder="eg. in 15 days"
                           name="payment_terms"
                           required
                         />
@@ -1540,18 +1541,14 @@
         const customerCountry = $(e.target).val();
 
         if (customerCountry) {
-          $("#customer_country").text(
-            $("#customerNames").select2("data")[0]?.country
-          );
-          $("#shipping_address").text(
-            $("#customerNames").select2("data")[0]?.address
-          );
+          $("#customer_country").text($(e.target).select2("data")[0]?.country);
+          $("#shipping_address").val($(e.target).select2("data")[0]?.address);
         }
       });
 
       function loadPaymentType() {
         $("#paymentTypes").select2({
-          placeholder: "Choose a raw material",
+          placeholder: "Choose a type",
           allowClear: "true",
           data: [
             {
