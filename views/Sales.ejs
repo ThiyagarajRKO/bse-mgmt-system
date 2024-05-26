@@ -398,70 +398,137 @@
                   <div class="tab-content">
                     <div id="tab-1" class="tab-pane p-0" role="tabpanel">
                       <div class="form-group mt-4">
-                        <label for="order_no">Order No:</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="salesLotNumbers"
-                          name="salesLotNumbers"
-                        ></select>
-                      </div>
-
-                      <div class="form-group mt-4">
-                        <label for="s">Sales Center</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="salesCenters"
-                          name="salesCenters"
-                        ></select>
-                      </div>
-
-                      <div class="form-group mt-4">
-                        <label for="rawMaterials">Raw Materials</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="rawMaterials"
-                          name="rawMaterials"
-                        ></select>
-                      </div>
-
-                      <div class="form-group mt-4">
-                        <label for="sales_quantity">Quantity</label>
+                        <label for="order_date">Order Date</label>
                         <input
-                          id="sales_quantity"
+                          id="order_date"
                           class="form-control"
-                          type="number"
-                          placeholder="eg. 10"
-                          name="sales_quantity"
+                          type="date"
+                          name="order_date"
                           required
                         />
+                      </div>
+
+                      <div class="form-group mt-2">
+                        <label for="customer_name">Customer Name</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="customerNames"
+                          name="customer_name"
+                        ></select>
                         <span style="font-size: 12px"
-                          >Balance Dispatched Quantity :
-                          <span
-                            class="fw-bold"
-                            id="balance_dispatched_quantity"
-                          ></span
+                          >Customer Country :
+                          <span class="fw-bold" id="customer_country"></span
                         ></span>
                       </div>
 
-                      <div class="form-group mt-4">
-                        <label for="sales_method">Sales Method</label>
+                      <div class="form-group mt-2">
+                        <label for="payment_terms">Payment Terms</label>
+                        <input
+                          id="payment_terms"
+                          class="form-control"
+                          type="text"
+                          name="payment_terms"
+                          required
+                        />
+                      </div>
+
+                      <div class="form-group mt-2">
+                        <label for="payment_type">Payment Type</label>
                         <select
                           class="form-control input-dropdown w-100"
-                          id="salesMethods"
-                          name="salesMethods"
+                          id="paymentTypes"
+                          name="payment_type"
                         ></select>
                       </div>
-                    </div>
-                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
-                      <div id="outputContainer">
+
+                      <div id="salesShippingContainer">
                         <fieldset
-                          class="form-group border p-3 salesOutput salesOutput_1"
+                          class="form-group border p-3 shippingData"
                           style="
                             border-color: rgba(129, 145, 179, 0.6) !important;
                             margin-top: 2.2rem !important;
                           "
                         >
-                          <legend class="mb-2 w-auto px-2">Output 1</legend>
+                          <legend class="mb-2 w-auto px-2">Shipping</legend>
+
+                          <div class="form-group mt-2">
+                            <label for="product_name">Shipping Date</label>
+                            <input
+                              id="shipping_date"
+                              class="form-control"
+                              type="date"
+                              name="shipping_date"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="shippingSources">Shipping Source</label>
+                            <select
+                              class="form-control input-dropdown w-100"
+                              id="shippingSources"
+                              name="shippingSources"
+                            ></select>
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="product_name"
+                              >Shipping Destination</label
+                            >
+                            <select
+                              class="form-control input-dropdown w-100"
+                              id="shippingDestinations"
+                              name="shippingDestinations"
+                            ></select>
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="shippingMethods">Shipping Method</label>
+                            <select
+                              class="form-control input-dropdown w-100"
+                              id="shippingMethods"
+                              name="shippingMethods"
+                            ></select>
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="shipping_address"
+                              >Shipping Address</label
+                            >
+                            <textarea
+                              row="3"
+                              id="shipping_address"
+                              class="form-control input-dropdown w-100"
+                              name="shipping_address"
+                              readonly
+                            ></textarea>
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="delivery_date"
+                              >Expected Delivery Date</label
+                            >
+                            <input
+                              id="delivery_date"
+                              class="form-control"
+                              type="date"
+                              name="delivery_date"
+                              required
+                            />
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
+                      <div id="salesProductContainer">
+                        <fieldset
+                          class="form-group border p-3 salesProduct salesProduct_1"
+                          style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          "
+                        >
+                          <legend class="mb-2 w-auto px-2">Product 1</legend>
                           <div class="form-group">
                             <label for="product_name">Product Name:</label>
                             <select
@@ -471,23 +538,25 @@
                           </div>
 
                           <div class="form-group mt-4">
-                            <label for="yield_quantity">Yield Quantity </label>
+                            <label for="product_unit">Unit</label>
                             <input
-                              class="form-control yield_quantity yield_quantity_1"
+                              class="form-control product_unit product_unit_1"
                               type="number"
                               placeholder="eg. 10"
-                              name="yield_quantity"
+                              name="product_unit"
                               required
                             />
                           </div>
 
                           <div class="form-group mt-4 mb-4">
-                            <label for="sales_notes">Sales Notes</label>
-                            <textarea
-                              row="3"
-                              class="form-control input-dropdown w-100 sales_notes sales_notes_1"
-                              name="sales_notes"
-                            ></textarea>
+                            <label for="product_price_1">Price</label>
+                            <input
+                              class="form-control product_price product_price_1"
+                              type="number"
+                              placeholder="eg. 10"
+                              name="product_price_1"
+                              required
+                            />
                           </div>
                         </fieldset>
                       </div>
@@ -619,16 +688,17 @@
                   <thead>
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
-                      <th class="fw-bold"><span>Raw Material</span></th>
-                      <th class="fw-bold"><span>Products</span></th>
+                      <th class="fw-bold"><span>Order No</span></th>
+                      <th class="fw-bold"><span>Order Date</span></th>
+                      <th class="fw-bold"><span>Customer Name</span></th>
                       <th class="fw-bold"><span>Products Count</span></th>
-                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
-                      <th class="fw-bold"><span>Peeled Quantity</span></th>
-                      <th class="fw-bold"><span>Total Yield Quantity</span></th>
-                      <th class="fw-bold"><span>Total Wastage</span></th>
-                      <th class="fw-bold"><span>Sales Method</span></th>
-                      <th class="fw-bold"><span>Sales Center</span></th>
-                      <th class="fw-bold"><span>Sales Date</span></th>
+                      <th class="fw-bold"><span>Total Units</span></th>
+                      <th class="fw-bold"><span>Total Price</span></th>
+                      <th class="fw-bold"><span>Carrier Code</span></th>
+                      <th class="fw-bold"><span>Shipping Code</span></th>
+                      <th class="fw-bold"><span>Payment Terms</span></th>
+                      <th class="fw-bold"><span>Payment Type</span></th>
+                      <th class="fw-bold"><span>Status</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -655,6 +725,7 @@
     jQuery(document).ready(async function ($) {
       // Declarations
       let is_updated_data = false;
+      let productNamesArray = [];
 
       toastr.options = {
         closeButton: false,
@@ -722,74 +793,44 @@
         $("textarea").val("");
 
         // Resetting select field selected option
-        $("#lotNumbers").val(null).trigger("change");
-        $("#productNames").val(null).trigger("change");
-        $("#destinationLocation").val(null).trigger("change");
-        $("#distributionLocation").val(null).trigger("change");
-        $("#prodVehicleNumbers").val(null).trigger("change");
-        $("#prodDriverNames").val(null).trigger("change");
+        $("#customerNames").val(null).trigger("change");
+        $("#paymentTypes").val(null).trigger("change");
+        $("#shippingSources").val(null).trigger("change");
+        $("#shippingDestinations").val(null).trigger("change");
+        $("#shippingMethods").val(null).trigger("change");
+        $("#salesProductNames").val(null).trigger("change");
 
-        $("#productNames").select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-        });
-
-        // Sales
-        $("#peeledLotNumbers").val(null).trigger("change");
-        $("#salesCenters").val(null).trigger("change");
-        $("#rawMaterials").val(null).trigger("change");
-        $(".salesProductNames").val(null).trigger("change");
-        $("#salesMethods").val(null).trigger("change");
-
-        $("#salesCenters").select2({
-          placeholder: "Choose a sales center",
-          allowClear: true,
-        });
-        $("#rawMaterials").select2({
-          placeholder: "Choose a raw material",
-          allowClear: true,
-        });
-        $(".salesProductNames").select2({
-          placeholder: "Choose a product",
+        $("#customerNames").select2({
+          placeholder: "Choose a customer",
           allowClear: true,
         });
 
-        // Peeled Sales
-        $("#peeledLotNumbers").val(null).trigger("change");
-        $("#distributionLocation").val(null).trigger("change");
-        $(".peeledProductNames").val(null).trigger("change");
-
-        //Packing
-        $("#packingLotNumbers").val(null).trigger("change");
-        $("#packingProductNames").val(null).trigger("change");
-        $("#packingDistributionLocation").val(null).trigger("change");
-        $("#packingGrade").val(null).trigger("change");
-        $("#packingSize").val(null).trigger("change");
-        $("#packingPackages").val(null).trigger("change");
-
-        $("#packingProductNames").select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-        });
-        $("#packingDistributionLocation").select2({
-          placeholder: "Choose a production center",
-          allowClear: true,
-        });
-        $("#packingGrade").select2({
-          placeholder: "Choose a Grade",
-          allowClear: true,
-        });
-        $("#packingSize").select2({
-          placeholder: "Choose a Size",
+        $("#paymentTypes").select2({
+          placeholder: "Choose a type",
           allowClear: true,
         });
 
-        $("#packingSize").select2({
-          placeholder: "Choose a Package",
+        $("#shippingSources").select2({
+          placeholder: "Choose a source",
           allowClear: true,
         });
 
-        $(`.salesOutput:not(".salesOutput_1")`).remove();
+        $("#shippingDestinations").select2({
+          placeholder: "Choose a destination",
+          allowClear: true,
+        });
+
+        $("#shippingMethods").select2({
+          placeholder: "Choose a method",
+          allowClear: true,
+        });
+
+        $("#salesProductNames").select2({
+          placeholder: "Choose a method",
+          allowClear: true,
+        });
+
+        $(`.salesProduct:not(".salesProduct_1")`).remove();
         $(`.vl-top:not(".vl-top-1")`).remove();
 
         is_updated_data = false;
@@ -833,7 +874,6 @@
       $(".salesContainer").addClass("d-block");
 
       resetAllInputs();
-      loadSalesTableData();
       loadSalesDropdowns();
       loadSalesTableData();
 
@@ -878,10 +918,13 @@
       );
 
       $(document).on("click", "#appendOutput", (e) => {
-        const last_fieldset_index = $("#outputContainer fieldset").length;
+        const last_fieldset_index = $("#salesProductContainer fieldset").length;
         const next_fieldset_index = (last_fieldset_index || 0) + 1;
 
-        if (!$(`.salesProductNames_${last_fieldset_index}`).val()) {
+        if (
+          !$(`.salesProductNames_${last_fieldset_index}`).val() ||
+          !$(`.product_unit_${last_fieldset_index}`).val()
+        ) {
           toastr["warning"](
             "Please fill all the required values in the above output to create a new output"
           );
@@ -913,9 +956,11 @@
 
       function loadSalesDropdowns() {
         // Sales Dropdown
-        loadSalesLotNumber();
-
-        loadSalesMethods();
+        loadCustomerNames();
+        loadPaymentType();
+        loadShippingLocations();
+        loadProductNames();
+        loadShippingMethods();
       }
 
       function addOutput(
@@ -925,9 +970,9 @@
         yield_quantity,
         sales_notes
       ) {
-        $("#outputContainer")
+        $("#salesProductContainer")
           .append(`<div class="vl-top vl-top-${index}"></div><fieldset
-                              class="form-group border p-3 mt-3 salesOutput salesOutput_${index}"
+                              class="form-group border p-3 mt-3 salesProduct salesProduct_${index}"
                               style="
                                 border-color: rgba(129, 145, 179, 0.6) !important;
                                 margin-top: 2.2rem !important;
@@ -1457,27 +1502,29 @@
         $("#salesModal").modal("hide");
       });
 
-      function loadSalesLotNumber() {
+      function loadCustomerNames() {
         $.ajax({
-          url: `/api/v1/procurement/lot/lots/dispatch`,
+          url: `/api/v1/master/customer`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: false,
           success: (data) => {
-            $("#salesLotNumbers").select2({
-              placeholder: "Choose a lot",
+            $("#customerNames").select2({
+              placeholder: "Choose a customer",
               allowClear: "true",
-              data: $.map(data?.data, function (item) {
+              data: $.map(data?.data?.rows, function (item) {
                 return {
                   id: item.id,
-                  text: item.procurement_lot,
+                  country: item.customer_country,
+                  address: item.customer_address,
+                  text: `${item.customer_name}-${item.customer_country}`,
                 };
               }),
             });
 
-            $("#salesLotNumbers").val(null).trigger("change");
+            $("#customerNames").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -1489,172 +1536,68 @@
         });
       }
 
-      $(document).on("change", "#salesLotNumbers", () => {
-        $("#balance_dispatched_quantity").text("");
+      $(document).on("change", "#customerNames", (e) => {
+        const customerCountry = $(e.target).val();
 
-        let lot_no = $("#salesLotNumbers").val();
-
-        $("#salesCenters").empty();
-        $("#rawMaterials").empty();
-        $(".salesProductNames").empty();
-        productNamesArray = [];
-
-        if (lot_no) {
-          loadSalesCenters(lot_no);
+        if (customerCountry) {
+          $("#customer_country").text(
+            $("#customerNames").select2("data")[0]?.country
+          );
+          $("#shipping_address").text(
+            $("#customerNames").select2("data")[0]?.address
+          );
         }
       });
 
-      function loadSalesCenters(procurement_lot_id) {
-        if (!procurement_lot_id) {
-          toastr["warning"]("Lot number must not be empty");
-          return;
-        }
-
-        $.ajax({
-          url:
-            "/api/v1/master/unit/get/dispatch/destination/all?procurement_lot_id=" +
-            procurement_lot_id,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#salesCenters").select2({
-              placeholder: "Choose a sales center",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
-            });
-
-            if (view_sales_center_id) {
-              $("#salesCenters").val(view_sales_center_id).trigger("change");
-            } else {
-              $("#salesCenters").val(null).trigger("change");
-            }
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
+      function loadPaymentType() {
+        $("#paymentTypes").select2({
+          placeholder: "Choose a raw material",
+          allowClear: "true",
+          data: [
+            {
+              id: "Credit card",
+              text: "Credit card",
+            },
+            {
+              id: "Debit card",
+              text: "Debit card",
+            },
+            {
+              id: "Digital wallet",
+              text: "Digital wallet",
+            },
+            {
+              id: "Direct debit",
+              text: "Direct debit",
+            },
+            {
+              id: "Cryptocurrency",
+              text: "Cryptocurrency",
+            },
+            {
+              id: "Cash",
+              text: "Cash",
+            },
+            {
+              id: "Bank transfer",
+              text: "Bank transfer",
+            },
+            {
+              id: "International ACH",
+              text: "International ACH",
+            },
+          ],
         });
+
+        $("#paymentTypes").val(null).trigger("change");
       }
 
-      $(document).on("change", "#salesCenters", () => {
-        $("#balance_dispatched_quantity").text("");
-
-        let lot_no = $("#salesLotNumbers").val();
-        let unit_master_id = $("#salesCenters").val();
-
-        $("#rawMaterials").empty();
+      function loadProductNames() {
         $(".salesProductNames").empty();
         productNamesArray = [];
 
-        if (lot_no && unit_master_id) {
-          loadSalesRawMaterials(lot_no, unit_master_id);
-        }
-      });
-
-      function loadSalesRawMaterials(lot_no, unit_master_id) {
-        if (!lot_no) {
-          toastr["warning"]("Invalid lot number!");
-          return;
-        }
-
-        if (!unit_master_id) {
-          toastr["warning"]("Invalid Sales center!");
-          return;
-        }
-
         $.ajax({
-          url: `/api/v1/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&sales_id=${$("#submitSales").attr("sales_id") || null}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#rawMaterials").select2({
-              placeholder: "Choose a raw material",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item?.id,
-                  species_id:
-                    item?.pp?.ProductMaster.ProductCategoryMaster
-                      .species_master_id,
-                  quantity:
-                    (parseFloat(item?.dispatch_quantity) || 0) -
-                    (parseFloat(item?.sales_quantity) || 0),
-                  text: `${item?.pp?.ProductMaster?.product_name}-${
-                    item?.pp?.procurement_product_type
-                  }-${item?.pp?.VendorMaster?.vendor_name?.replaceAll(
-                    " ",
-                    ""
-                  )}-${item?.dispatch_quantity || 0}`,
-                };
-              }),
-            });
-
-            if (view_raw_material_id) {
-              $("#rawMaterials").val(view_raw_material_id).trigger("change");
-            } else {
-              $("#rawMaterials").val(null).trigger("change");
-            }
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      $(document).on("change", "#rawMaterials", () => {
-        if ($("#rawMaterials").val()) {
-          $("#balance_dispatched_quantity").text("");
-
-          $(".salesProductNames").empty();
-          productNamesArray = [];
-
-          balance_dispatched_quantity =
-            $("#rawMaterials").select2("data")[0]?.quantity;
-
-          if (!isNaN(balance_dispatched_quantity)) {
-            $("#balance_dispatched_quantity").text(
-              parseFloat(balance_dispatched_quantity)
-            );
-
-            $("#balance_dispatched_quantity").css({ color: "white" });
-          }
-
-          $("#sales_quantity").keyup();
-
-          const species_id = $("#rawMaterials").select2("data")[0]?.species_id;
-          loadSalesProducts(species_id);
-        }
-      });
-
-      let productNamesArray = [];
-      function loadSalesProducts(species_id) {
-        $(".salesProductNames").empty();
-        productNamesArray = [];
-
-        if (!species_id) {
-          toastr["warning"]("Product data must not be empty");
-        }
-
-        $.ajax({
-          url: "/api/v1/master/product?species_id=" + species_id,
+          url: "/api/v1/master/product",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1689,50 +1632,81 @@
         });
       }
 
-      $(document).on("keyup", "#sales_quantity", (e) => {
-        e.preventDefault();
+      function loadShippingLocations() {
+        $.ajax({
+          url: `/api/v1/master/shipping`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            data?.data?.rows.forEach((item) => {
+              $("#shippingSources").select2({
+                placeholder: "Choose a source",
+                allowClear: "true",
+                data: [
+                  {
+                    id: item.id,
+                    text: item.shipping_source,
+                  },
+                ],
+              });
 
-        const currentSalesQuantity = $(e.target).val();
-        const procurementQuantity = parseFloat(
-          $("#rawMaterials").select2("data")[0]?.quantity
-        );
+              $("#shippingDestinations").select2({
+                placeholder: "Choose a destination",
+                allowClear: "true",
+                data: [
+                  {
+                    id: item.id,
+                    text: item.shipping_destination,
+                  },
+                ],
+              });
+            });
 
-        if (!currentSalesQuantity) {
-          $("#balance_dispatched_quantity").text(balance_dispatched_quantity);
-          $("#balance_dispatched_quantity").css({ color: "white" });
-          return;
-        }
+            $("#shippingSources").val(null).trigger("change");
+            $("#shippingDestinations").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
 
-        let balanceQuantity = procurementQuantity - currentSalesQuantity;
-
-        $("#balance_dispatched_quantity").text(
-          !isNaN(balanceQuantity) ? balanceQuantity : currentSalesQuantity
-        );
-
-        if (balanceQuantity > 0) {
-          $("#balance_dispatched_quantity").css({ color: "yellow" });
-        } else {
-          $("#balance_dispatched_quantity").css({ color: "red" });
-        }
-      });
-
-      function loadSalesMethods() {
-        $("#salesMethods").select2({
-          placeholder: "Choose a method",
+      function loadShippingMethods() {
+        $("#shippingMethods").select2({
+          placeholder: "Choose a customer",
           allowClear: "true",
           data: [
             {
-              id: "Manual",
-              text: "Manual",
+              id: "Air freight",
+              text: "Air freight",
             },
             {
-              id: "Chemical",
-              text: "Chemical",
+              id: "Flat rate shipping",
+              text: "Flat rate shipping",
+            },
+            {
+              id: "Sea shipping",
+              text: "Sea shipping",
+            },
+            {
+              id: "Expedited shipping",
+              text: "Expedited shipping",
+            },
+            {
+              id: "Land shipping",
+              text: "Land shipping",
             },
           ],
         });
 
-        $("#salesMethods").val(null).trigger("change");
+        $("#shippingMethods").val(null).trigger("change");
       }
 
       function saveSales() {
@@ -1754,7 +1728,7 @@
 
         let SalesProducts = [];
 
-        $(".salesOutput").each((i, obj) => {
+        $(".salesProduct").each((i, obj) => {
           let id = $(obj)
             .find(`.salesProductNames_${i + 1}`)
             .parent()
