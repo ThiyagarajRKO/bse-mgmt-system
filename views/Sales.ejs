@@ -1,0 +1,1857 @@
+<!-- @format -->
+
+<!doctype html>
+<html lang="en">
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <!-- Bootstrap  -->
+  <link
+    href="/public/plugins/bootstrap/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- MDB5  -->
+  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js"></script>
+
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+  <script src="/public/plugins/select2/js/select2.min.js"></script>
+
+  <!-- DataTable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
+  <script src="/public/plugins/dataTables/datatables.min.js"></script>
+  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
+  <!-- Responsive Datatable -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/dataTables/datatables.responsive.min.css"
+  />
+  <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
+
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+  <script src="/public/plugins/Toastr/toastr.min.js"></script>
+
+  <!-- perfect-scrollbar plugin -->
+  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
+
+  <!-- jQuery Confirm -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
+  />
+  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
+
+  <!-- Slide-in Panel -->
+  <link
+    rel="stylesheet"
+    href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
+  />
+  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
+
+  <!-- Tippy -->
+  <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
+  <script src="/public/plugins/tippy/popper.min.js"></script>
+  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
+  <!-- jQuery Smart Tab -->
+  <link
+    href="/public/plugins/smartTab/smart_tab.all.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <script
+    type="text/javascript"
+    src="/public/plugins/smartTab/smart_tab.min.js"
+  ></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js"></script>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE</title>
+
+    <style type="text/css">
+      @font-face {
+        font-family: "CassandraPersonalUse";
+        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
+          format("truetype");
+      }
+
+      @font-face {
+        font-family: "CerebriSansPro-Regular";
+        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
+          format("truetype");
+      }
+
+      @font-face {
+        font-family: "RedditMono-Regular";
+        src: url("/public/fonts/RedditMono/RedditMono-Regular.ttf?v=2")
+          format("truetype");
+      }
+
+      body {
+        font-family: "CerebriSansPro-Regular";
+        background-color: #f7f9fd;
+      }
+
+      .toast {
+        opacity: 1 !important;
+      }
+
+      .btn {
+        text-transform: none;
+      }
+
+      a,
+      .edit,
+      .view,
+      .close,
+      .del {
+        cursor: pointer;
+      }
+
+      .panelClose {
+        cursor: pointer;
+      }
+
+      .select2-dropdown {
+        z-index: 10000 !important;
+      }
+
+      /* Table Pagination */
+      .page-item.active .page-link {
+        color: #fff !important;
+        background-color: #ea5455 !important;
+        border-color: #ea5455 !important;
+      }
+
+      .page-link {
+        color: #000 !important;
+        background-color: #fff !important;
+        border: 1px solid #dee2e6 !important;
+      }
+
+      .page-link:hover {
+        color: #fff !important;
+        background-color: #f17979 !important;
+        border-color: #ea5455 !important;
+      }
+
+      svg.radial-progress {
+        height: auto;
+        max-width: 100px;
+        margin: 10px;
+        transform: rotate(-90deg);
+        width: 100%;
+        /* padding-left: 0px; */
+        /* padding-right: 0px; */
+      }
+
+      svg.radial-progress circle {
+        fill: rgba(0, 0, 0, 0);
+        stroke: #1f2d3e;
+        stroke-dashoffset: 219.91148575129;
+        stroke-width: 10;
+      }
+
+      svg.radial-progress circle.incomplete {
+        opacity: 0.25;
+      }
+
+      svg.radial-progress circle.complete {
+        stroke-dasharray: 219.91148575129;
+      }
+
+      svg.radial-progress text {
+        fill: #1f2d3e;
+        text-anchor: middle;
+      }
+
+      .topMenu-item {
+        cursor: pointer;
+      }
+
+      .topMenu-item-active {
+        /* box-shadow: 0 -2px 0 0 #ea5455; */
+        color: #ea5455;
+      }
+
+      .topMenu-item:hover:not(.topMenu-item-active) {
+        /* box-shadow: 0 -2px 0 0 #ea5455; */
+        color: #ea5455;
+      }
+
+      #salesProductTable_wrapper {
+        margin-top: 60px !important;
+      }
+
+      .slideInPanel {
+        z-index: 9999;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -600px;
+        width: 400px;
+        background-color: #1f2d3e;
+        color: #e3e3e3;
+        height: 90vh;
+        /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+        transition: right 0.3s ease;
+        border-radius: 8px;
+      }
+
+      /* Input */
+      .slideInPanel input {
+        background-color: transparent;
+        border-color: rgba(98, 114, 147, 0.6);
+      }
+
+      .slideInPanel input:focus {
+        background-color: transparent;
+      }
+
+      .slideInPanel input:hover {
+        border-color: #627293;
+      }
+
+      /* Select */
+      .slideInPanel .select2-container {
+        background-color: transparent !important;
+        border-color: rgba(98, 114, 147, 0.6) !important;
+        color: 627293 !important;
+      }
+
+      .select2-container {
+        width: 100% !important;
+      }
+
+      .select2-selection__rendered,
+      .select2-selection__clear,
+      .select2-selection__arrow {
+        color: white !important;
+        margin-top: 0.25rem !important;
+      }
+
+      .select2-selection {
+        background-color: transparent !important;
+        border-color: rgba(98, 114, 147, 0.6) !important;
+        height: 35px !important;
+      }
+
+      .slideInPanel .select:focus {
+        background-color: transparent;
+        border-color: #627293;
+      }
+
+      .slideInPanel .select2-container:hover {
+        border-color: #627293;
+      }
+
+      /* TextArea */
+      .slideInPanel textarea {
+        background-color: transparent;
+        border-color: rgba(98, 114, 147, 0.6);
+      }
+
+      .slideInPanel textarea:focus {
+        background-color: transparent;
+      }
+
+      .slideInPanel textarea:hover {
+        border-color: #627293;
+      }
+
+      /* Form Control */
+      .slideInPanel .form-control {
+        color: #f7f9fc;
+      }
+
+      .slideInPanel .form-control::placeholder {
+        color: #627293;
+      }
+
+      .select2-selection::placeholder {
+        color: #627293;
+      }
+
+      table.dataTable th {
+        text-align: left !important;
+      }
+
+      fieldset {
+        border-color: rgba(129, 145, 179, 0.6) !important;
+        border-radius: 4px;
+      }
+
+      legend {
+        margin-top: -1.7rem !important;
+        background-color: #e0e0e0;
+        color: #1f2d3e;
+        border-radius: 4px;
+        font-size: inherit !important;
+      }
+
+      #appendOutput:hover {
+        background-color: rgb(135, 49, 177);
+        background-color: linear-gradient(
+          90deg,
+          rgba(135, 49, 177, 1) 1%,
+          rgba(191, 24, 188, 1) 35%,
+          rgba(209, 52, 174, 1) 68%,
+          rgba(217, 29, 115, 1) 100%
+        );
+        color: white;
+      }
+
+      /* 
+      #appendOutput {
+        color: rgba(98, 114, 147, 0.6) !important;
+      } */
+
+      .st-theme-brick > .nav .nav-link.active {
+        background-color: #dc4c64 !important;
+      }
+
+      .st-theme-brick > .nav .nav-link {
+        color: #dc4c64 !important;
+      }
+
+      .st-theme-brick > .nav {
+        border-color: #dc4c64 !important;
+      }
+
+      .vl {
+        border-left: 2px dashed rgba(98, 114, 147, 0.6);
+        height: 25px;
+        position: absolute;
+        left: 50%;
+        margin-left: -3px;
+        /* bottom: -10; */
+      }
+
+      .vl-top {
+        border-left: 2px dashed rgba(98, 114, 147, 0.6);
+        height: 35px;
+        position: absolute;
+        left: 50%;
+        margin-left: -3px;
+        /* bottom: -10; */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row d-flex justify-content-center">
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Sales Container ---------------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container salesContainer d-none">
+          <!-- Slide-in Panel -->
+          <div id="salesSlideInPanel" class="slideInPanel px-4 overflow-auto">
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="salesPanelHeading" class="fw-bold fs-5"
+                    >Add Sales Data</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closeSalesPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div id="smarttab" class="border-0">
+                  <ul class="nav">
+                    <li>
+                      <a class="nav-link">Input</a>
+                    </li>
+                    <li>
+                      <a class="nav-link">Output</a>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content">
+                    <div id="tab-1" class="tab-pane p-0" role="tabpanel">
+                      <div class="form-group mt-4">
+                        <label for="order_no">Order No:</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="salesLotNumbers"
+                          name="salesLotNumbers"
+                        ></select>
+                      </div>
+
+                      <div class="form-group mt-4">
+                        <label for="s">Sales Center</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="salesCenters"
+                          name="salesCenters"
+                        ></select>
+                      </div>
+
+                      <div class="form-group mt-4">
+                        <label for="rawMaterials">Raw Materials</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="rawMaterials"
+                          name="rawMaterials"
+                        ></select>
+                      </div>
+
+                      <div class="form-group mt-4">
+                        <label for="sales_quantity">Quantity</label>
+                        <input
+                          id="sales_quantity"
+                          class="form-control"
+                          type="number"
+                          placeholder="eg. 10"
+                          name="sales_quantity"
+                          required
+                        />
+                        <span style="font-size: 12px"
+                          >Balance Dispatched Quantity :
+                          <span
+                            class="fw-bold"
+                            id="balance_dispatched_quantity"
+                          ></span
+                        ></span>
+                      </div>
+
+                      <div class="form-group mt-4">
+                        <label for="sales_method">Sales Method</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="salesMethods"
+                          name="salesMethods"
+                        ></select>
+                      </div>
+                    </div>
+                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
+                      <div id="outputContainer">
+                        <fieldset
+                          class="form-group border p-3 salesOutput salesOutput_1"
+                          style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          "
+                        >
+                          <legend class="mb-2 w-auto px-2">Output 1</legend>
+                          <div class="form-group">
+                            <label for="product_name">Product Name:</label>
+                            <select
+                              class="form-control input-dropdown w-100 salesProductNames salesProductNames_1"
+                              name="salesProductNames"
+                            ></select>
+                          </div>
+
+                          <div class="form-group mt-4">
+                            <label for="yield_quantity">Yield Quantity </label>
+                            <input
+                              class="form-control yield_quantity yield_quantity_1"
+                              type="number"
+                              placeholder="eg. 10"
+                              name="yield_quantity"
+                              required
+                            />
+                          </div>
+
+                          <div class="form-group mt-4 mb-4">
+                            <label for="sales_notes">Sales Notes</label>
+                            <textarea
+                              row="3"
+                              class="form-control input-dropdown w-100 sales_notes sales_notes_1"
+                              name="sales_notes"
+                            ></textarea>
+                          </div>
+                        </fieldset>
+                      </div>
+
+                      <div class="vl"></div>
+                      <div
+                        id="appendOutput"
+                        style="border-color: rgba(98, 114, 147, 0.6) !important"
+                        class="btn border rounded d-flex justify-content-center mt-4"
+                      >
+                        <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitSales" class="col-lg-auto btn btn-danger">
+                    Save
+                  </div>
+                  <div id="nextSales" class="col-lg-auto btn btn-outline-info">
+                    Next
+                  </div>
+                  <div
+                    id="resetSalesDataBtn"
+                    class="col-lg-auto btn btn-outline-warning"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openSalesPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Sales</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="salesTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Procurement Date</span></th>
+                    <th class="fw-bold"><span>Procurement Lot</span></th>
+                    <th class="fw-bold">
+                      <span>Total Dispatched Weight</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Peeled Items</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Peeled Weight</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Yield</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Wastage</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="salesModal"
+          class="modal hide fade modal-xl"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Sales Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_sales_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_products"
+                      >Total Saleses:</label
+                    >
+                    <span id="view_total_saleses"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_sales_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="salesProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Raw Material</span></th>
+                      <th class="fw-bold"><span>Products</span></th>
+                      <th class="fw-bold"><span>Products Count</span></th>
+                      <th class="fw-bold"><span>Dispatched Quantity</span></th>
+                      <th class="fw-bold"><span>Peeled Quantity</span></th>
+                      <th class="fw-bold"><span>Total Yield Quantity</span></th>
+                      <th class="fw-bold"><span>Total Wastage</span></th>
+                      <th class="fw-bold"><span>Sales Method</span></th>
+                      <th class="fw-bold"><span>Sales Center</span></th>
+                      <th class="fw-bold"><span>Sales Date</span></th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Container Ends -->
+      </div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    jQuery(document).ready(async function ($) {
+      // Declarations
+      let is_updated_data = false;
+
+      toastr.options = {
+        closeButton: false,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "5000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+      };
+
+      $(function () {
+        // SmartTab initialize
+        $("#smarttab").smartTab({
+          selected: 0,
+          theme: "brick",
+          autoAdjustHeight: false,
+          animation: "fade",
+          // justified: false,
+          keyboardSettings: {
+            keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+            keyLeft: [37], // Left key code
+            keyRight: [39], // Right key code
+          },
+        });
+      });
+
+      // Global Functions
+      // Function to format date as YYYY-MM-DD
+      function formatDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        // Ensure 2-digit formatting
+        if (day < 10) {
+          day = "0" + day;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        return year + "-" + month + "-" + day;
+      }
+
+      function resetAllInputs() {
+        $("input").val("");
+
+        // Reset all date inputs
+        var dateInputs = document.querySelectorAll('input[type="date"]');
+        // looping all the date inputs
+        dateInputs.forEach(function (input) {
+          input.value = formatDate(new Date());
+        });
+
+        // Resetting textarea
+        $("textarea").val("");
+
+        // Resetting select field selected option
+        $("#lotNumbers").val(null).trigger("change");
+        $("#productNames").val(null).trigger("change");
+        $("#destinationLocation").val(null).trigger("change");
+        $("#distributionLocation").val(null).trigger("change");
+        $("#prodVehicleNumbers").val(null).trigger("change");
+        $("#prodDriverNames").val(null).trigger("change");
+
+        $("#productNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
+
+        // Sales
+        $("#peeledLotNumbers").val(null).trigger("change");
+        $("#salesCenters").val(null).trigger("change");
+        $("#rawMaterials").val(null).trigger("change");
+        $(".salesProductNames").val(null).trigger("change");
+        $("#salesMethods").val(null).trigger("change");
+
+        $("#salesCenters").select2({
+          placeholder: "Choose a sales center",
+          allowClear: true,
+        });
+        $("#rawMaterials").select2({
+          placeholder: "Choose a raw material",
+          allowClear: true,
+        });
+        $(".salesProductNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
+
+        // Peeled Sales
+        $("#peeledLotNumbers").val(null).trigger("change");
+        $("#distributionLocation").val(null).trigger("change");
+        $(".peeledProductNames").val(null).trigger("change");
+
+        //Packing
+        $("#packingLotNumbers").val(null).trigger("change");
+        $("#packingProductNames").val(null).trigger("change");
+        $("#packingDistributionLocation").val(null).trigger("change");
+        $("#packingGrade").val(null).trigger("change");
+        $("#packingSize").val(null).trigger("change");
+        $("#packingPackages").val(null).trigger("change");
+
+        $("#packingProductNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
+        $("#packingDistributionLocation").select2({
+          placeholder: "Choose a production center",
+          allowClear: true,
+        });
+        $("#packingGrade").select2({
+          placeholder: "Choose a Grade",
+          allowClear: true,
+        });
+        $("#packingSize").select2({
+          placeholder: "Choose a Size",
+          allowClear: true,
+        });
+
+        $("#packingSize").select2({
+          placeholder: "Choose a Package",
+          allowClear: true,
+        });
+
+        $(`.salesOutput:not(".salesOutput_1")`).remove();
+        $(`.vl-top:not(".vl-top-1")`).remove();
+
+        is_updated_data = false;
+      }
+
+      function openSlidePanel(
+        panelId,
+        panelHeadingId,
+        panelType,
+        panelSubmitButton,
+        panelBtnAttrName
+      ) {
+        // Opening Slide Panel
+        $(`#${panelId}`).css("right", "0");
+
+        // Changing panel Heading label
+        $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+
+        // Changing panel save button label
+        $(`#${panelSubmitButton}`).text("Save");
+
+        // Changing panel save button attribute
+        $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+      }
+
+      function closeSlidePanel(panelId) {
+        // Opening Slide Panel
+        $(`#${panelId}`).css("right", "-600px");
+
+        // Resetting all the input fields' data
+        resetAllInputs();
+
+        // Destroying select2 all the dropdowns
+        // $('select.select2-hidden-accessible').select2('destroy');
+      }
+
+      // Open Location on load (default)
+      $(".menu-container").addClass("d-none");
+
+      $(".salesContainer").removeClass("d-none");
+      $(".salesContainer").addClass("d-block");
+
+      resetAllInputs();
+      loadSalesTableData();
+      loadSalesDropdowns();
+      loadSalesTableData();
+
+      // ---------------------------------------------------------
+      // -------------------------- Sales ------------------------
+      // ---------------------------------------------------------
+
+      // // Open panel
+      $("#openSalesPanelBtn").click(function () {
+        // $("#salesModal").modal("show");
+        openSlidePanel(
+          "salesSlideInPanel",
+          "salesPanelHeading",
+          "Sales",
+          "submitSales",
+          "sales_id"
+        );
+
+        $("#balance_dispatched_quantity").text("").css({ color: "white" });
+
+        $("#smarttab").smartTab("first");
+      });
+
+      // Close panel
+      $("#closeSalesPanelBtn").click(function () {
+        closeSlidePanel("salesSlideInPanel");
+
+        view_sales_center_id = "";
+        view_raw_material_id = "";
+      });
+
+      $(document).on("click", ".modal-header .close", () => {
+        $("#salesModal").modal("hide");
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#salesModal").modal("hide");
+        }
+      );
+
+      $(document).on("click", "#appendOutput", (e) => {
+        const last_fieldset_index = $("#outputContainer fieldset").length;
+        const next_fieldset_index = (last_fieldset_index || 0) + 1;
+
+        if (!$(`.salesProductNames_${last_fieldset_index}`).val()) {
+          toastr["warning"](
+            "Please fill all the required values in the above output to create a new output"
+          );
+          return;
+        }
+
+        addOutput(next_fieldset_index);
+      });
+
+      $(document).on("click", "#nextSales", (e) => {
+        $("#smarttab").smartTab("next");
+      });
+
+      $(document).on(
+        "showTab",
+        "#smarttab",
+        (e, anchorObject, tabIndex, tabDirection, tabPosition) => {
+          if (tabIndex == 0) {
+            $("#nextSales").show();
+            $("#submitSales").removeClass("col-lg-5");
+            $("#resetSalesDataBtn").removeClass("col-lg-5");
+          } else {
+            $("#nextSales").hide();
+            $("#submitSales").addClass("col-lg-5");
+            $("#resetSalesDataBtn").addClass("col-lg-5");
+          }
+        }
+      );
+
+      function loadSalesDropdowns() {
+        // Sales Dropdown
+        loadSalesLotNumber();
+
+        loadSalesMethods();
+      }
+
+      function addOutput(
+        index,
+        peeled_product_id,
+        product_master_id,
+        yield_quantity,
+        sales_notes
+      ) {
+        $("#outputContainer")
+          .append(`<div class="vl-top vl-top-${index}"></div><fieldset
+                              class="form-group border p-3 mt-3 salesOutput salesOutput_${index}"
+                              style="
+                                border-color: rgba(129, 145, 179, 0.6) !important;
+                                margin-top: 2.2rem !important;
+                              "
+                            >
+                              <legend class="mb-2 w-auto px-2">Output ${index}</legend>
+                              <div class="form-group">
+                                <label for="product_name">Product Name:</label>
+                                <select
+                                  class="form-control input-dropdown w-100 salesProductNames salesProductNames_${index}"
+                                  peeled_product_id=${peeled_product_id}
+                                  name="salesProductNames"
+                                ></select>
+                              </div>
+
+                              <div class="form-group mt-4">
+                                <label for="yield_quantity">Yield Quantity</label>
+                                <input
+                                  class="form-control yield_quantity yield_quantity_${index}"
+                                  type="number"
+                                  placeholder="eg. 10"
+                                  name="yield_quantity"
+                                  required
+                                />
+                              </div>
+
+                              <div class="form-group mt-4 mb-4">
+                                <label for="sales_notes">Sales Notes</label>
+                                <textarea
+                                  row="3"
+                                  class="form-control input-dropdown w-100 sales_notes sales_notes_${index}"
+                                  name="sales_notes"
+                                ></textarea>
+                              </div>
+
+                            </fieldset>`);
+
+        $(`.salesProductNames_${index}`).select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          data: productNamesArray,
+        });
+
+        $(`.salesProductNames_${index}`)
+          .val(product_master_id || null)
+          .trigger("change");
+
+        $(`.yield_quantity_${index}`).val(yield_quantity || "");
+
+        $(`.sales_notes_${index}`).val(sales_notes || "");
+      }
+
+      $("#submitSales").click(function () {
+        saveSales();
+      });
+
+      function loadSalesTableData() {
+        $("#salesTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/procurement/lot/stats/sales",
+            error: function (xhr, error, code) {
+              $("#salesTable").DataTable().destroy();
+              $("#salesTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "procurement_date" },
+            { data: "procurement_lot" },
+            { data: "total_dispatched_quantity" },
+            { data: "total_peeled_count" },
+            { data: "total_peeled_quantity" },
+            { data: "total_yield_quantity" },
+            { data: null },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewSales" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.procurement_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                const sales_quantity = parseFloat(row["total_peeled_quantity"]);
+                const yield_quantity = parseFloat(row["total_yield_quantity"]);
+                const wastage_quantity = sales_quantity - yield_quantity;
+                return isNaN(wastage_quantity) ? 0 : wastage_quantity;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewSales", (e) => {
+        // Changing panel input fields data
+        $("#closeSalesPanelBtn").click();
+
+        // Changing panel input fields data
+        const view_procurement_lot_id = $(e.target).attr("procurement_lot_id");
+
+        const view_total_sales = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        const view_total_sales_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
+        $("#view_sales_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        // Top Header
+        $("#view_sales_lot_no").attr(
+          "procurement_lot_id",
+          view_procurement_lot_id
+        );
+
+        $("#view_total_saleses").text(view_total_sales);
+
+        $("#view_total_sales_weight").text(view_total_sales_weight);
+
+        // Opening Slied Panel
+        $("#salesModal").modal("show");
+
+        loadSalesProductTableData(view_procurement_lot_id);
+      });
+
+      let salesProductTable;
+      function loadSalesProductTableData(procurement_lot_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Procurement lot data should not be empty!");
+        }
+
+        salesProductTable = $("#salesProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/sales?procurement_lot_id=${procurement_lot_id}`,
+            error: function (xhr, error, code) {
+              $("#salesProductTable").DataTable().destroy();
+              $("#salesProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "SalesProducts" },
+            { data: null },
+            { data: "dis.dispatch_quantity" },
+            { data: "sales_quantity" },
+            { data: "total_yield_quantity" },
+            { data: null },
+            { data: "sales_method" },
+            { data: "UnitMaster.unit_code" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editSales" sales_id=${
+                  row?.id || null
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["VendorMaster"]?.vendor_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span style="cursor:pointer;color:blue" class="sales_product_list" sales_products_data='${JSON.stringify(
+                  data
+                )}'>${data ? "Show" : "-"}</i>`;
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span>${row["SalesProducts"]?.length || 0}</i>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                const sales_quantity = parseFloat(row["sales_quantity"]);
+                const yield_quantity = parseFloat(row["total_yield_quantity"]);
+                const wastage_quantity = sales_quantity - yield_quantity;
+                return yield_quantity
+                  ? isNaN(wastage_quantity)
+                    ? 0
+                    : wastage_quantity
+                  : "-";
+              },
+            },
+            // {
+            //   targets: [8],
+            //   className: "text-left",
+            //   render: function (data, type, row) {
+            //     return `<span class=${
+            //       data == "In Progress" ? "text-warning" : "text-success"
+            //     }>${data} <i class="fa-solid ${
+            //       data == "In Progress"
+            //         ? "fa-spinner fa-spin"
+            //         : "fa-circle-check"
+            //     }"></i></span>`;
+            //   },
+            // },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+              },
+            },
+            {
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", "td span.sales_product_list", function (e) {
+        let tr = e.target.closest("tr");
+        let row = salesProductTable.row(tr);
+
+        if (row.child.isShown()) {
+          // This row is already open - close it
+          row.child.hide();
+          $(e.target).text("Show");
+        } else {
+          // Open this row
+          row
+            .child(
+              format(
+                $(e.target).parent().find("span").attr("sales_products_data")
+              )
+            )
+            .show();
+          $(e.target).text("Hide");
+        }
+      });
+
+      // Formatting function for row details - modify as you need
+      function format(product_data) {
+        // `d` is the original data object for the row
+        let html_content = "";
+
+        JSON.parse(product_data)?.forEach((row) => {
+          html_content += `<tr>
+                            <td>${row["ProductMaster"]?.product_name}</td>
+                            <td>${row?.yield_quantity}</td>
+                            <td><span class=${
+                              row?.sales_status == "In Progress"
+                                ? "text-warning"
+                                : "text-success"
+                            }>${row?.sales_status} <i class="fa-solid ${
+                              row?.sales_status == "In Progress"
+                                ? "fa-spinner fa-spin"
+                                : "fa-circle-check"
+                            }"></i></span></td>
+                            <td>${row?.sales_notes || "-"}</td>
+                          </tr>`;
+        });
+
+        return `<table class="table border rounded nowrap w-50">
+                        <tbody>
+                          <tr>
+                            <th class="fw-bold">Product Name</th>
+                            <th class="fw-bold">Yield Quantity</th>
+                            <th class="fw-bold">Status</th>
+                            <th class="fw-bold">Sales Notes</th>
+                          </tr>
+                          ${html_content}
+                        </tbody>
+                      </table>`;
+      }
+
+      let view_sales_center_id = "";
+      let view_raw_material_id = "";
+      $(document).on("click", ".editSales", (e) => {
+        // Changing panel input fields data
+        is_updated_data = true;
+
+        $("#salesLotNumbers")
+          .val($("#view_sales_lot_no").attr("procurement_lot_id"))
+          .trigger("change");
+
+        view_raw_material_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(1)
+          .find("span")
+          .attr("dispatch_id");
+
+        view_sales_center_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(9)
+          .find("span")
+          .attr("unit_master_id");
+
+        $("#sales_quantity").val(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#salesMethods")
+          .val($(e.target).closest("tr").children("td").eq(8).text())
+          .trigger("change");
+
+        let sales_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("sales_products_data");
+
+        let sales_products_obj = JSON.parse(sales_products);
+        if (
+          sales_products &&
+          Array.isArray(sales_products_obj) &&
+          sales_products_obj?.length > 0
+        ) {
+          let i = 1;
+
+          sales_products_obj?.forEach((product) => {
+            if (i == 1) {
+              $(".salesProductNames_" + i)
+                .val(product?.ProductMaster?.id)
+                .trigger("change");
+              $(".salesProductNames_" + i)
+                .parent()
+                .find("select")
+                .attr("peeled_product_id", product?.id);
+              $(".yield_quantity_" + i).val(product?.yield_quantity);
+              $(".sales_notes_" + i).val(product?.sales_notes);
+            } else {
+              addOutput(
+                i,
+                product?.id,
+                product?.ProductMaster?.id,
+                product?.yield_quantity,
+                product?.sales_notes
+              );
+            }
+            i++;
+          });
+        }
+
+        // Opening Slied Panel
+        $("#openSalesPanelBtn").click();
+
+        // Changing panel heading
+        $("#salesPanelHeading").text("Edit Sales Data");
+
+        // Changing panel button label
+        $("#submitSales").text("Update");
+
+        // Changing panel button attribute
+        $("#submitSales").attr("sales_id", $(e.target).attr("sales_id"));
+
+        $("#salesModal").modal("hide");
+      });
+
+      function loadSalesLotNumber() {
+        $.ajax({
+          url: `/api/v1/procurement/lot/lots/dispatch`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#salesLotNumbers").select2({
+              placeholder: "Choose a lot",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.procurement_lot,
+                };
+              }),
+            });
+
+            $("#salesLotNumbers").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#salesLotNumbers", () => {
+        $("#balance_dispatched_quantity").text("");
+
+        let lot_no = $("#salesLotNumbers").val();
+
+        $("#salesCenters").empty();
+        $("#rawMaterials").empty();
+        $(".salesProductNames").empty();
+        productNamesArray = [];
+
+        if (lot_no) {
+          loadSalesCenters(lot_no);
+        }
+      });
+
+      function loadSalesCenters(procurement_lot_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Lot number must not be empty");
+          return;
+        }
+
+        $.ajax({
+          url:
+            "/api/v1/master/unit/get/dispatch/destination/all?procurement_lot_id=" +
+            procurement_lot_id,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#salesCenters").select2({
+              placeholder: "Choose a sales center",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.unit_code,
+                };
+              }),
+            });
+
+            if (view_sales_center_id) {
+              $("#salesCenters").val(view_sales_center_id).trigger("change");
+            } else {
+              $("#salesCenters").val(null).trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#salesCenters", () => {
+        $("#balance_dispatched_quantity").text("");
+
+        let lot_no = $("#salesLotNumbers").val();
+        let unit_master_id = $("#salesCenters").val();
+
+        $("#rawMaterials").empty();
+        $(".salesProductNames").empty();
+        productNamesArray = [];
+
+        if (lot_no && unit_master_id) {
+          loadSalesRawMaterials(lot_no, unit_master_id);
+        }
+      });
+
+      function loadSalesRawMaterials(lot_no, unit_master_id) {
+        if (!lot_no) {
+          toastr["warning"]("Invalid lot number!");
+          return;
+        }
+
+        if (!unit_master_id) {
+          toastr["warning"]("Invalid Sales center!");
+          return;
+        }
+
+        $.ajax({
+          url: `/api/v1/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&sales_id=${$("#submitSales").attr("sales_id") || null}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            $("#rawMaterials").select2({
+              placeholder: "Choose a raw material",
+              allowClear: "true",
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item?.id,
+                  species_id:
+                    item?.pp?.ProductMaster.ProductCategoryMaster
+                      .species_master_id,
+                  quantity:
+                    (parseFloat(item?.dispatch_quantity) || 0) -
+                    (parseFloat(item?.sales_quantity) || 0),
+                  text: `${item?.pp?.ProductMaster?.product_name}-${
+                    item?.pp?.procurement_product_type
+                  }-${item?.pp?.VendorMaster?.vendor_name?.replaceAll(
+                    " ",
+                    ""
+                  )}-${item?.dispatch_quantity || 0}`,
+                };
+              }),
+            });
+
+            if (view_raw_material_id) {
+              $("#rawMaterials").val(view_raw_material_id).trigger("change");
+            } else {
+              $("#rawMaterials").val(null).trigger("change");
+            }
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("change", "#rawMaterials", () => {
+        if ($("#rawMaterials").val()) {
+          $("#balance_dispatched_quantity").text("");
+
+          $(".salesProductNames").empty();
+          productNamesArray = [];
+
+          balance_dispatched_quantity =
+            $("#rawMaterials").select2("data")[0]?.quantity;
+
+          if (!isNaN(balance_dispatched_quantity)) {
+            $("#balance_dispatched_quantity").text(
+              parseFloat(balance_dispatched_quantity)
+            );
+
+            $("#balance_dispatched_quantity").css({ color: "white" });
+          }
+
+          $("#sales_quantity").keyup();
+
+          const species_id = $("#rawMaterials").select2("data")[0]?.species_id;
+          loadSalesProducts(species_id);
+        }
+      });
+
+      let productNamesArray = [];
+      function loadSalesProducts(species_id) {
+        $(".salesProductNames").empty();
+        productNamesArray = [];
+
+        if (!species_id) {
+          toastr["warning"]("Product data must not be empty");
+        }
+
+        $.ajax({
+          url: "/api/v1/master/product?species_id=" + species_id,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            productNamesArray = [];
+
+            data?.data?.rows.forEach((item) => {
+              productNamesArray.push({
+                id: item.id,
+                text: item.product_name,
+              });
+            });
+
+            $(".salesProductNames").select2({
+              placeholder: "Choose a product",
+              allowClear: "true",
+              data: productNamesArray,
+            });
+
+            if (!is_updated_data)
+              $(".salesProductNames").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $(document).on("keyup", "#sales_quantity", (e) => {
+        e.preventDefault();
+
+        const currentSalesQuantity = $(e.target).val();
+        const procurementQuantity = parseFloat(
+          $("#rawMaterials").select2("data")[0]?.quantity
+        );
+
+        if (!currentSalesQuantity) {
+          $("#balance_dispatched_quantity").text(balance_dispatched_quantity);
+          $("#balance_dispatched_quantity").css({ color: "white" });
+          return;
+        }
+
+        let balanceQuantity = procurementQuantity - currentSalesQuantity;
+
+        $("#balance_dispatched_quantity").text(
+          !isNaN(balanceQuantity) ? balanceQuantity : currentSalesQuantity
+        );
+
+        if (balanceQuantity > 0) {
+          $("#balance_dispatched_quantity").css({ color: "yellow" });
+        } else {
+          $("#balance_dispatched_quantity").css({ color: "red" });
+        }
+      });
+
+      function loadSalesMethods() {
+        $("#salesMethods").select2({
+          placeholder: "Choose a method",
+          allowClear: "true",
+          data: [
+            {
+              id: "Manual",
+              text: "Manual",
+            },
+            {
+              id: "Chemical",
+              text: "Chemical",
+            },
+          ],
+        });
+
+        $("#salesMethods").val(null).trigger("change");
+      }
+
+      function saveSales() {
+        const sales_id = $("#submitSales").attr("sales_id");
+        const current_weight_balance = $("#balance_dispatched_quantity").text();
+        const sales_quantity = parseFloat($("#sales_quantity").val()) || 0;
+        let yield_quantity = 0;
+
+        $(".yield_quantity").each((i, obj) => {
+          yield_quantity += isNaN(parseFloat($(obj).val()))
+            ? 0
+            : parseFloat($(obj).val());
+        });
+
+        if (parseFloat(current_weight_balance) <= -1) {
+          toastr["warning"]("Invalid sales quantity");
+          return;
+        }
+
+        let SalesProducts = [];
+
+        $(".salesOutput").each((i, obj) => {
+          let id = $(obj)
+            .find(`.salesProductNames_${i + 1}`)
+            .parent()
+            .find("select")
+            .attr("peeled_product_id");
+
+          let product_master_id = $(obj)
+            .find(`.salesProductNames_${i + 1}`)
+            .val();
+
+          let yield_quantity = $(obj)
+            .find(`.yield_quantity_${i + 1}`)
+            .val();
+
+          yield_quantity = isNaN(parseFloat(yield_quantity))
+            ? 0
+            : parseFloat(yield_quantity);
+
+          let sales_notes = $(obj)
+            .find(`.sales_notes_${i + 1}`)
+            .val();
+
+          if (product_master_id) {
+            let outputObj = {
+              sales_id,
+              product_master_id,
+              yield_quantity,
+              sales_notes,
+            };
+
+            if (id && id != "undefined") {
+              outputObj.id = id;
+            }
+
+            SalesProducts.push(outputObj);
+          }
+        });
+
+        let url = "/api/v1/sales";
+        let method = "POST";
+        let input_params = {
+          dispatch_id: $("#rawMaterials").val(),
+          product_master_id: $(".salesProductNames").val(),
+          unit_master_id: $("#salesCenters").val(),
+          sales_method: $("#salesMethods").val(),
+          sales_quantity,
+          SalesProducts,
+        };
+
+        if (sales_id && sales_id != "null") {
+          url = "/api/v1/sales";
+          method = "PUT";
+
+          input_params = {
+            sales_id,
+            sales_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        if (yield_quantity > 0 && sales_quantity < yield_quantity) {
+          toastr["warning"](
+            "Yield quantity must not be greater than sales quantity!"
+          );
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closeSalesPanelBtn").click();
+
+            loadSalesTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetSalesDataBtn").on("click", resetAllInputs);
+      // -------------------- End of Sales -----------------
+    });
+  </script>
+</html>
