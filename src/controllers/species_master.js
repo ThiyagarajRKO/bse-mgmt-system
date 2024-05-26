@@ -21,7 +21,7 @@ export const Insert = async (profile_id, species_data) => {
       if (!species_data.division_master_id) {
         return reject({
           statusCode: 420,
-          message: "Devision master id must not be empty!",
+          message: "Division master id must not be empty!",
         });
       }
 

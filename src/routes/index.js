@@ -29,6 +29,7 @@ import priceListMasterRoute from "./price_list_master";
 import priceListProductMasterRoute from "./price_list_product_master";
 import shippingMasterRoute from "./shipping_master";
 import auditLogsRoute from "./audit_logs";
+import salesRoute from "./sales";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -104,6 +105,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(peeledDispatchRoute, { prefix: "/peeled/dispatch" });
 
   fastify.register(packingRoute, { prefix: "/packing" });
+
+  fastify.register(salesRoute, { prefix: "/sales" });
 
   fastify.register(locationMasterRoute, { prefix: "/master/location" });
 

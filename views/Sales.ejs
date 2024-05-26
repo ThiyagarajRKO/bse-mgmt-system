@@ -388,7 +388,7 @@
                 <div id="smarttab" class="border-0">
                   <ul class="nav">
                     <li>
-                      <a class="nav-link">Input</a>
+                      <a class="nav-link">Order</a>
                     </li>
                     <li>
                       <a class="nav-link">Products</a>
@@ -507,14 +507,14 @@
                           </div>
 
                           <div class="form-group mt-2">
-                            <label for="delivery_date"
+                            <label for="expected_delivery_date"
                               >Expected Delivery Date</label
                             >
                             <input
-                              id="delivery_date"
+                              id="expected_delivery_date"
                               class="form-control"
                               type="date"
-                              name="delivery_date"
+                              name="expected_delivery_date"
                               required
                             />
                           </div>
@@ -605,7 +605,7 @@
                 >
                   <i class="fa-solid fa-circle-plus my-auto"></i>
                   <span style="margin-top: 4px" class="fw-bold my-auto"
-                    >Sales</span
+                    >New Order</span
                   >
                 </div>
               </div>
@@ -617,22 +617,44 @@
                 <thead>
                   <tr>
                     <th style="border-radius: 4px 0 0 0"></th>
-                    <th class="fw-bold"><span>Procurement Date</span></th>
-                    <th class="fw-bold"><span>Procurement Lot</span></th>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Order No</span></th>
+                    <th class="fw-bold"><span>Order Date</span></th>
                     <th class="fw-bold">
-                      <span>Total Dispatched Weight</span>
+                      <span>Product Count</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Total Peeled Items</span>
+                      <span>Total Price</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Total Peeled Weight</span>
+                      <span>Customer Name</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Total Yield</span>
+                      <span>Payment Term</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Total Wastage</span>
+                      <span>Payment Type</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Shipping Date</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Shipping Source</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Shipping Destination</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Shipping Address</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Shipping Method</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Expected Delivery Date</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Delivery Status</span>
                     </th>
                   </tr>
                 </thead>
@@ -662,20 +684,20 @@
               <div class="modal-body">
                 <div class="d-flex justify-content-between">
                   <div class="form-group">
-                    <label class="fw-bold" for="lot_no">Lot No:</label>
-                    <span id="view_sales_lot_no"></span>
+                    <label class="fw-bold" for="lot_no">Order No:</label>
+                    <span id="view_order_no"></span>
                   </div>
 
                   <div class="form-group">
                     <label class="fw-bold" for="total_products"
-                      >Total Saleses:</label
+                      >Total Unit:</label
                     >
                     <span id="view_total_saleses"></span>
                   </div>
 
                   <div class="form-group">
                     <label class="fw-bold" for="total_weight"
-                      >Total Weight:</label
+                      >Total Price:</label
                     >
                     <span id="view_total_sales_weight"></span>
                   </div>
@@ -690,17 +712,10 @@
                   <thead>
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
-                      <th class="fw-bold"><span>Order No</span></th>
-                      <th class="fw-bold"><span>Order Date</span></th>
-                      <th class="fw-bold"><span>Customer Name</span></th>
-                      <th class="fw-bold"><span>Products Count</span></th>
-                      <th class="fw-bold"><span>Total Units</span></th>
-                      <th class="fw-bold"><span>Total Price</span></th>
-                      <th class="fw-bold"><span>Carrier Code</span></th>
-                      <th class="fw-bold"><span>Shipping Code</span></th>
-                      <th class="fw-bold"><span>Payment Terms</span></th>
-                      <th class="fw-bold"><span>Payment Type</span></th>
-                      <th class="fw-bold"><span>Status</span></th>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold"><span>Unit</span></th>
+                      <th class="fw-bold"><span>Price</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -969,8 +984,8 @@
         index,
         peeled_product_id,
         product_master_id,
-        yield_quantity,
-        sales_notes
+        product_unit,
+        product_price
       ) {
         $("#salesProductContainer")
           .append(`<div class="vl-top vl-top-${index}"></div><fieldset
@@ -1003,11 +1018,13 @@
 
                               <div class="form-group mt-2 mb-2">
                                 <label for="product_price_1">Price</label>
-                                <textarea
-                                  row="3"
-                                  class="form-control input-dropdown w-100 product_price_1 product_price_${index}"
-                                  name="product_price_1"
-                                ></textarea>
+                                <input
+                                  class="form-control product_price product_price_1"
+                                  type="number"
+                                  placeholder="eg. 10"
+                                  name="product_price_${index}"
+                                  required
+                                />
                               </div>
 
                             </fieldset>`);
@@ -1022,9 +1039,9 @@
           .val(product_master_id || null)
           .trigger("change");
 
-        $(`.yield_quantity_${index}`).val(yield_quantity || "");
+        $(`.product_unit_${index}`).val(product_unit || "");
 
-        $(`.sales_notes_${index}`).val(sales_notes || "");
+        $(`.product_price_${index}`).val(product_price || "");
       }
 
       $("#submitSales").click(function () {
@@ -1044,7 +1061,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/stats/sales",
+            url: "/api/v1/sales",
             error: function (xhr, error, code) {
               $("#salesTable").DataTable().destroy();
               $("#salesTable").DataTable({ scrollX: true, ordering: false });
@@ -1065,27 +1082,46 @@
           },
           columns: [
             { data: null },
-            { data: "procurement_date" },
-            { data: "procurement_lot" },
-            { data: "total_dispatched_quantity" },
-            { data: "total_peeled_count" },
-            { data: "total_peeled_quantity" },
-            { data: "total_yield_quantity" },
             { data: null },
+            { data: "order_no" },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: "CustomerMaster.customer_name" },
+            { data: "payment_terms" },
+            { data: "payment_type" },
+            { data: "shipping_date" },
+            { data: "ShippingMaster.shipping_source" },
+            { data: "ShippingMaster.shipping_destination" },
+            { data: "shipping_address" },
+            { data: "shipping_method" },
+            { data: "expected_delivery_date" },
+            { data: "delivery_status" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewSales" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa-solid fa-eye view viewSales" sales_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this order"></i>`;
               },
             },
             {
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                const date = new Date(row?.procurement_date);
+                return (
+                  '<i class="fa fa-trash del delProcurement" sales_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
+                );
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row?.created_at);
 
                 var months = [
                   "Jan",
@@ -1108,48 +1144,68 @@
               },
             },
             {
-              targets: [2],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span procurement_lot_id=${row?.id}>${data}</span>`;
+                const date = new Date(row?.shipping_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
               },
             },
             {
-              targets: [3],
+              targets: [14],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
+                const date = new Date(row?.shipping_date);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
               },
             },
             {
-              targets: [4],
+              targets: [15],
               className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                const sales_quantity = parseFloat(row["total_peeled_quantity"]);
-                const yield_quantity = parseFloat(row["total_yield_quantity"]);
-                const wastage_quantity = sales_quantity - yield_quantity;
-                return isNaN(wastage_quantity) ? 0 : wastage_quantity;
+              render: (data, type, row) => {
+                return `<span class=${
+                  data == "Delivered" ? "text-success" : "text-warning"
+                }>${data} <i class="fa-solid ${
+                  data == "Delivered"
+                    ? "fa-circle-check"
+                    : "fa-truck-fast fa-fade"
+                }"></i></span>`;
               },
             },
           ],
@@ -1162,44 +1218,41 @@
         $("#closeSalesPanelBtn").click();
 
         // Changing panel input fields data
-        const view_procurement_lot_id = $(e.target).attr("procurement_lot_id");
+        const view_sales_id = $(e.target).attr("sales_id");
 
-        const view_total_sales = $(e.target)
+        const view_total_products = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(4)
+          .eq(3)
           .text();
 
-        const view_total_sales_weight = $(e.target)
+        const view_total_products_weight = $(e.target)
           .closest("tr")
           .children("td")
           .eq(5)
           .text();
 
-        $("#view_sales_lot_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
+        $("#view_order_no").text(
+          $(e.target).closest("tr").children("td").eq(1).text()
         );
 
         // Top Header
-        $("#view_sales_lot_no").attr(
-          "procurement_lot_id",
-          view_procurement_lot_id
-        );
+        $("#view_order_no").attr("sales_id", view_sales_id);
 
-        $("#view_total_saleses").text(view_total_sales);
+        $("#view_total_products").text(view_total_products);
 
-        $("#view_total_sales_weight").text(view_total_sales_weight);
+        $("#view_total_products_weight").text(view_total_sales_weight);
 
         // Opening Slied Panel
         $("#salesModal").modal("show");
 
-        loadSalesProductTableData(view_procurement_lot_id);
+        loadSalesProductTableData(view_sales_id);
       });
 
       let salesProductTable;
-      function loadSalesProductTableData(procurement_lot_id) {
-        if (!procurement_lot_id) {
-          toastr["warning"]("Procurement lot data should not be empty!");
+      function loadSalesProductTableData() {
+        if (!sales_id) {
+          toastr["warning"]("Sales data should not be empty!");
         }
 
         salesProductTable = $("#salesProductTable").DataTable({
@@ -1214,7 +1267,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/sales?procurement_lot_id=${procurement_lot_id}`,
+            url: `/api/v1/sales/product?sales_id=${sales_id}`,
             error: function (xhr, error, code) {
               $("#salesProductTable").DataTable().destroy();
               $("#salesProductTable").DataTable({
@@ -1239,22 +1292,16 @@
           columns: [
             { data: null },
             { data: null },
-            { data: "SalesProducts" },
-            { data: null },
-            { data: "dis.dispatch_quantity" },
-            { data: "sales_quantity" },
-            { data: "total_yield_quantity" },
-            { data: null },
-            { data: "sales_method" },
-            { data: "UnitMaster.unit_code" },
-            { data: "created_at" },
+            { data: "ProductMaster.product_name" },
+            { data: "unit" },
+            { data: "price" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editSales" sales_id=${
+                return `<i class="fa fa-pen-to-square edit editSales" sales_product_id=${
                   row?.id || null
                 } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
@@ -1263,97 +1310,10 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["VendorMaster"]?.vendor_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
-              },
-            },
-            {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span style="cursor:pointer;color:blue" class="sales_product_list" sales_products_data='${JSON.stringify(
-                  data
-                )}'>${data ? "Show" : "-"}</i>`;
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span>${row["SalesProducts"]?.length || 0}</i>`;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                const sales_quantity = parseFloat(row["sales_quantity"]);
-                const yield_quantity = parseFloat(row["total_yield_quantity"]);
-                const wastage_quantity = sales_quantity - yield_quantity;
-                return yield_quantity
-                  ? isNaN(wastage_quantity)
-                    ? 0
-                    : wastage_quantity
-                  : "-";
-              },
-            },
-            // {
-            //   targets: [8],
-            //   className: "text-left",
-            //   render: function (data, type, row) {
-            //     return `<span class=${
-            //       data == "In Progress" ? "text-warning" : "text-success"
-            //     }>${data} <i class="fa-solid ${
-            //       data == "In Progress"
-            //         ? "fa-spinner fa-spin"
-            //         : "fa-circle-check"
-            //     }"></i></span>`;
-            //   },
-            // },
-            {
-              targets: [9],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
-              },
-            },
-            {
-              targets: [10],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row?.created_at);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
                 return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                  '<i class="fa fa-trash del delProcurement" sales_product_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
                 );
               },
             },
@@ -1391,7 +1351,7 @@
         JSON.parse(product_data)?.forEach((row) => {
           html_content += `<tr>
                             <td>${row["ProductMaster"]?.product_name}</td>
-                            <td>${row?.yield_quantity}</td>
+                            <td>${row?.product_unit}</td>
                             <td><span class=${
                               row?.sales_status == "In Progress"
                                 ? "text-warning"
@@ -1401,7 +1361,7 @@
                                 ? "fa-spinner fa-spin"
                                 : "fa-circle-check"
                             }"></i></span></td>
-                            <td>${row?.sales_notes || "-"}</td>
+                            <td>${row?.product_price || "-"}</td>
                           </tr>`;
         });
 
@@ -1409,9 +1369,8 @@
                         <tbody>
                           <tr>
                             <th class="fw-bold">Product Name</th>
-                            <th class="fw-bold">Yield Quantity</th>
-                            <th class="fw-bold">Status</th>
-                            <th class="fw-bold">Sales Notes</th>
+                            <th class="fw-bold">Unit</th>
+                            <th class="fw-bold">Price</th>
                           </tr>
                           ${html_content}
                         </tbody>
@@ -1425,7 +1384,7 @@
         is_updated_data = true;
 
         $("#salesLotNumbers")
-          .val($("#view_sales_lot_no").attr("procurement_lot_id"))
+          .val($("#view_order_no").attr("procurement_lot_id"))
           .trigger("change");
 
         view_raw_material_id = $(e.target)
@@ -1473,16 +1432,16 @@
               $(".salesProductNames_" + i)
                 .parent()
                 .find("select")
-                .attr("peeled_product_id", product?.id);
-              $(".yield_quantity_" + i).val(product?.yield_quantity);
-              $(".sales_notes_" + i).val(product?.sales_notes);
+                .attr("sales_product_id", product?.id);
+              $(".product_unit_" + i).val(product?.product_unit);
+              $(".product_price_" + i).val(product?.product_price);
             } else {
               addOutput(
                 i,
                 product?.id,
                 product?.ProductMaster?.id,
-                product?.yield_quantity,
-                product?.sales_notes
+                product?.product_unit,
+                product?.product_price
               );
             }
             i++;
@@ -1678,7 +1637,7 @@
 
       function loadShippingMethods() {
         $("#shippingMethods").select2({
-          placeholder: "Choose a customer",
+          placeholder: "Choose a method",
           allowClear: "true",
           data: [
             {
@@ -1711,10 +1670,10 @@
         const sales_id = $("#submitSales").attr("sales_id");
         const current_weight_balance = $("#balance_dispatched_quantity").text();
         const sales_quantity = parseFloat($("#sales_quantity").val()) || 0;
-        let yield_quantity = 0;
+        let product_unit = 0;
 
-        $(".yield_quantity").each((i, obj) => {
-          yield_quantity += isNaN(parseFloat($(obj).val()))
+        $(".product_unit").each((i, obj) => {
+          product_unit += isNaN(parseFloat($(obj).val()))
             ? 0
             : parseFloat($(obj).val());
         });
@@ -1737,24 +1696,24 @@
             .find(`.salesProductNames_${i + 1}`)
             .val();
 
-          let yield_quantity = $(obj)
-            .find(`.yield_quantity_${i + 1}`)
+          let product_unit = $(obj)
+            .find(`.product_unit_${i + 1}`)
             .val();
 
-          yield_quantity = isNaN(parseFloat(yield_quantity))
+          product_unit = isNaN(parseFloat(product_unit))
             ? 0
-            : parseFloat(yield_quantity);
+            : parseFloat(product_unit);
 
-          let sales_notes = $(obj)
-            .find(`.sales_notes_${i + 1}`)
+          let product_price = $(obj)
+            .find(`.product_price_${i + 1}`)
             .val();
 
           if (product_master_id) {
             let outputObj = {
               sales_id,
               product_master_id,
-              yield_quantity,
-              sales_notes,
+              product_unit,
+              product_price,
             };
 
             if (id && id != "undefined") {
@@ -1768,11 +1727,15 @@
         let url = "/api/v1/sales";
         let method = "POST";
         let input_params = {
-          dispatch_id: $("#rawMaterials").val(),
-          product_master_id: $(".salesProductNames").val(),
-          unit_master_id: $("#salesCenters").val(),
-          sales_method: $("#salesMethods").val(),
-          sales_quantity,
+          order_date: $("#order_date").val(),
+          customer_master_id: $("#customerNames").val(),
+          payment_terms: $("#payment_terms").val(),
+          payment_type: $("#paymentTypes").val(),
+          shipping_date: $("#shipping_date").val(),
+          shipping_master_id: $("#shippingDestinations").val(),
+          shipping_method: $("#shippingMethods").val(),
+          shipping_address: $("#shipping_address").val(),
+          expected_delivery_date: $("#expected_delivery_date").val(),
           SalesProducts,
         };
 
@@ -1788,12 +1751,12 @@
           };
         }
 
-        if (yield_quantity > 0 && sales_quantity < yield_quantity) {
-          toastr["warning"](
-            "Yield quantity must not be greater than sales quantity!"
-          );
-          return;
-        }
+        // if (product_unit > 0 && sales_quantity < product_unit) {
+        //   toastr["warning"](
+        //     "Yield quantity must not be greater than sales quantity!"
+        //   );
+        //   return;
+        // }
 
         $.ajax({
           url,

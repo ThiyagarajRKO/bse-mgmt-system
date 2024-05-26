@@ -28,3 +28,4 @@ export * as Peeling from "./peeling";
 export * as PeelingProducts from "./peeling_products";
 export * as PeeledDispatches from "./peeled_dispatches";
 export * as Packing from "./packing";
+export * as Sales from "./sales";
