@@ -29,6 +29,7 @@ export const Create = (
           shipping_method,
           shipping_address,
           expected_delivery_date,
+          OrdersProducts,
           is_active: true,
         },
         Array.isArray(OrdersProducts) && OrdersProducts.length > 0

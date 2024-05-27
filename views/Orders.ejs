@@ -751,8 +751,10 @@
                                 <th class="fw-bold">
                                   <span>Product Name</span>
                                 </th>
-                                <th class="fw-bold"><span>Unit</span></th>
-                                <th class="fw-bold"><span>Price</span></th>
+                                <th class="fw-bold"><span>Quantity</span></th>
+                                <th class="fw-bold">
+                                  <span>Price per KG</span>
+                                </th>
                                 <th class="fw-bold">
                                   <span>Description</span>
                                 </th>
@@ -1179,7 +1181,7 @@
                               </div>
 
                               <div class="form-group mt-2">
-                                <label for="product_unit">Unit</label>
+                                <label for="product_unit">Quantity</label>
                                 <input
                                   class="form-control product_unit product_unit_${index}"
                                   type="number"
@@ -1190,7 +1192,7 @@
                               </div>
 
                               <div class="form-group mt-2 mb-2">
-                                <label for="product_price">Price</label>
+                                <label for="product_price">Price per KG</label>
                                 <input
                                   class="form-control product_price product_price_${index}"
                                   type="number"
@@ -1316,6 +1318,13 @@
                 var month = months[date.getMonth()];
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
                 return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: (data, type, row) => {
+                return row?.OrdersProducts?.length || 0;
               },
             },
             {
@@ -1823,9 +1832,9 @@
             let outputObj = {
               order_id,
               product_master_id,
-              product_unit,
-              product_price,
-              product_desc,
+              unit: product_unit,
+              price: product_price,
+              description: product_desc,
             };
 
             if (id && id != "undefined") {
