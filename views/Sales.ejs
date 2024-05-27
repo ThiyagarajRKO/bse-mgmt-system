@@ -708,53 +708,53 @@
                           <legend class="w-auto px-2">Order Data</legend>
                           <!-- 1st row -->
                           <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_order_no"
-                                >Order No:</label
-                              >
-                              <span id="view_order_no"></span>
-                            </div>
+                            <table class="col">
+                              <tr>
+                                <th class="align-top">Order No</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_order_no"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Order Date</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_order_date"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Order Status</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_delivery_status"></span>
+                                </td>
+                              </tr>
+                            </table>
 
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_order_date"
-                                >Order Date:</label
-                              >
-                              <span id="view_order_date"></span>
-                            </div>
-                          </div>
-
-                          <!-- 2nd row -->
-                          <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_payment_terms"
-                                >Payment Terms:</label
-                              >
-                              <span id="view_payment_terms"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_payment_type"
-                                >Payment Type:</label
-                              >
-                              <span id="view_payment_type"></span>
-                            </div>
-                          </div>
-
-                          <!-- 3rd row -->
-                          <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                              <label class="fw-bold" for="total_products"
-                                >Total Price:</label
-                              >
-                              <span id="view_total_price"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="total_weight"
-                                >Status:</label
-                              >
-                              <span id="view_delivery_status"></span>
-                            </div>
+                            <table class="col">
+                              <tr>
+                                <th class="align-top">Payment Terms</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_payment_terms"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Payment Type</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_payment_type"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Total Price</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_total_price"></span>
+                                </td>
+                              </tr>
+                            </table>
                           </div>
                         </fieldset>
                       </div>
@@ -805,36 +805,39 @@
 
                           <!-- Customer Info -->
                           <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_customer_name"
-                                >Customer Name:</label
-                              >
-                              <span id="view_customer_name"></span>
-                            </div>
+                            <table class="col">
+                              <tr>
+                                <th class="align-top">Name</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_customer_name"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Country</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_customer_country"></span>
+                                </td>
+                              </tr>
+                            </table>
 
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_customer_country"
-                                >Customer Country:</label
-                              >
-                              <span id="view_customer_country"></span>
-                            </div>
-                          </div>
-
-                          <!-- Customer Contact -->
-                          <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_customer_email"
-                                >Customer Email:</label
-                              >
-                              <span id="view_customer_email"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_customer_phone"
-                                >Customer Phone:</label
-                              >
-                              <span id="view_customer_phone"></span>
-                            </div>
+                            <table class="col">
+                              <tr>
+                                <th class="align-top">Email</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_customer_email"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Phone</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_customer_phone"></span>
+                                </td>
+                              </tr>
+                            </table>
                           </div>
                         </fieldset>
                       </div>
@@ -871,7 +874,38 @@
 
                             <!-- Shipping Info -->
 
-                            <div class="form-group">
+                            <table class="w-100">
+                              <tr>
+                                <th class="align-top">Shipping Date</th>
+                                <td class="align-top">:</td>
+                                <td style="word-break: break-all">
+                                  <span id="view_shipping_date"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Destination</th>
+                                <td class="align-top">:</td>
+                                <td style="word-break: break-all">
+                                  <span id="view_shipping_destination"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Method</th>
+                                <td class="align-top">:</td>
+                                <td>
+                                  <span id="view_shipping_method"></span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th class="align-top">Expected Delivery</th>
+                                <td class="align-top">:</td>
+                                <td class="align-top">
+                                  <span id="view_expected_delivery"></span>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <!-- <div class="form-group">
                               <label class="fw-bold" for="view_shipping_date"
                                 >Shipping Date:</label
                               >
@@ -915,7 +949,7 @@
                                 >Expected Delivery:</label
                               >
                               <span id="view_expected_delivery"></span>
-                            </div>
+                            </div> -->
                           </fieldset>
                         </div>
                       </div>
