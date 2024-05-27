@@ -2,69 +2,60 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Sales extends Model {
+  class OrdersProducts extends Model {
     static associate(models) {
-      Sales.belongsTo(models.UserProfiles, {
+      OrdersProducts.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Sales.belongsTo(models.UserProfiles, {
+      OrdersProducts.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Sales.belongsTo(models.UserProfiles, {
+      OrdersProducts.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Sales.belongsTo(models.CustomerMaster, {
-        foreignKey: "customer_master_id",
+      OrdersProducts.belongsTo(models.Orders, {
+        foreignKey: "order_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      Sales.belongsTo(models.ShippingMaster, {
-        foreignKey: "shipping_master_id",
+      OrdersProducts.belongsTo(models.ProductMaster, {
+        foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  Sales.init(
+  OrdersProducts.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      order_no: {
-        type: DataTypes.BIGINT,
+      unit: {
+        type: DataTypes.FLOAT,
       },
-      payment_terms: {
-        type: DataTypes.STRING,
+      price: {
+        type: DataTypes.FLOAT,
       },
-      payment_type: {
-        type: DataTypes.STRING,
+      discount: {
+        type: DataTypes.FLOAT,
       },
-      shipping_method: {
-        type: DataTypes.STRING,
-      },
-      shipping_address: {
+      description: {
         type: DataTypes.TEXT,
-      },
-      shipping_date: {
-        type: DataTypes.DATE,
-      },
-      expected_delivery_date: {
-        type: DataTypes.DATE,
       },
       delivery_status: {
         type: DataTypes.STRING,
@@ -84,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Sales",
+      modelName: "OrdersProducts",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -93,46 +84,62 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  // Create Hook
-  Sales.beforeCreate(async (data, options) => {
+  // Bulk Create Hook
+  OrdersProducts.beforeBulkCreate(async (data, options) => {
     try {
-      const order_count = await sequelize.models.Sales.count();
+      data?.map((item) => {
+        item.is_active = true;
 
-      // Get year, month, and day from the procurement_date
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Adding 1 because getMonth() returns zero-based month
-      const day = currentDate.getDate().toString().padStart(2, "0");
+        item.created_by = options?.profile_id;
+      });
+    } catch (err) {
+      console.log(
+        "Error while appending an peeling products data",
+        err?.message || err
+      );
+    }
+  });
 
-      data.order_no = `${year}${month}${day}${order_count}`;
-
+  // Create Hook
+  OrdersProducts.beforeCreate(async (data, options) => {
+    try {
+      data.is_active = true;
       data.created_by = options.profile_id;
     } catch (err) {
-      console.log("Error while appending an Sales data", err?.message || err);
+      console.log(
+        "Error while appending an OrdersProducts data",
+        err?.message || err
+      );
     }
   });
 
   // Update Hook
-  Sales.beforeUpdate(async (data, options) => {
+  OrdersProducts.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
     } catch (err) {
-      console.log("Error while updating an Sales data", err?.message || err);
+      console.log(
+        "Error while updating an OrdersProducts data",
+        err?.message || err
+      );
     }
   });
 
   // Delete Hook
-  Sales.afterDestroy(async (data, options) => {
+  OrdersProducts.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting an Sales data", err?.message || err);
+      console.log(
+        "Error while deleting an OrdersProducts data",
+        err?.message || err
+      );
     }
   });
 
-  return Sales;
+  return OrdersProducts;
 };

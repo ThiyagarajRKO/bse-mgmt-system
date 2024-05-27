@@ -1,13 +1,13 @@
-import { Sales } from "../../../controllers";
+import { Orders } from "../../../controllers";
 
-export const Get = ({ sales_id }, session, fastify) => {
+export const Get = ({ order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let sales = await Sales.Get({
-        id: sales_id,
+      let orders = await Orders.Get({
+        id: order_id,
       });
 
-      if (!sales) {
+      if (!orders) {
         return reject({
           statusCode: 420,
           message: "No data found!",
@@ -15,7 +15,7 @@ export const Get = ({ sales_id }, session, fastify) => {
       }
 
       resolve({
-        data: sales,
+        data: orders,
       });
     } catch (err) {
       fastify.log.error(err);

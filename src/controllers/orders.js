@@ -1,13 +1,13 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
-export const Insert = async (profile_id, sales_data) => {
+export const Insert = async (profile_id, order_data, is_products_included) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!sales_data) {
+      if (!order_data) {
         return reject({
           statusCode: 420,
-          message: "Sales data must not be empty!",
+          message: "Orders data must not be empty!",
         });
       }
 
@@ -18,22 +18,35 @@ export const Insert = async (profile_id, sales_data) => {
         });
       }
 
-      if (!sales_data.customer_master_id) {
+      if (!order_data.customer_master_id) {
         return reject({
           statusCode: 420,
           message: "Customer master id must not be empty!",
         });
       }
 
-      const result = await models.Sales.create(sales_data, {
+      let options = {};
+      if (is_products_included) {
+        options = {
+          include: [
+            {
+              profile_id,
+              model: models.OrdersProducts,
+            },
+          ],
+        };
+      }
+
+      const result = await models.Orders.create(order_data, {
         profile_id,
+        ...options,
       });
       resolve(result);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
           statusCode: 420,
-          message: "Sales order already exists!",
+          message: "Orders order already exists!",
         });
       }
 
@@ -42,13 +55,13 @@ export const Insert = async (profile_id, sales_data) => {
   });
 };
 
-export const Update = async (profile_id, id, sales_data) => {
+export const Update = async (profile_id, id, order_data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Sales id must not be empty!",
+          message: "Orders id must not be empty!",
         });
       }
 
@@ -59,14 +72,14 @@ export const Update = async (profile_id, id, sales_data) => {
         });
       }
 
-      if (!sales_data) {
+      if (!order_data) {
         return reject({
           statusCode: 420,
-          message: "Sales data must not be empty!",
+          message: "Orders data must not be empty!",
         });
       }
 
-      const result = await models.Sales.update(sales_data, {
+      const result = await models.Orders.update(order_data, {
         where: {
           id,
           is_active: true,
@@ -87,11 +100,11 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Sales ID field must not be empty!",
+          message: "Orders ID field must not be empty!",
         });
       }
 
-      const species = await models.Sales.findOne({
+      const species = await models.Orders.findOne({
         includes: [
           {
             models: models.ProductCategoryMaster,
@@ -120,19 +133,47 @@ export const GetAll = ({ start, length, search }) => {
         is_active: true,
       };
 
-      // if (search) {
-      //   where[Op.or] = [
-      //     { species_name: { [Op.iLike]: `%${search}%` } },
-      //     { species_code: { [Op.iLike]: `%${search}%` } },
-      //     { scientific_name: { [Op.iLike]: `%${search}%` } },
-      //     { "$DivisionMaster.division_name$": { [Op.iLike]: `%${search}%` } },
-      //   ];
-      // }
+      if (search) {
+        where[Op.or] = [
+          { order_no: { [Op.iLike]: `%${search}%` } },
+          { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
+          { "$ShippingMaster.shipping_source$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$ShippingMaster.shipping_destination$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            "$OrdersProducts.ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+        ];
+      }
 
-      const vendors = await models.Sales.findAndCountAll({
+      const vendors = await models.Orders.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "order_no",
+          "created_at",
+          "payment_terms",
+          "payment_type",
+          "shipping_date",
+          "shipping_address",
+          "shipping_method",
+          "expected_delivery_date",
+          "delivery_status",
+        ],
         include: [
           {
-            attributes: ["id", "customer_name"],
+            attributes: [
+              "id",
+              "customer_name",
+              "customer_country",
+              "customer_email",
+              "customer_phone",
+            ],
             model: models.CustomerMaster,
             where: {
               is_active: true,
@@ -144,6 +185,39 @@ export const GetAll = ({ start, length, search }) => {
             where: {
               is_active: true,
             },
+            include: [
+              {
+                attributes: ["id", "carrier_name"],
+                model: models.CarrierMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+          },
+          {
+            required: false,
+            attributes: [
+              "id",
+              "unit",
+              "price",
+              "discount",
+              "description",
+              "delivery_status",
+            ],
+            model: models.OrdersProducts,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
           },
         ],
         where,
@@ -165,7 +239,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Sales ID field must not be empty!",
+          message: "Orders ID field must not be empty!",
         });
       }
 
@@ -176,7 +250,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const species = await models.Sales.destroy({
+      const species = await models.Orders.destroy({
         where: {
           id,
           is_active: true,

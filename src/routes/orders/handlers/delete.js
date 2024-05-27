@@ -1,14 +1,14 @@
-import { Sales } from "../../../controllers";
+import { Orders } from "../../../controllers";
 
-export const Delete = ({ profile_id, sales_id }, session, fastify) => {
+export const Delete = ({ profile_id, order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const shipping_master = await Sales.Delete({
+      const order = await Orders.Delete({
         profile_id,
-        id: sales_id,
+        id: order_id,
       });
 
-      if (shipping_master > 0) {
+      if (order > 0) {
         return resolve({
           message: "Order has been deleted successfully",
         });
@@ -16,7 +16,7 @@ export const Delete = ({ profile_id, sales_id }, session, fastify) => {
 
       resolve({
         statusCode: 420,
-        message: "Shipping master didn't delete",
+        message: "Order didn't delete",
       });
     } catch (err) {
       fastify.log.error(err);

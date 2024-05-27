@@ -1,15 +1,24 @@
-import { Sales } from "../../../controllers";
+import { Orders, OrdersProducts } from "../../../controllers";
 
 export const Update = (
-  { profile_id, sales_id, sales_data },
+  { profile_id, order_id, order_data },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const updated_data = await Sales.Update(profile_id, sales_id, sales_data);
+      const updated_data = await Orders.Update(
+        profile_id,
+        order_id,
+        order_data
+      );
 
       if (updated_data?.[0] > 0) {
+        await OrdersProducts.BulkUpsert(
+          profile_id,
+          peeling_data?.OrdersProducts
+        );
+
         return resolve({
           message: "Order has been updated successfully",
         });

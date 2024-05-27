@@ -1,21 +1,21 @@
-import { Sales } from "../../../controllers";
+import { Orders } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, sales_id, "search[value]": search },
+  { start, length, order_id, "search[value]": search },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Creating User
-      let sales = await Sales.GetAll({
+      let orders = await Orders.GetAll({
         start,
         length,
-        sales_id,
+        order_id,
         search,
       });
 
-      if (!sales) {
+      if (!orders) {
         return reject({
           statusCode: 420,
           message: "No data found!",
@@ -23,7 +23,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: sales,
+        data: orders,
       });
     } catch (err) {
       fastify.log.error(err);

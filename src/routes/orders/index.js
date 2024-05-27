@@ -11,7 +11,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 
-export const salesRoute = (fastify, opts, done) => {
+export const ordersRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -51,7 +51,7 @@ export const salesRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:sales_id", getSchema, async (req, reply) => {
+  fastify.get("/:order_id", getSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.params };
 
@@ -111,4 +111,4 @@ export const salesRoute = (fastify, opts, done) => {
   done();
 };
 
-export default salesRoute;
+export default ordersRoute;

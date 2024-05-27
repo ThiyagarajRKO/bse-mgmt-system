@@ -9,6 +9,6 @@ module.exports = fp(async function (fastify, opts) {
     },
     root: process.cwd() + "/views/",
     viewExt: "ejs",
-    maxAge: 2592000,
+    // maxAge: 2592000,
   });
 });

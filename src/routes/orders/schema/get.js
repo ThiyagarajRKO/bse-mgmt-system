@@ -2,9 +2,9 @@ export const getSchema = {
   schema: {
     params: {
       type: "object",
-      required: ["sales_id"],
+      required: ["order_id"],
       properties: {
-        sales_id: { type: "string" },
+        order_id: { type: "string" },
       },
     },
   },

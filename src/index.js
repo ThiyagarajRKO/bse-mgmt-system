@@ -78,8 +78,8 @@ fastify.get("/Production", function (req, res) {
   res.view("Production.ejs");
 });
 
-fastify.get("/Sales", function (req, res) {
-  res.view("Sales.ejs");
+fastify.get("/Orders", function (req, res) {
+  res.view("Orders.ejs");
 });
 
 fastify.get("/AuditLogs", function (req, res) {

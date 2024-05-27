@@ -1,39 +1,6 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
 
-export const Insert = async (profile_id, peeling_product_data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!profile_id) {
-        return reject({
-          statusCode: 420,
-          message: "user id must not be empty!",
-        });
-      }
-
-      if (!peeling_product_data?.peeling_id) {
-        return reject({
-          statusCode: 420,
-          message: "peeling data must not be empty!",
-        });
-      }
-
-      const result = await models.PeelingProducts.create(peeling_product_data, {
-        profile_id,
-      });
-      resolve(result);
-    } catch (err) {
-      if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({
-          statusCode: 420,
-          message: "Peeling data already exists!",
-        });
-      }
-      reject(err);
-    }
-  });
-};
-
 export const BulkUpsert = async (profile_id, peeling_product_data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -59,75 +26,6 @@ export const BulkUpsert = async (profile_id, peeling_product_data) => {
         }
       );
       resolve(result);
-    } catch (err) {
-      if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({
-          statusCode: 420,
-          message: "Peeling data already exists!",
-        });
-      }
-      reject(err);
-    }
-  });
-};
-
-export const Update = async (profile_id, id, peeling_product_data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Peeling id must not be empty!",
-        });
-      }
-
-      if (!profile_id) {
-        return reject({
-          statusCode: 420,
-          message: "user id must not be empty!",
-        });
-      }
-
-      if (!peeling_product_data) {
-        return reject({
-          statusCode: 420,
-          message: "Peeling product data must not be empty!",
-        });
-      }
-
-      const result = await models.PeelingProducts.update(peeling_product_data, {
-        where: {
-          id,
-          is_active: true,
-        },
-        individualHooks: true,
-        profile_id,
-      });
-      resolve(result);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const Get = ({ id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Peeling Product ID field must not be empty!",
-        });
-      }
-
-      const peeling = await models.PeelingProducts.findOne({
-        where: {
-          id,
-          is_active: true,
-        },
-      });
-
-      resolve(peeling);
     } catch (err) {
       reject(err);
     }
