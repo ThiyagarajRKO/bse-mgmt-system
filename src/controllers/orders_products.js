@@ -53,6 +53,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         subQuery: false,
         attributes: [
           "id",
+          "order_id",
           "unit",
           "price",
           "discount",
@@ -101,6 +102,40 @@ export const Delete = ({ profile_id, id }) => {
       const species = await models.OrdersProducts.destroy({
         where: {
           id,
+          is_active: true,
+          created_by: profile_id,
+        },
+        individualHooks: true,
+        profile_id,
+      });
+
+      resolve(species);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const DeleteByOrderId = ({ profile_id, order_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!order_id) {
+        return reject({
+          statusCode: 420,
+          message: "Order Id field must not be empty!",
+        });
+      }
+
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      const species = await models.OrdersProducts.destroy({
+        where: {
+          order_id,
           is_active: true,
           created_by: profile_id,
         },

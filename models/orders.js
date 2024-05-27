@@ -111,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
       const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Adding 1 because getMonth() returns zero-based month
       const day = currentDate.getDate().toString().padStart(2, "0");
 
-      data.order_no = `${year}${month}${day}${order_count}`;
+      data.order_no = `${year}${month}${day}${parseInt(order_count) + 1}`;
 
       data.created_by = options.profile_id;
     } catch (err) {

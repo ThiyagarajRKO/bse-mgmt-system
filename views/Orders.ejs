@@ -1288,7 +1288,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-trash del delProcurement" order_id=' +
+                  '<i class="fa fa-trash del delOrder" order_id=' +
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
                 );
@@ -1417,6 +1417,7 @@
       function loadOrdersProductTableData(order_id) {
         if (!order_id) {
           toastr["warning"]("Orders data should not be empty!");
+          return;
         }
 
         orderProductTable = $("#orderProductTable").DataTable({
@@ -1466,9 +1467,11 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_product_id=${
-                  row?.id || null
-                } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa fa-pen-to-square edit editOrders" order_id=' +
+                  row?.order_id +
+                  " order_product_id=${
+                    row?.id || null
+                  } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
             {
@@ -1476,7 +1479,9 @@
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-trash del delProcurement" order_product_id=' +
+                  '<i class="fa fa-trash del delOrderProduct" order_id=' +
+                  row?.order_id +
+                  " order_product_id=" +
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
                 );
@@ -1777,6 +1782,102 @@
 
         $("#shippingMethods").val(null).trigger("change");
       }
+
+      $(document).on("click", ".delOrder", (e) => {
+        let order_id = $(e.target).attr("order_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Order Detail?",
+          content: "Are you sure, do you want to remove this order?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/v1/orders?order_id=" + order_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadOrdersTableData();
+
+                    toastr.success(
+                      "Order has been deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function () {
+                    toastr.error("Order detail failed to delete!", "Error");
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Order detail is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      $(document).on("click", ".delOrderProduct", (e) => {
+        let order_product_id = $(e.target).attr("order_product_id");
+        let order_id = $(e.target).attr("order_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Ordered Product Detail?",
+          content: "Are you sure, do you want to remove this ordered product?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/orders/product?order_product_id=" +
+                    order_product_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadOrdersProductTableData(order_id);
+
+                    toastr.success(
+                      "Ordered product has been deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function () {
+                    toastr.error(
+                      "Ordered Product details failed to delete!",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Order product detail is safe now", "Info");
+            },
+          },
+        });
+      });
 
       function saveOrders() {
         const order_id = $("#submitOrders").attr("order_id");

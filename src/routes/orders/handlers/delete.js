@@ -1,8 +1,19 @@
-import { Orders } from "../../../controllers";
+import { Orders, OrdersProducts } from "../../../controllers";
 
 export const Delete = ({ profile_id, order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const order_products = await OrdersProducts.DeleteByOrderId({
+        profile_id,
+        order_id,
+      });
+
+      if (order_products <= 0) {
+        return resolve({
+          message: "Order data didn't delete successfully",
+        });
+      }
+
       const order = await Orders.Delete({
         profile_id,
         id: order_id,
