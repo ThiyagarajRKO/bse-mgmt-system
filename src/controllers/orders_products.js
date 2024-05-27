@@ -45,7 +45,11 @@ export const GetAll = ({ order_id, start, length, search }) => {
 
       if (search) {
         where[Op.or] = [
-          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$Packing.pd.pp.ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ];
       }
 
@@ -56,6 +60,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
           "order_id",
           "unit",
           "price",
+          "total_price",
           "discount",
           "description",
           "delivery_status",

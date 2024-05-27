@@ -605,9 +605,9 @@
 
                 <div class="total mt-4">
                   <span
-                    >No. of Products: <span class="no_of_products"></span></span
+                    >No. of Products: <span id="no_of_products">0</span></span
                   ><br />
-                  <span>Total Amount: <span class="total_amount"></span></span>
+                  <span>Total Amount: <span id="total_amount">0.00</span></span>
                 </div>
 
                 <div class="d-flex justify-content-between mt-2 py-3 pb-4">
@@ -785,7 +785,7 @@
                                   <span>Price per KG</span>
                                 </th>
                                 <th class="fw-bold">
-                                  <span>Description</span>
+                                  <span>Total Price</span>
                                 </th>
                               </tr>
                             </thead>
@@ -1141,7 +1141,10 @@
         const last_fieldset_index = $("#orderProductContainer fieldset").length;
         const next_fieldset_index = (last_fieldset_index || 0) + 1;
 
-        if ($(`.total_price_${last_fieldset_index}`).text() == "0.00") {
+        if (
+          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
+          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
+        ) {
           toastr["warning"](
             "Please fill all the required values in the above output to create a new output"
           );
@@ -1171,15 +1174,31 @@
         calculatePrice(current_index);
       });
 
+      $(document).on("change", ".total_price", (e) => {
+        const current_index = $(e.target).attr("current_index");
+
+        let no_of_products = 0;
+        let total_amount = 0.0;
+        $(".total_price").each((i, v) => {
+          if (parseFloat(v.innerText) && v.innerText != "0.00") {
+            no_of_products++;
+            total_amount += parseFloat(v.innerText);
+          }
+        });
+
+        $("#no_of_products").text(no_of_products);
+        $("#total_amount").text(total_amount);
+      });
+
       function calculatePrice(current_index) {
         const current_unit = $(".product_unit_" + current_index).val();
         const current_price = $(".product_price_" + current_index).val();
         const total_price =
           parseFloat(current_unit) * parseFloat(current_price);
 
-        $(".total_price_" + current_index).text(
-          !isNaN(total_price) ? total_price : "0.00"
-        );
+        $(".total_price_" + current_index)
+          .text(!isNaN(total_price) ? total_price : "0.00")
+          .trigger("change");
       }
 
       $(document).on("click", "#nextOrders", (e) => {
@@ -1342,7 +1361,7 @@
             { data: "order_no" },
             { data: null },
             { data: null },
-            { data: null },
+            { data: "total_products_price" },
             { data: "delivery_status" },
           ],
           columnDefs: [
@@ -1362,6 +1381,13 @@
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
                 );
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
               },
             },
             {
@@ -1530,7 +1556,7 @@
             { data: "Packing.pd.pp.ProductMaster.product_name" },
             { data: "unit" },
             { data: "price" },
-            { data: "description" },
+            { data: "total_price" },
           ],
           columnDefs: [
             {
@@ -1599,6 +1625,8 @@
         $("#submitOrders").attr("order_id", $(e.target).attr("order_id"));
 
         $("#orderModal").modal("hide");
+
+        $("#smarttab").smartTab("last");
       });
 
       function loadCustomerNames() {

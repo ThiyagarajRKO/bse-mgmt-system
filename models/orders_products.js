@@ -95,7 +95,7 @@ module.exports = (sequelize, DataTypes) => {
 
         const total_price =
           parseFloat(item?.price) * parseFloat(item?.unit) -
-          parseFloat(item.discount);
+          (parseFloat(data.discount) || 0);
 
         item.total_price = isNaN(total_price) ? 0 : total_price;
 
@@ -114,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
     try {
       const total_price =
         parseFloat(data?.price) * parseFloat(data?.unit) -
-        parseFloat(data.discount);
+        (parseFloat(data.discount) || 0);
 
       data.total_price = isNaN(total_price) ? 0 : total_price;
 

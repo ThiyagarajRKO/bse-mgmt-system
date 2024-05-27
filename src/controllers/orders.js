@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (profile_id, order_data, is_products_included) => {
   return new Promise(async (resolve, reject) => {
@@ -164,6 +164,12 @@ export const GetAll = ({ start, length, search }) => {
           "shipping_method",
           "expected_delivery_date",
           "delivery_status",
+          [
+            sequelize.literal(
+              `(SELECT SUM(total_price) FROM orders_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+            ),
+            "total_products_price",
+          ],
         ],
         include: [
           {
