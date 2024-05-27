@@ -62,11 +62,34 @@ export const GetAll = ({ order_id, start, length, search }) => {
         ],
         include: [
           {
-            attributes: ["id", "product_name"],
-            model: models.ProductMaster,
+            attributes: ["id"],
+            model: models.Packing,
             where: {
               is_active: true,
             },
+            include: [
+              {
+                attributes: ["id"],
+                as: "pd",
+                model: models.PeeledDispatches,
+                where: { is_active: true },
+                include: [
+                  {
+                    attributes: ["id"],
+                    as: "pp",
+                    model: models.PeelingProducts,
+                    where: { is_active: true },
+                    include: [
+                      {
+                        attributes: ["id", "product_name"],
+                        model: models.ProductMaster,
+                        where: { is_active: true },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
         where,

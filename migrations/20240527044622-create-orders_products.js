@@ -17,13 +17,13 @@ module.exports = {
           key: "id",
         },
       },
-      product_master_id: {
+      packing_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "product_master" },
+          model: { tableName: "packing" },
           key: "id",
         },
       },
@@ -36,6 +36,9 @@ module.exports = {
         allowNull: false,
       },
       discount: {
+        type: Sequelize.FLOAT,
+      },
+      total_price: {
         type: Sequelize.FLOAT,
       },
       description: {

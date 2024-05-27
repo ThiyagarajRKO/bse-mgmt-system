@@ -311,7 +311,7 @@
         font-size: inherit !important;
       }
 
-      #appendOutput:hover {
+      #appendProducts:hover {
         background-color: rgb(135, 49, 177);
         background-color: linear-gradient(
           90deg,
@@ -324,7 +324,7 @@
       }
 
       /* 
-      #appendOutput {
+      #appendProducts {
         color: rgba(98, 114, 147, 0.6) !important;
       } */
 
@@ -534,25 +534,35 @@
                           <div class="form-group">
                             <label for="product_name">Product Name:</label>
                             <select
+                              current_index="1"
                               class="form-control input-dropdown w-100 orderProductNames orderProductNames_1"
                               name="orderProductNames"
                             ></select>
                           </div>
 
                           <div class="form-group mt-2">
-                            <label for="product_unit">Unit</label>
+                            <label for="product_unit">Quantity</label>
                             <input
+                              current_index="1"
                               class="form-control product_unit product_unit_1"
                               type="number"
                               placeholder="eg. 10"
                               name="product_unit"
                               required
                             />
+                            <span style="font-size: 12px"
+                              >Total Quantity :
+                              <b
+                                ><span
+                                  class="total_quantity total_quantity_1"
+                                ></span></b
+                            ></span>
                           </div>
 
-                          <div class="form-group mt-2 mb-2">
-                            <label for="product_price_1">Price</label>
+                          <div class="form-group mt-2">
+                            <label for="product_price_1">Price per KG</label>
                             <input
+                              current_index="1"
                               class="form-control product_price product_price_1"
                               type="number"
                               placeholder="eg. 10"
@@ -561,20 +571,29 @@
                             />
                           </div>
 
-                          <div class="form-group mt-2 mb-2">
-                            <label for="product_desc_1">Description</label>
+                          <div class="form-group mt-2">
+                            <label for="product_desc">Description</label>
                             <textarea
                               row="3"
                               class="form-control input-dropdown w-100 product_desc product_desc_1"
-                              name="product_desc_1"
+                              name="product_desc"
                             ></textarea>
+                          </div>
+
+                          <div class="form-group mt-2">
+                            <label for="total_price">Total Price :</label>
+                            <b
+                              ><span class="total_price total_price_1"
+                                >0.00</span
+                              ></b
+                            >
                           </div>
                         </fieldset>
                       </div>
 
                       <div class="vl"></div>
                       <div
-                        id="appendOutput"
+                        id="appendProducts"
                         style="border-color: rgba(98, 114, 147, 0.6) !important"
                         class="btn border rounded d-flex justify-content-center mt-4"
                       >
@@ -584,7 +603,14 @@
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                <div class="total mt-4">
+                  <span
+                    >No. of Products: <span class="no_of_products"></span></span
+                  ><br />
+                  <span>Total Amount: <span class="total_amount"></span></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2 py-3 pb-4">
                   <div id="submitOrders" class="col-lg-auto btn btn-danger">
                     Save
                   </div>
@@ -1083,7 +1109,7 @@
           "order_id"
         );
 
-        $("#balance_dispatched_quantity").text("").css({ color: "white" });
+        $("#customer_country").text("").css({ color: "white" });
 
         $("#smarttab").smartTab("first");
       });
@@ -1108,14 +1134,11 @@
         }
       );
 
-      $(document).on("click", "#appendOutput", (e) => {
+      $(document).on("click", "#appendProducts", (e) => {
         const last_fieldset_index = $("#orderProductContainer fieldset").length;
         const next_fieldset_index = (last_fieldset_index || 0) + 1;
 
-        if (
-          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
-          !$(`.product_unit_${last_fieldset_index}`).val()
-        ) {
+        if ($(`.total_price_${last_fieldset_index}`).text() == "0.00") {
           toastr["warning"](
             "Please fill all the required values in the above output to create a new output"
           );
@@ -1124,6 +1147,37 @@
 
         addOutput(next_fieldset_index);
       });
+
+      $(document).on("change", ".orderProductNames", (e) => {
+        const current_index = $(e.target).attr("current_index");
+
+        $(".total_quantity_" + current_index).text(
+          $(e.target).select2("data")?.[0]?.quantity || ""
+        );
+      });
+
+      $(document).on("keyup", ".product_unit", (e) => {
+        const current_index = $(e.target).attr("current_index");
+
+        calculatePrice(current_index);
+      });
+
+      $(document).on("keyup", ".product_price", (e) => {
+        const current_index = $(e.target).attr("current_index");
+
+        calculatePrice(current_index);
+      });
+
+      function calculatePrice(current_index) {
+        const current_unit = $(".product_unit_" + current_index).val();
+        const current_price = $(".product_price_" + current_index).val();
+        const total_price =
+          parseFloat(current_unit) * parseFloat(current_price);
+
+        $(".total_price_" + current_index).text(
+          !isNaN(total_price) ? total_price : "0.00"
+        );
+      }
 
       $(document).on("click", "#nextOrders", (e) => {
         $("#smarttab").smartTab("next");
@@ -1157,7 +1211,7 @@
       function addOutput(
         index,
         peeled_product_id,
-        product_master_id,
+        packing_id,
         product_unit,
         product_price,
         product_desc
@@ -1174,6 +1228,7 @@
                               <div class="form-group">
                                 <label for="product_name">Product Name:</label>
                                 <select
+                                  current_index=""${index}"
                                   class="form-control input-dropdown w-100 orderProductNames orderProductNames_${index}"
                                   peeled_product_id=${peeled_product_id}
                                   name="orderProductNames"
@@ -1183,17 +1238,24 @@
                               <div class="form-group mt-2">
                                 <label for="product_unit">Quantity</label>
                                 <input
+                                  current_index="${index}"
                                   class="form-control product_unit product_unit_${index}"
                                   type="number"
                                   placeholder="eg. 10"
                                   name="product_unit"
                                   required
                                 />
+                                <span style="font-size: 12px">Total Quantity :
+                                  <b><span
+                                    class="total_quantity total_quantity_1"
+                                  ></b></span
+                                ></span>
                               </div>
 
-                              <div class="form-group mt-2 mb-2">
+                              <div class="form-group mt-2">
                                 <label for="product_price">Price per KG</label>
                                 <input
+                                  current_index="${index}"
                                   class="form-control product_price product_price_${index}"
                                   type="number"
                                   placeholder="eg. 10"
@@ -1202,13 +1264,18 @@
                                 />
                               </div>
 
-                              <div class="form-group mt-2 mb-2">
+                              <div class="form-group mt-2">
                                 <label for="product_desc">Description</label>
                                 <textarea
                                   row="3"
                                   class="form-control input-dropdown w-100 product_desc product_desc_${index}"
                                   name="product_desc"
                                 ></textarea>
+                              </div>
+
+                              <div class="form-group mt-2">
+                                <label for="product_price">Total Price :</label>
+                                <b><span current_index="${index}" class="total_price total_price_${index}">0.00</span></b>
                               </div>
 
                             </fieldset>`);
@@ -1220,7 +1287,7 @@
         });
 
         $(`.orderProductNames_${index}`)
-          .val(product_master_id || null)
+          .val(packing_id || null)
           .trigger("change");
 
         $(`.product_unit_${index}`).val(product_unit || "");
@@ -1457,7 +1524,7 @@
           columns: [
             { data: null },
             { data: null },
-            { data: "ProductMaster.product_name" },
+            { data: "Packing.pd.pp.ProductMaster.product_name" },
             { data: "unit" },
             { data: "price" },
             { data: "description" },
@@ -1467,24 +1534,16 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_id=' +
-                  row?.order_id +
-                  " order_product_id=${
-                    row?.id || null
-                  } aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${row?.order_id}" order_product_id="${
+                  row?.id || null
+                }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
             {
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delOrderProduct" order_id=' +
-                  row?.order_id +
-                  " order_product_id=" +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
-                );
+                return `<i class="fa fa-trash del delOrderProduct" order_id="${row?.order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
               },
             },
           ],
@@ -1671,7 +1730,7 @@
         productNamesArray = [];
 
         $.ajax({
-          url: "/api/v1/master/product",
+          url: "/api/v1/packing/names",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -1680,10 +1739,11 @@
           success: (data) => {
             productNamesArray = [];
 
-            data?.data?.rows.forEach((item) => {
+            data?.data.forEach((item) => {
               productNamesArray.push({
                 id: item.id,
-                text: item.product_name,
+                text: item?.pd?.pp?.ProductMaster?.product_name,
+                quantity: item.packing_quantity,
               });
             });
 
@@ -1881,20 +1941,6 @@
 
       function saveOrders() {
         const order_id = $("#submitOrders").attr("order_id");
-        const current_weight_balance = $("#balance_dispatched_quantity").text();
-        const order_quantity = parseFloat($("#order_quantity").val()) || 0;
-        let product_unit = 0;
-
-        $(".product_unit").each((i, obj) => {
-          product_unit += isNaN(parseFloat($(obj).val()))
-            ? 0
-            : parseFloat($(obj).val());
-        });
-
-        if (parseFloat(current_weight_balance) <= -1) {
-          toastr["warning"]("Invalid orders quantity");
-          return;
-        }
 
         let OrdersProducts = [];
 
@@ -1905,7 +1951,7 @@
             .find("select")
             .attr("peeled_product_id");
 
-          let product_master_id = $(obj)
+          let packing_id = $(obj)
             .find(`.orderProductNames_${i + 1}`)
             .val();
 
@@ -1929,10 +1975,10 @@
             .find(`.product_desc_${i + 1}`)
             .val();
 
-          if (product_master_id) {
+          if (packing_id) {
             let outputObj = {
               order_id,
-              product_master_id,
+              packing_id,
               unit: product_unit,
               price: product_price,
               description: product_desc,

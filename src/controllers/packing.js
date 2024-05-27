@@ -98,7 +98,7 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length, search }) => {
+export const GetAll = ({ start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -370,189 +370,44 @@ export const GetAll = ({ start, length, search }) => {
     }
   });
 };
-export const GetQuantity = ({ id }) => {
+
+export const GetNames = ({ start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Dispatch product ID field must not be empty!",
-        });
-      }
-
-      const product = await models.PeeledDispatches.findOne({
-        attributes: ["peeled_dispatch_quantity"],
+      const packings = await models.Packing.findAll({
+        attributes: ["id", "packing_quantity"],
         where: {
-          id,
           is_active: true,
         },
-      });
-
-      resolve(product);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const GetDestinations = ({
-  procurement_lot_id,
-  start,
-  length,
-  search,
-}) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let where = {
-        is_active: true,
-      };
-
-      let procurementLotsWhere = {
-        is_active: true,
-      };
-
-      if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
-      }
-
-      const packing = await models.Packing.findAll({
-        subQuery: false,
-        attributes: ["id"],
-        attributes: [
-          "id",
-          "created_at",
-          "packing_quantity",
-          [
-            sequelize.literal(
-              `(SELECT CASE WHEN SUM(packing_quantity) IS NULL THEN 0 ELSE SUM(packing_quantity) END)`
-            ),
-            "packing_quantity",
-          ],
-        ],
         include: [
           {
-            model: models.PeeledDispatches,
             attributes: ["id"],
-            where: {
-              is_active: true,
-            },
+            as: "pd",
+            model: models.PeeledDispatches,
+            where: { is_active: true },
             include: [
               {
-                model: models.PeelingProducts,
                 attributes: ["id"],
-                where: {
-                  is_active: true,
-                },
+                as: "pp",
+                model: models.PeelingProducts,
+                where: { is_active: true },
                 include: [
                   {
-                    model: models.Peeling,
-                    attributes: ["id"],
-                    where: {
-                      is_active: true,
-                    },
-                    include: [
-                      {
-                        model: models.Dispatches,
-                        attributes: ["id"],
-                        where: {
-                          is_active: true,
-                        },
-                        include: [
-                          {
-                            model: models.ProcurementProducts,
-                            attributes: ["id"],
-                            where: {
-                              is_active: true,
-                            },
-                            include: [
-                              {
-                                model: models.UnitMaster,
-                                attributes: ["id", "unit_code"],
-
-                                where: {
-                                  is_active: true,
-                                  unit_type: "Peeling Center",
-                                },
-                              },
-                            ],
-                            include: [
-                              {
-                                model: models.GradeMaster,
-                                attributes: ["id", "grade_name"],
-
-                                where: {
-                                  is_active: true,
-                                },
-                              },
-                            ],
-                            include: [
-                              {
-                                model: models.SizeMaster,
-                                attributes: ["id", "size"],
-
-                                where: {
-                                  is_active: true,
-                                },
-                              },
-                            ],
-                            include: [
-                              {
-                                model: models.PackagingMaster,
-                                attributes: ["id", "packaging_code"],
-
-                                where: {
-                                  is_active: true,
-                                },
-                              },
-                            ],
-                            include: [
-                              {
-                                model: models.ProcurementLots,
-                                where: procurementLotsWhere,
-                                attributes: ["id", "procurement_lot"],
-                                where: {
-                                  is_active: true,
-                                },
-                              },
-                              {
-                                model: models.ProductMaster,
-                                attributes: ["id", "product_name"],
-                                where: {
-                                  is_active: true,
-                                },
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
+                    attributes: ["id", "product_name"],
+                    model: models.ProductMaster,
+                    where: { is_active: true },
                   },
                 ],
               },
             ],
           },
         ],
-        where,
-        offset: start,
         limit: length,
+        offset: start,
         order: [["created_at", "desc"]],
-        group: [
-          "Packing.id",
-          "PeelingDispatch.id",
-          "PeelingProducts.id",
-          "Peeling->Dispatch.id",
-          "Peeling->Dispatch->ProcurementProduct.id",
-          "Peeling->Dispatch->ProcurementProduct->ProcurementLot.id",
-          "Peeling->Dispatch->ProcurementProduct->ProductMaster.id",
-          "Peeling.id",
-          "UnitMaster.id",
-          "GradeMaster.id",
-          "SizeMaster.id",
-          "PackagingMaster.id",
-        ],
       });
 
-      resolve(packing);
+      resolve(packings);
     } catch (err) {
       reject(err);
     }

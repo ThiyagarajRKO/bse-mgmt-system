@@ -31,8 +31,8 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
-      OrdersProducts.belongsTo(models.ProductMaster, {
-        foreignKey: "product_master_id",
+      OrdersProducts.belongsTo(models.Packing, {
+        foreignKey: "packing_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -52,6 +52,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
       },
       discount: {
+        type: DataTypes.FLOAT,
+      },
+      total_price: {
         type: DataTypes.FLOAT,
       },
       description: {
@@ -90,6 +93,12 @@ module.exports = (sequelize, DataTypes) => {
       data?.map((item) => {
         item.is_active = true;
 
+        const total_price =
+          parseFloat(item?.price) * parseFloat(item?.unit) -
+          parseFloat(item.discount);
+
+        item.total_price = isNaN(total_price) ? 0 : total_price;
+
         item.created_by = options?.profile_id;
       });
     } catch (err) {
@@ -103,6 +112,12 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   OrdersProducts.beforeCreate(async (data, options) => {
     try {
+      const total_price =
+        parseFloat(data?.price) * parseFloat(data?.unit) -
+        parseFloat(data.discount);
+
+      data.total_price = isNaN(total_price) ? 0 : total_price;
+
       data.is_active = true;
       data.created_by = options.profile_id;
     } catch (err) {
