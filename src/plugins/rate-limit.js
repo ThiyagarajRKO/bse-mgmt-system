@@ -9,6 +9,6 @@ module.exports = fp(async function (fastify, opts) {
         ? parseInt(process.env.RATE_LIMIT)
         : 120,
     timeWindow: process.env.RATE_LIMIT_TIME,
-    allowList: ["/public"],
+    allowList: ["/public", "/node_modules"],
   });
 });

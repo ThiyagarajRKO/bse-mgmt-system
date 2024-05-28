@@ -1,6 +1,6 @@
 <!-- @format -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <!-- title logo -->
   <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
@@ -182,6 +182,17 @@
         /* font-weight: bold; */
       }
 
+      .topMenu-item-active .icon-button {
+        /* border-bottom: 1px solid #ea5455; */
+        background-color: #ea5455 !important;
+        color: white;
+
+        /* background-color: #f07b3f; */
+        /* border-radius: 8px; */
+        transition: right 0.3s ease;
+        /* font-weight: bold; */
+      }
+
       .tippy-box[data-theme~="tomato"] {
         background-color: #4f4f4f;
         color: white;
@@ -316,6 +327,33 @@
         display: none;
       }
 
+      .icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        /* border: 2px solid #ddd; */
+        border-radius: 50%;
+        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+        text-decoration: none;
+        color: #333;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .icon-button i {
+        font-size: 12px;
+      }
+
+      .icon-label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
       /* Styles for mobile screens */
       @media screen and (max-width: 480px) {
         .dashboardCard {
@@ -402,10 +440,10 @@
         <div
           class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
         >
-          <div class="fs-6">
+          <div class="icon-button shadow">
             <i class="fa-solid fa-shopping-bag"></i>
           </div>
-          <div class="pt-2">
+          <div class="icon-label pt-2">
             <span>Purchases</span>
           </div>
         </div>
@@ -413,10 +451,10 @@
         <div
           class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
         >
-          <div class="fs-6">
+          <div class="icon-button shadow">
             <i class="fa-solid fa-circle-half-stroke"></i>
           </div>
-          <div class="pt-2">
+          <div class="icon-label pt-2">
             <span>Adjustment</span>
           </div>
         </div>
@@ -424,10 +462,10 @@
         <div
           class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
         >
-          <div class="fs-6">
+          <div class="icon-button shadow">
             <i class="fa-solid fa-hand-holding-dollar"></i>
           </div>
-          <div class="pt-2">
+          <div class="icon-label pt-2">
             <span>Payments</span>
           </div>
         </div>
@@ -1670,8 +1708,8 @@
                       ? "₹ " + parseFloat(item?.total_procurement_price)
                       : ""
                     : parseFloat(item?.total_procurement_quantity) > 0
-                    ? parseFloat(item?.total_procurement_quantity) + " kg"
-                    : "",
+                      ? parseFloat(item?.total_procurement_quantity) + " kg"
+                      : "",
               });
 
               dataPointsAdjustment.push({
@@ -1688,8 +1726,8 @@
                       ? "₹ " + parseFloat(item?.total_adjusted_price)
                       : ""
                     : parseFloat(item?.total_adjusted_quantity) > 0
-                    ? parseFloat(item?.total_adjusted_quantity) + " kg"
-                    : "",
+                      ? parseFloat(item?.total_adjusted_quantity) + " kg"
+                      : "",
               });
             });
 
