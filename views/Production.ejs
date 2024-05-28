@@ -154,24 +154,21 @@
       }
 
       svg.radial-progress {
+        width: 60px;
         height: auto;
-        max-width: 100px;
-        margin: 10px;
         transform: rotate(-90deg);
-        width: 100%;
-        /* padding-left: 0px; */
-        /* padding-right: 0px; */
       }
 
       svg.radial-progress circle {
         fill: rgba(0, 0, 0, 0);
         stroke: #1f2d3e;
         stroke-dashoffset: 219.91148575129;
-        stroke-width: 10;
+        stroke-width: 6;
+        stroke-linecap: round;
       }
 
       svg.radial-progress circle.incomplete {
-        opacity: 0.25;
+        opacity: 0.15;
       }
 
       svg.radial-progress circle.complete {
@@ -319,7 +316,7 @@
         color: white;
       }
 
-      /* 
+      /*
       #appendOutput {
         color: rgba(98, 114, 147, 0.6) !important;
       } */
@@ -359,184 +356,237 @@
         max-width: 100% !important;
         /* box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175); */
       }
+
+      .progressBar-label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .progressBar-weight {
+        font-size: 12px;
+        color: #627293;
+      }
     </style>
   </head>
 
   <body>
     <div class="container-fluid">
       <div class="row d-flex justify-content-center">
-        <div
-          class="topMenu-item topMenu-item-active dispatchMenu col-lg-1 d-flex justify-content-center"
-        >
-          <div class="d-flex flex-column text-center align-items-center">
-            <svg
-              class="radial-progress"
-              id="dispatchCircle"
-              data-percentage="0"
-              viewBox="0 0 80 80"
-            >
-              <circle class="incomplete" cx="40" cy="40" r="35"></circle>
-              <circle
-                class="complete"
-                cx="40"
-                cy="40"
-                r="35"
-                style="stroke-dashoffset: 0"
-              ></circle>
-              <text
-                id="dispatchPercentage"
-                class="percentage"
-                x="50%"
-                y="57%"
-                transform="matrix(0, 1, -1, 0, 80, 0)"
-              >
-                0%
-              </text>
-            </svg>
-            <div class="d-flex flex-column">
-              <span class="heading fw-bold fs-6">Dispatch</span>
-              <span
-                style="font-family: sans-serif"
-                class="fs-6 weight fw-bold dispatchWeight"
-                style="font-weight: RedditMono-Regular"
-                >0</span
-              >
+        <div class="row d-flex justify-content-center p-0">
+          <div class="col topMenu-item topMenu-item-active dispatchMenu">
+            <div class="bg-white border rounded">
+              <table>
+                <tbody>
+                  <tr>
+                    <td class="p-3">
+                      <svg
+                        class="radial-progress"
+                        id="dispatchCircle"
+                        data-percentage="0"
+                        viewBox="0 0 80 80"
+                      >
+                        <circle
+                          class="incomplete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                        ></circle>
+                        <circle
+                          class="complete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          style="stroke-dashoffset: 0"
+                        ></circle>
+                        <text
+                          id="dispatchPercentage"
+                          class="percentage"
+                          x="50%"
+                          y="57%"
+                          transform="matrix(0, 1, -1, 0, 80, 0)"
+                        >
+                          0%
+                        </text>
+                      </svg>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="progressBar-label heading fw-bold"
+                          >Dispatch</span
+                        >
+                        <span
+                          class="progressBar-weight weight fw-bold dispatchWeight"
+                          style="font-weight: RedditMono-Regular"
+                          >0</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
 
-        <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
-          <hr
-            id="preprocessingHR"
-            style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
-          />
-        </div>
-
-        <div
-          class="topMenu-item peelingMenu col-lg-1 d-flex justify-content-center"
-        >
-          <div class="d-flex flex-column text-center align-items-center">
-            <svg
-              class="radial-progress"
-              id="preprocessingCircle"
-              data-percentage="0"
-              viewBox="0 0 80 80"
-            >
-              <circle class="incomplete" cx="40" cy="40" r="35"></circle>
-              <circle
-                class="complete"
-                cx="40"
-                cy="40"
-                r="35"
-                style="stroke-dashoffset: 0"
-              ></circle>
-              <text
-                id="preprocessingPercentage"
-                class="percentage"
-                x="50%"
-                y="57%"
-                transform="matrix(0, 1, -1, 0, 80, 0)"
-              >
-                0%
-              </text>
-            </svg>
-            <span class="heading fw-bold fs-6">Peeling</span>
-            <span
-              style="font-family: sans-serif"
-              class="fs-6 weight fw-bold preprocessingWeight"
-              style="font-weight: RedditMono-Regular"
-              >0</span
-            >
+          <div class="col topMenu-item peelingMenu">
+            <div class="bg-white border rounded">
+              <table>
+                <tbody>
+                  <tr>
+                    <td class="p-3">
+                      <svg
+                        class="radial-progress"
+                        id="preprocessingCircle"
+                        data-percentage="0"
+                        viewBox="0 0 80 80"
+                      >
+                        <circle
+                          class="incomplete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                        ></circle>
+                        <circle
+                          class="complete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          style="stroke-dashoffset: 0"
+                        ></circle>
+                        <text
+                          id="preprocessingPercentage"
+                          class="percentage"
+                          x="50%"
+                          y="57%"
+                          transform="matrix(0, 1, -1, 0, 80, 0)"
+                        >
+                          0%
+                        </text>
+                      </svg>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="progressBar-label heading fw-bold"
+                          >Peeling</span
+                        >
+                        <span
+                          class="progressBar-weight weight fw-bold preprocessingWeight"
+                          style="font-weight: RedditMono-Regular"
+                          >0</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
-          <hr
-            id="peeledDispatchHR"
-            style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
-          />
-        </div>
-
-        <div
-          class="topMenu-item peeledDispatchMenu col-lg-1 d-flex justify-content-center"
-        >
-          <div class="d-flex flex-column text-center align-items-center">
-            <svg
-              class="radial-progress"
-              id="peeledDispatchCircle"
-              data-percentage="0"
-              viewBox="0 0 80 80"
-            >
-              <circle class="incomplete" cx="40" cy="40" r="35"></circle>
-              <circle
-                class="complete"
-                cx="40"
-                cy="40"
-                r="35"
-                style="stroke-dashoffset: 0"
-              ></circle>
-              <text
-                id="peeledDispatchPercentage"
-                class="percentage"
-                x="50%"
-                y="57%"
-                transform="matrix(0, 1, -1, 0, 80, 0)"
-              >
-                0%
-              </text>
-            </svg>
-            <span class="heading fw-bold fs-6">Dispatch</span>
-            <span
-              style="font-family: sans-serif"
-              class="fs-6 weight fw-bold peeledDispatchWeight"
-              style="font-weight: RedditMono-Regular"
-              >0</span
-            >
+          <div class="col topMenu-item peeledDispatchMenu">
+            <div class="bg-white border rounded">
+              <table>
+                <tbody>
+                  <tr>
+                    <td class="p-3">
+                      <svg
+                        class="radial-progress"
+                        id="peeledDispatchCircle"
+                        data-percentage="0"
+                        viewBox="0 0 80 80"
+                      >
+                        <circle
+                          class="incomplete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                        ></circle>
+                        <circle
+                          class="complete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          style="stroke-dashoffset: 0"
+                        ></circle>
+                        <text
+                          id="peeledDispatchPercentage"
+                          class="percentage"
+                          x="50%"
+                          y="57%"
+                          transform="matrix(0, 1, -1, 0, 80, 0)"
+                        >
+                          0%
+                        </text>
+                      </svg>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="progressBar-label heading fw-bold"
+                          >Dispatch</span
+                        >
+                        <span
+                          class="progressBar-weight weight fw-bold peeledDispatchWeight"
+                          style="font-weight: RedditMono-Regular"
+                          >0</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        <div class="col-lg-1" style="padding-left: 0px; padding-right: 0px">
-          <hr
-            id="packingHR"
-            style="border: 3px solid #28394f; opacity: 0.2; margin-top: 64px"
-          />
-        </div>
-
-        <div
-          class="topMenu-item packingMenu col-lg-1 d-flex justify-content-center"
-        >
-          <div class="d-flex flex-column text-center align-items-center">
-            <svg
-              class="radial-progress"
-              id="packingCircle"
-              data-percentage="0"
-              viewBox="0 0 80 80"
-            >
-              <circle class="incomplete" cx="40" cy="40" r="35"></circle>
-              <circle
-                class="complete"
-                cx="40"
-                cy="40"
-                r="35"
-                style="stroke-dashoffset: 0"
-              ></circle>
-              <text
-                id="packingPercentage"
-                class="percentage"
-                x="50%"
-                y="57%"
-                transform="matrix(0, 1, -1, 0, 80, 0)"
-              >
-                0%
-              </text>
-            </svg>
-            <span class="heading fw-bold fs-6">Packing</span>
-            <span
-              style="font-family: sans-serif"
-              class="fs-6 weight fw-bold packingWeight"
-              style="font-weight: RedditMono-Regular"
-              >0</span
-            >
+          <div class="col topMenu-item packingMenu">
+            <div class="bg-white border rounded">
+              <table>
+                <tbody>
+                  <tr>
+                    <td class="p-3">
+                      <svg
+                        class="radial-progress"
+                        id="packingCircle"
+                        data-percentage="0"
+                        viewBox="0 0 80 80"
+                      >
+                        <circle
+                          class="incomplete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                        ></circle>
+                        <circle
+                          class="complete"
+                          cx="40"
+                          cy="40"
+                          r="35"
+                          style="stroke-dashoffset: 0"
+                        ></circle>
+                        <text
+                          id="packingPercentage"
+                          class="percentage"
+                          x="50%"
+                          y="57%"
+                          transform="matrix(0, 1, -1, 0, 80, 0)"
+                        >
+                          0%
+                        </text>
+                      </svg>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <span class="progressBar-label heading fw-bold"
+                          >Packing</span
+                        >
+                        <span
+                          class="progressBar-weight weight fw-bold packingWeight"
+                          style="font-weight: RedditMono-Regular"
+                          >0</span
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
