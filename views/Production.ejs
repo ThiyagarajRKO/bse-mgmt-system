@@ -2,93 +2,163 @@
 
 <!doctype html>
 <html lang="en">
-  <!-- title logo -->
-  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
-
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  />
-
-  <!-- Bootstrap  -->
-  <link
-    href="/public/plugins/bootstrap/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
-
-  <!-- MDB5  -->
-  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
-  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js"></script>
-
-  <!-- jQuery -->
-  <script src="/public/plugins/jquery/jquery.min.js"></script>
-
-  <!-- Select2 -->
-  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
-  <script src="/public/plugins/select2/js/select2.min.js"></script>
-
-  <!-- DataTable -->
-  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
-  <script src="/public/plugins/dataTables/datatables.min.js"></script>
-  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
-  <!-- Responsive Datatable -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/dataTables/datatables.responsive.min.css"
-  />
-  <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
-
-  <!-- Toast -->
-  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
-  <script src="/public/plugins/Toastr/toastr.min.js"></script>
-
-  <!-- perfect-scrollbar plugin -->
-  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
-
-  <!-- jQuery Confirm -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
-  />
-  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
-
-  <!-- Slide-in Panel -->
-  <link
-    rel="stylesheet"
-    href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
-  />
-  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
-
-  <!-- Tippy -->
-  <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
-  <script src="/public/plugins/tippy/popper.min.js"></script>
-  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
-
-  <!-- jQuery Smart Tab -->
-  <link
-    href="/public/plugins/smartTab/smart_tab.all.min.css"
-    rel="stylesheet"
-    type="text/css"
-  />
-  <script
-    type="text/javascript"
-    src="/public/plugins/smartTab/smart_tab.min.js"
-  ></script>
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/public/css/style.css" />
-
-  <!-- Custom Script -->
-  <script src="/public/custom/App.js"></script>
-
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BSE</title>
+
+    <!-- Font Preloading -->
+    <link
+      rel="preload"
+      href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/public/fonts/Lato/Lato-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/public/fonts/Lato/Lato-Bold.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <!-- title logo -->
+    <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2"
+    />
+
+    <!-- Bootstrap  -->
+    <link
+      href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2"
+      rel="stylesheet"
+    />
+    <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
+
+    <!-- MDB5  -->
+    <link
+      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2"
+      rel="stylesheet"
+    />
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
+
+    <!-- jQuery -->
+    <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
+
+    <!-- Select2 -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/select2/css/select2.min.css?v=2"
+    />
+    <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
+
+    <!-- DataTable -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.min.css?v=2"
+    />
+    <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
+    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
+    <!-- Responsive Datatable -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.responsive.min.css?v=2"
+    />
+    <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
+
+    <!-- Toast -->
+    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
+    <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
+
+    <!-- perfect-scrollbar plugin -->
+    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/font-awesome/css/all.min.css?v=2"
+    />
+
+    <!-- jQuery Confirm -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2"
+    />
+    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
+
+    <!-- Slide-in Panel -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2"
+    />
+    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
+
+    <!-- Tippy -->
+    <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
+    <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
+    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
+
+    <!-- jQuery Smart Tab -->
+    <link
+      href="/public/plugins/smartTab/smart_tab.all.min.css?v=2"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script
+      type="text/javascript"
+      src="/public/plugins/smartTab/smart_tab.min.js"
+    ></script>
+
+    <!-- jQuery custom scrollbar -->
+    <link
+      href="/public/plugins/jquery-custom-scrollbar/jquery.custom-scrollbar.css?v=2"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script
+      type="text/javascript"
+      src="/public/plugins/jquery-custom-scrollbar/jquery.custom-scrollbar.min.js"
+    ></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/public/css/style.css" />
+
+    <!-- Custom Script -->
+    <script src="/public/custom/App.js?v=2"></script>
 
     <style type="text/css">
       @font-face {
@@ -107,6 +177,16 @@
         font-family: "RedditMono-Regular";
         src: url("/public/fonts/RedditMono/RedditMono-Regular.ttf?v=2")
           format("truetype");
+      }
+
+      @font-face {
+        font-family: "Lato-Regular";
+        src: url("/public/fonts/Lato/Lato-Regular.ttf?v=2") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Lato-Bold";
+        src: url("/public/fonts/Lato/Lato-Bold.ttf?v=2") format("truetype");
       }
 
       body {
@@ -369,15 +449,17 @@
       }
 
       .progressBar-label {
-        font-size: 14px;
+        font-family: "Lato-Regular";
+        font-size: 13px;
         /* font-weight: bold; */
         color: white;
       }
 
       .progressBar-weight {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: bold;
         color: #b4b4b4;
+        font-family: "Lato-Bold";
       }
 
       .progressBar-weight-unit {
@@ -412,6 +494,12 @@
         font-size: 14px;
         font-weight: 600;
       }
+
+      .stepper-menu {
+        background-color: #293646;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
     </style>
   </head>
 
@@ -421,12 +509,14 @@
         <!-- ------------------------------------------------------------------------------------------------------------- -->
         <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="topMenu-container d-flex justify-content-center mt-0">
+        <div
+          class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
+        >
           <div
             class="topMenu-item topMenu-item-active dispatchMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
-              <i class="fa-solid fa-shopping-bag"></i>
+              <i class="fa-solid fa-car"></i>
             </div>
             <div class="icon-label pt-2">
               <span>Dispatch</span>
@@ -437,7 +527,7 @@
             class="topMenu-item peelingMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
-              <i class="fa-solid fa-circle-half-stroke"></i>
+              <i class="fa-solid fa-building"></i>
             </div>
             <div class="icon-label pt-2">
               <span>Peeling</span>
@@ -448,7 +538,7 @@
             class="topMenu-item peeledDispatchMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
-              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <i class="fa-solid fa-car"></i>
             </div>
             <div class="icon-label pt-2">
               <span>Dispatch</span>
@@ -459,7 +549,7 @@
             class="topMenu-item packingMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
-              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <i class="fa-solid fa-boxes-packing"></i>
             </div>
             <div class="icon-label pt-2">
               <span>Packing</span>
@@ -484,8 +574,8 @@
             class="row d-flex justify-content-center p-0"
             style="z-index: 99"
           >
-            <div class="col stepper-menu">
-              <div class="bg-dark border rounded">
+            <div class="col">
+              <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
                     <tr>
@@ -542,8 +632,8 @@
               </div>
             </div>
 
-            <div class="col stepper-menu">
-              <div class="bg-dark border rounded">
+            <div class="col">
+              <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
                     <tr>
@@ -580,12 +670,10 @@
                       </td>
                       <td>
                         <div class="d-flex flex-column">
-                          <span class="progressBar-label heading fw-bold"
-                            >Peeling</span
-                          >
+                          <span class="progressBar-label heading">Peeling</span>
                           <div class="weightContainer">
                             <span
-                              class="progressBar-weight weight fw-bold preprocessingWeight"
+                              class="progressBar-weight weight preprocessingWeight"
                               style="font-weight: RedditMono-Regular"
                               >0</span
                             >
@@ -599,8 +687,8 @@
               </div>
             </div>
 
-            <div class="col stepper-menu">
-              <div class="bg-dark border rounded">
+            <div class="col">
+              <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
                     <tr>
@@ -637,12 +725,12 @@
                       </td>
                       <td>
                         <div class="d-flex flex-column">
-                          <span class="progressBar-label heading fw-bold"
+                          <span class="progressBar-label heading"
                             >Dispatch</span
                           >
                           <div class="weightContainer">
                             <span
-                              class="progressBar-weight weight fw-bold peeledDispatchWeight"
+                              class="progressBar-weight weight peeledDispatchWeight"
                               style="font-weight: RedditMono-Regular"
                               >0</span
                             >
@@ -656,8 +744,8 @@
               </div>
             </div>
 
-            <div class="col stepper-menu">
-              <div class="bg-dark border rounded">
+            <div class="col">
+              <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
                     <tr>
@@ -694,12 +782,10 @@
                       </td>
                       <td>
                         <div class="d-flex flex-column">
-                          <span class="progressBar-label heading fw-bold"
-                            >Packing</span
-                          >
+                          <span class="progressBar-label heading">Packing</span>
                           <div class="weightContainer">
                             <span
-                              class="progressBar-weight weight fw-bold packingWeight"
+                              class="progressBar-weight weight packingWeight"
                               style="font-weight: RedditMono-Regular"
                               >0</span
                             >
