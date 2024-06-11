@@ -2,43 +2,43 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class OrdersProducts extends Model {
+  class OrderProducts extends Model {
     static associate(models) {
-      OrdersProducts.belongsTo(models.UserProfiles, {
+      OrderProducts.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      OrdersProducts.belongsTo(models.UserProfiles, {
+      OrderProducts.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      OrdersProducts.belongsTo(models.UserProfiles, {
+      OrderProducts.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      OrdersProducts.belongsTo(models.Orders, {
+      OrderProducts.belongsTo(models.Orders, {
         foreignKey: "order_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      OrdersProducts.belongsTo(models.Packing, {
+      OrderProducts.belongsTo(models.Packing, {
         foreignKey: "packing_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  OrdersProducts.init(
+  OrderProducts.init(
     {
       id: {
         primaryKey: true,
@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "OrdersProducts",
+      modelName: "OrderProducts",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -88,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Bulk Create Hook
-  OrdersProducts.beforeBulkCreate(async (data, options) => {
+  OrderProducts.beforeBulkCreate(async (data, options) => {
     try {
       data?.map((item) => {
         item.is_active = true;
@@ -110,7 +110,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   // Create Hook
-  OrdersProducts.beforeCreate(async (data, options) => {
+  OrderProducts.beforeCreate(async (data, options) => {
     try {
       const total_price =
         parseFloat(data?.price) * parseFloat(data?.unit) -
@@ -122,27 +122,27 @@ module.exports = (sequelize, DataTypes) => {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while appending an OrdersProducts data",
+        "Error while appending an OrderProducts data",
         err?.message || err
       );
     }
   });
 
   // Update Hook
-  OrdersProducts.beforeUpdate(async (data, options) => {
+  OrderProducts.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while updating an OrdersProducts data",
+        "Error while updating an OrderProducts data",
         err?.message || err
       );
     }
   });
 
   // Delete Hook
-  OrdersProducts.afterDestroy(async (data, options) => {
+  OrderProducts.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
@@ -150,11 +150,11 @@ module.exports = (sequelize, DataTypes) => {
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
       console.log(
-        "Error while deleting an OrdersProducts data",
+        "Error while deleting an OrderProducts data",
         err?.message || err
       );
     }
   });
 
-  return OrdersProducts;
+  return OrderProducts;
 };

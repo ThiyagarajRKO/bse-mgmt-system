@@ -23,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      // Has Many Association
+      CustomerMaster.hasMany(models.Orders, {
+        foreignKey: "customer_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   CustomerMaster.init(

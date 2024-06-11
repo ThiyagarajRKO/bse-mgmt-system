@@ -29,4 +29,4 @@ export * as PeelingProducts from "./peeling_products";
 export * as PeeledDispatches from "./peeled_dispatches";
 export * as Packing from "./packing";
 export * as Orders from "./orders";
-export * as OrdersProducts from "./orders_products";
+export * as OrderProducts from "./order_products";

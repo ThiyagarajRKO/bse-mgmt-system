@@ -11,7 +11,7 @@ export const BulkUpsert = async (profile_id, order_products_data) => {
         });
       }
 
-      const result = await models.OrdersProducts.bulkCreate(
+      const result = await models.OrderProducts.bulkCreate(
         order_products_data,
         {
           updateOnDuplicate: [
@@ -53,7 +53,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         ];
       }
 
-      const vendors = await models.OrdersProducts.findAndCountAll({
+      const vendors = await models.OrderProducts.findAndCountAll({
         subQuery: false,
         attributes: [
           "id",
@@ -127,7 +127,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const species = await models.OrdersProducts.destroy({
+      const species = await models.OrderProducts.destroy({
         where: {
           id,
           is_active: true,
@@ -161,7 +161,7 @@ export const DeleteByOrderId = ({ profile_id, order_id }) => {
         });
       }
 
-      const species = await models.OrdersProducts.destroy({
+      const species = await models.OrderProducts.destroy({
         where: {
           order_id,
           is_active: true,

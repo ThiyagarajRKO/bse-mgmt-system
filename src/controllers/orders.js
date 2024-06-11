@@ -31,7 +31,7 @@ export const Insert = async (profile_id, order_data, is_products_included) => {
           include: [
             {
               profile_id,
-              model: models.OrdersProducts,
+              model: models.OrderProducts,
             },
           ],
         };
@@ -144,7 +144,7 @@ export const GetAll = ({ start, length, search }) => {
             },
           },
           {
-            "$OrdersProducts.ProductMaster.product_name$": {
+            "$OrderProducts.ProductMaster.product_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
@@ -166,7 +166,7 @@ export const GetAll = ({ start, length, search }) => {
           "delivery_status",
           [
             sequelize.literal(
-              `(SELECT SUM(total_price) FROM orders_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+              `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
             ),
             "total_products_price",
           ],
@@ -210,7 +210,7 @@ export const GetAll = ({ start, length, search }) => {
               "description",
               "delivery_status",
             ],
-            model: models.OrdersProducts,
+            model: models.OrderProducts,
             where: {
               is_active: true,
             },

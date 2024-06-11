@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (profile_id, customer_master_data) => {
   return new Promise(async (resolve, reject) => {
@@ -136,6 +136,104 @@ export const GetAll = ({ start, length, customer_name, search }) => {
       });
 
       resolve(customers);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetOrders = ({ start, length, customer_name, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (customer_name) {
+        where.customer_name = { [Op.iLike]: `%${customer_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { customer_name: { [Op.iLike]: `%${search}%` } },
+          { customer_address: { [Op.iLike]: `%${search}%` } },
+          { customer_country: { [Op.iLike]: `%${search}%` } },
+          { customer_phone: { [Op.iLike]: `%${search}%` } },
+          { customer_email: { [Op.iLike]: `%${search}%` } },
+          { customer_paymentterms: { [Op.iLike]: `%${search}%` } },
+          { customer_credit: { [Op.iLike]: `%${search}%` } },
+          { customer_type: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const count = await models.CustomerMaster.count({
+        subQuery: false,
+        include: [
+          {
+            required: false,
+            attributes: ["id"],
+            model: models.Orders,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: ["id", "total_price"],
+                model: models.OrderProducts,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+          },
+        ],
+        where,
+      });
+
+      const rows = await models.CustomerMaster.findAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "customer_name",
+          "customer_email",
+          "customer_phone",
+          "customer_address",
+          [sequelize.fn("count", sequelize.col("Orders.id")), "total_orders"],
+          [
+            sequelize.fn(
+              "sum",
+              sequelize.col("Orders.OrderProducts.total_price")
+            ),
+            "total_paid",
+          ],
+        ],
+        include: [
+          {
+            required: false,
+            attributes: ["id"],
+            model: models.Orders,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: ["id", "total_price"],
+                model: models.OrderProducts,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+        group: ["CustomerMaster.id", "Orders.id", "Orders->OrderProducts.id"],
+      });
+
+      resolve({ count, rows });
     } catch (err) {
       reject(err);
     }

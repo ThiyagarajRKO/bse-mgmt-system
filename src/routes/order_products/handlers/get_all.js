@@ -1,4 +1,4 @@
-import { OrdersProducts } from "../../../controllers";
+import { OrderProducts } from "../../../controllers";
 
 export const GetAll = (
   { start, length, order_id, "search[value]": search },
@@ -8,7 +8,7 @@ export const GetAll = (
   return new Promise(async (resolve, reject) => {
     try {
       // Creating User
-      let order_products = await OrdersProducts.GetAll({
+      let order_products = await OrderProducts.GetAll({
         start,
         length,
         order_id,

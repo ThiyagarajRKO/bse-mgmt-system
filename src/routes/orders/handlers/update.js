@@ -1,4 +1,4 @@
-import { Orders, OrdersProducts } from "../../../controllers";
+import { Orders, OrderProducts } from "../../../controllers";
 
 export const Update = (
   { profile_id, order_id, order_data },
@@ -14,10 +14,7 @@ export const Update = (
       );
 
       if (updated_data?.[0] > 0) {
-        await OrdersProducts.BulkUpsert(
-          profile_id,
-          peeling_data?.OrdersProducts
-        );
+        await OrderProducts.BulkUpsert(profile_id, peeling_data?.OrderProducts);
 
         return resolve({
           message: "Order has been updated successfully",

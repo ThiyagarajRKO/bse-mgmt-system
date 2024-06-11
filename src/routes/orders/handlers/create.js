@@ -11,7 +11,7 @@ export const Create = (
     shipping_method,
     shipping_address,
     expected_delivery_date,
-    OrdersProducts,
+    OrderProducts,
   },
   session,
   fastify
@@ -29,12 +29,10 @@ export const Create = (
           shipping_method,
           shipping_address,
           expected_delivery_date,
-          OrdersProducts,
+          OrderProducts,
           is_active: true,
         },
-        Array.isArray(OrdersProducts) && OrdersProducts.length > 0
-          ? true
-          : false
+        Array.isArray(OrderProducts) && OrderProducts.length > 0 ? true : false
       );
 
       resolve({

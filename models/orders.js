@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       // Has to Many
-      Orders.hasMany(models.OrdersProducts, {
+      Orders.hasMany(models.OrderProducts, {
         foreignKey: "order_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",

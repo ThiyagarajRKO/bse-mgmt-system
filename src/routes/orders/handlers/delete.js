@@ -1,9 +1,9 @@
-import { Orders, OrdersProducts } from "../../../controllers";
+import { Orders, OrderProducts } from "../../../controllers";
 
 export const Delete = ({ profile_id, order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const order_products = await OrdersProducts.DeleteByOrderId({
+      const order_products = await OrderProducts.DeleteByOrderId({
         profile_id,
         order_id,
       });

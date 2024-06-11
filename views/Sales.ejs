@@ -216,17 +216,39 @@
       }
 
       .topMenu-item {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        width: 100px;
+        cursor: pointer;
+      }
+
+      .topMenu-item:hover:not(.topMenu-item-active) {
+        /* border-bottom: 1px solid #ea5455; */
+        color: #ea5455 !important;
+        /* font-weight: bold; */
+        transition: right 0.3s ease;
         cursor: pointer;
       }
 
       .topMenu-item-active {
-        /* box-shadow: 0 -2px 0 0 #ea5455; */
-        color: #ea5455;
+        /* border-bottom: 1px solid #ea5455; */
+        color: #ea5455 !important;
+        /* background-color: #f07b3f; */
+        /* border-radius: 8px; */
+        transition: right 0.3s ease;
+        /* font-weight: bold; */
       }
 
-      .topMenu-item:hover:not(.topMenu-item-active) {
-        /* box-shadow: 0 -2px 0 0 #ea5455; */
-        color: #ea5455;
+      .topMenu-item-active .icon-button {
+        /* border-bottom: 1px solid #ea5455; */
+        background-color: #ea5455 !important;
+        color: white;
+
+        /* background-color: #f07b3f; */
+        /* border-radius: 8px; */
+        transition: right 0.3s ease;
+        /* font-weight: bold; */
       }
 
       /* #orderProductTable_wrapper {
@@ -385,6 +407,33 @@
         margin-left: -3px;
         /* bottom: -10; */
       }
+
+      .icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        /* border: 2px solid #ddd; */
+        border-radius: 50%;
+        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+        text-decoration: none;
+        color: #333;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .icon-button i {
+        font-size: 12px;
+      }
+
+      .icon-label {
+        font-size: 14px;
+        font-weight: 600;
+      }
     </style>
   </head>
 
@@ -392,9 +441,61 @@
     <div class="container-fluid">
       <div class="row d-flex justify-content-center">
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------- Orders Container ---------------------------------------------------- -->
+        <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container orderContainer d-none">
+        <div
+          class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
+        >
+          <div
+            class="topMenu-item topMenu-item-active ordersMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Orders</span>
+            </div>
+          </div>
+
+          <div
+            class="topMenu-item customerMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Customer</span>
+            </div>
+          </div>
+
+          <div
+            class="topMenu-item supportMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Support</span>
+            </div>
+          </div>
+
+          <div
+            class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Payments</span>
+            </div>
+          </div>
+        </div>
+        <!-- Top Menu Container Ends -->
+
+        <!-- ----------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Orders Container ---------------------------------------------- -->
+        <!-- ----------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container ordersContainer d-none">
           <!-- Slide-in Panel -->
           <div id="orderSlideInPanel" class="slideInPanel px-4 overflow-auto">
             <div class="row d-flex justify-content-center">
@@ -703,14 +804,14 @@
         <!-- Modal -->
         <div
           id="orderModal"
-          class="modal hide fade modal-xl"
+          class="modal hide fade"
           tabindex="-1"
           role="dialog"
           aria-labelledby="myModalLabel"
           aria-hidden="true"
         >
           <div
-            class="modal-dialog modal-fullscreen modal-dialog-scrollable w-100 mt-3"
+            class="modal-dialog modal-fullscreen w-100 mt-3"
             style="height: 90vh"
           >
             <!-- Modal content-->
@@ -999,6 +1100,129 @@
         </div>
 
         <!-- Orders Container Ends -->
+
+        <!-- ----------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Customer Container ---------------------------------------------- -->
+        <!-- ----------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container customerContainer d-none">
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <table
+                id="customerTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th class="fw-bold"><span>Customer ID</span></th>
+                    <th class="fw-bold"><span>Customer Name</span></th>
+                    <th class="fw-bold"><span>Email</span></th>
+                    <th class="fw-bold"><span>Phone</span></th>
+                    <th class="fw-bold"><span>Address</span></th>
+                    <th class="fw-bold">
+                      <span>Last Order</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Orders</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Total Paid</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Due Amount</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchase History</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="customerOrdersModal"
+          class="modal hide fade"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          data-keyboard="false"
+          data-backdrop="static"
+        >
+          <div class="modal-dialog modal-xl">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Procurement Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="lot_no">Lot No:</label>
+                    <span id="view_lot_no"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_products"
+                      >Total Products:</label
+                    >
+                    <span id="view_total_products"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="total_weight"
+                      >Total Weight:</label
+                    >
+                    <span id="view_total_weight"></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <table
+                  id="procurementProductTable"
+                  class="rounded table table-hover nowrap w-100"
+                >
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th class="fw-bold"><span>Product Name</span></th>
+                      <th class="fw-bold">
+                        <span>Purchased Type</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Purchased Quantity</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Purchased Price</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Vendor Name</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Purchaser</span>
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Customer Container Ends -->
       </div>
     </div>
   </body>
@@ -1041,6 +1265,17 @@
             keyRight: [39], // Right key code
           },
         });
+      });
+
+      // Menu navigation
+      $(".topMenu-item").click(function () {
+        $(".topMenu-item").removeClass("topMenu-item-active");
+
+        $(this).addClass("topMenu-item-active");
+
+        $(".panelClose").click();
+
+        resetAllInputs();
       });
 
       // Global Functions
@@ -1152,15 +1387,15 @@
       // Open Location on load (default)
       $(".menu-container").addClass("d-none");
 
-      $(".orderContainer").removeClass("d-none");
-      $(".orderContainer").addClass("d-block");
+      $(".ordersContainer").removeClass("d-none");
+      $(".ordersContainer").addClass("d-block");
 
       resetAllInputs();
       loadOrdersDropdowns();
       loadOrdersTableData();
 
       // ---------------------------------------------------------
-      // -------------------------- Orders ------------------------
+      // -------------------------- Orders -----------------------
       // ---------------------------------------------------------
 
       // // Open panel
@@ -1175,8 +1410,6 @@
         );
 
         $("#customer_country").text("").css({ color: "white" });
-
-        $("#smarttab").smartTab("first");
       });
 
       // Close panel
@@ -1185,6 +1418,16 @@
 
         view_order_center_id = "";
         view_raw_material_id = "";
+      });
+
+      $(".ordersMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".ordersContainer").removeClass("d-none");
+        $(".ordersContainer").addClass("d-block");
+
+        loadOrdersDropdowns();
+        loadOrdersTableData();
       });
 
       $(document).on("click", ".modal-header .close", () => {
@@ -1482,7 +1725,7 @@
               targets: [4],
               className: "text-left",
               render: (data, type, row) => {
-                return row?.OrdersProducts?.length || 0;
+                return row?.OrderProducts?.length || 0;
               },
             },
             {
@@ -1994,7 +2237,7 @@
       function saveOrders() {
         const order_id = $("#submitOrders").attr("order_id");
 
-        let OrdersProducts = [];
+        let OrderProducts = [];
 
         $(".orderProduct").each((i, obj) => {
           let id = $(obj)
@@ -2040,7 +2283,7 @@
               outputObj.id = id;
             }
 
-            OrdersProducts.push(outputObj);
+            OrderProducts.push(outputObj);
           }
         });
 
@@ -2056,7 +2299,7 @@
           shipping_method: $("#shippingMethods").val(),
           shipping_address: $("#shipping_address").val(),
           expected_delivery_date: $("#expected_delivery_date").val(),
-          OrdersProducts,
+          OrderProducts,
         };
 
         if (order_id && order_id != "null") {
@@ -2107,6 +2350,167 @@
 
       $("#resetOrdersDataBtn").on("click", resetAllInputs);
       // -------------------- End of Orders -----------------
+
+      // ---------------------------------------------------------
+      // ------------------------ Customer -----------------------
+      // ---------------------------------------------------------
+
+      $(".customerMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".customerContainer").removeClass("d-none");
+        $(".customerContainer").addClass("d-block");
+
+        loadCustomersTableData();
+      });
+
+      $(document).on("click", ".modal-header .close", () => {
+        $("#orderModal").modal("hide");
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#orderModal").modal("hide");
+        }
+      );
+
+      function loadCustomersTableData() {
+        $("#customerTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/master/customer/orders",
+            error: function (xhr, error, code) {
+              $("#orderTable").DataTable().destroy();
+              $("#orderTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: "id" },
+            { data: "customer_name" },
+            { data: "customer_email" },
+            { data: "customer_phone" },
+            { data: "customer_address" },
+            { data: "last_order" },
+            { data: "total_orders" },
+            { data: "total_paid" },
+            { data: "due_amount" },
+            { data: null },
+          ],
+          columnDefs: [
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
+              },
+            },
+            {
+              targets: [9],
+              className: "text-center",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewCustomer" customer_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewCustomer", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
+
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_lot_no").attr(
+          "procurement_lot_id",
+          $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(0)
+            .find("i")
+            .attr("procurement_lot_id")
+        );
+
+        $("#view_lot_no").attr(
+          "procurement_date",
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
+
+        // Opening Slied Panel
+        $("#customerOrdersModal").modal("show");
+
+        loadProcurementProductTableData(view_lot_no);
+      });
+
+      // -------------------- End of Customer -----------------
     });
   </script>
 </html>
