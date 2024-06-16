@@ -745,7 +745,7 @@
               </table>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">
+              <button type="button" class="close btn btn-danger" data-dismiss="modal">
                 Close
               </button>
             </div>
@@ -1697,6 +1697,14 @@
     $(document).on("click", ".modal-header .close", () => {
       $("#procurementProductModal").modal("hide");
     });
+
+    $(document).on(
+      "click",
+      ".modal-header .close, .modal-footer .close",
+      () => {
+        $("#procurementProductModal").modal("hide");
+      }
+    );
 
     $("#submitPurchases").click(function () {
       savePurchases();
