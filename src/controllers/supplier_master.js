@@ -162,6 +162,51 @@ export const GetAll = ({
   });
 };
 
+export const GetOrders = ({ start, length, supplier_name, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (supplier_name) {
+        where.supplier_name = { [Op.iLike]: `%${supplier_name}%` };
+      }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(sequelize.cast(sequelize.col("id"), "varchar"), {
+            [Op.iLike]: `%${search}%`,
+          }),
+          { supplier_name: { [Op.iLike]: `%${search}%` } },
+          { address: { [Op.iLike]: `%${search}%` } },
+          { phone: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const suppliers = await models.SupplierMaster.findAndCountAll({
+        include: [
+          {
+            attributes: ["id"],
+            model: models.ProcurementProducts,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+      });
+
+      resolve(suppliers);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Count = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {

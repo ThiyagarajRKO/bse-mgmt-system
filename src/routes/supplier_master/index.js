@@ -3,13 +3,15 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
+import { GetOrders } from "./handlers/get_orders";
 
 // Schema
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
+import { getOrdersSchema } from "./schema/get_orders";
 
 export const supplierMasterRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -75,6 +77,25 @@ export const supplierMasterRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await GetAll(params, req?.session, fastify);
+
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/orders", getOrdersSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetOrders(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,

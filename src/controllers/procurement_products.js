@@ -210,6 +210,7 @@ export const GetAll = ({
   procurement_price,
   procurement_totalamount,
   procurement_purchaser,
+  supplier_id,
   start,
   length,
   search,
@@ -258,6 +259,13 @@ export const GetAll = ({
         procurementLotsWhere.procurement_lot = procurement_lot;
       }
 
+      let supplierWhere = {
+        is_active: true,
+      };
+
+      if (supplier_id) {
+        supplierWhere.id = supplier_id;
+      }
       const procurements = await models.ProcurementProducts.findAndCountAll({
         include: [
           {
@@ -275,9 +283,7 @@ export const GetAll = ({
           },
           {
             model: models.SupplierMaster,
-            where: {
-              is_active: true,
-            },
+            where: supplierWhere,
           },
           {
             model: models.ProductMaster,

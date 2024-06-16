@@ -12,6 +12,7 @@ export const GetAll = (
     species_master_name,
     supplier_master_name,
     unit_master_name,
+    supplier_id,
     "search[value]": search,
   },
   session,
@@ -30,6 +31,7 @@ export const GetAll = (
         species_master_name,
         supplier_master_name,
         unit_master_name,
+        supplier_id,
         search,
       });
 

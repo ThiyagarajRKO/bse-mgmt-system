@@ -29,6 +29,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      // Has Many
+      SupplierMaster.hasMany(models.ProcurementProducts, {
+        foreignKey: "supplier_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   SupplierMaster.init(
