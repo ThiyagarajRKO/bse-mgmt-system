@@ -126,7 +126,9 @@
           <li class="nav-item">
             <a id="production" href="" class="nav-link"><i data-feather="package"></i><span>Production</span></a>
           </li>
-
+          <li class="nav-item">
+            <a id="inventory" href="" class="nav-link"><i data-feather="package"></i><span>Inventory</span></a>
+          </li>
           <li class="nav-item">
             <a id="sales" href="" class="nav-link"><i data-feather="shopping-bag"></i><span>Sales</span></a>
           </li>
@@ -238,6 +240,11 @@
     // Production navigation
     $("#production").on("click", function () {
       loadIframe("/Production");
+    });
+
+    // Inventory navigation
+    $("#inventory").on("click", function () {
+      loadIframe("/Inventory");
     });
 
     // Sales

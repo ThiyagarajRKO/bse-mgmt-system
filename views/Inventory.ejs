@@ -1,0 +1,1158 @@
+<!-- @format -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE</title>
+
+    <!-- Font Preloading -->
+    <link rel="preload" href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" as="font"
+        type="font/ttf" crossorigin />
+    <link rel="preload" href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf" as="font" type="font/ttf"
+        crossorigin />
+
+    <!-- title logo -->
+    <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2" />
+
+    <!-- Bootstrap  -->
+    <link href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2" rel="stylesheet" />
+    <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
+
+    <!-- MDB5  -->
+    <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2" rel="stylesheet" />
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
+
+    <!-- jQuery -->
+    <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css?v=2" />
+    <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
+
+    <!-- DataTable -->
+    <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css?v=2" />
+    <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
+    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
+    <!-- Responsive Datatable -->
+    <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css?v=2" />
+    <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
+
+    <!-- Toast -->
+    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
+    <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
+
+    <!-- perfect-scrollbar plugin -->
+    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css?v=2" />
+
+    <!-- jQuery Confirm -->
+    <link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2" />
+    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
+
+    <!-- Slide-in Panel -->
+    <link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2" />
+    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
+
+    <!-- Tippy -->
+    <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
+    <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
+    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
+
+    <!-- jQuery Smart Tab -->
+    <link href="/public/plugins/smartTab/smart_tab.all.min.css?v=2" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/public/plugins/smartTab/smart_tab.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/public/css/style.css?v=2" />
+
+    <!-- Custom Script -->
+    <script src="/public/custom/App.js?v=2"></script>
+
+    <style type="text/css">
+        @font-face {
+            font-family: "CassandraPersonalUse";
+            src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
+        }
+
+        @font-face {
+            font-family: "CerebriSansPro-Regular";
+            src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
+        }
+
+        @font-face {
+            font-family: "RedditMono-Regular";
+            src: url("/public/fonts/RedditMono/RedditMono-Regular.ttf?v=2") format("truetype");
+        }
+
+        body {
+            font-family: "CerebriSansPro-Regular";
+            background-color: #f7f9fd;
+        }
+
+        .toast {
+            opacity: 1 !important;
+        }
+
+        .btn {
+            text-transform: none;
+        }
+
+        a,
+        .edit,
+        .view,
+        .close,
+        .del {
+            cursor: pointer;
+        }
+
+        .panelClose {
+            cursor: pointer;
+        }
+
+        .select2-dropdown {
+            z-index: 10000 !important;
+        }
+
+        /* Table Pagination */
+        .page-item.active .page-link {
+            color: #fff !important;
+            background-color: #ea5455 !important;
+            border-color: #ea5455 !important;
+        }
+
+        .page-link {
+            color: #000 !important;
+            background-color: #fff !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .page-link:hover {
+            color: #fff !important;
+            background-color: #f17979 !important;
+            border-color: #ea5455 !important;
+        }
+
+        svg.radial-progress {
+            height: auto;
+            max-width: 100px;
+            margin: 10px;
+            transform: rotate(-90deg);
+            width: 100%;
+            /* padding-left: 0px; */
+            /* padding-right: 0px; */
+        }
+
+        svg.radial-progress circle {
+            fill: rgba(0, 0, 0, 0);
+            stroke: #1f2d3e;
+            stroke-dashoffset: 219.91148575129;
+            stroke-width: 10;
+        }
+
+        svg.radial-progress circle.incomplete {
+            opacity: 0.25;
+        }
+
+        svg.radial-progress circle.complete {
+            stroke-dasharray: 219.91148575129;
+        }
+
+        svg.radial-progress text {
+            fill: #1f2d3e;
+            text-anchor: middle;
+        }
+
+        .topMenu-item {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .topMenu-item-active {
+            border-bottom: 1px solid #ea5455;
+            color: #ea5455 !important;
+            /* background-color: #f07b3f; */
+            /* border-radius: 8px; */
+            transition: right 0.3s ease;
+            /* font-weight: bold; */
+        }
+
+        .topMenu-item:hover:not(.topMenu-item-active) {
+            /* box-shadow: 0 -2px 0 0 #ea5455; */
+            color: #ea5455;
+            transition: right 0.3s ease;
+            cursor: pointer;
+        }
+
+        .topMenu-item-active .icon-button {
+            /* border-bottom: 1px solid #ea5455; */
+            background-color: #ea5455 !important;
+            color: white;
+
+            /* background-color: #f07b3f; */
+            /* border-radius: 8px; */
+            transition: right 0.3s ease;
+            /* font-weight: bold; */
+        }
+
+        /* #orderProductTable_wrapper {
+        margin-top: 60px !important;
+      } */
+
+        .slideInPanel {
+            z-index: 9999;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: -600px;
+            width: 400px;
+            background-color: #1f2d3e;
+            color: #e3e3e3;
+            height: 90vh;
+            /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+            transition: right 0.3s ease;
+            border-radius: 8px;
+        }
+
+        /* Input */
+        .slideInPanel input {
+            background-color: transparent;
+            border-color: rgba(98, 114, 147, 0.6);
+        }
+
+        .slideInPanel input:focus {
+            background-color: transparent;
+        }
+
+        .slideInPanel input:hover {
+            border-color: #627293;
+        }
+
+        /* Select */
+        .slideInPanel .select2-container {
+            background-color: transparent !important;
+            border-color: rgba(98, 114, 147, 0.6) !important;
+            color: 627293 !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-selection__rendered,
+        .select2-selection__clear,
+        .select2-selection__arrow {
+            color: white !important;
+            margin-top: 0.25rem !important;
+        }
+
+        .select2-selection {
+            background-color: transparent !important;
+            border-color: rgba(98, 114, 147, 0.6) !important;
+            height: 35px !important;
+        }
+
+        .slideInPanel .select:focus {
+            background-color: transparent;
+            border-color: #627293;
+        }
+
+        .slideInPanel .select2-container:hover {
+            border-color: #627293;
+        }
+
+        /* TextArea */
+        .slideInPanel textarea {
+            background-color: transparent;
+            border-color: rgba(98, 114, 147, 0.6);
+        }
+
+        .slideInPanel textarea:focus {
+            background-color: transparent;
+        }
+
+        .slideInPanel textarea:hover {
+            border-color: #627293;
+        }
+
+        /* Form Control */
+        .slideInPanel .form-control {
+            color: #f7f9fc;
+        }
+
+        .slideInPanel .form-control::placeholder {
+            color: #627293;
+        }
+
+        .select2-selection::placeholder {
+            color: #627293;
+        }
+
+        table.dataTable th {
+            text-align: left !important;
+        }
+
+        fieldset {
+            border-color: rgba(129, 145, 179, 0.6) !important;
+            border-radius: 4px;
+        }
+
+        legend {
+            margin-top: -1.7rem !important;
+            background-color: #e0e0e0;
+            color: #1f2d3e;
+            border-radius: 4px;
+            font-size: inherit !important;
+        }
+
+        #appendProducts:hover {
+            background-color: rgb(135, 49, 177);
+            background-color: linear-gradient(90deg,
+                    rgba(135, 49, 177, 1) 1%,
+                    rgba(191, 24, 188, 1) 35%,
+                    rgba(209, 52, 174, 1) 68%,
+                    rgba(217, 29, 115, 1) 100%);
+            color: white;
+        }
+
+        /* 
+      #appendProducts {
+        color: rgba(98, 114, 147, 0.6) !important;
+      } */
+
+        .st-theme-brick>.nav .nav-link.active {
+            background-color: #dc4c64 !important;
+        }
+
+        .st-theme-brick>.nav .nav-link {
+            color: #dc4c64 !important;
+        }
+
+        .st-theme-brick>.nav {
+            border-color: #dc4c64 !important;
+        }
+
+        .vl {
+            border-left: 2px dashed rgba(98, 114, 147, 0.6);
+            height: 25px;
+            position: absolute;
+            left: 50%;
+            margin-left: -3px;
+            /* bottom: -10; */
+        }
+
+        .vl-top {
+            border-left: 2px dashed rgba(98, 114, 147, 0.6);
+            height: 35px;
+            position: absolute;
+            left: 50%;
+            margin-left: -3px;
+            /* bottom: -10; */
+        }
+
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            /* border: 2px solid #ddd; */
+            border-radius: 50%;
+            /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+            text-decoration: none;
+            color: #333;
+            transition:
+                background-color 0.3s,
+                color 0.3s,
+                box-shadow 0.3s;
+        }
+
+        .icon-button i {
+            font-size: 12px;
+        }
+
+        .icon-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <!-- ------------------------------------------------------------------------------------------------------------- -->
+            <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
+            <!-- ------------------------------------------------------------------------------------------------------------- -->
+            <div class="topMenu-container d-flex justify-content-center overflow-auto mt-0">
+                <div
+                    class="topMenu-item topMenu-item-active purchaseMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+                    <div class="icon-button shadow">
+                        <i class="fa-solid fa-shopping-bag"></i>
+                    </div>
+                    <div class="icon-label pt-2">
+                        <span>Purchase</span>
+                    </div>
+                </div>
+
+                <div
+                    class="topMenu-item salesMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+                    <div class="icon-button shadow">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                    </div>
+                    <div class="icon-label pt-2">
+                        <span>Sales</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Top Menu Container Ends -->
+
+            <!-- ------------------------------------------------------------------------------------------------------------- -->
+            <!-- ------------------------------------- Orders Container ---------------------------------------------------- -->
+            <!-- ------------------------------------------------------------------------------------------------------------- -->
+            <div class="menu-container orderContainer d-none">
+                <!-- Slide-in Panel -->
+                <div id="orderSlideInPanel" class="slideInPanel px-4 overflow-auto">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-sm-12 col-md-12 col-md-12">
+                            <div class="text-center mt-4 d-flex justify-content-between">
+                                <span id="orderPanelHeading" class="fw-bold fs-5">Add Orders Data</span>
+                                <div class="col my-auto d-flex justify-content-end">
+                                    <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeOrdersPanelBtn"></i>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div id="smarttab" class="border-0">
+                                <ul class="nav">
+                                    <li>
+                                        <a class="nav-link">Order</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link">Products</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="tab-1" class="tab-pane p-0" role="tabpanel">
+                                        <div class="form-group mt-2">
+                                            <label for="order_date">Order Date</label>
+                                            <input id="order_date" class="form-control" type="date" name="order_date"
+                                                required />
+                                        </div>
+
+                                        <div class="form-group mt-2">
+                                            <label for="customer_name">Customer Name</label>
+                                            <select class="form-control input-dropdown w-100" id="customerNames"
+                                                name="customer_name"></select>
+                                            <span style="font-size: 12px">Customer Country :
+                                                <span class="fw-bold" id="customer_country"></span></span>
+                                        </div>
+
+                                        <div class="form-group mt-2">
+                                            <label for="payment_terms">Payment Terms</label>
+                                            <input id="payment_terms" class="form-control" type="text"
+                                                placeholder="eg. in 15 days" name="payment_terms" required />
+                                        </div>
+
+                                        <div class="form-group mt-2">
+                                            <label for="payment_type">Payment Type</label>
+                                            <select class="form-control input-dropdown w-100" id="paymentTypes"
+                                                name="payment_type"></select>
+                                        </div>
+
+                                        <div id="orderShippingContainer">
+                                            <fieldset class="form-group border p-3 shippingData" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          ">
+                                                <legend class="mb-2 w-auto px-2">Shipping</legend>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="product_name">Shipping Date</label>
+                                                    <input id="shipping_date" class="form-control" type="date"
+                                                        name="shipping_date" required />
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="shippingSources">Shipping Source</label>
+                                                    <select class="form-control input-dropdown w-100"
+                                                        id="shippingSources" name="shippingSources"></select>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="product_name">Shipping Destination</label>
+                                                    <select class="form-control input-dropdown w-100"
+                                                        id="shippingDestinations" name="shippingDestinations"></select>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="shippingMethods">Shipping Method</label>
+                                                    <select class="form-control input-dropdown w-100"
+                                                        id="shippingMethods" name="shippingMethods"></select>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="shipping_address">Shipping Address</label>
+                                                    <textarea row="3" id="shipping_address"
+                                                        class="form-control input-dropdown w-100"
+                                                        name="shipping_address" placeholder="Shipping address"
+                                                        readonly></textarea>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="expected_delivery_date">Expected Delivery Date</label>
+                                                    <input id="expected_delivery_date" class="form-control" type="date"
+                                                        name="expected_delivery_date" required />
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
+                                        <div id="orderProductContainer">
+                                            <fieldset class="form-group border p-3 orderProduct orderProduct_1" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          ">
+                                                <legend class="mb-2 w-auto px-2">Product 1</legend>
+                                                <div class="form-group">
+                                                    <label for="product_name">Product Name:</label>
+                                                    <select current_index="1"
+                                                        class="form-control input-dropdown w-100 orderProductNames orderProductNames_1"
+                                                        name="orderProductNames"></select>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="product_unit">Quantity</label>
+                                                    <input current_index="1"
+                                                        class="form-control product_unit product_unit_1" type="number"
+                                                        placeholder="eg. 10" name="product_unit" required />
+                                                    <span style="font-size: 12px">Total Quantity :
+                                                        <b><span
+                                                                class="total_quantity total_quantity_1"></span></b></span>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="product_price_1">Price per KG</label>
+                                                    <input current_index="1"
+                                                        class="form-control product_price product_price_1" type="number"
+                                                        placeholder="eg. 10" name="product_price_1" required />
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="product_desc">Description</label>
+                                                    <textarea row="3"
+                                                        class="form-control input-dropdown w-100 product_desc product_desc_1"
+                                                        name="product_desc"></textarea>
+                                                </div>
+
+                                                <div class="form-group mt-2">
+                                                    <label for="total_price">Total Price :</label>
+                                                    <b><span class="total_price total_price_1">0.00</span></b>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="vl"></div>
+                                        <div id="appendProducts"
+                                            style="border-color: rgba(98, 114, 147, 0.6) !important"
+                                            class="btn border rounded d-flex justify-content-center mt-4">
+                                            <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="total mt-4">
+                                <span>No. of Products: <span id="no_of_products">0</span></span><br />
+                                <span>Total Amount: <span id="total_amount">0.00</span></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-2 py-3 pb-4">
+                                <div id="submitOrders" class="col-lg-auto btn btn-danger">
+                                    Save
+                                </div>
+                                <div id="nextOrders" class="col-lg-auto btn btn-outline-info">
+                                    Next
+                                </div>
+                                <div id="resetOrdersDataBtn" class="col-lg-auto btn btn-outline-warning">
+                                    Clear
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Content -->
+                <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+                    <div class="border p-4 w-100">
+                        <table id="purchaseInventoryTable" class="rounded table table-hover nowrap w-100">
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold"><span>Product ID</span></th>
+                                    <th class="fw-bold"><span>Product Name</span></th>
+                                    <th class="fw-bold"><span>Supplier Name</span></th>
+                                    <th class="fw-bold"><span>Order Date</span></th>
+                                    <th class="fw-bold"><span>Delivery Date</span></th>
+                                    <th class="fw-bold"><span>Payment Terms</span></th>
+                                    <th class="fw-bold"><span>Purchase Order Status</span></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- modal-dialog-centered modal-dialog-scrollable -->
+            <!-- Modal -->
+            <div id="productModal" class="modal hide fade modal-xl" tabindex="-1" role="dialog"
+                aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen modal-dialog-scrollable w-100 mt-3" style="height: 90vh">
+                    <!-- Modal content-->
+                    <div class="modal-content rounded">
+                        <div class="modal-header mx-2">
+                            <h4 class="modal-title">Sales Orders</h4>
+                            <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                            </i>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <!-- Panel 1 -->
+                                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4">
+                                        <!-- Order Data Container -->
+                                        <div id="orderDataContainer">
+                                            <fieldset class="form-group border p-3" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                                                <legend class="w-auto px-2">Order Data</legend>
+                                                <!-- 1st row -->
+                                                <div class="d-flex justify-content-between">
+                                                    <table class="col">
+                                                        <tr>
+                                                            <th class="align-top">Order No</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_order_no"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Order Date</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_order_date"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Order Status</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_delivery_status"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <table class="col">
+                                                        <tr>
+                                                            <th class="align-top">Payment Terms</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_payment_terms"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Payment Type</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_payment_type"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Total Price</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_total_price"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <!-- Order Products Container -->
+                                        <div id="orderedProductsContainer">
+                                            <fieldset class="form-group border p-3 mt-4" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                                                <legend class="w-auto px-2">Ordered Products</legend>
+
+                                                <table id="orderProductTable"
+                                                    class="rounded table table-hover nowrap w-100">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="border-radius: 4px 0 0 0"></th>
+                                                            <th style="border-radius: 4px 0 0 0"></th>
+                                                            <th class="fw-bold">
+                                                                <span>Product Name</span>
+                                                            </th>
+                                                            <th class="fw-bold"><span>Quantity</span></th>
+                                                            <th class="fw-bold">
+                                                                <span>Price per KG</span>
+                                                            </th>
+                                                            <th class="fw-bold">
+                                                                <span>Total Price</span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </fieldset>
+                                        </div>
+
+                                        <!-- Customer Info Container -->
+                                        <div id="customerContainer">
+                                            <fieldset class="form-group border p-3 mt-4" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                                                <legend class="w-auto px-2">Customer Info</legend>
+
+                                                <!-- Customer Info -->
+                                                <div class="d-flex justify-content-between">
+                                                    <table class="col">
+                                                        <tr>
+                                                            <th class="align-top">Name</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_customer_name"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Country</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_customer_country"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <table class="col">
+                                                        <tr>
+                                                            <th class="align-top">Email</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_customer_email"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Phone</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_customer_phone"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel 2 -->
+                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4">
+                                        <div class="d-flex flex-column justify-content-between" style="height: 100%">
+                                            <!-- Order Tracking Container -->
+                                            <div id="orderTrackingContainer">
+                                                <fieldset class="form-group border p-3" style="
+                              border-color: rgba(129, 145, 179, 0.6) !important;
+                            ">
+                                                    <legend class="w-auto px-2">Order Tracking</legend>
+
+                                                    <!-- Order Tracking -->
+                                                </fieldset>
+                                            </div>
+                                            <!-- Shipping Container -->
+                                            <div id="shippingContainer">
+                                                <fieldset class="form-group border p-3 mt-4" style="
+                              border-color: rgba(129, 145, 179, 0.6) !important;
+                            ">
+                                                    <legend class="w-auto px-2">Shipping Info</legend>
+
+                                                    <!-- Shipping Info -->
+
+                                                    <table class="w-100">
+                                                        <tr>
+                                                            <th class="align-top">Shipping Date</th>
+                                                            <td class="align-top">:</td>
+                                                            <td style="word-break: break-all">
+                                                                <span id="view_shipping_date"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Destination</th>
+                                                            <td class="align-top">:</td>
+                                                            <td style="word-break: break-all">
+                                                                <span id="view_shipping_destination"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Method</th>
+                                                            <td class="align-top">:</td>
+                                                            <td>
+                                                                <span id="view_shipping_method"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="align-top">Expected Delivery</th>
+                                                            <td class="align-top">:</td>
+                                                            <td class="align-top">
+                                                                <span id="view_expected_delivery"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <!-- <div class="form-group">
+                              <label class="fw-bold" for="view_shipping_date"
+                                >Shipping Date:</label
+                              >
+                              <span id="view_shipping_date"></span>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="fw-bold" for="view_shipping_carrier"
+                                >Shipping Carrier:</label
+                              >
+                              <span id="view_shipping_carrier"></span>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="fw-bold" for="view_shipping_source"
+                                >Shipping Source:</label
+                              >
+                              <span id="view_shipping_source"></span>
+                            </div>
+
+                            <div class="form-group">
+                              <label
+                                class="fw-bold"
+                                for="view_shipping_destination"
+                                >Shipping Destination:</label
+                              >
+                              <span id="view_shipping_destination"></span>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="fw-bold" for="view_shipping_method"
+                                >Shipping Method:</label
+                              >
+                              <span id="view_shipping_method"></span>
+                            </div>
+
+                            <div class="form-group">
+                              <label
+                                class="fw-bold"
+                                for="view_expected_delivery"
+                                >Expected Delivery:</label
+                              >
+                              <span id="view_expected_delivery"></span>
+                            </div> -->
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="close btn btn-danger" data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Container Ends -->
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    jQuery(document).ready(async function ($) {
+        // Declarations
+        let is_updated_data = false;
+        let productNamesArray = [];
+
+        toastr.options = {
+            closeButton: false,
+            debug: false,
+            newestOnTop: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            preventDuplicates: false,
+            onclick: null,
+            showDuration: "300",
+            hideDuration: "1000",
+            timeOut: "5000",
+            extendedTimeOut: "1000",
+            showEasing: "swing",
+            hideEasing: "linear",
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+        };
+
+        $(function () {
+            // SmartTab initialize
+            $("#smarttab").smartTab({
+                selected: 0,
+                theme: "brick",
+                autoAdjustHeight: false,
+                animation: "fade",
+                // justified: false,
+                keyboardSettings: {
+                    keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+                    keyLeft: [37], // Left key code
+                    keyRight: [39], // Right key code
+                },
+            });
+        });
+
+        // Global Functions
+        // Function to format date as YYYY-MM-DD
+        function formatDate(date) {
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+
+            // Ensure 2-digit formatting
+            if (day < 10) {
+                day = "0" + day;
+            }
+            if (month < 10) {
+                month = "0" + month;
+            }
+
+            return year + "-" + month + "-" + day;
+        }
+
+        function resetAllInputs() {
+            $("input").val("");
+
+            // Reset all date inputs
+            var dateInputs = document.querySelectorAll('input[type="date"]');
+            // looping all the date inputs
+            dateInputs.forEach(function (input) {
+                input.value = formatDate(new Date());
+            });
+
+            // Resetting textarea
+            $("textarea").val("");
+
+            // Resetting select field selected option
+            $("#customerNames").val(null).trigger("change");
+            $("#paymentTypes").val(null).trigger("change");
+            $("#shippingSources").val(null).trigger("change");
+            $("#shippingDestinations").val(null).trigger("change");
+            $("#shippingMethods").val(null).trigger("change");
+            $("#orderProductNames").val(null).trigger("change");
+
+            $("#customerNames").select2({
+                placeholder: "Choose a customer",
+                allowClear: true,
+            });
+
+            $("#paymentTypes").select2({
+                placeholder: "Choose a type",
+                allowClear: true,
+            });
+
+            $("#shippingSources").select2({
+                placeholder: "Choose a source",
+                allowClear: true,
+            });
+
+            $("#shippingDestinations").select2({
+                placeholder: "Choose a destination",
+                allowClear: true,
+            });
+
+            $("#shippingMethods").select2({
+                placeholder: "Choose a method",
+                allowClear: true,
+            });
+
+            $("#orderProductNames").select2({
+                placeholder: "Choose a method",
+                allowClear: true,
+            });
+
+            $(`.orderProduct:not(".orderProduct_1")`).remove();
+            $(`.vl-top:not(".vl-top-1")`).remove();
+
+            is_updated_data = false;
+        }
+
+        function openSlidePanel(
+            panelId,
+            panelHeadingId,
+            panelType,
+            panelSubmitButton,
+            panelBtnAttrName
+        ) {
+            // Opening Slide Panel
+            $(`#${panelId}`).css("right", "0");
+
+            // Changing panel Heading label
+            $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+
+            // Changing panel save button label
+            $(`#${panelSubmitButton}`).text("Save");
+
+            // Changing panel save button attribute
+            $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+        }
+
+        function closeSlidePanel(panelId) {
+            // Opening Slide Panel
+            $(`#${panelId}`).css("right", "-600px");
+
+            // Resetting all the input fields' data
+            resetAllInputs();
+
+            // Destroying select2 all the dropdowns
+            // $('select.select2-hidden-accessible').select2('destroy');
+        }
+
+        // Open Location on load (default)
+        $(".menu-container").addClass("d-none");
+
+        $(".orderContainer").removeClass("d-none");
+        $(".orderContainer").addClass("d-block");
+
+        loadOrdersTableData();
+
+        // ---------------------------------------------------------
+        // -------------------------- Purchase ---------------------
+        // ---------------------------------------------------------
+
+        $(".purchaseMenu").click(function () {
+            $(".menu-container").addClass("d-none");
+
+            $(".orderContainer").removeClass("d-none");
+            $(".orderContainer").addClass("d-block");
+
+            loadOrdersTableData();
+        });
+
+        function loadOrdersTableData() {
+            $("#purchaseInventoryTable").DataTable({
+                // searching: true,
+                destroy: true,
+                responsive: false,
+                processing: true,
+                serverSide: true,
+                scrollX: true,
+                scrollCollapse: true,
+                scrollY: "40vh",
+                ordering: false,
+                ajax: {
+                    type: "GET",
+                    url: "/api/v1/orders",
+                    error: function (xhr, error, code) {
+                        $("#purchaseInventoryTable").DataTable().destroy();
+                        $("#purchaseInventoryTable").DataTable({
+                            scrollX: true,
+                            ordering: false,
+                        });
+
+                        if (xhr["status"] == 420) {
+                            toastr["warning"](xhr["responseJSON"]["message"]);
+                        } else {
+                            toastr["error"](xhr["responseJSON"]["message"]);
+                        }
+                    },
+                    dataSrc: function (json) {
+                        json.iTotalRecords = json.data?.rows?.length;
+                        json.iTotalDisplayRecords = json.data?.count;
+
+                        // Return the data to be displayed in the DataTable
+                        return json?.data?.rows;
+                    },
+                },
+                columns: [
+                    { data: "order_no" },
+                    { data: null },
+                    { data: null },
+                    { data: "total_products_price" },
+                    { data: "delivery_status" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [0],
+                        className: "text-left",
+                        render: function (data, type, row) {
+                            return data || 0;
+                        },
+                    },
+                    {
+                        targets: [1],
+                        className: "text-left",
+                        render: function (data, type, row) {
+                            const date = new Date(row?.created_at);
+
+                            var months = [
+                                "Jan",
+                                "Feb",
+                                "Mar",
+                                "Apr",
+                                "May",
+                                "Jun",
+                                "Jul",
+                                "Aug",
+                                "Sep",
+                                "Oct",
+                                "Nov",
+                                "Dec",
+                            ];
+
+                            var month = months[date.getMonth()];
+                            var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                            return day + "-" + month + "-" + date.getFullYear();
+                        },
+                    },
+                    {
+                        targets: [2],
+                        className: "text-left",
+                        render: (data, type, row) => {
+                            return row?.OrdersProducts?.length || 0;
+                        },
+                    },
+                    {
+                        targets: [4],
+                        className: "text-left",
+                        render: (data, type, row) => {
+                            return `<span class=${data == "Delivered" ? "text-success" : "text-warning"
+                                }>${data} <i class="fa-solid ${data == "Delivered"
+                                    ? "fa-circle-check"
+                                    : "fa-truck-fast fa-fade"
+                                }"></i></span>`;
+                        },
+                    },
+                ],
+                drawCallback: () => { },
+            });
+        }
+
+        // -------------------- End of Orders -----------------
+    });
+</script>
+
+</html>
