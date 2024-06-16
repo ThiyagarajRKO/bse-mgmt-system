@@ -441,6 +441,15 @@
           </div>
         </div>
 
+        <div class="topMenu-item supplierMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-shopping-bag"></i>
+          </div>
+          <div class="icon-label pt-2">
+            <span>Supplier</span>
+          </div>
+        </div>
+
         <div class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
           <div class="icon-button shadow">
             <i class="fa-solid fa-circle-half-stroke"></i>
@@ -637,7 +646,7 @@
                     name="procurement_price" />
                 </div>
                 <div class="form-group my-3">
-                  <label for="procurement_product_supplier">Vendor Name</label>
+                  <label for="procurement_product_supplier">Supplier Name</label>
                   <select id="procurement_product_supplier" class="form-control input-dropdown w-100"
                     name="procurementProductSupplier" required></select>
                 </div>
@@ -735,7 +744,7 @@
                       <span>Purchased Price</span>
                     </th>
                     <th class="fw-bold">
-                      <span>Vendor Name</span>
+                      <span>Supplier Name</span>
                     </th>
                     <th class="fw-bold">
                       <span>Purchaser</span>
@@ -920,7 +929,7 @@
     // ---------------------------------------------------------
 
     // Loading Charts
-    loadProcurementSpendByVendorsChart(
+    loadProcurementSpendBySuppliersChart(
       "days",
       $("#procurementSpendChartFilter").val()
     );
@@ -950,7 +959,7 @@
     // Chart Filters
     $(document).on("change", "#procurementSpendChartFilter", (e) => {
       if ($(".supplierFilter").hasClass("btn-danger")) {
-        loadProcurementSpendByVendorsChart("days", $(e.target).val());
+        loadProcurementSpendBySuppliersChart("days", $(e.target).val());
       } else if ($(".productFilter").hasClass("btn-danger")) {
         loadProcurementSpendByProductsChart("days", $(e.target).val());
       }
@@ -1039,7 +1048,7 @@
       $(".productFilter").addClass("btn-outline-danger");
       $(".supplierFilter").addClass("btn-danger");
 
-      loadProcurementSpendByVendorsChart(
+      loadProcurementSpendBySuppliersChart(
         "days",
         $("#procurementSpendChartFilter").val()
       );
@@ -1123,7 +1132,7 @@
     });
 
     // Chart Functions
-    function loadProcurementSpendByVendorsChart(
+    function loadProcurementSpendBySuppliersChart(
       filter_type,
       filter_days,
       from_date,
@@ -1162,7 +1171,7 @@
       }
 
       $.ajax({
-        url: `/api/v1/procurement/product/chart/spend/by/vendor?from_date=${from_date}&to_date=${to_date}`,
+        url: `/api/v1/procurement/product/chart/spend/by/supplier?from_date=${from_date}&to_date=${to_date}`,
         method: "GET",
         dataType: "json",
         contentType: "application/json",
@@ -1173,7 +1182,7 @@
 
           data?.data.map((item) => {
             dataPoints.push({
-              label: item?.VendorMaster?.vendor_name,
+              label: item?.SupplierMaster?.supplier_name,
               y: parseFloat(item.total_amount) || 0,
             });
           });
@@ -1556,7 +1565,7 @@
       }
 
       $.ajax({
-        url: `/api/v1/procurement/product/chart/performance/by/vendor?from_date=${from_date}&to_date=${to_date}`,
+        url: `/api/v1/procurement/product/chart/performance/by/supplier?from_date=${from_date}&to_date=${to_date}`,
         method: "GET",
         dataType: "json",
         contentType: "application/json",
@@ -1568,7 +1577,7 @@
 
           data?.data.map((item) => {
             dataPointsProcurement.push({
-              label: item?.VendorMaster?.vendor_name,
+              label: item?.SupplierMaster?.supplier_name,
               y:
                 parseFloat(
                   type == "price"
@@ -1586,7 +1595,7 @@
             });
 
             dataPointsAdjustment.push({
-              label: item?.VendorMaster?.vendor_name,
+              label: item?.SupplierMaster?.supplier_name,
               y:
                 parseFloat(
                   type == "price"
@@ -1966,7 +1975,7 @@
           { data: "procurement_product_type" },
           { data: "procurement_quantity" },
           { data: "procurement_price" },
-          { data: "VendorMaster.vendor_name" },
+          { data: "SupplierMaster.supplier_name" },
           { data: "procurement_purchaser" },
         ],
         columnDefs: [
@@ -1974,7 +1983,7 @@
             targets: [0],
             className: "text-left",
             render: function (data, type, row) {
-              return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+              return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} supplier_master_id=${row["ProcurementLot"]?.["SupplierMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
             },
           },
           {
@@ -1988,7 +1997,7 @@
             targets: [5],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
+              return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
             },
           },
         ],
@@ -2044,7 +2053,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("vendor_master_id")
+            .attr("supplier_master_id")
         )
         .trigger("change");
 
@@ -2196,7 +2205,7 @@
     function loadProcurementSuppliers() {
       // Load Suppliers
       $.ajax({
-        url: "/api/v1/master/vendor",
+        url: "/api/v1/master/supplier",
         method: "GET",
         dataType: "json",
         contentType: "application/json",
@@ -2205,12 +2214,12 @@
         success: (data) => {
           // Loading data
           $("#procurement_product_supplier").select2({
-            placeholder: "Choose a vendor",
+            placeholder: "Choose a supplier",
             allowClear: true,
             data: $.map(data?.data?.rows, function (item) {
               return {
                 id: item.id,
-                text: item.vendor_name,
+                text: item.supplier_name,
               };
             }),
           });
@@ -2244,7 +2253,7 @@
         procurement_product_type: $("#procurement_product_type").val(),
         procurement_quantity: $("#procurement_quantity").val(),
         procurement_price: $("#procurement_price").val(),
-        vendor_master_id: $("#procurement_product_supplier").val(),
+        supplier_master_id: $("#procurement_product_supplier").val(),
         procurement_purchaser: $("#procurement_purchaser").val(),
       };
 

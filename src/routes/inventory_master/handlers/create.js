@@ -1,20 +1,26 @@
-import { InventoryMaster, VendorMaster } from "../../../controllers";
+import { InventoryMaster, SupplierMaster } from "../../../controllers";
 
 export const Create = (
-  { profile_id, inventory_name, inventory_uom, inventory_category, vendor_master_id },
+  {
+    profile_id,
+    inventory_name,
+    inventory_uom,
+    inventory_category,
+    supplier_master_id,
+  },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const vendor_count = await VendorMaster.Count({
-        id: vendor_master_id,
+      const supplier_count = await SupplierMaster.Count({
+        id: supplier_master_id,
       });
 
-      if (vendor_count == 0) {
+      if (supplier_count == 0) {
         return reject({
           statusCode: 420,
-          message: "Invalid vendor master id!",
+          message: "Invalid supplier master id!",
         });
       }
 
@@ -22,7 +28,7 @@ export const Create = (
         inventory_name,
         inventory_uom,
         inventory_category,
-        vendor_master_id,
+        supplier_master_id,
         is_active: true,
       });
 

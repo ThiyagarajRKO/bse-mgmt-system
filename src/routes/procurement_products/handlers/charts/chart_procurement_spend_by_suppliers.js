@@ -1,6 +1,6 @@
 import { ProcurementProducts } from "../../../../controllers";
 
-export const GetProcurementPerformanceByVendors = (
+export const GetProcurementSpendBySuppliers = (
   { from_date, to_date },
   session,
   fastify
@@ -8,7 +8,7 @@ export const GetProcurementPerformanceByVendors = (
   return new Promise(async (resolve, reject) => {
     try {
       let procurement =
-        await ProcurementProducts.GetProcurementPerformanceByVendorsData({
+        await ProcurementProducts.GetProcurementSpendBySuppliersData({
           from_date,
           to_date,
         });

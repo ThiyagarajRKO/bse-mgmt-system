@@ -1,4 +1,4 @@
-import { ProcurementLots, VendorMaster } from "../../../controllers";
+import { ProcurementLots, SupplierMaster } from "../../../controllers";
 
 export const Create = (
   { profile_id, procurement_date, unit_master_id },

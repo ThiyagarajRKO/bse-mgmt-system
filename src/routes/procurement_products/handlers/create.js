@@ -8,7 +8,7 @@ export const Create = (
   {
     profile_id,
     procurement_date,
-    vendor_master_id,
+    supplier_master_id,
     unit_master_id,
     procurement_lot_id,
     product_master_id,
@@ -32,7 +32,7 @@ export const Create = (
         const procurement_product = await ProcurementProducts.Count({
           procurement_lot_id: procurement_lot?.id,
           product_master_id,
-          vendor_master_id,
+          supplier_master_id,
           procurement_product_type,
         });
 
@@ -58,7 +58,7 @@ export const Create = (
       const procurement_product = await ProcurementProducts.Count({
         procurement_lot_id,
         product_master_id,
-        vendor_master_id,
+        supplier_master_id,
         procurement_product_type,
       });
 
@@ -78,7 +78,7 @@ export const Create = (
       const purchase = await ProcurementProducts.Insert(profile_id, {
         procurement_lot_id,
         product_master_id,
-        vendor_master_id,
+        supplier_master_id,
         procurement_product_type,
         procurement_quantity,
         procurement_price,

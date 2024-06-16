@@ -1,10 +1,10 @@
-import { LocationMaster, VendorMaster } from "../../../controllers";
+import { LocationMaster, SupplierMaster } from "../../../controllers";
 
 export const Create = (
   {
     profile_id,
-    vendor_name,
-    vendor_profile_url,
+    supplier_name,
+    supplier_profile_url,
     representative,
     address,
     phone,
@@ -27,9 +27,9 @@ export const Create = (
         });
       }
 
-      const vendor_master = await VendorMaster.Insert(profile_id, {
-        vendor_name,
-        vendor_profile_url,
+      const supplier_master = await SupplierMaster.Insert(profile_id, {
+        supplier_name,
+        supplier_profile_url,
         representative,
         address,
         phone,
@@ -39,9 +39,9 @@ export const Create = (
       });
 
       resolve({
-        message: "Vendor master data has been inserted successfully",
+        message: "Supplier master data has been inserted successfully",
         data: {
-          vendor_master_id: vendor_master?.id,
+          supplier_master_id: supplier_master?.id,
         },
       });
     } catch (err) {

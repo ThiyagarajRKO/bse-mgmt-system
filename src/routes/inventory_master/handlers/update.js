@@ -1,4 +1,4 @@
-import { InventoryMaster, VendorMaster } from "../../../controllers";
+import { InventoryMaster, SupplierMaster } from "../../../controllers";
 
 export const Update = (
   { profile_id, inventory_master_id, inventory_master_data },
@@ -7,15 +7,15 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (inventory_master_data?.vendor_master_id) {
-        const vendor_count = await VendorMaster.Count({
-          id: inventory_master_data?.vendor_master_id,
+      if (inventory_master_data?.supplier_master_id) {
+        const supplier_count = await SupplierMaster.Count({
+          id: inventory_master_data?.supplier_master_id,
         });
 
-        if (vendor_count == 0) {
+        if (supplier_count == 0) {
           return reject({
             statusCode: 420,
-            message: "Invalid Vendor master id!",
+            message: "Invalid Supplier master id!",
           });
         }
       }

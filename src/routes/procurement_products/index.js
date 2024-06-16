@@ -6,10 +6,10 @@ import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
 
 // Chart Handler
-import { GetProcurementSpendByVendors } from "./handlers/charts/chart_procurement_spend_by_vendors";
+import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
 import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
 import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
-import { GetProcurementPerformanceByVendors } from "./handlers/charts/chart_procurement_performance_by_vendor";
+import { GetProcurementPerformanceBySuppliers } from "./handlers/charts/chart_procurement_performance_by_supplier";
 import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement_age_by_product";
 
 // Schema
@@ -21,10 +21,10 @@ import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
 
 // Chart Schema
-import { getProcurementSpendByVendorsSchema } from "./schema/charts/chart_procurement_spend_by_vendors";
+import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
 import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
 import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
-import { getProcurementPerformanceByVendorsSchema } from "./schema/charts/chart_procurement_performance_by_vendor";
+import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
 import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
@@ -147,13 +147,13 @@ export const procurementProductsRoute = (fastify, opts, done) => {
   // ----------------------------------------------------------------------
 
   fastify.get(
-    "/chart/spend/by/vendor",
-    getProcurementSpendByVendorsSchema,
+    "/chart/spend/by/supplier",
+    getProcurementSpendBySuppliersSchema,
     async (req, reply) => {
       try {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetProcurementSpendByVendors(
+        const result = await GetProcurementSpendBySuppliers(
           params,
           req?.session,
           fastify
@@ -228,13 +228,13 @@ export const procurementProductsRoute = (fastify, opts, done) => {
   );
 
   fastify.get(
-    "/chart/performance/by/vendor",
-    getProcurementPerformanceByVendorsSchema,
+    "/chart/performance/by/supplier",
+    getProcurementPerformanceBySuppliersSchema,
     async (req, reply) => {
       try {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
-        const result = await GetProcurementPerformanceByVendors(
+        const result = await GetProcurementPerformanceBySuppliers(
           params,
           req?.session,
           fastify

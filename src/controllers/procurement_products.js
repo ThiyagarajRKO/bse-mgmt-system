@@ -11,10 +11,10 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.vendor_master_id) {
+      if (!procurement_data?.supplier_master_id) {
         return reject({
           statusCode: 420,
-          message: "Vendor master id must not be empty!",
+          message: "Supplier master id must not be empty!",
         });
       }
 
@@ -125,7 +125,7 @@ export const Get = ({ id }) => {
             },
           },
           {
-            model: models.VendorMaster,
+            model: models.SupplierMaster,
             where: {
               is_active: true,
             },
@@ -274,7 +274,7 @@ export const GetAll = ({
             where: procurementLotsWhere,
           },
           {
-            model: models.VendorMaster,
+            model: models.SupplierMaster,
             where: {
               is_active: true,
             },
@@ -379,8 +379,8 @@ export const GetNames = ({
             },
           },
           {
-            attributes: ["id", "vendor_name"],
-            model: models.VendorMaster,
+            attributes: ["id", "supplier_name"],
+            model: models.SupplierMaster,
             where: {
               is_active: true,
             },
@@ -393,7 +393,7 @@ export const GetNames = ({
         group: [
           "ProcurementProducts.id",
           "ProductMaster.id",
-          "VendorMaster.id",
+          "SupplierMaster.id",
         ],
       });
 
@@ -408,7 +408,7 @@ export const Count = ({
   id,
   procurement_lot_id,
   product_master_id,
-  vendor_master_id,
+  supplier_master_id,
   procurement_product_type,
 }) => {
   return new Promise(async (resolve, reject) => {
@@ -425,8 +425,8 @@ export const Count = ({
         where.procurement_lot_id = procurement_lot_id;
       }
 
-      if (vendor_master_id) {
-        where.vendor_master_id = vendor_master_id;
+      if (supplier_master_id) {
+        where.supplier_master_id = supplier_master_id;
       }
 
       if (product_master_id) {
@@ -454,7 +454,7 @@ export const CheckLot = ({
   procurement_lot_id,
   product_master_id,
   procurement_product_type,
-  vendor_master_id,
+  supplier_master_id,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -462,7 +462,7 @@ export const CheckLot = ({
         where: {
           product_master_id,
           procurement_product_type,
-          vendor_master_id,
+          supplier_master_id,
           procurement_lot_id,
           id: {
             [Op.ne]: id,
@@ -516,7 +516,7 @@ export const Delete = ({ profile_id, id }) => {
 // ----------------------------------- Charts -------------------------------------
 // --------------------------------------------------------------------------------
 
-export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
+export const GetProcurementSpendBySuppliersData = ({ from_date, to_date }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -535,7 +535,7 @@ export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
       const output_data = await models.ProcurementProducts.findAll({
         subQuery: false,
         attributes: [
-          "vendor_master_id",
+          "supplier_master_id",
           [
             sequelize.fn("sum", sequelize.col("procurement_totalamount")),
             "total_amount",
@@ -543,8 +543,8 @@ export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
         ],
         include: [
           {
-            attributes: ["id", "vendor_name"],
-            model: models.VendorMaster,
+            attributes: ["id", "supplier_name"],
+            model: models.SupplierMaster,
             where: {
               is_active: true,
             },
@@ -552,7 +552,7 @@ export const GetProcurementSpendByVendorsData = ({ from_date, to_date }) => {
         ],
         where,
         order: [["total_amount", "asc"]],
-        group: ["vendor_master_id", "VendorMaster.id"],
+        group: ["supplier_master_id", "SupplierMaster.id"],
       });
 
       resolve(output_data);
@@ -666,7 +666,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
   });
 };
 
-export const GetProcurementPerformanceByVendorsData = ({
+export const GetProcurementPerformanceBySuppliersData = ({
   from_date,
   to_date,
 }) => {
@@ -688,7 +688,7 @@ export const GetProcurementPerformanceByVendorsData = ({
       const output_data = await models.ProcurementProducts.findAll({
         subQuery: false,
         attributes: [
-          // "vendor_master_id",
+          // "supplier_master_id",
           [
             sequelize.fn("sum", sequelize.col("procurement_quantity")),
             "total_procurement_quantity",
@@ -708,8 +708,8 @@ export const GetProcurementPerformanceByVendorsData = ({
         ],
         include: [
           {
-            attributes: ["vendor_name"],
-            model: models.VendorMaster,
+            attributes: ["supplier_name"],
+            model: models.SupplierMaster,
             where: {
               is_active: true,
             },
@@ -731,7 +731,7 @@ export const GetProcurementPerformanceByVendorsData = ({
             "desc",
           ],
         ],
-        group: ["VendorMaster.id"],
+        group: ["SupplierMaster.id"],
       });
 
       resolve(output_data);

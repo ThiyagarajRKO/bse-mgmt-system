@@ -1,47 +1,47 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class VendorMaster extends Model {
+  class SupplierMaster extends Model {
     static associate(models) {
-      VendorMaster.belongsTo(models.UserProfiles, {
+      SupplierMaster.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      VendorMaster.belongsTo(models.UserProfiles, {
+      SupplierMaster.belongsTo(models.UserProfiles, {
         as: "updater",
         foreignKey: "updated_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      VendorMaster.belongsTo(models.UserProfiles, {
+      SupplierMaster.belongsTo(models.UserProfiles, {
         as: "deleter",
         foreignKey: "deleted_by",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
 
-      VendorMaster.belongsTo(models.LocationMaster, {
+      SupplierMaster.belongsTo(models.LocationMaster, {
         foreignKey: "location_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
     }
   }
-  VendorMaster.init(
+  SupplierMaster.init(
     {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      vendor_name: {
+      supplier_name: {
         type: DataTypes.STRING(100),
       },
-      vendor_profile_url: {
+      supplier_profile_url: {
         type: DataTypes.TEXT,
       },
       address: {
@@ -71,8 +71,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "VendorMaster",
-      tableName: "vendor_master",
+      modelName: "SupplierMaster",
+      tableName: "supplier_master",
       underscored: true,
       createdAt: false,
       updatedAt: false,
@@ -82,38 +82,38 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Create Hook
-  VendorMaster.beforeCreate(async (data, options) => {
+  SupplierMaster.beforeCreate(async (data, options) => {
     try {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a vendor details",
+        "Error while inserting a supplier details",
         err?.message || err
       );
     }
   });
 
   // Update Hook
-  VendorMaster.beforeUpdate(async (data, options) => {
+  SupplierMaster.beforeUpdate(async (data, options) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a vendor", err?.message || err);
+      console.log("Error while updating a supplier", err?.message || err);
     }
   });
 
   // Delete Hook
-  VendorMaster.afterDestroy(async (data, options) => {
+  SupplierMaster.afterDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a vendor", err?.message || err);
+      console.log("Error while deleting a supplier", err?.message || err);
     }
   });
 
-  return VendorMaster;
+  return SupplierMaster;
 };

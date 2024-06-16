@@ -161,14 +161,14 @@ export const GetAll = ({
         ];
       }
 
-      const vendors = await models.VehicleMaster.findAndCountAll({
+      const suppliers = await models.VehicleMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(suppliers);
     } catch (err) {
       reject(err);
     }
@@ -224,7 +224,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.VehicleMaster.destroy({
+      const supplier = await models.VehicleMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -234,7 +234,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(supplier);
     } catch (err) {
       reject(err);
     }

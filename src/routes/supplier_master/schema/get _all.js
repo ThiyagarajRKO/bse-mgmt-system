@@ -6,7 +6,7 @@ export const getAllSchema = {
       properties: {
         start: { type: "number" },
         length: { type: "number" },
-        vendor_name: { type: "string" },
+        supplier_name: { type: "string" },
         location_master_name: { type: "string" },
         "search[value]": { type: "string" },
       },

@@ -1,4 +1,4 @@
-import { PackagingMaster, VendorMaster } from "../../../controllers";
+import { PackagingMaster, SupplierMaster } from "../../../controllers";
 
 export const Create = (
   {
@@ -9,21 +9,21 @@ export const Create = (
     packaging_length,
     packaging_weight,
     packaging_material_composition,
-    vendor_master_id
+    supplier_master_id,
   },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const vendor_count = await VendorMaster.Count({
-        id: vendor_master_id,
+      const supplier_count = await SupplierMaster.Count({
+        id: supplier_master_id,
       });
 
-      if (vendor_count == 0) {
+      if (supplier_count == 0) {
         return reject({
           statusCode: 420,
-          message: "Invalid vendor master id!",
+          message: "Invalid supplier master id!",
         });
       }
       const packaging_master = await PackagingMaster.Insert(profile_id, {
@@ -33,7 +33,7 @@ export const Create = (
         packaging_length,
         packaging_weight,
         packaging_material_composition,
-        vendor_master_id,
+        supplier_master_id,
         is_active: true,
       });
 

@@ -13,7 +13,7 @@ import roleMasterRoute from "./role_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
 import unitMasterRoute from "./unit_master";
-import vendorMasterRoute from "./vendor_master";
+import supplierMasterRoute from "./supplier_master";
 import packagingMasterRoute from "./packaging_master";
 import inventoryMasterRoute from "./inventory_master";
 import speciesMasterRoute from "./species_master";
@@ -115,7 +115,7 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(unitMasterRoute, { prefix: "/master/unit" });
 
-  fastify.register(vendorMasterRoute, { prefix: "/master/vendor" });
+  fastify.register(supplierMasterRoute, { prefix: "/master/supplier" });
 
   fastify.register(packagingMasterRoute, { prefix: "/master/packaging" });
 

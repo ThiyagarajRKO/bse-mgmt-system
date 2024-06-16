@@ -32,10 +32,10 @@ export const Insert = async (profile_id, inventory_master_data) => {
         });
       }
 
-      if (!inventory_master_data?.vendor_master_id) {
+      if (!inventory_master_data?.supplier_master_id) {
         return reject({
           statusCode: 420,
-          message: "Vendor master id must not be empty!",
+          message: "Supplier master id must not be empty!",
         });
       }
 
@@ -127,7 +127,7 @@ export const GetAll = ({
   inventory_name,
   inventory_uom,
   inventory_category,
-  vendor_master_name,
+  supplier_master_name,
   start,
   length,
   search,
@@ -150,12 +150,14 @@ export const GetAll = ({
         where.inventory_category = { [Op.iLike]: `%${inventory_category}%` };
       }
 
-      let vendorWhere = {
+      let supplierWhere = {
         is_active: true,
       };
 
-      if (vendor_master_name) {
-        vendorWhere.vendor_name = { [Op.iLike]: `%${vendor_master_name}%` };
+      if (supplier_master_name) {
+        supplierWhere.supplier_name = {
+          [Op.iLike]: `%${supplier_master_name}%`,
+        };
       }
 
       if (search) {
@@ -164,15 +166,15 @@ export const GetAll = ({
           { inventory_uom: { [Op.iLike]: `%${search}%` } },
           // { inventory_category: { [Op.iLike]: `%${search}%` } },
 
-          { "$VendorMaster.vendor_name$": { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
         ];
       }
 
       const inventories = await models.InventoryMaster.findAndCountAll({
         include: [
           {
-            model: models.VendorMaster,
-            where: vendorWhere,
+            model: models.SupplierMaster,
+            where: supplierWhere,
           },
         ],
         where,

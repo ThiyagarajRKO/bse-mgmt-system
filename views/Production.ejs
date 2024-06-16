@@ -1881,7 +1881,7 @@
                 }'>${row["pp"]?.["ProductMaster"]?.product_name
                 }-${row["pp"]?.procurement_product_type}-${row[
                   "pp"
-                ]?.["VendorMaster"]?.vendor_name?.replaceAll(" ", "")}</i>`;
+                ]?.["SupplierMaster"]?.supplier_name?.replaceAll(" ", "")}</i>`;
             },
           },
           {
@@ -2110,7 +2110,7 @@
                   (parseFloat(item?.procurement_quantity) || 0) -
                   (parseFloat(item?.dispatched_quantity) || 0),
                 text: `${item?.ProductMaster?.product_name}-${item?.procurement_product_type
-                  }-${item?.VendorMaster?.vendor_name?.replaceAll(" ", "")}`,
+                  }-${item?.SupplierMaster?.supplier_name?.replaceAll(" ", "")}`,
               };
             }),
           });
@@ -2737,7 +2737,7 @@
             targets: [1],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["VendorMaster"]?.vendor_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
+              return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["SupplierMaster"]?.supplier_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
             },
           },
           {
@@ -3116,7 +3116,7 @@
                   (parseFloat(item?.peeling_quantity) || 0),
                 text: `${item?.pp?.ProductMaster?.product_name
                   }-${item?.pp?.procurement_product_type
-                  }-${item?.pp?.VendorMaster?.vendor_name?.replaceAll(
+                  }-${item?.pp?.SupplierMaster?.supplier_name?.replaceAll(
                     " ",
                     ""
                   )}-${item?.dispatch_quantity || 0}`,

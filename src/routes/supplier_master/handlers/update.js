@@ -1,15 +1,15 @@
-import { LocationMaster, VendorMaster } from "../../../controllers";
+import { LocationMaster, SupplierMaster } from "../../../controllers";
 
 export const Update = (
-  { profile_id, vendor_master_id, vendor_master_data },
+  { profile_id, supplier_master_id, supplier_master_data },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (vendor_master_data?.location_master_id) {
+      if (supplier_master_data?.location_master_id) {
         const location_count = await LocationMaster.Count({
-          id: vendor_master_data?.location_master_id,
+          id: supplier_master_data?.location_master_id,
         });
 
         if (location_count == 0) {
@@ -20,21 +20,21 @@ export const Update = (
         }
       }
 
-      const updated_data = await VendorMaster.Update(
+      const updated_data = await SupplierMaster.Update(
         profile_id,
-        vendor_master_id,
-        vendor_master_data
+        supplier_master_id,
+        supplier_master_data
       );
 
       if (updated_data?.[0] > 0) {
         return resolve({
-          message: "Vendor master has been updated successfully",
+          message: "Supplier master has been updated successfully",
         });
       }
 
       resolve({
         statusCode: 420,
-        message: "Vendor master didn't update",
+        message: "Supplier master didn't update",
       });
     } catch (err) {
       fastify.log.error(err);

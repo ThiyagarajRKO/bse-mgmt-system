@@ -644,31 +644,31 @@
   <!-- Unit Container Ends -->
 
   <!-- ------------------------------------------------------------------------------------------------------------- -->
-  <!-- ------------------------------------- Vendor Container ---------------------------------------------------- -->
+  <!-- ------------------------------------- Supplier Container ---------------------------------------------------- -->
   <!-- ------------------------------------------------------------------------------------------------------------- -->
-  <div class="menu-container vendorContainer d-none">
+  <div class="menu-container supplierContainer d-none">
     <!-- Slide-in Panel -->
-    <div id="vendorSlideInPanel" class="slideInPanel px-4 overflow-auto">
+    <div id="supplierSlideInPanel" class="slideInPanel px-4 overflow-auto">
       <div class="row d-flex justify-content-center">
         <div class="col-sm-12 col-md-12 col-md-12">
           <div class="text-center mt-4 d-flex justify-content-between">
-            <span id="vendorPanelHeading" class="fw-bold fs-5">Add Vendor Data</span>
+            <span id="supplierPanelHeading" class="fw-bold fs-5">Add Supplier Data</span>
             <div class="col my-auto d-flex justify-content-end">
-              <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeVendorPanelBtn"></i>
+              <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeSupplierPanelBtn"></i>
             </div>
           </div>
 
           <hr />
 
           <div class="form-group mt-4">
-            <label for="vendor-name">Vendor Name</label>
-            <input id="vendor_name" class="form-control" type="text" placeholder="eg. Jone" name="vendor-name"
+            <label for="supplier-name">Supplier Name</label>
+            <input id="supplier_name" class="form-control" type="text" placeholder="eg. Jone" name="supplier-name"
               required />
           </div>
 
           <div class="form-group my-3">
-            <label for="vendor-location">Location</label>
-            <select class="form-control input-dropdown" id="vendorLocations" name="location"></select>
+            <label for="supplier-location">Location</label>
+            <select class="form-control input-dropdown" id="supplierLocations" name="location"></select>
           </div>
 
           <div class="form-group my-3">
@@ -677,27 +677,27 @@
           </div>
 
           <div class="form-group my-3">
-            <label for="vendor_phoneno">Phone No</label>
-            <input id="vendor_phone" class="form-control" type="tel" pattern="[6789][0-9]{9}"
-              placeholder="eg. 9876543210" name="vendor_phoneno" required />
+            <label for="supplier_phoneno">Phone No</label>
+            <input id="supplier_phone" class="form-control" type="tel" pattern="[6789][0-9]{9}"
+              placeholder="eg. 9876543210" name="supplier_phoneno" required />
           </div>
 
           <div class="form-group my-3">
             <label for="email">Email</label>
-            <input id="vendor_email" class="form-control" type="email"
+            <input id="supplier_email" class="form-control" type="email"
               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address"
               placeholder="eg. xyz@gmail.com" name="email" />
           </div>
 
           <div class="form-group my-3">
             <label for="address">Address</label>
-            <textarea id="vendor_address" class="form-control" placeholder="eg. xyz" type="text" name="address"
+            <textarea id="supplier_address" class="form-control" placeholder="eg. xyz" type="text" name="address"
               rows="4"></textarea>
           </div>
 
           <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-            <div id="submitVendor" class="col-lg-5 btn btn-danger">Save</div>
-            <div id="resetVendorDataBtn" class="col-lg-5 btn btn-outline-danger">
+            <div id="submitSupplier" class="col-lg-5 btn btn-danger">Save</div>
+            <div id="resetSupplierDataBtn" class="col-lg-5 btn btn-outline-danger">
               Clear
             </div>
           </div>
@@ -710,19 +710,19 @@
       <div class="border p-4 w-100">
         <!-- Add Button -->
         <div class="d-flex rounded-2 justify-content-end pb-4">
-          <div id="openVendorPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+          <div id="openSupplierPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
             style="width: 100px">
             <i class="fa-solid fa-circle-plus my-auto"></i>
             <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
           </div>
         </div>
 
-        <table id="vendorTable" class="table table-hover nowrap w-100">
+        <table id="supplierTable" class="table table-hover nowrap w-100">
           <thead>
             <tr>
               <th></th>
               <th></th>
-              <th class="fw-bold"><span>Vendor Name</span></th>
+              <th class="fw-bold"><span>Supplier Name</span></th>
               <th class="fw-bold"><span>Location</span></th>
               <th class="fw-bold"><span>Representative</span></th>
               <th class="fw-bold"><span>Phone</span></th>
@@ -735,7 +735,7 @@
       </div>
     </div>
   </div>
-  <!-- Vendor Container Ends -->
+  <!-- Supplier Container Ends -->
 
   <!-- ------------------------------------------------------------------------------------------------------------- -->
   <!-- ------------------------------------------ Packaging Container ------------------------------------------------ -->
@@ -1171,7 +1171,7 @@
           </div>
 
           <div class="form-group mt-4">
-            <label for="vendor">Supplier</label>
+            <label for="supplier">Supplier</label>
             <select id="inventory_supplier" class="form-control input-dropdown w-100" name="inventorySupplier"></select>
           </div>
 
@@ -1908,8 +1908,8 @@
 
     tippy(".procurementTopMenu", {
       content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topProcurementSubMenu-item vendorMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-users mb-2"></i>Vendors</div>
+        <div class="topProcurementSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
+            class="fa-solid fa-users mb-2"></i>Suppliers</div>
         <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
         </div>`,
@@ -2025,7 +2025,7 @@
       // Resetting select field selected option
       $("#unitLocations").val(null).trigger("change");
       $("#unitType").val(null).trigger("change");
-      $("#vendorLocations").val(null).trigger("change");
+      $("#supplierLocations").val(null).trigger("change");
       $("#packagingType").val(null).trigger("change");
       $("#packagingMaterialComposition").val(null).trigger("change");
       $("#gradeSpeciesNames").val(null).trigger("change");
@@ -3367,45 +3367,45 @@
     $("#resetProductDataBtn").on("click", resetAllInputs);
 
     // ---------------------------------------------------------
-    // ------------------------- Vendors -----------------------
+    // ------------------------- Suppliers -----------------------
     // ---------------------------------------------------------
 
     // Open panel
-    $("#openVendorPanelBtn").click(function () {
+    $("#openSupplierPanelBtn").click(function () {
       openSlidePanel(
-        "vendorSlideInPanel",
-        "vendorPanelHeading",
-        "Vendor",
-        "submitVendor",
-        "vendor_master_id"
+        "supplierSlideInPanel",
+        "supplieranelHeading",
+        "Supplier",
+        "submitSupplier",
+        "supplier_master_id"
       );
     });
 
     // Close panel
-    $("#closeVendorPanelBtn").click(function () {
-      closeSlidePanel("vendorSlideInPanel");
+    $("#closeSupplierPanelBtn").click(function () {
+      closeSlidePanel("supplierSlideInPanel");
     });
 
-    $(document).on("click", ".vendorMenu", function () {
+    $(document).on("click", ".supplierMenu", function () {
       $(".menu-container").addClass("d-none");
 
-      $(".vendorContainer").removeClass("d-none");
-      $(".vendorContainer").addClass("d-block");
+      $(".supplierContainer").removeClass("d-none");
+      $(".supplierContainer").addClass("d-block");
 
-      loadVendorDropdowns();
-      loadVendorsTableData();
+      loadSupplierDropdowns();
+      loadSuppliersTableData();
     });
 
-    $("#submitVendor").click(function () {
-      saveVendor();
+    $("#submitSupplier").click(function () {
+      saveSupplier();
     });
 
-    function loadVendorDropdowns() {
-      loadVendorLocations();
+    function loadSupplierDropdowns() {
+      loadSupplierLocations();
     }
 
-    function loadVendorsTableData() {
-      $("#vendorTable").DataTable({
+    function loadSuppliersTableData() {
+      $("#supplierTable").DataTable({
         // searching: true,
         destroy: true,
         responsive: false,
@@ -3417,10 +3417,10 @@
         ordering: false,
         ajax: {
           type: "GET",
-          url: "/api/v1/master/vendor",
+          url: "/api/v1/master/supplier",
           error: function (xhr, error, code) {
-            $("#vendorTable").DataTable().destroy();
-            $("#vendorTable").DataTable({ scrollX: true, ordering: false });
+            $("#supplierTable").DataTable().destroy();
+            $("#supplierTable").DataTable({ scrollX: true, ordering: false });
 
             if (xhr["status"] == 420) {
               toastr["warning"](xhr["responseJSON"]["message"]);
@@ -3439,7 +3439,7 @@
         columns: [
           { data: null },
           { data: null },
-          { data: "vendor_name" },
+          { data: "supplier_name" },
           { data: "LocationMaster.location_name" },
           { data: "representative" },
           { data: "phone" },
@@ -3453,7 +3453,7 @@
             className: "text-left",
             render: function (data, type, row) {
               return (
-                '<i class="fa fa-pen-to-square edit editVendor" vendor_master_id=' +
+                '<i class="fa fa-pen-to-square edit editSupplier" supplier_master_id=' +
                 row["id"] +
                 ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this row"></i>'
               );
@@ -3464,7 +3464,7 @@
             className: "text-left",
             render: function (data, type, row) {
               return (
-                '<i class="fa fa-trash del delVendor" vendor_master_id=' +
+                '<i class="fa fa-trash del delSupplier" supplier_master_id=' +
                 row["id"] +
                 ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this row"></i>'
               );
@@ -3518,12 +3518,12 @@
       });
     }
 
-    $(document).on("click", ".editVendor", (e) => {
+    $(document).on("click", ".editSupplier", (e) => {
       // Changing panel input fields data
-      $("#vendor_name").val(
+      $("#supplier_name").val(
         $(e.target).closest("tr").children("td").eq(2).text()
       );
-      $("#vendorLocations")
+      $("#supplierLocations")
         .val(
           $(e.target)
             .closest("tr")
@@ -3536,38 +3536,38 @@
       $("#representative").val(
         $(e.target).closest("tr").children("td").eq(4).text()
       );
-      $("#vendor_phone").val(
+      $("#supplier_phone").val(
         $(e.target).closest("tr").children("td").eq(5).text()
       );
-      $("#vendor_email").val(
+      $("#supplier_email").val(
         $(e.target).closest("tr").children("td").eq(6).text()
       );
-      $("#vendor_address").val(
+      $("#supplier_address").val(
         $(e.target).closest("tr").children("td").eq(7).text()
       );
 
       // Opening slide panel
-      $("#openVendorPanelBtn").click();
+      $("#openSupplierPanelBtn").click();
 
       // Changing panel heading
-      $("#vendorPanelHeading").text("Edit Vendor Data");
+      $("#supplierPanelHeading").text("Edit Supplier Data");
 
       // Changing panel button label
-      $("#submitVendor").text("Update");
+      $("#submitSupplier").text("Update");
 
       // Changing panel button attribute
-      $("#submitVendor").attr(
-        "vendor_master_id",
-        $(e.target).attr("vendor_master_id")
+      $("#submitSupplier").attr(
+        "supplier_master_id",
+        $(e.target).attr("supplier_master_id")
       );
     });
 
-    $(document).on("click", ".delVendor", (e) => {
-      let vendor_master_id = $(e.target).attr("vendor_master_id");
+    $(document).on("click", ".delSupplier", (e) => {
+      let supplier_master_id = $(e.target).attr("supplier_master_id");
       let currentRow = $(e.target).closest("tr");
       $.confirm({
-        title: "Delete Vendor?",
-        content: "Are you sure, do you want to remove this vendor?",
+        title: "Delete Supplier?",
+        content: "Are you sure, do you want to remove this supplier?",
         backgroundDismiss: false,
         backgroundDismissAnimation: "glow",
         type: "red",
@@ -3584,15 +3584,15 @@
             action: function () {
               $.ajax({
                 url:
-                  "/api/v1/master/vendor?vendor_master_id=" +
-                  vendor_master_id,
+                  "/api/v1/master/supplier?supplier_master_id=" +
+                  supplier_master_id,
                 method: "DELETE",
               })
                 .done(function (response) {
                   //loading data to table
-                  loadVendorsTableData();
+                  loadSuppliersTableData();
 
-                  toastr.success("Vendor deleted successfully", "Deleted");
+                  toastr.success("Supplier deleted successfully", "Deleted");
                 })
                 .fail(function (err) {
                   if (err["status"] == 420) {
@@ -3604,13 +3604,13 @@
             },
           },
           no: function () {
-            toastr.info("Vendor is safe now", "Info");
+            toastr.info("Supplier is safe now", "Info");
           },
         },
       });
     });
 
-    function loadVendorLocations() {
+    function loadSupplierLocations() {
       // Load Roles
       $.ajax({
         url: "/api/v1/master/location",
@@ -3621,7 +3621,7 @@
         processData: false,
         success: (data) => {
           // Loading data
-          $("#vendorLocations").select2({
+          $("#supplierLocations").select2({
             placeholder: "Choose a location",
             allowClear: true,
             data: $.map(data?.data?.rows, function (item) {
@@ -3633,7 +3633,7 @@
           });
 
           // Clearing selected value
-          $("#vendorLocations").val(null).trigger("change");
+          $("#supplierLocations").val(null).trigger("change");
         },
         error: (jqXhr, textStatus, errorThrown) => {
           if (jqXhr["status"] == 420) {
@@ -3645,27 +3645,27 @@
       });
     }
 
-    function saveVendor() {
-      const vendor_master_id = $("#submitVendor").attr("vendor_master_id");
+    function saveSupplier() {
+      const supplier_master_id = $("#submitSupplier").attr("supplier_master_id");
 
-      let url = "/api/v1/master/vendor";
+      let url = "/api/v1/master/supplier";
       let method = "POST";
       let input_params = {
-        vendor_name: $("#vendor_name").val(),
+        supplier_name: $("#supplier_name").val(),
         representative: $("#representative").val(),
-        address: $("#vendor_address").val(),
-        phone: $("#vendor_phone").val(),
-        email: $("#vendor_email").val(),
-        location_master_id: $("#vendorLocations").val(),
+        address: $("#supplier_address").val(),
+        phone: $("#supplier_phone").val(),
+        email: $("#supplier_email").val(),
+        location_master_id: $("#supplierLocations").val(),
       };
 
-      if (vendor_master_id) {
-        url = "/api/v1/master/vendor";
+      if (supplier_master_id) {
+        url = "/api/v1/master/supplier";
         method = "PUT";
 
         input_params = {
-          vendor_master_id,
-          vendor_master_data: {
+          supplier_master_id,
+          supplier_master_data: {
             ...input_params,
           },
         };
@@ -3683,9 +3683,9 @@
         success: (data) => {
           toastr["success"](data?.message);
 
-          $("#closeVendorPanelBtn").click();
+          $("#closeSupplierPanelBtn").click();
 
-          loadVendorsTableData();
+          loadSuppliersTableData();
 
           resetAllInputs();
         },
@@ -3699,7 +3699,7 @@
       });
     }
 
-    $("#resetVendorDataBtn").on("click", resetAllInputs);
+    $("#resetSupplierDataBtn").on("click", resetAllInputs);
 
     // ---------------------------------------------------------
     // ----------------------- Packaging -----------------------
@@ -3738,7 +3738,7 @@
     function loadPackagingDropdowns() {
       loadPackagingType();
       loadPackagingMaterialComposition();
-      loadPackagingVendor();
+      loadPackagingSupplier();
     }
 
     function loadPackagingTableData() {
@@ -3786,7 +3786,7 @@
           { data: "packaging_height" },
           { data: "packaging_weight" },
           { data: "packaging_material_composition" },
-          { data: "VendorMaster.vendor_name" },
+          { data: "SupplierMaster.supplier_name" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -3816,7 +3816,7 @@
             targets: [9],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span packaging_master_id='${row["VendorMaster"].id}'>${data}</i>`;
+              return `<span packaging_master_id='${row["SupplierMaster"].id}'>${data}</i>`;
             },
           },
           {
@@ -4006,10 +4006,10 @@
       $("#packagingMaterialComposition").val(null).trigger("change");
     }
 
-    function loadPackagingVendor() {
+    function loadPackagingSupplier() {
       // Load Roles
       $.ajax({
-        url: "/api/v1/master/vendor",
+        url: "/api/v1/master/supplier",
         method: "GET",
         dataType: "json",
         contentType: "application/json",
@@ -4023,7 +4023,7 @@
             data: $.map(data?.data?.rows, function (item) {
               return {
                 id: item.id,
-                text: item.vendor_name,
+                text: item.supplier_name,
               };
             }),
           });
@@ -4059,7 +4059,7 @@
         packaging_material_composition: $(
           "#packagingMaterialComposition"
         ).val(),
-        vendor_master_id: $("#packagingSupplier").val(),
+        supplier_master_id: $("#packagingSupplier").val(),
       };
 
       if (packaging_master_id) {
@@ -4139,7 +4139,7 @@
     });
 
     function loadInventoryDropdowns() {
-      loadInventoryVendors();
+      loadInventorySuppliers();
       loadInventoryCategory();
     }
 
@@ -4184,7 +4184,7 @@
           { data: "inventory_name" },
           { data: "inventory_uom" },
           { data: "inventory_category" },
-          { data: "VendorMaster.vendor_name" },
+          { data: "SupplierMaster.supplier_name" },
           { data: "created_at" },
         ],
         columnDefs: [
@@ -4214,7 +4214,7 @@
             targets: [5],
             className: "text-left",
             render: function (data, type, row) {
-              return `<span vendor_master_id='${row["VendorMaster"].id}'">${data}</span>`;
+              return `<span supplier_master_id='${row["SupplierMaster"].id}'">${data}</span>`;
             },
           },
           {
@@ -4276,7 +4276,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("vendor_master_id")
+            .attr("supplier_master_id")
         )
         .trigger("change");
 
@@ -4371,10 +4371,10 @@
       $("#inventory_category").val(null).trigger("change");
     }
 
-    function loadInventoryVendors() {
+    function loadInventorySuppliers() {
       // Load Roles
       $.ajax({
-        url: "/api/v1/master/vendor",
+        url: "/api/v1/master/supplier",
         method: "GET",
         dataType: "json",
         contentType: "application/json",
@@ -4383,12 +4383,12 @@
         success: (data) => {
           // Loading data
           $("#inventory_supplier").select2({
-            placeholder: "Choose a Vendor",
+            placeholder: "Choose a Supplier",
             allowClear: true,
             data: $.map(data?.data?.rows, function (item) {
               return {
                 id: item.id,
-                text: item.vendor_name,
+                text: item.supplier_name,
               };
             }),
           });
@@ -4419,7 +4419,7 @@
         inventory_name: $("#inventory_name").val(),
         inventory_uom: $("#inventory_uom").val(),
         inventory_category: $("#inventory_category").val(),
-        vendor_master_id: $("#inventory_supplier").val(),
+        supplier_master_id: $("#inventory_supplier").val(),
       };
 
       if (inventory_master_id) {
@@ -6160,8 +6160,8 @@
             action: function () {
               $.ajax({
                 url:
-                  "/api/v1/master/customer?vendor_master_id=" +
-                  vendor_master_id,
+                  "/api/v1/master/customer?supplier_master_id=" +
+                  supplier_master_id,
                 method: "DELETE",
               })
                 .done(function (response) {

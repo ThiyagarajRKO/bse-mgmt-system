@@ -9,7 +9,7 @@ export const GetAll = (
     packaging_length,
     packaging_weight,
     package_material_composition,
-    vendor_master_name,
+    supplier_master_name,
     "search[value]": search,
   },
   session,
@@ -25,7 +25,7 @@ export const GetAll = (
         packaging_length,
         packaging_weight,
         package_material_composition,
-        vendor_master_name,
+        supplier_master_name,
         search,
       });
 

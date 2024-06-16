@@ -195,7 +195,7 @@ export const GetAll = ({
           sequelize.where(
             sequelize.cast(
               sequelize.col(
-                "Dispatch.ProcurementProduct.VendorMaster.vendor_name"
+                "Dispatch.ProcurementProduct.SupplierMaster.supplier_name"
               ),
               "varchar"
             ),
@@ -235,7 +235,7 @@ export const GetAll = ({
                   },
                   {
                     attributes: [],
-                    model: models.VendorMaster,
+                    model: models.SupplierMaster,
                     where: {
                       is_active: true,
                     },
@@ -300,8 +300,8 @@ export const GetAll = ({
                     },
                   },
                   {
-                    attributes: ["vendor_name"],
-                    model: models.VendorMaster,
+                    attributes: ["supplier_name"],
+                    model: models.SupplierMaster,
                     where: {
                       is_active: true,
                     },
@@ -357,7 +357,7 @@ export const GetAll = ({
         //   "Dispatch->ProcurementProduct.id",
         //   "Dispatch->ProcurementProduct->ProcurementLot.id",
         //   "Dispatch->ProcurementProduct->ProductMaster.id",
-        //   "Dispatch->ProcurementProduct->VendorMaster.id",
+        //   "Dispatch->ProcurementProduct->SupplierMaster.id",
         // ],
       });
 

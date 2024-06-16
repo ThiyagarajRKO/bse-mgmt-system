@@ -1,17 +1,17 @@
 "use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("vendor_master", {
+    await queryInterface.createTable("supplier_master", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      vendor_name: {
+      supplier_name: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      vendor_profile_url: {
+      supplier_profile_url: {
         type: Sequelize.TEXT,
       },
       address: {
@@ -81,6 +81,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("vendor_master");
+    await queryInterface.dropTable("supplier_master");
   },
 };

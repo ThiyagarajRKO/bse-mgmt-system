@@ -120,14 +120,14 @@ export const GetAll = ({ location_name, start = 0, length = 10, search }) => {
         ];
       }
 
-      const vendors = await models.LocationMaster.findAndCountAll({
+      const suppliers = await models.LocationMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(suppliers);
     } catch (err) {
       reject(err);
     }
@@ -176,7 +176,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.LocationMaster.destroy({
+      const supplier = await models.LocationMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -186,7 +186,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(supplier);
     } catch (err) {
       reject(err);
     }

@@ -10,7 +10,7 @@ export const GetAll = (
     procurement_purchaser,
     product_master_name,
     species_master_name,
-    vendor_master_name,
+    supplier_master_name,
     unit_master_name,
     "search[value]": search,
   },
@@ -28,7 +28,7 @@ export const GetAll = (
         procurement_purchaser,
         product_master_name,
         species_master_name,
-        vendor_master_name,
+        supplier_master_name,
         unit_master_name,
         search,
       });

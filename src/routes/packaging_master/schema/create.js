@@ -5,7 +5,7 @@ export const createSchema = {
       required: [
         "packaging_type",
         "packaging_material_composition",
-        "vendor_master_id",
+        "supplier_master_id",
       ],
       properties: {
         packaging_type: { type: "string" },
@@ -14,7 +14,7 @@ export const createSchema = {
         packaging_length: { type: "integer" },
         packaging_weight: { type: "integer" },
         packaging_material_composition: { type: "string" },
-        vendor_master_id: { type: "string" },
+        supplier_master_id: { type: "string" },
       },
     },
   },

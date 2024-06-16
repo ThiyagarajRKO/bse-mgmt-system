@@ -31,10 +31,10 @@ export const Insert = async (profile_id, packaging_data) => {
           message: "Packaging Width must not be empty!",
         });
       }
-      if (!packaging_data?.vendor_master_id) {
+      if (!packaging_data?.supplier_master_id) {
         return reject({
           statusCode: 420,
-          message: "Vendor master id must not be empty!",
+          message: "Supplier master id must not be empty!",
         });
       }
 
@@ -128,7 +128,7 @@ export const GetAll = ({
   packaging_length,
   packaging_weight,
   packaging_material_composition,
-  vendor_master_name,
+  supplier_master_name,
   start,
   length,
   search,
@@ -168,12 +168,14 @@ export const GetAll = ({
         };
       }
 
-      let vendorWhere = {
+      let supplierWhere = {
         is_active: true,
       };
 
-      if (vendor_master_name) {
-        vendorWhere.vendor_name = { [Op.iLike]: `%${vendor_master_name}%` };
+      if (supplier_master_name) {
+        supplierWhere.supplier_name = {
+          [Op.iLike]: `%${supplier_master_name}%`,
+        };
       }
 
       if (search) {
@@ -185,15 +187,15 @@ export const GetAll = ({
           // { packaging_height: { [Op.iLike]: `%${search}%` } },
           // { packaging_weight: { [Op.iLike]: `%${search}%` } },
           // { packaging_material_composition: { [Op.iLike]: `%${search}%` } },
-          { "$VendorMaster.vendor_name$": { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
         ];
       }
 
       const packagings = await models.PackagingMaster.findAndCountAll({
         include: [
           {
-            model: models.VendorMaster,
-            where: vendorWhere,
+            model: models.SupplierMaster,
+            where: supplierWhere,
           },
         ],
         where,

@@ -2,9 +2,9 @@ export const createSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["location_master_id", "vendor_name", "representative"],
+      required: ["location_master_id", "supplier_name", "representative"],
       properties: {
-        vendor_name: { type: "string" },
+        supplier_name: { type: "string" },
         representative: { type: "string" },
         address: { type: "string" },
         phone: { type: "string" },

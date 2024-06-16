@@ -191,7 +191,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             }
           ),
           {
-            "$pp->VendorMaster.vendor_name$": {
+            "$pp->SupplierMaster.supplier_name$": {
               [Op.iLike]: `%${search}%`,
             },
           },
@@ -227,8 +227,8 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
                 },
               },
               {
-                attributes: ["id", "vendor_name"],
-                model: models.VendorMaster,
+                attributes: ["id", "supplier_name"],
+                model: models.SupplierMaster,
                 where: {
                   is_active: true,
                 },
@@ -418,8 +418,8 @@ export const GetProductNames = ({
                 },
               },
               {
-                attributes: ["id", "vendor_name"],
-                model: models.VendorMaster,
+                attributes: ["id", "supplier_name"],
+                model: models.SupplierMaster,
                 where: {
                   is_active: true,
                 },
@@ -446,7 +446,7 @@ export const GetProductNames = ({
           "pp->ProductMaster.id",
           "pp->ProductMaster->ProductCategoryMaster.id",
           // "pp->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
-          "pp->VendorMaster.id",
+          "pp->SupplierMaster.id",
         ],
       });
 

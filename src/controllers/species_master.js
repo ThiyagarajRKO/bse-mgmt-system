@@ -161,7 +161,7 @@ export const GetAll = ({
         ];
       }
 
-      const vendors = await models.SpeciesMaster.findAndCountAll({
+      const suppliers = await models.SpeciesMaster.findAndCountAll({
         include: [
           {
             model: models.DivisionMaster,
@@ -181,7 +181,7 @@ export const GetAll = ({
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(suppliers);
     } catch (err) {
       reject(err);
     }

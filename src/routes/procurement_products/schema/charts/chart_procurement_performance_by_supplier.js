@@ -1,4 +1,4 @@
-export const getProcurementPerformanceByVendorsSchema = {
+export const getProcurementPerformanceBySuppliersSchema = {
   schema: {
     query: {
       type: "object",

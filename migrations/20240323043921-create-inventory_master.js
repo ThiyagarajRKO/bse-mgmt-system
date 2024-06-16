@@ -24,13 +24,13 @@ module.exports = {
         ),
         allowNull: false,
       },
-      vendor_master_id: {
+      supplier_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "vendor_master" },
+          model: { tableName: "supplier_master" },
           key: "id",
         },
       },

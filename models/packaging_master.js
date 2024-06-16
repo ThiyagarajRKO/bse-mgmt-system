@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
-      PackagingMaster.belongsTo(models.VendorMaster, {
-        foreignKey: "vendor_master_id",
+      PackagingMaster.belongsTo(models.SupplierMaster, {
+        foreignKey: "supplier_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
@@ -95,23 +95,25 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PackagingMaster.beforeCreate(async (data, options) => {
     try {
-      if (data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attribute: "vendor_name",
-          where: { id: data?.vendor_master_id, is_active: true },
-        });
+      if (data?.supplier_master_id) {
+        const { supplier_name } = await sequelize.models.SupplierMaster.findOne(
+          {
+            attribute: "supplier_name",
+            where: { id: data?.supplier_master_id, is_active: true },
+          }
+        );
         if (!data?.packaging_weight || data?.packaging_weight == 0) {
           data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
             data?.packaging_length
           } cm x ${data?.packaging_width} cm x ${data?.packaging_height} cm-${
             PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          }-${supplier_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
         } else {
           data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
             data?.packaging_weight
           }kgs-${
             PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          }-${supplier_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
         }
       }
 
@@ -127,23 +129,25 @@ module.exports = (sequelize, DataTypes) => {
   // Update Hook
   PackagingMaster.beforeUpdate(async (data, options) => {
     try {
-      if (data?.vendor_master_id) {
-        const { vendor_name } = await sequelize.models.VendorMaster.findOne({
-          attribute: "vendor_name",
-          where: { id: data?.vendor_master_id, is_active: true },
-        });
+      if (data?.supplier_master_id) {
+        const { supplier_name } = await sequelize.models.SupplierMaster.findOne(
+          {
+            attribute: "supplier_name",
+            where: { id: data?.supplier_master_id, is_active: true },
+          }
+        );
         if (!data?.packaging_weight || data?.packaging_weight == 0) {
           data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
             data?.packaging_length
           } cm x ${data?.packaging_width} cm x ${data?.packaging_height} cm-${
             PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          }-${supplier_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
         } else {
           data.packaging_code = `${PackagingTypes[data?.packaging_type]}-${
             data?.packaging_weight
           }kgs-${
             PackagingMaterials[data?.packaging_material_composition]
-          }-${vendor_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
+          }-${supplier_name?.trim()?.replaceAll(" ", "")?.toUpperCase()}`;
         }
       }
       data.updated_at = new Date();

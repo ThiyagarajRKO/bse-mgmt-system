@@ -11,7 +11,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
 
-export const vendorMasterRoute = (fastify, opts, done) => {
+export const supplierMasterRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -51,7 +51,7 @@ export const vendorMasterRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:vendor_master_id", getSchema, async (req, reply) => {
+  fastify.get("/:supplier_master_id", getSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.params };
 
@@ -111,4 +111,4 @@ export const vendorMasterRoute = (fastify, opts, done) => {
   done();
 };
 
-export default vendorMasterRoute;
+export default supplierMasterRoute;

@@ -7,7 +7,7 @@ export const GetAll = (
     inventory_name,
     inventory_uom,
     inventory_category,
-    vendor_master_name,
+    supplier_master_name,
     "search[value]": search,
   },
   session,
@@ -21,7 +21,7 @@ export const GetAll = (
         inventory_name,
         inventory_uom,
         inventory_category,
-        vendor_master_name,
+        supplier_master_name,
         search,
       });
 

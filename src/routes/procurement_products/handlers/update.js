@@ -34,7 +34,7 @@ export const Update = (
         const procurement_product = await ProcurementProducts.CheckLot({
           id: procurement_product_id,
           procurement_lot_id: procurement_product_data?.procurement_lot_id,
-          vendor_master_id: procurement_product_data?.vendor_master_id,
+          supplier_master_id: procurement_product_data?.supplier_master_id,
           product_master_id: procurement_product_data?.product_master_id,
           procurement_product_type:
             procurement_product_data?.procurement_product_type,

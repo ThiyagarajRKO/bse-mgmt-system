@@ -53,7 +53,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         ];
       }
 
-      const vendors = await models.OrderProducts.findAndCountAll({
+      const suppliers = await models.OrderProducts.findAndCountAll({
         subQuery: false,
         attributes: [
           "id",
@@ -103,7 +103,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(suppliers);
     } catch (err) {
       reject(err);
     }

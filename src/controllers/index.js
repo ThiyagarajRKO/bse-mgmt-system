@@ -6,7 +6,7 @@ export * as LocationMaster from "./location_master";
 export * as ProcurementLots from "./procurement_lots";
 export * as ProcurementProducts from "./procurement_products";
 export * as UnitMaster from "./unit_master";
-export * as VendorMaster from "./vendor_master";
+export * as SupplierMaster from "./supplier_master";
 export * as PackagingMaster from "./packaging_master";
 export * as InventoryMaster from "./inventory_master";
 export * as SpeciesMaster from "./species_master";

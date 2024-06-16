@@ -1,11 +1,13 @@
-import { VendorMaster } from "../../../controllers";
+import { SupplierMaster } from "../../../controllers";
 
-export const Get = ({ vendor_master_id }, session, fastify) => {
+export const Get = ({ supplier_master_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let vendor_master = await VendorMaster.Get({ id: vendor_master_id });
+      let supplier_master = await SupplierMaster.Get({
+        id: supplier_master_id,
+      });
 
-      if (!vendor_master) {
+      if (!supplier_master) {
         return reject({
           statusCode: 420,
           message: "No data found!",
@@ -13,7 +15,7 @@ export const Get = ({ vendor_master_id }, session, fastify) => {
       }
 
       resolve({
-        data: vendor_master,
+        data: supplier_master,
       });
     } catch (err) {
       fastify.log.error(err);

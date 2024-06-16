@@ -181,14 +181,14 @@ export const GetAll = ({
         ];
       }
 
-      const vendors = await models.DriverMaster.findAndCountAll({
+      const suppliers = await models.DriverMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(vendors);
+      resolve(suppliers);
     } catch (err) {
       reject(err);
     }
@@ -230,7 +230,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const vendor = await models.DriverMaster.destroy({
+      const supplier = await models.DriverMaster.destroy({
         where: {
           id,
           is_active: true,
@@ -240,7 +240,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(vendor);
+      resolve(supplier);
     } catch (err) {
       reject(err);
     }
