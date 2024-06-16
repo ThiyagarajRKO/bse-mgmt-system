@@ -10,3 +10,5 @@ dist
 package-lock.json
 
 .env
+
+# .vscode/settings.json
