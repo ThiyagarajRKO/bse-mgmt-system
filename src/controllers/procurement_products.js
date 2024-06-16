@@ -266,13 +266,35 @@ export const GetAll = ({
       if (supplier_id) {
         supplierWhere.id = supplier_id;
       }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { "$ProductMaster.product_name": { [Op.iLike]: `%${search}%` } },
+          { procurement_product_type: { [Op.iLike]: `%${search}%` } },
+          { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
       const procurements = await models.ProcurementProducts.findAndCountAll({
         include: [
           {
             as: "pl",
+            attributes: [
+              "id",
+              "procurement_lot",
+              "procurement_date",
+              "created_at",
+            ],
             model: models.ProcurementLots,
             include: [
               {
+                attributes: ["id", "unit_name"],
                 model: models.UnitMaster,
                 where: {
                   is_active: true,
@@ -282,10 +304,12 @@ export const GetAll = ({
             where: procurementLotsWhere,
           },
           {
+            attributes: ["id", "supplier_name"],
             model: models.SupplierMaster,
             where: supplierWhere,
           },
           {
+            attributes: ["id", "product_name"],
             model: models.ProductMaster,
             where: productWhere,
           },
@@ -294,18 +318,21 @@ export const GetAll = ({
             model: models.Dispatches,
             include: [
               {
+                attributes: ["id", "unit_name"],
                 model: models.UnitMaster,
                 where: {
                   is_active: true,
                 },
               },
               {
+                attributes: ["id", "vehicle_number"],
                 model: models.VehicleMaster,
                 where: {
                   is_active: true,
                 },
               },
               {
+                attributes: ["id", "driver_name"],
                 model: models.DriverMaster,
                 where: {
                   is_active: true,

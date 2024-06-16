@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Insert = async (profile_id, supplier_master_data) => {
   return new Promise(async (resolve, reject) => {
@@ -186,9 +186,35 @@ export const GetOrders = ({ start, length, supplier_name, search }) => {
       }
 
       const suppliers = await models.SupplierMaster.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "supplier_name",
+          "email",
+          "phone",
+          "address",
+          [
+            sequelize.literal(
+              `(SELECT created_at FROM procurement_products pp WHERE pp.supplier_master_id = "SupplierMaster".id and pp.is_active = true order by created_at DESC LIMIT 1)`
+            ),
+            "last_order_on",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(pp.id) FROM procurement_products pp WHERE pp.supplier_master_id = "SupplierMaster".id and pp.is_active = true)`
+            ),
+            "total_orders",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.supplier_master_id = "SupplierMaster".id and pp.is_active = true)`
+            ),
+            "total_paid",
+          ],
+        ],
         include: [
           {
-            attributes: ["id"],
+            attributes: ["created_at"],
             model: models.ProcurementProducts,
             where: {
               is_active: true,
@@ -196,6 +222,7 @@ export const GetOrders = ({ start, length, supplier_name, search }) => {
           },
         ],
         where,
+        order: [[sequelize.col(`"ProcurementProducts".created_at`), "desc"]],
         offset: start,
         limit: length,
       });
