@@ -275,8 +275,16 @@ export const GetAll = ({
               [Op.iLike]: `%${search}%`,
             }
           ),
-          { "$ProductMaster.product_name": { [Op.iLike]: `%${search}%` } },
-          { procurement_product_type: { [Op.iLike]: `%${search}%` } },
+          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col("procurement_product_type"),
+              "varchar"
+            ),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
         ];
       }

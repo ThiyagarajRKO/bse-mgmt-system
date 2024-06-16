@@ -175,9 +175,12 @@ export const GetOrders = ({ start, length, supplier_name, search }) => {
 
       if (search) {
         where[Op.or] = [
-          sequelize.where(sequelize.cast(sequelize.col("id"), "varchar"), {
-            [Op.iLike]: `%${search}%`,
-          }),
+          sequelize.where(
+            sequelize.cast(sequelize.col('"SupplierMaster".id'), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           { supplier_name: { [Op.iLike]: `%${search}%` } },
           { address: { [Op.iLike]: `%${search}%` } },
           { phone: { [Op.iLike]: `%${search}%` } },
