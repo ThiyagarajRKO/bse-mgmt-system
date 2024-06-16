@@ -2,1039 +2,846 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BSE</title>
 
-    <!-- Font Preloading -->
-    <link
-      rel="preload"
-      href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSE</title>
 
-    <!-- title logo -->
-    <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+  <!-- Font Preloading -->
+  <link rel="preload" href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" as="font"
+    type="font/ttf" crossorigin />
+  <link rel="preload" href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf" as="font" type="font/ttf"
+    crossorigin="anonymous" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2"
-    />
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-    <!-- Bootstrap  -->
-    <link
-      href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2"
-      rel="stylesheet"
-    />
-    <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2" />
 
-    <!-- MDB5  -->
-    <link
-      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2"
-      rel="stylesheet"
-    />
-    <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
+  <!-- Bootstrap  -->
+  <link href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2" rel="stylesheet" />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
 
-    <!-- jQuery -->
-    <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
+  <!-- MDB5  -->
+  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2" rel="stylesheet" />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
 
-    <!-- Select2 -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/select2/css/select2.min.css?v=2"
-    />
-    <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
 
-    <!-- DataTable -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.min.css?v=2"
-    />
-    <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
-    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
-    <!-- Responsive Datatable -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.responsive.min.css?v=2"
-    />
-    <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css?v=2" />
+  <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
 
-    <!-- Toast -->
-    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
-    <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
+  <!-- DataTable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css?v=2" />
+  <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
+  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
+  <!-- Responsive Datatable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css?v=2" />
+  <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
 
-    <!-- perfect-scrollbar plugin -->
-    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
+  <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
 
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/font-awesome/css/all.min.css?v=2"
-    />
+  <!-- perfect-scrollbar plugin -->
+  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
 
-    <!-- jQuery Confirm -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2"
-    />
-    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css?v=2" />
 
-    <!-- Slide-in Panel -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2"
-    />
-    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
+  <!-- jQuery Confirm -->
+  <link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2" />
+  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
 
-    <!-- Tippy -->
-    <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
-    <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
-    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
+  <!-- Slide-in Panel -->
+  <link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2" />
+  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
 
-    <!-- jQuery Smart Tab -->
-    <link
-      href="/public/plugins/smartTab/smart_tab.all.min.css?v=2"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <script
-      type="text/javascript"
-      src="/public/plugins/smartTab/smart_tab.min.js"
-    ></script>
+  <!-- Tippy -->
+  <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
+  <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
+  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/public/css/style.css?v=2" />
+  <!-- jQuery Smart Tab -->
+  <link href="/public/plugins/smartTab/smart_tab.all.min.css?v=2" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="/public/plugins/smartTab/smart_tab.min.js"></script>
 
-    <!-- Custom Script -->
-    <script src="/public/custom/App.js?v=2"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css?v=2" />
 
-    <style type="text/css">
-      @font-face {
-        font-family: "CassandraPersonalUse";
-        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js?v=2"></script>
 
-      @font-face {
-        font-family: "CerebriSansPro-Regular";
-        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <style type="text/css">
+    @font-face {
+      font-family: "CassandraPersonalUse";
+      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
+    }
 
-      @font-face {
-        font-family: "RedditMono-Regular";
-        src: url("/public/fonts/RedditMono/RedditMono-Regular.ttf?v=2")
-          format("truetype");
-      }
+    @font-face {
+      font-family: "CerebriSansPro-Regular";
+      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
+    }
 
-      body {
-        font-family: "CerebriSansPro-Regular";
-        background-color: #f7f9fd;
-      }
+    @font-face {
+      font-family: "RedditMono-Regular";
+      src: url("/public/fonts/RedditMono/RedditMono-Regular.ttf?v=2") format("truetype");
+    }
 
-      .toast {
-        opacity: 1 !important;
-      }
+    body {
+      font-family: "CerebriSansPro-Regular";
+      background-color: #f7f9fd;
+    }
 
-      .btn {
-        text-transform: none;
-      }
+    .toast {
+      opacity: 1 !important;
+    }
 
-      a,
-      .edit,
-      .view,
-      .close,
-      .del {
-        cursor: pointer;
-      }
+    .btn {
+      text-transform: none;
+    }
 
-      .panelClose {
-        cursor: pointer;
-      }
+    a,
+    .edit,
+    .view,
+    .close,
+    .del {
+      cursor: pointer;
+    }
 
-      .select2-dropdown {
-        z-index: 10000 !important;
-      }
+    .panelClose {
+      cursor: pointer;
+    }
 
-      /* Table Pagination */
-      .page-item.active .page-link {
-        color: #fff !important;
-        background-color: #ea5455 !important;
-        border-color: #ea5455 !important;
-      }
+    .select2-dropdown {
+      z-index: 10000 !important;
+    }
 
-      .page-link {
-        color: #000 !important;
-        background-color: #fff !important;
-        border: 1px solid #dee2e6 !important;
-      }
+    /* Table Pagination */
+    .page-item.active .page-link {
+      color: #fff !important;
+      background-color: #ea5455 !important;
+      border-color: #ea5455 !important;
+    }
 
-      .page-link:hover {
-        color: #fff !important;
-        background-color: #f17979 !important;
-        border-color: #ea5455 !important;
-      }
+    .page-link {
+      color: #000 !important;
+      background-color: #fff !important;
+      border: 1px solid #dee2e6 !important;
+    }
 
-      svg.radial-progress {
-        height: auto;
-        max-width: 100px;
-        margin: 10px;
-        transform: rotate(-90deg);
-        width: 100%;
-        /* padding-left: 0px; */
-        /* padding-right: 0px; */
-      }
+    .page-link:hover {
+      color: #fff !important;
+      background-color: #f17979 !important;
+      border-color: #ea5455 !important;
+    }
 
-      svg.radial-progress circle {
-        fill: rgba(0, 0, 0, 0);
-        stroke: #1f2d3e;
-        stroke-dashoffset: 219.91148575129;
-        stroke-width: 10;
-      }
+    svg.radial-progress {
+      height: auto;
+      max-width: 100px;
+      margin: 10px;
+      transform: rotate(-90deg);
+      width: 100%;
+      /* padding-left: 0px; */
+      /* padding-right: 0px; */
+    }
 
-      svg.radial-progress circle.incomplete {
-        opacity: 0.25;
-      }
+    svg.radial-progress circle {
+      fill: rgba(0, 0, 0, 0);
+      stroke: #1f2d3e;
+      stroke-dashoffset: 219.91148575129;
+      stroke-width: 10;
+    }
 
-      svg.radial-progress circle.complete {
-        stroke-dasharray: 219.91148575129;
-      }
+    svg.radial-progress circle.incomplete {
+      opacity: 0.25;
+    }
 
-      svg.radial-progress text {
-        fill: #1f2d3e;
-        text-anchor: middle;
-      }
+    svg.radial-progress circle.complete {
+      stroke-dasharray: 219.91148575129;
+    }
 
-      .topMenu-item {
-        display: block;
-        text-align: center;
-        text-decoration: none;
-        width: 100px;
-        cursor: pointer;
-      }
+    svg.radial-progress text {
+      fill: #1f2d3e;
+      text-anchor: middle;
+    }
 
-      .topMenu-item:hover:not(.topMenu-item-active) {
-        /* border-bottom: 1px solid #ea5455; */
-        color: #ea5455 !important;
-        /* font-weight: bold; */
-        transition: right 0.3s ease;
-        cursor: pointer;
-      }
+    .topMenu-item {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      width: 100px;
+      cursor: pointer;
+    }
 
-      .topMenu-item-active {
-        /* border-bottom: 1px solid #ea5455; */
-        color: #ea5455 !important;
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
+    .topMenu-item:hover:not(.topMenu-item-active) {
+      /* border-bottom: 1px solid #ea5455; */
+      color: #ea5455 !important;
+      /* font-weight: bold; */
+      transition: right 0.3s ease;
+      cursor: pointer;
+    }
 
-      .topMenu-item-active .icon-button {
-        /* border-bottom: 1px solid #ea5455; */
-        background-color: #ea5455 !important;
-        color: white;
+    .topMenu-item-active {
+      /* border-bottom: 1px solid #ea5455; */
+      color: #ea5455 !important;
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
 
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
+    .topMenu-item-active .icon-button {
+      /* border-bottom: 1px solid #ea5455; */
+      background-color: #ea5455 !important;
+      color: white;
 
-      /* #orderProductTable_wrapper {
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
+
+    /* #orderProductTable_wrapper {
         margin-top: 60px !important;
       } */
 
-      .slideInPanel {
-        z-index: 9999;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        right: -600px;
-        width: 400px;
-        background-color: #1f2d3e;
-        color: #e3e3e3;
-        height: 90vh;
-        /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-        transition: right 0.3s ease;
-        border-radius: 8px;
-      }
+    .slideInPanel {
+      z-index: 9999;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -600px;
+      width: 400px;
+      background-color: #1f2d3e;
+      color: #e3e3e3;
+      height: 90vh;
+      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+      transition: right 0.3s ease;
+      border-radius: 8px;
+    }
 
-      /* Input */
-      .slideInPanel input {
-        background-color: transparent;
-        border-color: rgba(98, 114, 147, 0.6);
-      }
+    /* Input */
+    .slideInPanel input {
+      background-color: transparent;
+      border-color: rgba(98, 114, 147, 0.6);
+    }
 
-      .slideInPanel input:focus {
-        background-color: transparent;
-      }
+    .slideInPanel input:focus {
+      background-color: transparent;
+    }
 
-      .slideInPanel input:hover {
-        border-color: #627293;
-      }
+    .slideInPanel input:hover {
+      border-color: #627293;
+    }
 
-      /* Select */
-      .slideInPanel .select2-container {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        color: 627293 !important;
-      }
+    /* Select */
+    .slideInPanel .select2-container {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      color: 627293 !important;
+    }
 
-      .select2-container {
-        width: 100% !important;
-      }
+    .select2-container {
+      width: 100% !important;
+    }
 
-      .select2-selection__rendered,
-      .select2-selection__clear,
-      .select2-selection__arrow {
-        color: white !important;
-        margin-top: 0.25rem !important;
-      }
+    .select2-selection__rendered,
+    .select2-selection__clear,
+    .select2-selection__arrow {
+      color: white !important;
+      margin-top: 0.25rem !important;
+    }
 
-      .select2-selection {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        height: 35px !important;
-      }
+    .select2-selection {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      height: 35px !important;
+    }
 
-      .slideInPanel .select:focus {
-        background-color: transparent;
-        border-color: #627293;
-      }
+    .slideInPanel .select:focus {
+      background-color: transparent;
+      border-color: #627293;
+    }
 
-      .slideInPanel .select2-container:hover {
-        border-color: #627293;
-      }
+    .slideInPanel .select2-container:hover {
+      border-color: #627293;
+    }
 
-      /* TextArea */
-      .slideInPanel textarea {
-        background-color: transparent;
-        border-color: rgba(98, 114, 147, 0.6);
-      }
+    /* TextArea */
+    .slideInPanel textarea {
+      background-color: transparent;
+      border-color: rgba(98, 114, 147, 0.6);
+    }
 
-      .slideInPanel textarea:focus {
-        background-color: transparent;
-      }
+    .slideInPanel textarea:focus {
+      background-color: transparent;
+    }
 
-      .slideInPanel textarea:hover {
-        border-color: #627293;
-      }
+    .slideInPanel textarea:hover {
+      border-color: #627293;
+    }
 
-      /* Form Control */
-      .slideInPanel .form-control {
-        color: #f7f9fc;
-      }
+    /* Form Control */
+    .slideInPanel .form-control {
+      color: #f7f9fc;
+    }
 
-      .slideInPanel .form-control::placeholder {
-        color: #627293;
-      }
+    .slideInPanel .form-control::placeholder {
+      color: #627293;
+    }
 
-      .select2-selection::placeholder {
-        color: #627293;
-      }
+    .select2-selection::placeholder {
+      color: #627293;
+    }
 
-      table.dataTable th {
-        text-align: left !important;
-      }
+    table.dataTable th {
+      text-align: left !important;
+    }
 
-      fieldset {
-        border-color: rgba(129, 145, 179, 0.6) !important;
-        border-radius: 4px;
-      }
+    fieldset {
+      border-color: rgba(129, 145, 179, 0.6) !important;
+      border-radius: 4px;
+    }
 
-      legend {
-        margin-top: -1.7rem !important;
-        background-color: #e0e0e0;
-        color: #1f2d3e;
-        border-radius: 4px;
-        font-size: inherit !important;
-      }
+    legend {
+      margin-top: -1.7rem !important;
+      background-color: #e0e0e0;
+      color: #1f2d3e;
+      border-radius: 4px;
+      font-size: inherit !important;
+    }
 
-      #appendProducts:hover {
-        background-color: rgb(135, 49, 177);
-        background-color: linear-gradient(
-          90deg,
+    #appendProducts:hover {
+      background-color: rgb(135, 49, 177);
+      background-color: linear-gradient(90deg,
           rgba(135, 49, 177, 1) 1%,
           rgba(191, 24, 188, 1) 35%,
           rgba(209, 52, 174, 1) 68%,
-          rgba(217, 29, 115, 1) 100%
-        );
-        color: white;
-      }
+          rgba(217, 29, 115, 1) 100%);
+      color: white;
+    }
 
-      /* 
+    /* 
       #appendProducts {
         color: rgba(98, 114, 147, 0.6) !important;
       } */
 
-      .st-theme-brick > .nav .nav-link.active {
-        background-color: #dc4c64 !important;
-      }
+    .st-theme-brick>.nav .nav-link.active {
+      background-color: #dc4c64 !important;
+    }
 
-      .st-theme-brick > .nav .nav-link {
-        color: #dc4c64 !important;
-      }
+    .st-theme-brick>.nav .nav-link {
+      color: #dc4c64 !important;
+    }
 
-      .st-theme-brick > .nav {
-        border-color: #dc4c64 !important;
-      }
+    .st-theme-brick>.nav {
+      border-color: #dc4c64 !important;
+    }
 
-      .vl {
-        border-left: 2px dashed rgba(98, 114, 147, 0.6);
-        height: 25px;
-        position: absolute;
-        left: 50%;
-        margin-left: -3px;
-        /* bottom: -10; */
-      }
+    .vl {
+      border-left: 2px dashed rgba(98, 114, 147, 0.6);
+      height: 25px;
+      position: absolute;
+      left: 50%;
+      margin-left: -3px;
+      /* bottom: -10; */
+    }
 
-      .vl-top {
-        border-left: 2px dashed rgba(98, 114, 147, 0.6);
-        height: 35px;
-        position: absolute;
-        left: 50%;
-        margin-left: -3px;
-        /* bottom: -10; */
-      }
+    .vl-top {
+      border-left: 2px dashed rgba(98, 114, 147, 0.6);
+      height: 35px;
+      position: absolute;
+      left: 50%;
+      margin-left: -3px;
+      /* bottom: -10; */
+    }
 
-      .icon-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-        background-color: white;
-        /* border: 2px solid #ddd; */
-        border-radius: 50%;
-        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-        text-decoration: none;
-        color: #333;
-        transition:
-          background-color 0.3s,
-          color 0.3s,
-          box-shadow 0.3s;
-      }
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      /* border: 2px solid #ddd; */
+      border-radius: 50%;
+      /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+      text-decoration: none;
+      color: #333;
+      transition:
+        background-color 0.3s,
+        color 0.3s,
+        box-shadow 0.3s;
+    }
 
-      .icon-button i {
-        font-size: 12px;
-      }
+    .icon-button i {
+      font-size: 12px;
+    }
 
-      .icon-label {
-        font-size: 14px;
-        font-weight: 600;
-      }
-    </style>
-  </head>
+    .icon-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="container-fluid">
-      <div class="row d-flex justify-content-center">
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
+<body>
+  <div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <div class="topMenu-container d-flex justify-content-center overflow-auto mt-0">
         <div
-          class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
-        >
-          <div
-            class="topMenu-item topMenu-item-active ordersMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-clipboard-list"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Orders</span>
-            </div>
+          class="topMenu-item topMenu-item-active ordersMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-clipboard-list"></i>
           </div>
-
-          <div
-            class="topMenu-item customerMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-users"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Customer</span>
-            </div>
-          </div>
-
-          <div
-            class="topMenu-item supportMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Support</span>
-            </div>
-          </div>
-
-          <div
-            class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-hand-holding-dollar"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Payments</span>
-            </div>
-          </div>
-        </div>
-        <!-- Top Menu Container Ends -->
-
-        <!-- ----------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------- Orders Container ---------------------------------------------- -->
-        <!-- ----------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container ordersContainer d-none">
-          <!-- Slide-in Panel -->
-          <div id="orderSlideInPanel" class="slideInPanel px-4 overflow-auto">
-            <div class="row d-flex justify-content-center">
-              <div class="col-sm-12 col-md-12 col-md-12">
-                <div class="text-center mt-4 d-flex justify-content-between">
-                  <span id="orderPanelHeading" class="fw-bold fs-5"
-                    >Add Orders Data</span
-                  >
-                  <div class="col my-auto d-flex justify-content-end">
-                    <i
-                      class="fa-solid fa-circle-xmark my-auto panelClose"
-                      id="closeOrdersPanelBtn"
-                    ></i>
-                  </div>
-                </div>
-
-                <hr />
-
-                <div id="smarttab" class="border-0">
-                  <ul class="nav">
-                    <li>
-                      <a class="nav-link">Order</a>
-                    </li>
-                    <li>
-                      <a class="nav-link">Products</a>
-                    </li>
-                  </ul>
-
-                  <div class="tab-content">
-                    <div id="tab-1" class="tab-pane p-0" role="tabpanel">
-                      <div class="form-group mt-2">
-                        <label for="order_date">Order Date</label>
-                        <input
-                          id="order_date"
-                          class="form-control"
-                          type="date"
-                          name="order_date"
-                          required
-                        />
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="customer_name">Customer Name</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="customerNames"
-                          name="customer_name"
-                        ></select>
-                        <span style="font-size: 12px"
-                          >Customer Country :
-                          <span class="fw-bold" id="customer_country"></span
-                        ></span>
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="payment_terms">Payment Terms</label>
-                        <input
-                          id="payment_terms"
-                          class="form-control"
-                          type="text"
-                          placeholder="eg. in 15 days"
-                          name="payment_terms"
-                          required
-                        />
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="payment_type">Payment Type</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="paymentTypes"
-                          name="payment_type"
-                        ></select>
-                      </div>
-
-                      <div id="orderShippingContainer">
-                        <fieldset
-                          class="form-group border p-3 shippingData"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                            margin-top: 2.2rem !important;
-                          "
-                        >
-                          <legend class="mb-2 w-auto px-2">Shipping</legend>
-
-                          <div class="form-group mt-2">
-                            <label for="product_name">Shipping Date</label>
-                            <input
-                              id="shipping_date"
-                              class="form-control"
-                              type="date"
-                              name="shipping_date"
-                              required
-                            />
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shippingSources">Shipping Source</label>
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingSources"
-                              name="shippingSources"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_name"
-                              >Shipping Destination</label
-                            >
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingDestinations"
-                              name="shippingDestinations"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shippingMethods">Shipping Method</label>
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingMethods"
-                              name="shippingMethods"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shipping_address"
-                              >Shipping Address</label
-                            >
-                            <textarea
-                              row="3"
-                              id="shipping_address"
-                              class="form-control input-dropdown w-100"
-                              name="shipping_address"
-                              placeholder="Shipping address"
-                              readonly
-                            ></textarea>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="expected_delivery_date"
-                              >Expected Delivery Date</label
-                            >
-                            <input
-                              id="expected_delivery_date"
-                              class="form-control"
-                              type="date"
-                              name="expected_delivery_date"
-                              required
-                            />
-                          </div>
-                        </fieldset>
-                      </div>
-                    </div>
-                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
-                      <div id="orderProductContainer">
-                        <fieldset
-                          class="form-group border p-3 orderProduct orderProduct_1"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                            margin-top: 2.2rem !important;
-                          "
-                        >
-                          <legend class="mb-2 w-auto px-2">Product 1</legend>
-                          <div class="form-group">
-                            <label for="product_name">Product Name:</label>
-                            <select
-                              current_index="1"
-                              class="form-control input-dropdown w-100 orderProductNames orderProductNames_1"
-                              name="orderProductNames"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_unit">Quantity</label>
-                            <input
-                              current_index="1"
-                              class="form-control product_unit product_unit_1"
-                              type="number"
-                              placeholder="eg. 10"
-                              name="product_unit"
-                              required
-                            />
-                            <span style="font-size: 12px"
-                              >Total Quantity :
-                              <b
-                                ><span
-                                  class="total_quantity total_quantity_1"
-                                ></span></b
-                            ></span>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_price_1">Price per KG</label>
-                            <input
-                              current_index="1"
-                              class="form-control product_price product_price_1"
-                              type="number"
-                              placeholder="eg. 10"
-                              name="product_price_1"
-                              required
-                            />
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_desc">Description</label>
-                            <textarea
-                              row="3"
-                              class="form-control input-dropdown w-100 product_desc product_desc_1"
-                              name="product_desc"
-                            ></textarea>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="total_price">Total Price :</label>
-                            <b
-                              ><span class="total_price total_price_1"
-                                >0.00</span
-                              ></b
-                            >
-                          </div>
-                        </fieldset>
-                      </div>
-
-                      <div class="vl"></div>
-                      <div
-                        id="appendProducts"
-                        style="border-color: rgba(98, 114, 147, 0.6) !important"
-                        class="btn border rounded d-flex justify-content-center mt-4"
-                      >
-                        <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="total mt-4">
-                  <span
-                    >No. of Products: <span id="no_of_products">0</span></span
-                  ><br />
-                  <span>Total Amount: <span id="total_amount">0.00</span></span>
-                </div>
-
-                <div class="d-flex justify-content-between mt-2 py-3 pb-4">
-                  <div id="submitOrders" class="col-lg-auto btn btn-danger">
-                    Save
-                  </div>
-                  <div id="nextOrders" class="col-lg-auto btn btn-outline-info">
-                    Next
-                  </div>
-                  <div
-                    id="resetOrdersDataBtn"
-                    class="col-lg-auto btn btn-outline-warning"
-                  >
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Table Content -->
-          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-            <div class="border p-4 w-100">
-              <!-- Add Button -->
-              <div class="d-flex rounded-2 justify-content-end pb-4">
-                <div
-                  id="openOrdersPanelBtn"
-                  class="btn btn-outline-danger d-flex justify-content-around"
-                  style="width: 150px"
-                >
-                  <i class="fa-solid fa-circle-plus my-auto"></i>
-                  <span style="margin-top: 4px" class="fw-bold my-auto"
-                    >New Order</span
-                  >
-                </div>
-              </div>
-
-              <table
-                id="orderTable"
-                class="rounded table table-hover nowrap w-100"
-              >
-                <thead>
-                  <tr>
-                    <th style="border-radius: 4px 0 0 0"></th>
-                    <th style="border-radius: 4px 0 0 0"></th>
-                    <th class="fw-bold"><span>Order No</span></th>
-                    <th class="fw-bold"><span>Order Date</span></th>
-                    <th class="fw-bold">
-                      <span>Product Count</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Total Price</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Order Status</span>
-                    </th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
+          <div class="icon-label pt-2">
+            <span>Orders</span>
           </div>
         </div>
 
-        <!-- modal-dialog-centered modal-dialog-scrollable -->
-        <!-- Modal -->
-        <div
-          id="orderModal"
-          class="modal hide fade"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="myModalLabel"
-          aria-hidden="true"
-        >
-          <div
-            class="modal-dialog modal-fullscreen w-100 mt-3"
-            style="height: 90vh"
-          >
-            <!-- Modal content-->
-            <div class="modal-content rounded">
-              <div class="modal-header mx-2">
-                <h4 class="modal-title">Sales Orders</h4>
-                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
-                </i>
+        <div class="topMenu-item customerMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="icon-label pt-2">
+            <span>Customer</span>
+          </div>
+        </div>
+
+        <div class="topMenu-item supportMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <div class="icon-label pt-2">
+            <span>Support</span>
+          </div>
+        </div>
+
+        <div class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <div class="icon-label pt-2">
+            <span>Payments</span>
+          </div>
+        </div>
+      </div>
+      <!-- Top Menu Container Ends -->
+
+      <!-- ----------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------- Orders Container ---------------------------------------------- -->
+      <!-- ----------------------------------------------------------------------------------------------------- -->
+      <div class="menu-container ordersContainer d-none">
+        <!-- Slide-in Panel -->
+        <div id="orderSlideInPanel" class="slideInPanel px-4 overflow-auto">
+          <div class="row d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-md-12">
+              <div class="text-center mt-4 d-flex justify-content-between">
+                <span id="orderPanelHeading" class="fw-bold fs-5">Add Orders Data</span>
+                <div class="col my-auto d-flex justify-content-end">
+                  <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeOrdersPanelBtn"></i>
+                </div>
               </div>
-              <div class="modal-body">
-                <div class="container-fluid">
-                  <div class="row">
-                    <!-- Panel 1 -->
-                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4">
-                      <!-- Order Data Container -->
-                      <div id="orderDataContainer">
-                        <fieldset
-                          class="form-group border p-3"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Order Data</legend>
-                          <!-- 1st row -->
-                          <div class="d-flex justify-content-between">
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Order No</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_order_no"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Order Date</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_order_date"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Order Status</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_delivery_status"></span>
-                                </td>
-                              </tr>
-                            </table>
 
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Payment Terms</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_payment_terms"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Payment Type</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_payment_type"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Total Price</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_total_price"></span>
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                        </fieldset>
-                      </div>
+              <hr />
 
-                      <!-- Order Products Container -->
-                      <div id="orderedProductsContainer">
-                        <fieldset
-                          class="form-group border p-3 mt-4"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Ordered Products</legend>
+              <div id="smarttab" class="border-0">
+                <ul class="nav">
+                  <li>
+                    <a class="nav-link">Order</a>
+                  </li>
+                  <li>
+                    <a class="nav-link">Products</a>
+                  </li>
+                </ul>
 
-                          <table
-                            id="orderProductTable"
-                            class="rounded table table-hover nowrap w-100"
-                          >
-                            <thead>
-                              <tr>
-                                <th style="border-radius: 4px 0 0 0"></th>
-                                <th style="border-radius: 4px 0 0 0"></th>
-                                <th class="fw-bold">
-                                  <span>Product Name</span>
-                                </th>
-                                <th class="fw-bold"><span>Quantity</span></th>
-                                <th class="fw-bold">
-                                  <span>Price per KG</span>
-                                </th>
-                                <th class="fw-bold">
-                                  <span>Total Price</span>
-                                </th>
-                              </tr>
-                            </thead>
-                          </table>
-                        </fieldset>
-                      </div>
-
-                      <!-- Customer Info Container -->
-                      <div id="customerContainer">
-                        <fieldset
-                          class="form-group border p-3 mt-4"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Customer Info</legend>
-
-                          <!-- Customer Info -->
-                          <div class="d-flex justify-content-between">
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Name</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_name"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Country</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_country"></span>
-                                </td>
-                              </tr>
-                            </table>
-
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Email</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_email"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Phone</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_phone"></span>
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                        </fieldset>
-                      </div>
+                <div class="tab-content">
+                  <div id="tab-1" class="tab-pane p-0" role="tabpanel">
+                    <div class="form-group mt-2">
+                      <label for="order_date">Order Date</label>
+                      <input id="order_date" class="form-control" type="date" name="order_date" required />
                     </div>
 
-                    <!-- Panel 2 -->
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4">
-                      <div
-                        class="d-flex flex-column justify-content-between"
-                        style="height: 100%"
-                      >
-                        <!-- Order Tracking Container -->
-                        <div id="orderTrackingContainer">
-                          <fieldset
-                            class="form-group border p-3"
-                            style="
-                              border-color: rgba(129, 145, 179, 0.6) !important;
-                            "
-                          >
-                            <legend class="w-auto px-2">Order Tracking</legend>
+                    <div class="form-group mt-2">
+                      <label for="customer_name">Customer Name</label>
+                      <select class="form-control input-dropdown w-100" id="customerNames"
+                        name="customer_name"></select>
+                      <span style="font-size: 12px">Customer Country :
+                        <span class="fw-bold" id="customer_country"></span></span>
+                    </div>
 
-                            <!-- Order Tracking -->
-                          </fieldset>
+                    <div class="form-group mt-2">
+                      <label for="payment_terms">Payment Terms</label>
+                      <input id="payment_terms" class="form-control" type="text" placeholder="eg. in 15 days"
+                        name="payment_terms" required />
+                    </div>
+
+                    <div class="form-group mt-2">
+                      <label for="payment_type">Payment Type</label>
+                      <select class="form-control input-dropdown w-100" id="paymentTypes" name="payment_type"></select>
+                    </div>
+
+                    <div id="orderShippingContainer">
+                      <fieldset class="form-group border p-3 shippingData" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          ">
+                        <legend class="mb-2 w-auto px-2">Shipping</legend>
+
+                        <div class="form-group mt-2">
+                          <label for="product_name">Shipping Date</label>
+                          <input id="shipping_date" class="form-control" type="date" name="shipping_date" required />
                         </div>
-                        <!-- Shipping Container -->
-                        <div id="shippingContainer">
-                          <fieldset
-                            class="form-group border p-3 mt-4"
-                            style="
+
+                        <div class="form-group mt-2">
+                          <label for="shippingSources">Shipping Source</label>
+                          <select class="form-control input-dropdown w-100" id="shippingSources"
+                            name="shippingSources"></select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="product_name">Shipping Destination</label>
+                          <select class="form-control input-dropdown w-100" id="shippingDestinations"
+                            name="shippingDestinations"></select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="shippingMethods">Shipping Method</label>
+                          <select class="form-control input-dropdown w-100" id="shippingMethods"
+                            name="shippingMethods"></select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="shipping_address">Shipping Address</label>
+                          <textarea row="3" id="shipping_address" class="form-control input-dropdown w-100"
+                            name="shipping_address" placeholder="Shipping address" readonly></textarea>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="expected_delivery_date">Expected Delivery Date</label>
+                          <input id="expected_delivery_date" class="form-control" type="date"
+                            name="expected_delivery_date" required />
+                        </div>
+                      </fieldset>
+                    </div>
+                  </div>
+                  <div id="tab-2" class="tab-pane p-0" role="tabpanel">
+                    <div id="orderProductContainer">
+                      <fieldset class="form-group border p-3 orderProduct orderProduct_1" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            margin-top: 2.2rem !important;
+                          ">
+                        <legend class="mb-2 w-auto px-2">Product 1</legend>
+                        <div class="form-group">
+                          <label for="product_name">Product Name:</label>
+                          <select current_index="1"
+                            class="form-control input-dropdown w-100 orderProductNames orderProductNames_1"
+                            name="orderProductNames"></select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="product_unit">Quantity</label>
+                          <input current_index="1" class="form-control product_unit product_unit_1" type="number"
+                            placeholder="eg. 10" name="product_unit" required />
+                          <span style="font-size: 12px">Total Quantity :
+                            <b><span class="total_quantity total_quantity_1"></span></b></span>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="product_price_1">Price per KG</label>
+                          <input current_index="1" class="form-control product_price product_price_1" type="number"
+                            placeholder="eg. 10" name="product_price_1" required />
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="product_desc">Description</label>
+                          <textarea row="3" class="form-control input-dropdown w-100 product_desc product_desc_1"
+                            name="product_desc"></textarea>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <label for="total_price">Total Price :</label>
+                          <b><span class="total_price total_price_1">0.00</span></b>
+                        </div>
+                      </fieldset>
+                    </div>
+
+                    <div class="vl"></div>
+                    <div id="appendProducts" style="border-color: rgba(98, 114, 147, 0.6) !important"
+                      class="btn border rounded d-flex justify-content-center mt-4">
+                      <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="total mt-4">
+                <span>No. of Products: <span id="no_of_products">0</span></span><br />
+                <span>Total Amount: <span id="total_amount">0.00</span></span>
+              </div>
+
+              <div class="d-flex justify-content-between mt-2 py-3 pb-4">
+                <div id="submitOrders" class="col-lg-auto btn btn-danger">
+                  Save
+                </div>
+                <div id="nextOrders" class="col-lg-auto btn btn-outline-info">
+                  Next
+                </div>
+                <div id="resetOrdersDataBtn" class="col-lg-auto btn btn-outline-warning">
+                  Clear
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Content -->
+        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+          <div class="border p-4 w-100">
+            <!-- Add Button -->
+            <div class="d-flex rounded-2 justify-content-end pb-4">
+              <div id="openOrdersPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+                style="width: 150px">
+                <i class="fa-solid fa-circle-plus my-auto"></i>
+                <span style="margin-top: 4px" class="fw-bold my-auto">New Order</span>
+              </div>
+            </div>
+
+            <table id="orderTable" class="rounded table table-hover nowrap w-100">
+              <thead>
+                <tr>
+                  <th style="border-radius: 4px 0 0 0"></th>
+                  <th style="border-radius: 4px 0 0 0"></th>
+                  <th class="fw-bold"><span>Order No</span></th>
+                  <th class="fw-bold"><span>Order Date</span></th>
+                  <th class="fw-bold">
+                    <span>Product Count</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Total Price</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Order Status</span>
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-dialog-centered modal-dialog-scrollable -->
+      <!-- Modal -->
+      <div id="orderModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen w-100 mt-3" style="height: 90vh">
+          <!-- Modal content-->
+          <div class="modal-content rounded">
+            <div class="modal-header mx-2">
+              <h4 class="modal-title">Sales Orders</h4>
+              <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+              </i>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <!-- Panel 1 -->
+                  <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4">
+                    <!-- Order Data Container -->
+                    <div id="orderDataContainer">
+                      <fieldset class="form-group border p-3" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                        <legend class="w-auto px-2">Order Data</legend>
+                        <!-- 1st row -->
+                        <div class="d-flex justify-content-between">
+                          <table class="col">
+                            <tr>
+                              <th class="align-top">Order No</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_order_no"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Order Date</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_order_date"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Order Status</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_delivery_status"></span>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <table class="col">
+                            <tr>
+                              <th class="align-top">Payment Terms</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_payment_terms"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Payment Type</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_payment_type"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Total Price</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_total_price"></span>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </fieldset>
+                    </div>
+
+                    <!-- Order Products Container -->
+                    <div id="orderedProductsContainer">
+                      <fieldset class="form-group border p-3 mt-4" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                        <legend class="w-auto px-2">Ordered Products</legend>
+
+                        <table id="orderProductTable" class="rounded table table-hover nowrap w-100">
+                          <thead>
+                            <tr>
+                              <th style="border-radius: 4px 0 0 0"></th>
+                              <th style="border-radius: 4px 0 0 0"></th>
+                              <th class="fw-bold">
+                                <span>Product Name</span>
+                              </th>
+                              <th class="fw-bold"><span>Quantity</span></th>
+                              <th class="fw-bold">
+                                <span>Price per KG</span>
+                              </th>
+                              <th class="fw-bold">
+                                <span>Total Price</span>
+                              </th>
+                            </tr>
+                          </thead>
+                        </table>
+                      </fieldset>
+                    </div>
+
+                    <!-- Customer Info Container -->
+                    <div id="customerContainer">
+                      <fieldset class="form-group border p-3 mt-4" style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                          ">
+                        <legend class="w-auto px-2">Customer Info</legend>
+
+                        <!-- Customer Info -->
+                        <div class="d-flex justify-content-between">
+                          <table class="col">
+                            <tr>
+                              <th class="align-top">Name</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_customer_name"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Country</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_customer_country"></span>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <table class="col">
+                            <tr>
+                              <th class="align-top">Email</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_customer_email"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Phone</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_customer_phone"></span>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </fieldset>
+                    </div>
+                  </div>
+
+                  <!-- Panel 2 -->
+                  <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4">
+                    <div class="d-flex flex-column justify-content-between" style="height: 100%">
+                      <!-- Order Tracking Container -->
+                      <div id="orderTrackingContainer">
+                        <fieldset class="form-group border p-3" style="
                               border-color: rgba(129, 145, 179, 0.6) !important;
-                            "
-                          >
-                            <legend class="w-auto px-2">Shipping Info</legend>
+                            ">
+                          <legend class="w-auto px-2">Order Tracking</legend>
 
-                            <!-- Shipping Info -->
+                          <!-- Order Tracking -->
+                        </fieldset>
+                      </div>
+                      <!-- Shipping Container -->
+                      <div id="shippingContainer">
+                        <fieldset class="form-group border p-3 mt-4" style="
+                              border-color: rgba(129, 145, 179, 0.6) !important;
+                            ">
+                          <legend class="w-auto px-2">Shipping Info</legend>
 
-                            <table class="w-100">
-                              <tr>
-                                <th class="align-top">Shipping Date</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_date"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Destination</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_destination"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Method</th>
-                                <td class="align-top">:</td>
-                                <td>
-                                  <span id="view_shipping_method"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Expected Delivery</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_expected_delivery"></span>
-                                </td>
-                              </tr>
-                            </table>
+                          <!-- Shipping Info -->
 
-                            <!-- <div class="form-group">
+                          <table class="w-100">
+                            <tr>
+                              <th class="align-top">Shipping Date</th>
+                              <td class="align-top">:</td>
+                              <td style="word-break: break-all">
+                                <span id="view_shipping_date"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Destination</th>
+                              <td class="align-top">:</td>
+                              <td style="word-break: break-all">
+                                <span id="view_shipping_destination"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Method</th>
+                              <td class="align-top">:</td>
+                              <td>
+                                <span id="view_shipping_method"></span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th class="align-top">Expected Delivery</th>
+                              <td class="align-top">:</td>
+                              <td class="align-top">
+                                <span id="view_expected_delivery"></span>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <!-- <div class="form-group">
                               <label class="fw-bold" for="view_shipping_date"
                                 >Shipping Date:</label
                               >
@@ -1079,523 +886,500 @@
                               >
                               <span id="view_expected_delivery"></span>
                             </div> -->
-                          </fieldset>
-                        </div>
+                        </fieldset>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="close btn btn-danger"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="close btn btn-danger" data-dismiss="modal">
+                Close
+              </button>
             </div>
           </div>
         </div>
-
-        <!-- Orders Container Ends -->
-
-        <!-- ----------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------- Customer Container ---------------------------------------------- -->
-        <!-- ----------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container customerContainer d-none">
-          <!-- Table Content -->
-          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-            <div class="border p-4 w-100">
-              <table
-                id="customerTable"
-                class="rounded table table-hover nowrap w-100"
-              >
-                <thead>
-                  <tr>
-                    <th class="fw-bold"><span>Customer ID</span></th>
-                    <th class="fw-bold"><span>Customer Name</span></th>
-                    <th class="fw-bold"><span>Email</span></th>
-                    <th class="fw-bold"><span>Phone</span></th>
-                    <th class="fw-bold"><span>Address</span></th>
-                    <th class="fw-bold">
-                      <span>Last Order</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Total Orders</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Total Paid</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Due Amount</span>
-                    </th>
-                    <th class="fw-bold">
-                      <span>Purchase History</span>
-                    </th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- modal-dialog-centered modal-dialog-scrollable -->
-        <!-- Modal -->
-        <div
-          id="customerOrdersModal"
-          class="modal hide fade"
-          role="dialog"
-          aria-labelledby="myModalLabel"
-          data-keyboard="false"
-          data-backdrop="static"
-        >
-          <div class="modal-dialog modal-xl">
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">Purchase History</h4>
-                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
-                </i>
-              </div>
-              <div class="modal-body">
-                <!-- Order Data Container -->
-                <div id="orderDataContainer">
-                  <fieldset
-                    class="form-group border p-3"
-                    style="border-color: rgba(129, 145, 179, 0.6) !important"
-                  >
-                    <legend class="w-auto px-2">Customer</legend>
-                    <!-- 1st row -->
-                    <div class="d-flex justify-content-between">
-                      <table class="col">
-                        <tr>
-                          <th class="align-top">ID</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_customer_id"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Name</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_order_customer_name"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Country</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_order_customer_address"></span>
-                          </td>
-                        </tr>
-                      </table>
-
-                      <table class="col">
-                        <tr>
-                          <th class="align-top">Email</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_order_customer_email"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Phone</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_order_customer_phone"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Rating</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_order_customer_rating"></span>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                  </fieldset>
-                </div>
-
-                <div>
-                  <fieldset
-                    class="form-group border p-3 mt-3"
-                    style="border-color: rgba(129, 145, 179, 0.6) !important"
-                  >
-                    <legend class="w-auto px-2">Orders</legend>
-                    <table
-                      id="customerOrdersTable"
-                      class="rounded table table-hover nowrap w-100"
-                    >
-                      <thead>
-                        <tr>
-                          <th style="border-radius: 4px 0 0 0"></th>
-                          <th class="fw-bold"><span>Order No</span></th>
-                          <th class="fw-bold">
-                            <span>Order Date</span>
-                          </th>
-                          <th class="fw-bold">
-                            <span>Product Count</span>
-                          </th>
-                          <th class="fw-bold">
-                            <span>Total Price</span>
-                          </th>
-                          <th class="fw-bold">
-                            <span>Order Status</span>
-                          </th>
-                        </tr>
-                      </thead>
-                    </table>
-                  </fieldset>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="close btn btn-danger"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Customer Container Ends -->
       </div>
+
+      <!-- Orders Container Ends -->
+
+      <!-- ----------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------- Customer Container ---------------------------------------------- -->
+      <!-- ----------------------------------------------------------------------------------------------------- -->
+      <div class="menu-container customerContainer d-none">
+        <!-- Table Content -->
+        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+          <div class="border p-4 w-100">
+            <table id="customerTable" class="rounded table table-hover nowrap w-100">
+              <thead>
+                <tr>
+                  <th class="fw-bold"><span>Customer ID</span></th>
+                  <th class="fw-bold"><span>Customer Name</span></th>
+                  <th class="fw-bold"><span>Email</span></th>
+                  <th class="fw-bold"><span>Phone</span></th>
+                  <th class="fw-bold"><span>Address</span></th>
+                  <th class="fw-bold">
+                    <span>Last Order On</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Last Order Status</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Total Orders</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Total Paid</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Due Amount</span>
+                  </th>
+                  <th class="fw-bold">
+                    <span>Purchase History</span>
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-dialog-centered modal-dialog-scrollable -->
+      <!-- Modal -->
+      <div id="customerOrdersModal" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel"
+        data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-xl">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Purchase History</h4>
+              <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+              </i>
+            </div>
+            <div class="modal-body">
+              <!-- Order Data Container -->
+              <div id="orderDataContainer">
+                <fieldset class="form-group border p-3" style="border-color: rgba(129, 145, 179, 0.6) !important">
+                  <legend class="w-auto px-2">Customer</legend>
+                  <!-- 1st row -->
+                  <div class="d-flex justify-content-between">
+                    <table class="col">
+                      <tr>
+                        <th class="align-top">ID</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_customer_id"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="align-top">Name</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_order_customer_name"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="align-top">Country</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_order_customer_address"></span>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <table class="col">
+                      <tr>
+                        <th class="align-top">Email</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_order_customer_email"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="align-top">Phone</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_order_customer_phone"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="align-top">Rating</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">
+                          <span id="view_order_customer_rating"></span>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div>
+                <fieldset class="form-group border p-3 mt-3" style="border-color: rgba(129, 145, 179, 0.6) !important">
+                  <legend class="w-auto px-2">Orders</legend>
+                  <table id="customerOrdersTable" class="rounded table table-hover nowrap w-100">
+                    <thead>
+                      <tr>
+                        <th style="border-radius: 4px 0 0 0"></th>
+                        <th class="fw-bold"><span>Order No</span></th>
+                        <th class="fw-bold">
+                          <span>Order Date</span>
+                        </th>
+                        <th class="fw-bold">
+                          <span>Product Count</span>
+                        </th>
+                        <th class="fw-bold">
+                          <span>Total Price</span>
+                        </th>
+                        <th class="fw-bold">
+                          <span>Order Status</span>
+                        </th>
+                      </tr>
+                    </thead>
+                  </table>
+                </fieldset>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="close btn btn-danger" data-dismiss="modal">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Customer Container Ends -->
     </div>
-  </body>
+  </div>
+</body>
 
-  <script type="text/javascript">
-    jQuery(document).ready(async function ($) {
-      // Declarations
-      let is_updated_data = false;
-      let productNamesArray = [];
+<script type="text/javascript">
+  jQuery(document).ready(async function ($) {
+    // Declarations
+    let is_updated_data = false;
+    let productNamesArray = [];
 
-      toastr.options = {
-        closeButton: false,
-        debug: false,
-        newestOnTop: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "5000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut",
-      };
+    toastr.options = {
+      closeButton: false,
+      debug: false,
+      newestOnTop: true,
+      progressBar: true,
+      positionClass: "toast-top-right",
+      preventDuplicates: false,
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "5000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut",
+    };
 
-      $(function () {
-        // SmartTab initialize
-        $("#smarttab").smartTab({
-          selected: 0,
-          theme: "brick",
-          autoAdjustHeight: false,
-          animation: "fade",
-          // justified: false,
-          keyboardSettings: {
-            keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
-            keyLeft: [37], // Left key code
-            keyRight: [39], // Right key code
-          },
-        });
+    $(function () {
+      // SmartTab initialize
+      $("#smarttab").smartTab({
+        selected: 0,
+        theme: "brick",
+        autoAdjustHeight: false,
+        animation: "fade",
+        // justified: false,
+        keyboardSettings: {
+          keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+          keyLeft: [37], // Left key code
+          keyRight: [39], // Right key code
+        },
+      });
+    });
+
+    // Menu navigation
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass("topMenu-item-active");
+
+      $(this).addClass("topMenu-item-active");
+
+      $(".panelClose").click();
+
+      resetAllInputs();
+    });
+
+    // Global Functions
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      // Ensure 2-digit formatting
+      if (day < 10) {
+        day = "0" + day;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
+      return year + "-" + month + "-" + day;
+    }
+
+    function resetAllInputs() {
+      $("input").val("");
+
+      // Reset all date inputs
+      var dateInputs = document.querySelectorAll('input[type="date"]');
+      // looping all the date inputs
+      dateInputs.forEach(function (input) {
+        input.value = formatDate(new Date());
       });
 
-      // Menu navigation
-      $(".topMenu-item").click(function () {
-        $(".topMenu-item").removeClass("topMenu-item-active");
+      // Resetting textarea
+      $("textarea").val("");
 
-        $(this).addClass("topMenu-item-active");
+      // Resetting select field selected option
+      $("#customerNames").val(null).trigger("change");
+      $("#paymentTypes").val(null).trigger("change");
+      $("#shippingSources").val(null).trigger("change");
+      $("#shippingDestinations").val(null).trigger("change");
+      $("#shippingMethods").val(null).trigger("change");
+      $("#orderProductNames").val(null).trigger("change");
 
-        $(".panelClose").click();
-
-        resetAllInputs();
+      $("#customerNames").select2({
+        placeholder: "Choose a customer",
+        allowClear: true,
       });
 
-      // Global Functions
-      // Function to format date as YYYY-MM-DD
-      function formatDate(date) {
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
+      $("#paymentTypes").select2({
+        placeholder: "Choose a type",
+        allowClear: true,
+      });
 
-        // Ensure 2-digit formatting
-        if (day < 10) {
-          day = "0" + day;
-        }
-        if (month < 10) {
-          month = "0" + month;
-        }
+      $("#shippingSources").select2({
+        placeholder: "Choose a source",
+        allowClear: true,
+      });
 
-        return year + "-" + month + "-" + day;
-      }
+      $("#shippingDestinations").select2({
+        placeholder: "Choose a destination",
+        allowClear: true,
+      });
 
-      function resetAllInputs() {
-        $("input").val("");
+      $("#shippingMethods").select2({
+        placeholder: "Choose a method",
+        allowClear: true,
+      });
 
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+      $("#orderProductNames").select2({
+        placeholder: "Choose a method",
+        allowClear: true,
+      });
 
-        // Resetting textarea
-        $("textarea").val("");
+      $(`.orderProduct:not(".orderProduct_1")`).remove();
+      $(`.vl-top:not(".vl-top-1")`).remove();
 
-        // Resetting select field selected option
-        $("#customerNames").val(null).trigger("change");
-        $("#paymentTypes").val(null).trigger("change");
-        $("#shippingSources").val(null).trigger("change");
-        $("#shippingDestinations").val(null).trigger("change");
-        $("#shippingMethods").val(null).trigger("change");
-        $("#orderProductNames").val(null).trigger("change");
+      is_updated_data = false;
+    }
 
-        $("#customerNames").select2({
-          placeholder: "Choose a customer",
-          allowClear: true,
-        });
+    function openSlidePanel(
+      panelId,
+      panelHeadingId,
+      panelType,
+      panelSubmitButton,
+      panelBtnAttrName
+    ) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "0");
 
-        $("#paymentTypes").select2({
-          placeholder: "Choose a type",
-          allowClear: true,
-        });
+      // Changing panel Heading label
+      $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
 
-        $("#shippingSources").select2({
-          placeholder: "Choose a source",
-          allowClear: true,
-        });
+      // Changing panel save button label
+      $(`#${panelSubmitButton}`).text("Save");
 
-        $("#shippingDestinations").select2({
-          placeholder: "Choose a destination",
-          allowClear: true,
-        });
+      // Changing panel save button attribute
+      $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+    }
 
-        $("#shippingMethods").select2({
-          placeholder: "Choose a method",
-          allowClear: true,
-        });
+    function closeSlidePanel(panelId) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "-600px");
 
-        $("#orderProductNames").select2({
-          placeholder: "Choose a method",
-          allowClear: true,
-        });
+      // Resetting all the input fields' data
+      resetAllInputs();
 
-        $(`.orderProduct:not(".orderProduct_1")`).remove();
-        $(`.vl-top:not(".vl-top-1")`).remove();
+      // Destroying select2 all the dropdowns
+      // $('select.select2-hidden-accessible').select2('destroy');
+    }
 
-        is_updated_data = false;
-      }
+    // Open Location on load (default)
+    $(".menu-container").addClass("d-none");
 
-      function openSlidePanel(
-        panelId,
-        panelHeadingId,
-        panelType,
-        panelSubmitButton,
-        panelBtnAttrName
-      ) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "0");
+    $(".ordersContainer").removeClass("d-none");
+    $(".ordersContainer").addClass("d-block");
 
-        // Changing panel Heading label
-        $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+    resetAllInputs();
+    loadOrdersDropdowns();
+    loadOrdersTableData();
 
-        // Changing panel save button label
-        $(`#${panelSubmitButton}`).text("Save");
+    // ---------------------------------------------------------
+    // -------------------------- Orders -----------------------
+    // ---------------------------------------------------------
 
-        // Changing panel save button attribute
-        $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
-      }
+    // // Open panel
+    $("#openOrdersPanelBtn").click(function () {
+      // $("#orderModal").modal("show");
+      openSlidePanel(
+        "orderSlideInPanel",
+        "orderPanelHeading",
+        "Orders",
+        "submitOrders",
+        "order_id"
+      );
 
-      function closeSlidePanel(panelId) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "-600px");
+      $("#customer_country").text("").css({ color: "white" });
+    });
 
-        // Resetting all the input fields' data
-        resetAllInputs();
+    // Close panel
+    $("#closeOrdersPanelBtn").click(function () {
+      closeSlidePanel("orderSlideInPanel");
 
-        // Destroying select2 all the dropdowns
-        // $('select.select2-hidden-accessible').select2('destroy');
-      }
+      view_order_center_id = "";
+      view_raw_material_id = "";
+    });
 
-      // Open Location on load (default)
+    $(".ordersMenu").click(function () {
       $(".menu-container").addClass("d-none");
 
       $(".ordersContainer").removeClass("d-none");
       $(".ordersContainer").addClass("d-block");
 
-      resetAllInputs();
+      delete sessionStorage?.customer_id;
+
       loadOrdersDropdowns();
       loadOrdersTableData();
+    });
 
-      // ---------------------------------------------------------
-      // -------------------------- Orders -----------------------
-      // ---------------------------------------------------------
+    $(document).on("click", ".modal-header .close", () => {
+      $("#orderModal").modal("hide");
+    });
 
-      // // Open panel
-      $("#openOrdersPanelBtn").click(function () {
-        // $("#orderModal").modal("show");
-        openSlidePanel(
-          "orderSlideInPanel",
-          "orderPanelHeading",
-          "Orders",
-          "submitOrders",
-          "order_id"
-        );
-
-        $("#customer_country").text("").css({ color: "white" });
-      });
-
-      // Close panel
-      $("#closeOrdersPanelBtn").click(function () {
-        closeSlidePanel("orderSlideInPanel");
-
-        view_order_center_id = "";
-        view_raw_material_id = "";
-      });
-
-      $(".ordersMenu").click(function () {
-        $(".menu-container").addClass("d-none");
-
-        $(".ordersContainer").removeClass("d-none");
-        $(".ordersContainer").addClass("d-block");
-
-        delete sessionStorage?.customer_id;
-
-        loadOrdersDropdowns();
-        loadOrdersTableData();
-      });
-
-      $(document).on("click", ".modal-header .close", () => {
+    $(document).on(
+      "click",
+      ".modal-header .close, .modal-footer .close",
+      () => {
         $("#orderModal").modal("hide");
-      });
-
-      $(document).on(
-        "click",
-        ".modal-header .close, .modal-footer .close",
-        () => {
-          $("#orderModal").modal("hide");
-        }
-      );
-
-      $(document).on("hide.bs.modal", "#orderModal", function () {
-        if (sessionStorage?.customer_id) {
-          $("#customerOrdersModal").modal("show");
-          delete sessionStorage?.customer_id;
-        }
-      });
-
-      $(document).on("click", "#appendProducts", (e) => {
-        const last_fieldset_index = $("#orderProductContainer fieldset").length;
-        const next_fieldset_index = (last_fieldset_index || 0) + 1;
-
-        if (
-          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
-          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
-        ) {
-          toastr["warning"](
-            "Please fill all the required values in the above output to create a new output"
-          );
-          return;
-        }
-
-        addOutput(next_fieldset_index);
-      });
-
-      $(document).on("change", ".orderProductNames", (e) => {
-        const current_index = $(e.target).attr("current_index");
-
-        $(".total_quantity_" + current_index).text(
-          $(e.target).select2("data")?.[0]?.quantity || ""
-        );
-      });
-
-      $(document).on("keyup", ".product_unit", (e) => {
-        const current_index = $(e.target).attr("current_index");
-
-        calculatePrice(current_index);
-      });
-
-      $(document).on("keyup", ".product_price", (e) => {
-        const current_index = $(e.target).attr("current_index");
-
-        calculatePrice(current_index);
-      });
-
-      $(document).on("change", ".total_price", (e) => {
-        const current_index = $(e.target).attr("current_index");
-
-        let no_of_products = 0;
-        let total_amount = 0.0;
-        $(".total_price").each((i, v) => {
-          if (parseFloat(v.innerText) && v.innerText != "0.00") {
-            no_of_products++;
-            total_amount += parseFloat(v.innerText);
-          }
-        });
-
-        $("#no_of_products").text(no_of_products);
-        $("#total_amount").text(total_amount);
-      });
-
-      function calculatePrice(current_index) {
-        const current_unit = $(".product_unit_" + current_index).val();
-        const current_price = $(".product_price_" + current_index).val();
-        const total_price =
-          parseFloat(current_unit) * parseFloat(current_price);
-
-        $(".total_price_" + current_index)
-          .text(!isNaN(total_price) ? total_price : "0.00")
-          .trigger("change");
       }
+    );
 
-      $(document).on("click", "#nextOrders", (e) => {
-        $("#smarttab").smartTab("next");
-      });
-
-      $(document).on(
-        "showTab",
-        "#smarttab",
-        (e, anchorObject, tabIndex, tabDirection, tabPosition) => {
-          if (tabIndex == 0) {
-            $("#nextOrders").show();
-            $("#submitOrders").removeClass("col-lg-5");
-            $("#resetOrdersDataBtn").removeClass("col-lg-5");
-          } else {
-            $("#nextOrders").hide();
-            $("#submitOrders").addClass("col-lg-5");
-            $("#resetOrdersDataBtn").addClass("col-lg-5");
-          }
-        }
-      );
-
-      function loadOrdersDropdowns() {
-        // Orders Dropdown
-        loadCustomerNames();
-        loadPaymentType();
-        loadShippingLocations();
-        loadProductNames();
-        loadShippingMethods();
+    $(document).on("hide.bs.modal", "#orderModal", function () {
+      if (sessionStorage?.customer_id) {
+        $("#customerOrdersModal").modal("show");
+        delete sessionStorage?.customer_id;
       }
+    });
 
-      function addOutput(
-        index,
-        peeled_product_id,
-        packing_id,
-        product_unit,
-        product_price,
-        product_desc
+    $(document).on("click", "#appendProducts", (e) => {
+      const last_fieldset_index = $("#orderProductContainer fieldset").length;
+      const next_fieldset_index = (last_fieldset_index || 0) + 1;
+
+      if (
+        !$(`.orderProductNames_${last_fieldset_index}`).val() ||
+        $(`.total_price_${last_fieldset_index}`).text() == "0.00"
       ) {
-        $("#orderProductContainer")
-          .append(`<div class="vl-top vl-top-${index}"></div><fieldset
+        toastr["warning"](
+          "Please fill all the required values in the above output to create a new output"
+        );
+        return;
+      }
+
+      addOutput(next_fieldset_index);
+    });
+
+    $(document).on("change", ".orderProductNames", (e) => {
+      const current_index = $(e.target).attr("current_index");
+
+      $(".total_quantity_" + current_index).text(
+        $(e.target).select2("data")?.[0]?.quantity || ""
+      );
+    });
+
+    $(document).on("keyup", ".product_unit", (e) => {
+      const current_index = $(e.target).attr("current_index");
+
+      calculatePrice(current_index);
+    });
+
+    $(document).on("keyup", ".product_price", (e) => {
+      const current_index = $(e.target).attr("current_index");
+
+      calculatePrice(current_index);
+    });
+
+    $(document).on("change", ".total_price", (e) => {
+      const current_index = $(e.target).attr("current_index");
+
+      let no_of_products = 0;
+      let total_amount = 0.0;
+      $(".total_price").each((i, v) => {
+        if (parseFloat(v.innerText) && v.innerText != "0.00") {
+          no_of_products++;
+          total_amount += parseFloat(v.innerText);
+        }
+      });
+
+      $("#no_of_products").text(no_of_products);
+      $("#total_amount").text(total_amount);
+    });
+
+    function calculatePrice(current_index) {
+      const current_unit = $(".product_unit_" + current_index).val();
+      const current_price = $(".product_price_" + current_index).val();
+      const total_price =
+        parseFloat(current_unit) * parseFloat(current_price);
+
+      $(".total_price_" + current_index)
+        .text(!isNaN(total_price) ? total_price : "0.00")
+        .trigger("change");
+    }
+
+    $(document).on("click", "#nextOrders", (e) => {
+      $("#smarttab").smartTab("next");
+    });
+
+    $(document).on(
+      "showTab",
+      "#smarttab",
+      (e, anchorObject, tabIndex, tabDirection, tabPosition) => {
+        if (tabIndex == 0) {
+          $("#nextOrders").show();
+          $("#submitOrders").removeClass("col-lg-5");
+          $("#resetOrdersDataBtn").removeClass("col-lg-5");
+        } else {
+          $("#nextOrders").hide();
+          $("#submitOrders").addClass("col-lg-5");
+          $("#resetOrdersDataBtn").addClass("col-lg-5");
+        }
+      }
+    );
+
+    function loadOrdersDropdowns() {
+      // Orders Dropdown
+      loadCustomerNames();
+      loadPaymentType();
+      loadShippingLocations();
+      loadProductNames();
+      loadShippingMethods();
+    }
+
+    function addOutput(
+      index,
+      peeled_product_id,
+      packing_id,
+      product_unit,
+      product_price,
+      product_desc
+    ) {
+      $("#orderProductContainer")
+        .append(`<div class="vl-top vl-top-${index}"></div><fieldset
                               class="form-group border p-3 mt-3 orderProduct orderProduct_${index}"
                               style="
                                 border-color: rgba(129, 145, 179, 0.6) !important;
@@ -1658,1083 +1442,1126 @@
 
                             </fieldset>`);
 
-        $(`.orderProductNames_${index}`).select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-          data: productNamesArray,
-        });
-
-        $(`.orderProductNames_${index}`)
-          .val(packing_id || null)
-          .trigger("change");
-
-        $(`.product_unit_${index}`).val(product_unit || "");
-
-        $(`.product_price_${index}`).val(product_price || "");
-
-        $(`.product_desc_${index}`).val(product_desc || "");
-      }
-
-      $("#submitOrders").click(function () {
-        saveOrders();
+      $(`.orderProductNames_${index}`).select2({
+        placeholder: "Choose a product",
+        allowClear: true,
+        data: productNamesArray,
       });
 
-      function loadOrdersTableData() {
-        $("#orderTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/orders",
-            error: function (xhr, error, code) {
-              $("#orderTable").DataTable().destroy();
-              $("#orderTable").DataTable({ scrollX: true, ordering: false });
+      $(`.orderProductNames_${index}`)
+        .val(packing_id || null)
+        .trigger("change");
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+      $(`.product_unit_${index}`).val(product_unit || "");
 
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+      $(`.product_price_${index}`).val(product_price || "");
+
+      $(`.product_desc_${index}`).val(product_desc || "");
+    }
+
+    $("#submitOrders").click(function () {
+      saveOrders();
+    });
+
+    function loadOrdersTableData() {
+      $("#orderTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/orders",
+          error: function (xhr, error, code) {
+            $("#orderTable").DataTable().destroy();
+            $("#orderTable").DataTable({ scrollX: true, ordering: false });
+
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "order_no" },
+          { data: null },
+          { data: null },
+          { data: "total_products_price" },
+          { data: "delivery_status" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa-solid fa-eye view viewOrders" order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
             },
           },
-          columns: [
-            { data: null },
-            { data: null },
-            { data: "order_no" },
-            { data: null },
-            { data: null },
-            { data: "total_products_price" },
-            { data: "delivery_status" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewOrders" order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
-              },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return (
+                '<i class="fa fa-trash del delOrder" order_id=' +
+                row["id"] +
+                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
+              );
             },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delOrder" order_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>'
-                );
-              },
+          },
+          {
+            targets: [2],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
             },
-            {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row?.created_at);
+          },
+          {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row?.created_at);
 
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
 
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
-              },
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return day + "-" + month + "-" + date.getFullYear();
             },
-            {
-              targets: [4],
-              className: "text-left",
-              render: (data, type, row) => {
-                return row?.OrderProducts?.length || 0;
-              },
+          },
+          {
+            targets: [4],
+            className: "text-left",
+            render: (data, type, row) => {
+              return row?.OrderProducts?.length || 0;
             },
-            {
-              targets: [6],
-              className: "text-left",
-              render: (data, type, row) => {
-                return `<span class=${
-                  data == "Delivered" ? "text-success" : "text-warning"
-                }>${data} <i class="fa-solid ${
-                  data == "Delivered"
-                    ? "fa-circle-check"
-                    : "fa-truck-fast fa-fade"
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: (data, type, row) => {
+              return `<span class=${data == "Delivered" ? "text-success" : "text-warning"
+                }>${data} <i class="fa-solid ${data == "Delivered"
+                  ? "fa-circle-check"
+                  : "fa-truck-fast fa-fade"
                 }"></i></span>`;
-              },
             },
-          ],
-          drawCallback: () => {},
-        });
-      }
-
-      $(document).on("click", ".viewOrders", (e) => {
-        // Changing panel input fields data
-        $("#closeOrdersPanelBtn").click();
-
-        // Changing panel input fields data
-        const view_order_id = $(e.target).attr("order_id");
-
-        $("#view_order_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-
-        // Top Header
-        $("#view_order_no").attr("order_id", view_order_id);
-
-        $("#view_order_date").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#view_payment_terms").text($(e.target).attr("payment_terms"));
-
-        $("#view_payment_type").text($(e.target).attr("payment_type"));
-
-        $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
-
-        $("#view_delivery_status").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-
-        $("#view_customer_name").text($(e.target).attr("customer_name"));
-
-        $("#view_customer_name").attr(
-          "customer_master_id",
-          $(e.target).attr("customer_master_id")
-        );
-
-        $("#view_customer_country").text($(e.target).attr("customer_country"));
-
-        $("#view_customer_email").text($(e.target).attr("customer_email"));
-
-        $("#view_customer_phone").text($(e.target).attr("customer_phone"));
-
-        // Shipping
-        $("#view_shipping_date").text(
-          formatDate(new Date($(e.target).attr("shipping_date")))
-        );
-
-        $("#view_shipping_carrier").text(
-          $(e.target).attr("shipping_carrier_name")
-        );
-
-        $("#view_shipping_source").text($(e.target).attr("shipping_source"));
-
-        $("#view_shipping_destination").text(
-          $(e.target).attr("shipping_destination")
-        );
-
-        $("#view_shipping_method").text($(e.target).attr("shipping_method"));
-
-        $("#view_expected_delivery").text(
-          formatDate(new Date($(e.target).attr("expected_delivery")))
-        );
-
-        // Opening Slied Panel
-        $("#orderModal").modal("show");
-
-        loadOrdersProductTableData(view_order_id);
+          },
+        ],
+        drawCallback: () => { },
       });
+    }
 
-      function loadOrdersProductTableData(order_id) {
-        if (!order_id) {
-          toastr["warning"]("Orders data should not be empty!");
-          return;
-        }
+    $(document).on("click", ".viewOrders", (e) => {
+      // Changing panel input fields data
+      $("#closeOrdersPanelBtn").click();
 
-        $("#orderProductTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: `/api/v1/orders/product?order_id=${order_id}`,
-            error: function (xhr, error, code) {
-              $("#orderProductTable").DataTable().destroy();
-              $("#orderProductTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
+      // Changing panel input fields data
+      const view_order_id = $(e.target).attr("order_id");
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: null },
-            { data: "Packing.pd.pp.ProductMaster.product_name" },
-            { data: "unit" },
-            { data: "price" },
-            { data: "total_price" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${row?.order_id}" order_product_id="${
-                  row?.id || null
-                }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-trash del delOrderProduct" order_id="${row?.order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
-              },
-            },
-          ],
-          drawCallback: () => {},
-        });
-      }
-
-      let view_order_center_id = "";
-      let view_raw_material_id = "";
-      $(document).on("click", ".editOrders", (e) => {
-        // Changing panel input fields data
-        is_updated_data = true;
-
-        $("#orderLotNumbers")
-          .val($("#view_order_no").attr("procurement_lot_id"))
-          .trigger("change");
-
-        view_raw_material_id = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(1)
-          .find("span")
-          .attr("dispatch_id");
-
-        view_order_center_id = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(9)
-          .find("span")
-          .attr("unit_master_id");
-
-        $("#order_quantity").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
-        );
-
-        $("#orderMethods")
-          .val($(e.target).closest("tr").children("td").eq(8).text())
-          .trigger("change");
-
-        // Opening Slied Panel
-        $("#openOrdersPanelBtn").click();
-
-        // Changing panel heading
-        $("#orderPanelHeading").text("Edit Orders Data");
-
-        // Changing panel button label
-        $("#submitOrders").text("Update");
-
-        // Changing panel button attribute
-        $("#submitOrders").attr("order_id", $(e.target).attr("order_id"));
-
-        $("#orderModal").modal("hide");
-
-        $("#smarttab").smartTab("last");
-      });
-
-      function loadCustomerNames() {
-        $.ajax({
-          url: `/api/v1/master/customer`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#customerNames").select2({
-              placeholder: "Choose a customer",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  country: item.customer_country,
-                  address: item.customer_address,
-                  text: `${item.customer_name}-${item.customer_country}`,
-                };
-              }),
-            });
-
-            $("#customerNames").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      $(document).on("change", "#customerNames", (e) => {
-        const customerCountry = $(e.target).val();
-
-        if (customerCountry) {
-          $("#customer_country").text($(e.target).select2("data")[0]?.country);
-          $("#shipping_address").val($(e.target).select2("data")[0]?.address);
-        }
-      });
-
-      function loadPaymentType() {
-        $("#paymentTypes").select2({
-          placeholder: "Choose a type",
-          allowClear: "true",
-          data: [
-            {
-              id: "Credit card",
-              text: "Credit card",
-            },
-            {
-              id: "Debit card",
-              text: "Debit card",
-            },
-            {
-              id: "Digital wallet",
-              text: "Digital wallet",
-            },
-            {
-              id: "Direct debit",
-              text: "Direct debit",
-            },
-            {
-              id: "Cryptocurrency",
-              text: "Cryptocurrency",
-            },
-            {
-              id: "Cash",
-              text: "Cash",
-            },
-            {
-              id: "Bank transfer",
-              text: "Bank transfer",
-            },
-            {
-              id: "International ACH",
-              text: "International ACH",
-            },
-          ],
-        });
-
-        $("#paymentTypes").val(null).trigger("change");
-      }
-
-      function loadProductNames() {
-        $(".orderProductNames").empty();
-        productNamesArray = [];
-
-        $.ajax({
-          url: "/api/v1/packing/names",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            productNamesArray = [];
-
-            data?.data.forEach((item) => {
-              productNamesArray.push({
-                id: item.id,
-                text: item?.pd?.pp?.ProductMaster?.product_name,
-                quantity: item.packing_quantity,
-              });
-            });
-
-            $(".orderProductNames").select2({
-              placeholder: "Choose a product",
-              allowClear: "true",
-              data: productNamesArray,
-            });
-
-            if (!is_updated_data)
-              $(".orderProductNames").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadShippingLocations() {
-        $.ajax({
-          url: `/api/v1/master/shipping`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            data?.data?.rows.forEach((item) => {
-              $("#shippingSources").select2({
-                placeholder: "Choose a source",
-                allowClear: "true",
-                data: [
-                  {
-                    id: item.id,
-                    text: item.shipping_source,
-                  },
-                ],
-              });
-
-              $("#shippingDestinations").select2({
-                placeholder: "Choose a destination",
-                allowClear: "true",
-                data: [
-                  {
-                    id: item.id,
-                    text: item.shipping_destination,
-                  },
-                ],
-              });
-            });
-
-            $("#shippingSources").val(null).trigger("change");
-            $("#shippingDestinations").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadShippingMethods() {
-        $("#shippingMethods").select2({
-          placeholder: "Choose a method",
-          allowClear: "true",
-          data: [
-            {
-              id: "Air freight",
-              text: "Air freight",
-            },
-            {
-              id: "Flat rate shipping",
-              text: "Flat rate shipping",
-            },
-            {
-              id: "Sea shipping",
-              text: "Sea shipping",
-            },
-            {
-              id: "Expedited shipping",
-              text: "Expedited shipping",
-            },
-            {
-              id: "Land shipping",
-              text: "Land shipping",
-            },
-          ],
-        });
-
-        $("#shippingMethods").val(null).trigger("change");
-      }
-
-      $(document).on("click", ".delOrder", (e) => {
-        let order_id = $(e.target).attr("order_id");
-        let currentRow = $(e.target).closest("tr");
-        $.confirm({
-          title: "Delete Order Detail?",
-          content: "Are you sure, do you want to remove this order?",
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
-          type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
-          buttons: {
-            delete: {
-              text: "Delete",
-              btnClass: "btn-red",
-              action: function () {
-                $.ajax({
-                  url: "/api/v1/orders?order_id=" + order_id,
-                  method: "delete",
-                })
-                  .done(function (response) {
-                    //loading data to table
-                    loadOrdersTableData();
-
-                    toastr.success(
-                      "Order has been deleted successfully",
-                      "Deleted"
-                    );
-                  })
-                  .fail(function () {
-                    toastr.error("Order detail failed to delete!", "Error");
-                  });
-              },
-            },
-            no: function () {
-              toastr.info("Order detail is safe now", "Info");
-            },
-          },
-        });
-      });
-
-      $(document).on("click", ".delOrderProduct", (e) => {
-        let order_product_id = $(e.target).attr("order_product_id");
-        let order_id = $(e.target).attr("order_id");
-        let currentRow = $(e.target).closest("tr");
-        $.confirm({
-          title: "Delete Ordered Product Detail?",
-          content: "Are you sure, do you want to remove this ordered product?",
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
-          type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
-          buttons: {
-            delete: {
-              text: "Delete",
-              btnClass: "btn-red",
-              action: function () {
-                $.ajax({
-                  url:
-                    "/api/v1/orders/product?order_product_id=" +
-                    order_product_id,
-                  method: "delete",
-                })
-                  .done(function (response) {
-                    //loading data to table
-                    loadOrdersProductTableData(order_id);
-
-                    toastr.success(
-                      "Ordered product has been deleted successfully",
-                      "Deleted"
-                    );
-                  })
-                  .fail(function () {
-                    toastr.error(
-                      "Ordered Product details failed to delete!",
-                      "Error"
-                    );
-                  });
-              },
-            },
-            no: function () {
-              toastr.info("Order product detail is safe now", "Info");
-            },
-          },
-        });
-      });
-
-      function saveOrders() {
-        const order_id = $("#submitOrders").attr("order_id");
-
-        let OrderProducts = [];
-
-        $(".orderProduct").each((i, obj) => {
-          let id = $(obj)
-            .find(`.orderProductNames_${i + 1}`)
-            .parent()
-            .find("select")
-            .attr("peeled_product_id");
-
-          let packing_id = $(obj)
-            .find(`.orderProductNames_${i + 1}`)
-            .val();
-
-          let product_unit = $(obj)
-            .find(`.product_unit_${i + 1}`)
-            .val();
-
-          product_unit = isNaN(parseFloat(product_unit))
-            ? 0
-            : parseFloat(product_unit);
-
-          let product_price = $(obj)
-            .find(`.product_price_${i + 1}`)
-            .val();
-
-          product_price = isNaN(parseFloat(product_price))
-            ? 0
-            : parseFloat(product_price);
-
-          let product_desc = $(obj)
-            .find(`.product_desc_${i + 1}`)
-            .val();
-
-          if (packing_id) {
-            let outputObj = {
-              order_id,
-              packing_id,
-              unit: product_unit,
-              price: product_price,
-              description: product_desc,
-            };
-
-            if (id && id != "undefined") {
-              outputObj.id = id;
-            }
-
-            OrderProducts.push(outputObj);
-          }
-        });
-
-        let url = "/api/v1/orders";
-        let method = "POST";
-        let input_params = {
-          order_date: $("#order_date").val(),
-          customer_master_id: $("#customerNames").val(),
-          payment_terms: $("#payment_terms").val(),
-          payment_type: $("#paymentTypes").val(),
-          shipping_date: $("#shipping_date").val(),
-          shipping_master_id: $("#shippingDestinations").val(),
-          shipping_method: $("#shippingMethods").val(),
-          shipping_address: $("#shipping_address").val(),
-          expected_delivery_date: $("#expected_delivery_date").val(),
-          OrderProducts,
-        };
-
-        if (order_id && order_id != "null") {
-          url = "/api/v1/orders";
-          method = "PUT";
-
-          input_params = {
-            order_id,
-            order_data: {
-              ...input_params,
-            },
-          };
-        }
-
-        // if (product_unit > 0 && order_quantity < product_unit) {
-        //   toastr["warning"](
-        //     "Yield quantity must not be greater than orders quantity!"
-        //   );
-        //   return;
-        // }
-
-        $.ajax({
-          url,
-          method,
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            toastr["success"](data?.message);
-
-            $("#closeOrdersPanelBtn").click();
-
-            loadOrdersTableData();
-
-            resetAllInputs();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      $("#resetOrdersDataBtn").on("click", resetAllInputs);
-      // -------------------- End of Orders -----------------
-
-      // ---------------------------------------------------------
-      // ------------------------ Customer -----------------------
-      // ---------------------------------------------------------
-
-      $(".customerMenu").click(function () {
-        $(".menu-container").addClass("d-none");
-
-        $(".customerContainer").removeClass("d-none");
-        $(".customerContainer").addClass("d-block");
-
-        loadCustomersTableData();
-      });
-
-      $(document).on("click", ".modal-header .close", () => {
-        $("#customerOrdersModal").modal("hide");
-      });
-
-      $(document).on(
-        "click",
-        ".modal-header .close, .modal-footer .close",
-        () => {
-          $("#customerOrdersModal").modal("hide");
-        }
+      $("#view_order_no").text(
+        $(e.target).closest("tr").children("td").eq(2).text()
       );
 
-      function loadCustomersTableData() {
-        $("#customerTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/master/customer/orders",
-            error: function (xhr, error, code) {
-              $("#orderTable").DataTable().destroy();
-              $("#orderTable").DataTable({ scrollX: true, ordering: false });
+      // Top Header
+      $("#view_order_no").attr("order_id", view_order_id);
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+      $("#view_order_date").text(
+        $(e.target).closest("tr").children("td").eq(3).text()
+      );
 
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: "id" },
-            { data: "customer_name" },
-            { data: "customer_email" },
-            { data: "customer_phone" },
-            { data: "customer_address" },
-            { data: "last_order" },
-            { data: "total_orders" },
-            { data: "total_paid" },
-            { data: "due_amount" },
-            { data: null },
-          ],
-          columnDefs: [
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return parseFloat(data || 0).toFixed(2);
-              },
-            },
-            {
-              targets: [8],
-              className: "text-left",
-              render: function (data, type, row) {
-                return parseFloat(data || 0).toFixed(2);
-              },
-            },
-            {
-              targets: [9],
-              className: "text-center",
-              render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewCustomer" customer_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
-              },
-            },
-          ],
-          drawCallback: () => {},
-        });
-      }
+      $("#view_payment_terms").text($(e.target).attr("payment_terms"));
 
-      $(document).on("click", ".viewCustomer", (e) => {
-        // Changing panel input fields data
-        $("#closeProcurementPanelBtn").click();
+      $("#view_payment_type").text($(e.target).attr("payment_type"));
 
-        const customer_id = $(e.target).attr("customer_id");
+      $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
 
-        let customer_data = sessionStorage?.customer_data
-          ? JSON.parse(sessionStorage?.customer_data)
-          : {
-              customer_name: $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(1)
-                .text(),
-              customer_email: $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(2)
-                .text(),
-              customer_phone: $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(3)
-                .text(),
-              customer_address: $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(4)
-                .text(),
-            };
+      $("#view_delivery_status").text(
+        $(e.target).closest("tr").children("td").eq(6).text()
+      );
 
-        $("#view_customer_id").text(customer_id);
-        $("#view_order_customer_name").text(customer_data?.customer_name);
-        $("#view_order_customer_address").text(customer_data?.customer_address);
-        $("#view_order_customer_email").text(customer_data?.customer_email);
-        $("#view_order_customer_phone").text(customer_data?.customer_phone);
+      $("#view_customer_name").text($(e.target).attr("customer_name"));
 
-        sessionStorage.customer_data = JSON.stringify(customer_data);
+      $("#view_customer_name").attr(
+        "customer_master_id",
+        $(e.target).attr("customer_master_id")
+      );
 
-        // Opening Slied Panel
-        $("#customerOrdersModal").modal("show");
+      $("#view_customer_country").text($(e.target).attr("customer_country"));
 
-        loadCustomerOrdersTableData(customer_id);
-      });
+      $("#view_customer_email").text($(e.target).attr("customer_email"));
 
-      function loadCustomerOrdersTableData(customer_id) {
-        $("#customerOrdersTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/orders?customer_id=" + customer_id,
-            error: function (xhr, error, code) {
-              $("#customerOrdersTable").DataTable().destroy();
-              $("#customerOrdersTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
+      $("#view_customer_phone").text($(e.target).attr("customer_phone"));
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+      // Shipping
+      $("#view_shipping_date").text(
+        formatDate(new Date($(e.target).attr("shipping_date")))
+      );
 
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: "order_no" },
-            { data: null },
-            { data: null },
-            { data: "total_products_price" },
-            { data: "delivery_status" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewCustomerOrders" customer_id='${customer_id}' order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row?.created_at);
+      $("#view_shipping_carrier").text(
+        $(e.target).attr("shipping_carrier_name")
+      );
 
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
+      $("#view_shipping_source").text($(e.target).attr("shipping_source"));
 
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: (data, type, row) => {
-                return row?.OrderProducts?.length || 0;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: (data, type, row) => {
-                return `<span class=${
-                  data == "Delivered" ? "text-success" : "text-warning"
-                }>${data} <i class="fa-solid ${
-                  data == "Delivered"
-                    ? "fa-circle-check"
-                    : "fa-truck-fast fa-fade"
-                }"></i></span>`;
-              },
-            },
-          ],
-          drawCallback: () => {},
-        });
-      }
+      $("#view_shipping_destination").text(
+        $(e.target).attr("shipping_destination")
+      );
 
-      $(document).on("click", ".viewCustomerOrders", (e) => {
-        sessionStorage.customer_id = $(e.target).attr("customer_id");
-        // Closing Slied Panel
-        $("#customerOrdersModal").modal("hide");
+      $("#view_shipping_method").text($(e.target).attr("shipping_method"));
 
-        // Changing panel input fields data
-        const view_order_id = $(e.target).attr("order_id");
+      $("#view_expected_delivery").text(
+        formatDate(new Date($(e.target).attr("expected_delivery")))
+      );
 
-        $("#view_order_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
+      // Opening Slied Panel
+      $("#orderModal").modal("show");
 
-        // Top Header
-        $("#view_order_no").attr("order_id", view_order_id);
-
-        $("#view_order_date").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#view_payment_terms").text($(e.target).attr("payment_terms"));
-
-        $("#view_payment_type").text($(e.target).attr("payment_type"));
-
-        $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
-
-        $("#view_delivery_status").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-
-        $("#view_customer_name").text($(e.target).attr("customer_name"));
-
-        $("#view_customer_name").attr(
-          "customer_master_id",
-          $(e.target).attr("customer_master_id")
-        );
-
-        $("#view_customer_country").text($(e.target).attr("customer_country"));
-
-        $("#view_customer_email").text($(e.target).attr("customer_email"));
-
-        $("#view_customer_phone").text($(e.target).attr("customer_phone"));
-
-        // Shipping
-        $("#view_shipping_date").text(
-          formatDate(new Date($(e.target).attr("shipping_date")))
-        );
-
-        $("#view_shipping_carrier").text(
-          $(e.target).attr("shipping_carrier_name")
-        );
-
-        $("#view_shipping_source").text($(e.target).attr("shipping_source"));
-
-        $("#view_shipping_destination").text(
-          $(e.target).attr("shipping_destination")
-        );
-
-        $("#view_shipping_method").text($(e.target).attr("shipping_method"));
-
-        $("#view_expected_delivery").text(
-          formatDate(new Date($(e.target).attr("expected_delivery")))
-        );
-
-        // Opening Slied Panel
-        $("#orderModal").modal("show");
-
-        loadOrdersProductTableData(view_order_id);
-      });
-
-      // -------------------- End of Customer -----------------
+      loadOrdersProductTableData(view_order_id);
     });
-  </script>
+
+    function loadOrdersProductTableData(order_id) {
+      if (!order_id) {
+        toastr["warning"]("Orders data should not be empty!");
+        return;
+      }
+
+      $("#orderProductTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: `/api/v1/orders/product?order_id=${order_id}`,
+          error: function (xhr, error, code) {
+            $("#orderProductTable").DataTable().destroy();
+            $("#orderProductTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
+
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "Packing.pd.pp.ProductMaster.product_name" },
+          { data: "unit" },
+          { data: "price" },
+          { data: "total_price" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa fa-pen-to-square edit editOrders" order_id="${row?.order_id}" order_product_id="${row?.id || null
+                }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa fa-trash del delOrderProduct" order_id="${row?.order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
+            },
+          },
+        ],
+        drawCallback: () => { },
+      });
+    }
+
+    let view_order_center_id = "";
+    let view_raw_material_id = "";
+    $(document).on("click", ".editOrders", (e) => {
+      // Changing panel input fields data
+      is_updated_data = true;
+
+      $("#orderLotNumbers")
+        .val($("#view_order_no").attr("procurement_lot_id"))
+        .trigger("change");
+
+      view_raw_material_id = $(e.target)
+        .closest("tr")
+        .children("td")
+        .eq(1)
+        .find("span")
+        .attr("dispatch_id");
+
+      view_order_center_id = $(e.target)
+        .closest("tr")
+        .children("td")
+        .eq(9)
+        .find("span")
+        .attr("unit_master_id");
+
+      $("#order_quantity").val(
+        $(e.target).closest("tr").children("td").eq(5).text()
+      );
+
+      $("#orderMethods")
+        .val($(e.target).closest("tr").children("td").eq(8).text())
+        .trigger("change");
+
+      // Opening Slied Panel
+      $("#openOrdersPanelBtn").click();
+
+      // Changing panel heading
+      $("#orderPanelHeading").text("Edit Orders Data");
+
+      // Changing panel button label
+      $("#submitOrders").text("Update");
+
+      // Changing panel button attribute
+      $("#submitOrders").attr("order_id", $(e.target).attr("order_id"));
+
+      $("#orderModal").modal("hide");
+
+      $("#smarttab").smartTab("last");
+    });
+
+    function loadCustomerNames() {
+      $.ajax({
+        url: `/api/v1/master/customer`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          $("#customerNames").select2({
+            placeholder: "Choose a customer",
+            allowClear: "true",
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                country: item.customer_country,
+                address: item.customer_address,
+                text: `${item.customer_name}-${item.customer_country}`,
+              };
+            }),
+          });
+
+          $("#customerNames").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $(document).on("change", "#customerNames", (e) => {
+      const customerCountry = $(e.target).val();
+
+      if (customerCountry) {
+        $("#customer_country").text($(e.target).select2("data")[0]?.country);
+        $("#shipping_address").val($(e.target).select2("data")[0]?.address);
+      }
+    });
+
+    function loadPaymentType() {
+      $("#paymentTypes").select2({
+        placeholder: "Choose a type",
+        allowClear: "true",
+        data: [
+          {
+            id: "Credit card",
+            text: "Credit card",
+          },
+          {
+            id: "Debit card",
+            text: "Debit card",
+          },
+          {
+            id: "Digital wallet",
+            text: "Digital wallet",
+          },
+          {
+            id: "Direct debit",
+            text: "Direct debit",
+          },
+          {
+            id: "Cryptocurrency",
+            text: "Cryptocurrency",
+          },
+          {
+            id: "Cash",
+            text: "Cash",
+          },
+          {
+            id: "Bank transfer",
+            text: "Bank transfer",
+          },
+          {
+            id: "International ACH",
+            text: "International ACH",
+          },
+        ],
+      });
+
+      $("#paymentTypes").val(null).trigger("change");
+    }
+
+    function loadProductNames() {
+      $(".orderProductNames").empty();
+      productNamesArray = [];
+
+      $.ajax({
+        url: "/api/v1/packing/names",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          productNamesArray = [];
+
+          data?.data.forEach((item) => {
+            productNamesArray.push({
+              id: item.id,
+              text: item?.pd?.pp?.ProductMaster?.product_name,
+              quantity: item.packing_quantity,
+            });
+          });
+
+          $(".orderProductNames").select2({
+            placeholder: "Choose a product",
+            allowClear: "true",
+            data: productNamesArray,
+          });
+
+          if (!is_updated_data)
+            $(".orderProductNames").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadShippingLocations() {
+      $.ajax({
+        url: `/api/v1/master/shipping`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          data?.data?.rows.forEach((item) => {
+            $("#shippingSources").select2({
+              placeholder: "Choose a source",
+              allowClear: "true",
+              data: [
+                {
+                  id: item.id,
+                  text: item.shipping_source,
+                },
+              ],
+            });
+
+            $("#shippingDestinations").select2({
+              placeholder: "Choose a destination",
+              allowClear: "true",
+              data: [
+                {
+                  id: item.id,
+                  text: item.shipping_destination,
+                },
+              ],
+            });
+          });
+
+          $("#shippingSources").val(null).trigger("change");
+          $("#shippingDestinations").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadShippingMethods() {
+      $("#shippingMethods").select2({
+        placeholder: "Choose a method",
+        allowClear: "true",
+        data: [
+          {
+            id: "Air freight",
+            text: "Air freight",
+          },
+          {
+            id: "Flat rate shipping",
+            text: "Flat rate shipping",
+          },
+          {
+            id: "Sea shipping",
+            text: "Sea shipping",
+          },
+          {
+            id: "Expedited shipping",
+            text: "Expedited shipping",
+          },
+          {
+            id: "Land shipping",
+            text: "Land shipping",
+          },
+        ],
+      });
+
+      $("#shippingMethods").val(null).trigger("change");
+    }
+
+    $(document).on("click", ".delOrder", (e) => {
+      let order_id = $(e.target).attr("order_id");
+      let currentRow = $(e.target).closest("tr");
+      $.confirm({
+        title: "Delete Order Detail?",
+        content: "Are you sure, do you want to remove this order?",
+        backgroundDismiss: false,
+        backgroundDismissAnimation: "glow",
+        type: "red",
+        closeIcon: true,
+        closeIconClass: "fa fa-close",
+        typeAnimated: true,
+        boxWidth: "30%",
+        useBootstrap: false,
+        autoClose: "no|5000",
+        buttons: {
+          delete: {
+            text: "Delete",
+            btnClass: "btn-red",
+            action: function () {
+              $.ajax({
+                url: "/api/v1/orders?order_id=" + order_id,
+                method: "delete",
+              })
+                .done(function (response) {
+                  //loading data to table
+                  loadOrdersTableData();
+
+                  toastr.success(
+                    "Order has been deleted successfully",
+                    "Deleted"
+                  );
+                })
+                .fail(function () {
+                  toastr.error("Order detail failed to delete!", "Error");
+                });
+            },
+          },
+          no: function () {
+            toastr.info("Order detail is safe now", "Info");
+          },
+        },
+      });
+    });
+
+    $(document).on("click", ".delOrderProduct", (e) => {
+      let order_product_id = $(e.target).attr("order_product_id");
+      let order_id = $(e.target).attr("order_id");
+      let currentRow = $(e.target).closest("tr");
+      $.confirm({
+        title: "Delete Ordered Product Detail?",
+        content: "Are you sure, do you want to remove this ordered product?",
+        backgroundDismiss: false,
+        backgroundDismissAnimation: "glow",
+        type: "red",
+        closeIcon: true,
+        closeIconClass: "fa fa-close",
+        typeAnimated: true,
+        boxWidth: "30%",
+        useBootstrap: false,
+        autoClose: "no|5000",
+        buttons: {
+          delete: {
+            text: "Delete",
+            btnClass: "btn-red",
+            action: function () {
+              $.ajax({
+                url:
+                  "/api/v1/orders/product?order_product_id=" +
+                  order_product_id,
+                method: "delete",
+              })
+                .done(function (response) {
+                  //loading data to table
+                  loadOrdersProductTableData(order_id);
+
+                  toastr.success(
+                    "Ordered product has been deleted successfully",
+                    "Deleted"
+                  );
+                })
+                .fail(function () {
+                  toastr.error(
+                    "Ordered Product details failed to delete!",
+                    "Error"
+                  );
+                });
+            },
+          },
+          no: function () {
+            toastr.info("Order product detail is safe now", "Info");
+          },
+        },
+      });
+    });
+
+    function saveOrders() {
+      const order_id = $("#submitOrders").attr("order_id");
+
+      let OrderProducts = [];
+
+      $(".orderProduct").each((i, obj) => {
+        let id = $(obj)
+          .find(`.orderProductNames_${i + 1}`)
+          .parent()
+          .find("select")
+          .attr("peeled_product_id");
+
+        let packing_id = $(obj)
+          .find(`.orderProductNames_${i + 1}`)
+          .val();
+
+        let product_unit = $(obj)
+          .find(`.product_unit_${i + 1}`)
+          .val();
+
+        product_unit = isNaN(parseFloat(product_unit))
+          ? 0
+          : parseFloat(product_unit);
+
+        let product_price = $(obj)
+          .find(`.product_price_${i + 1}`)
+          .val();
+
+        product_price = isNaN(parseFloat(product_price))
+          ? 0
+          : parseFloat(product_price);
+
+        let product_desc = $(obj)
+          .find(`.product_desc_${i + 1}`)
+          .val();
+
+        if (packing_id) {
+          let outputObj = {
+            order_id,
+            packing_id,
+            unit: product_unit,
+            price: product_price,
+            description: product_desc,
+          };
+
+          if (id && id != "undefined") {
+            outputObj.id = id;
+          }
+
+          OrderProducts.push(outputObj);
+        }
+      });
+
+      let url = "/api/v1/orders";
+      let method = "POST";
+      let input_params = {
+        order_date: $("#order_date").val(),
+        customer_master_id: $("#customerNames").val(),
+        payment_terms: $("#payment_terms").val(),
+        payment_type: $("#paymentTypes").val(),
+        shipping_date: $("#shipping_date").val(),
+        shipping_master_id: $("#shippingDestinations").val(),
+        shipping_method: $("#shippingMethods").val(),
+        shipping_address: $("#shipping_address").val(),
+        expected_delivery_date: $("#expected_delivery_date").val(),
+        OrderProducts,
+      };
+
+      if (order_id && order_id != "null") {
+        url = "/api/v1/orders";
+        method = "PUT";
+
+        input_params = {
+          order_id,
+          order_data: {
+            ...input_params,
+          },
+        };
+      }
+
+      // if (product_unit > 0 && order_quantity < product_unit) {
+      //   toastr["warning"](
+      //     "Yield quantity must not be greater than orders quantity!"
+      //   );
+      //   return;
+      // }
+
+      $.ajax({
+        url,
+        method,
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeOrdersPanelBtn").click();
+
+          loadOrdersTableData();
+
+          resetAllInputs();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetOrdersDataBtn").on("click", resetAllInputs);
+    // -------------------- End of Orders -----------------
+
+    // ---------------------------------------------------------
+    // ------------------------ Customer -----------------------
+    // ---------------------------------------------------------
+
+    $(".customerMenu").click(function () {
+      $(".menu-container").addClass("d-none");
+
+      $(".customerContainer").removeClass("d-none");
+      $(".customerContainer").addClass("d-block");
+
+      loadCustomersTableData();
+    });
+
+    $(document).on("click", ".modal-header .close", () => {
+      $("#customerOrdersModal").modal("hide");
+    });
+
+    $(document).on(
+      "click",
+      ".modal-header .close, .modal-footer .close",
+      () => {
+        $("#customerOrdersModal").modal("hide");
+      }
+    );
+
+    function loadCustomersTableData() {
+      $("#customerTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/master/customer/orders",
+          error: function (xhr, error, code) {
+            $("#orderTable").DataTable().destroy();
+            $("#orderTable").DataTable({ scrollX: true, ordering: false });
+
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: "id" },
+          { data: "customer_name" },
+          { data: "customer_email" },
+          { data: "customer_phone" },
+          { data: "customer_address" },
+          { data: "last_order_on" },
+          { data: "last_order_status" },
+          { data: "total_orders" },
+          { data: "total_paid" },
+          { data: "due_amount" },
+          { data: null },
+        ],
+        columnDefs: [
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row?.last_order_on);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return day + "-" + month + "-" + date.getFullYear();
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span class=${data == "Delivered" ? "text-success" : "text-warning"
+                }>${data} <i class="fa-solid ${data == "Delivered"
+                  ? "fa-circle-check"
+                  : "fa-truck-fast fa-fade"
+                }"></i></span>`;
+            },
+          },
+          {
+            targets: [7],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
+          },
+          {
+            targets: [8],
+            className: "text-left",
+            render: function (data, type, row) {
+              return parseFloat(data || 0).toFixed(2);
+            },
+          },
+          {
+            targets: [9],
+            className: "text-left",
+            render: function (data, type, row) {
+              return parseFloat(data || 0).toFixed(2);
+            },
+          },
+          {
+            targets: [10],
+            className: "text-center",
+            render: function (data, type, row) {
+              return `<i class="fa-solid fa-eye view viewCustomer" customer_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
+            },
+          },
+        ],
+        drawCallback: () => { },
+      });
+    }
+
+    $(document).on("click", ".viewCustomer", (e) => {
+      // Changing panel input fields data
+      $("#closeProcurementPanelBtn").click();
+
+      const customer_id = $(e.target).attr("customer_id");
+
+      let customer_data = sessionStorage?.customer_data
+        ? JSON.parse(sessionStorage?.customer_data)
+        : {
+          customer_name: $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(1)
+            .text(),
+          customer_email: $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(2)
+            .text(),
+          customer_phone: $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(3)
+            .text(),
+          customer_address: $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(4)
+            .text(),
+        };
+
+      $("#view_customer_id").text(customer_id);
+      $("#view_order_customer_name").text(customer_data?.customer_name);
+      $("#view_order_customer_address").text(customer_data?.customer_address);
+      $("#view_order_customer_email").text(customer_data?.customer_email);
+      $("#view_order_customer_phone").text(customer_data?.customer_phone);
+
+      sessionStorage.customer_data = JSON.stringify(customer_data);
+
+      // Opening Slied Panel
+      $("#customerOrdersModal").modal("show");
+
+      loadCustomerOrdersTableData(customer_id);
+    });
+
+    function loadCustomerOrdersTableData(customer_id) {
+      $("#customerOrdersTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/orders?customer_id=" + customer_id,
+          error: function (xhr, error, code) {
+            $("#customerOrdersTable").DataTable().destroy();
+            $("#customerOrdersTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
+
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: "order_no" },
+          { data: null },
+          { data: null },
+          { data: "total_products_price" },
+          { data: "delivery_status" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa-solid fa-eye view viewCustomerOrders" customer_id='${customer_id}' order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
+          },
+          {
+            targets: [2],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row?.created_at);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return day + "-" + month + "-" + date.getFullYear();
+            },
+          },
+          {
+            targets: [3],
+            className: "text-left",
+            render: (data, type, row) => {
+              return row?.OrderProducts?.length || 0;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: (data, type, row) => {
+              return `<span class=${data == "Delivered" ? "text-success" : "text-warning"
+                }>${data} <i class="fa-solid ${data == "Delivered"
+                  ? "fa-circle-check"
+                  : "fa-truck-fast fa-fade"
+                }"></i></span>`;
+            },
+          },
+        ],
+        drawCallback: () => { },
+      });
+    }
+
+    $(document).on("click", ".viewCustomerOrders", (e) => {
+      sessionStorage.customer_id = $(e.target).attr("customer_id");
+      // Closing Slied Panel
+      $("#customerOrdersModal").modal("hide");
+
+      // Changing panel input fields data
+      const view_order_id = $(e.target).attr("order_id");
+
+      $("#view_order_no").text(
+        $(e.target).closest("tr").children("td").eq(2).text()
+      );
+
+      // Top Header
+      $("#view_order_no").attr("order_id", view_order_id);
+
+      $("#view_order_date").text(
+        $(e.target).closest("tr").children("td").eq(3).text()
+      );
+
+      $("#view_payment_terms").text($(e.target).attr("payment_terms"));
+
+      $("#view_payment_type").text($(e.target).attr("payment_type"));
+
+      $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
+
+      $("#view_delivery_status").text(
+        $(e.target).closest("tr").children("td").eq(6).text()
+      );
+
+      $("#view_customer_name").text($(e.target).attr("customer_name"));
+
+      $("#view_customer_name").attr(
+        "customer_master_id",
+        $(e.target).attr("customer_master_id")
+      );
+
+      $("#view_customer_country").text($(e.target).attr("customer_country"));
+
+      $("#view_customer_email").text($(e.target).attr("customer_email"));
+
+      $("#view_customer_phone").text($(e.target).attr("customer_phone"));
+
+      // Shipping
+      $("#view_shipping_date").text(
+        formatDate(new Date($(e.target).attr("shipping_date")))
+      );
+
+      $("#view_shipping_carrier").text(
+        $(e.target).attr("shipping_carrier_name")
+      );
+
+      $("#view_shipping_source").text($(e.target).attr("shipping_source"));
+
+      $("#view_shipping_destination").text(
+        $(e.target).attr("shipping_destination")
+      );
+
+      $("#view_shipping_method").text($(e.target).attr("shipping_method"));
+
+      $("#view_expected_delivery").text(
+        formatDate(new Date($(e.target).attr("expected_delivery")))
+      );
+
+      // Opening Slied Panel
+      $("#orderModal").modal("show");
+
+      loadOrdersProductTableData(view_order_id);
+    });
+
+    // -------------------- End of Customer --------------------
+
+    // ---------------------------------------------------------
+    // ------------------------ Support -----------------------
+    // ---------------------------------------------------------
+
+    $(".supportMenu").click(function () {
+      toastr["info"]("Comming Soon...");
+      // $(".menu-container").addClass("d-none");
+
+      // $(".customerContainer").removeClass("d-none");
+      // $(".customerContainer").addClass("d-block");
+
+      // loadCustomersTableData();
+    });
+
+    // -------------------- End of Support --------------------
+  });
+</script>
+
 </html>

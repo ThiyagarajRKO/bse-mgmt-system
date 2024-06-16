@@ -166,31 +166,31 @@ export const GetOrders = ({ start, length, customer_name, search }) => {
         ];
       }
 
-      const count = await models.CustomerMaster.count({
-        subQuery: false,
-        include: [
-          {
-            required: false,
-            attributes: ["id"],
-            model: models.Orders,
-            where: {
-              is_active: true,
-            },
-            include: [
-              {
-                attributes: ["id", "total_price"],
-                model: models.OrderProducts,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
-          },
-        ],
-        where,
-      });
+      // const count = await models.CustomerMaster.count({
+      //   subQuery: false,
+      //   include: [
+      //     {
+      //       required: false,
+      //       attributes: ["id"],
+      //       model: models.Orders,
+      //       where: {
+      //         is_active: true,
+      //       },
+      //       include: [
+      //         {
+      //           attributes: ["id", "total_price"],
+      //           model: models.OrderProducts,
+      //           where: {
+      //             is_active: true,
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   ],
+      //   where,
+      // });
 
-      const rows = await models.CustomerMaster.findAll({
+      const data = await models.CustomerMaster.findAndCountAll({
         subQuery: false,
         attributes: [
           "id",
@@ -198,11 +198,27 @@ export const GetOrders = ({ start, length, customer_name, search }) => {
           "customer_email",
           "customer_phone",
           "customer_address",
-          [sequelize.fn("count", sequelize.col("Orders.id")), "total_orders"],
           [
-            sequelize.fn(
-              "sum",
-              sequelize.col("Orders.OrderProducts.total_price")
+            sequelize.literal(
+              `(SELECT created_at FROM orders o WHERE o.customer_master_id = "CustomerMaster".id and o.is_active = true order by created_at DESC LIMIT 1)`
+            ),
+            "last_order_on",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT delivery_status FROM orders o WHERE o.customer_master_id = "CustomerMaster".id and o.is_active = true order by created_at DESC LIMIT 1)`
+            ),
+            "last_order_status",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(id) FROM orders o WHERE o.customer_master_id = "CustomerMaster".id and o.is_active = true)`
+            ),
+            "total_orders",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(op.total_price) FROM order_products op JOIN orders o ON o.customer_master_id = "CustomerMaster".id and o.id = op.order_id and o.is_active = true WHERE op.is_active = true)`
             ),
             "total_paid",
           ],
@@ -210,30 +226,30 @@ export const GetOrders = ({ start, length, customer_name, search }) => {
         include: [
           {
             required: false,
-            attributes: ["id"],
+            attributes: [],
             model: models.Orders,
-            where: {
-              is_active: true,
-            },
             include: [
               {
-                attributes: ["id", "total_price"],
+                required: false,
+                attributes: [],
                 model: models.OrderProducts,
                 where: {
                   is_active: true,
                 },
               },
             ],
+            where: {
+              is_active: true,
+            },
           },
         ],
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
-        group: ["CustomerMaster.id", "Orders.id", "Orders->OrderProducts.id"],
       });
 
-      resolve({ count, rows });
+      resolve(data);
     } catch (err) {
       reject(err);
     }

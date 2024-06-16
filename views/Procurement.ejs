@@ -2,1103 +2,1065 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BSE</title>
 
-    <!-- Font Preloading -->
-    <link
-      rel="preload"
-      href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSE</title>
 
-    <!-- title logo -->
-    <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+  <!-- Font Preloading -->
+  <link rel="preload" href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" as="font"
+    type="font/ttf" crossorigin="anonymous" />
+  <link rel="preload" href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf" as="font" type="font/ttf"
+    crossorigin="anonymous" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2"
-    />
+  <!-- title logo -->
+  <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-    <!-- Bootstrap -->
-    <link
-      href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2"
-      rel="stylesheet"
-    />
-    <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=2" />
 
-    <!-- MDB5  -->
-    <link
-      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2"
-      rel="stylesheet"
-    />
-    <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
+  <!-- Bootstrap -->
+  <link href="/public/plugins/bootstrap/css/bootstrap.min.css?v=2" rel="stylesheet" />
+  <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=2"></script>
 
-    <!-- jQuery -->
-    <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
+  <!-- MDB5  -->
+  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2" rel="stylesheet" />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
 
-    <!-- Select2 -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/select2/css/select2.min.css?v=2"
-    />
-    <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
+  <!-- jQuery -->
+  <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
 
-    <!-- DataTable -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.min.css?v=2"
-    />
-    <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
-    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
-    <!-- Responsive Datatable -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.responsive.min.css?v=2"
-    />
-    <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css?v=2" />
+  <script src="/public/plugins/select2/js/select2.min.js?v=2"></script>
 
-    <!-- Toast -->
-    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
-    <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
+  <!-- DataTable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css?v=2" />
+  <script src="/public/plugins/dataTables/datatables.min.js?v=2"></script>
+  <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=2"></script>
+  <!-- Responsive Datatable -->
+  <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css?v=2" />
+  <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=2"></script>
 
-    <!-- perfect-scrollbar plugin -->
-    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
+  <!-- Toast -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=2" />
+  <script src="/public/plugins/Toastr/toastr.min.js?v=2"></script>
 
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/font-awesome/css/all.min.css?v=2"
-    />
+  <!-- perfect-scrollbar plugin -->
+  <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=2"></script>
 
-    <!-- jQuery Confirm -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2"
-    />
-    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css?v=2" />
 
-    <!-- Slide-in Panel -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2"
-    />
-    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
+  <!-- jQuery Confirm -->
+  <link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=2" />
+  <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=2"></script>
 
-    <!-- Tippy -->
-    <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
-    <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
-    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
+  <!-- Slide-in Panel -->
+  <link rel="stylesheet" href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=2" />
+  <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=2"></script>
 
-    <!-- Popper -->
-    <script src="/public/plugins/popper/popper.umd.min.js?v=2"></script>
+  <!-- Tippy -->
+  <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=2" />
+  <script src="/public/plugins/tippy/popper.min.js?v=2"></script>
+  <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=2"></script>
 
-    <!-- Canvas JS -->
-    <script src="/public/plugins/canvasJs/canvasjs.min.js?v=2"></script>
+  <!-- Popper -->
+  <script src="/public/plugins/popper/popper.umd.min.js?v=2"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/public/css/style.css?v=2" />
+  <!-- Canvas JS -->
+  <script src="/public/plugins/canvasJs/canvasjs.min.js?v=2"></script>
 
-    <!-- Custom Script -->
-    <script src="/public/custom/App.js?v=2"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/public/css/style.css?v=2" />
 
-    <style type="text/css">
-      @font-face {
-        font-family: "CassandraPersonalUse";
-        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <!-- Custom Script -->
+  <script src="/public/custom/App.js?v=2"></script>
 
-      @font-face {
-        font-family: "CerebriSansPro-Regular";
-        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2")
-          format("truetype");
-      }
+  <style type="text/css">
+    @font-face {
+      font-family: "CassandraPersonalUse";
+      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=2") format("truetype");
+    }
 
-      body {
-        font-family: "CerebriSansPro-Regular";
-        background-color: #f7f9fd;
-        text-transform: none !important;
-      }
+    @font-face {
+      font-family: "CerebriSansPro-Regular";
+      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=2") format("truetype");
+    }
 
-      #closeVehiclePanelBtn,
-      .panelClose {
-        cursor: pointer;
-      }
+    body {
+      font-family: "CerebriSansPro-Regular";
+      background-color: #f7f9fd;
+      text-transform: none !important;
+    }
 
-      .toast {
-        opacity: 1 !important;
-      }
+    #closeVehiclePanelBtn,
+    .panelClose {
+      cursor: pointer;
+    }
 
-      .show-dot {
-        display: none !important;
-      }
+    .toast {
+      opacity: 1 !important;
+    }
 
-      #lastMenu {
-        border-right: 0px solid #414a57;
-      }
+    .show-dot {
+      display: none !important;
+    }
 
-      .btn {
-        text-transform: none;
-      }
+    #lastMenu {
+      border-right: 0px solid #414a57;
+    }
 
-      .bg-danger,
-      .btn-red {
-        background-color: #e8763e !important;
-        text-transform: none;
-      }
+    .btn {
+      text-transform: none;
+    }
 
-      .procurementSpendBtn.btn-danger {
-        background-color: rgba(31, 45, 62, 0.8);
-        text-transform: none;
-      }
+    .bg-danger,
+    .btn-red {
+      background-color: #e8763e !important;
+      text-transform: none;
+    }
 
-      .procurementSpendBtn.btn-danger:hover {
-        background-color: rgba(31, 45, 62, 0.8);
-        text-transform: none;
-      }
+    .procurementSpendBtn.btn-danger {
+      background-color: rgba(31, 45, 62, 0.8);
+      text-transform: none;
+    }
 
-      .procurementSpendBtn.btn-outline-danger {
-        border-color: rgba(31, 45, 62, 0.8) !important;
-        color: rgba(31, 45, 62, 0.8) !important;
-        text-transform: none;
-        box-shadow: none !important;
-        /* --webkit-background-clip: padding-box;
+    .procurementSpendBtn.btn-danger:hover {
+      background-color: rgba(31, 45, 62, 0.8);
+      text-transform: none;
+    }
+
+    .procurementSpendBtn.btn-outline-danger {
+      border-color: rgba(31, 45, 62, 0.8) !important;
+      color: rgba(31, 45, 62, 0.8) !important;
+      text-transform: none;
+      box-shadow: none !important;
+      /* --webkit-background-clip: padding-box;
         background-clip: padding-box; */
-      }
+    }
 
-      .procurementSpendBtn.btn-outline-danger:hover {
-        border-color: rgba(31, 45, 62, 0.8) !important;
-        color: rgba(31, 45, 62, 0.8) !important;
-        /* -webkit-background-clip: padding-box;
+    .procurementSpendBtn.btn-outline-danger:hover {
+      border-color: rgba(31, 45, 62, 0.8) !important;
+      color: rgba(31, 45, 62, 0.8) !important;
+      /* -webkit-background-clip: padding-box;
         background-clip: padding-box; */
+    }
+
+    .topMenu-item {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      width: 100px;
+      cursor: pointer;
+    }
+
+    .topMenu-item:hover:not(.topMenu-item-active) {
+      /* border-bottom: 1px solid #ea5455; */
+      color: #ea5455 !important;
+      /* font-weight: bold; */
+      transition: right 0.3s ease;
+      cursor: pointer;
+    }
+
+    .topMenu-item-active {
+      /* border-bottom: 1px solid #ea5455; */
+      color: #ea5455 !important;
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
+
+    .topMenu-item-active .icon-button {
+      /* border-bottom: 1px solid #ea5455; */
+      background-color: #ea5455 !important;
+      color: white;
+
+      /* background-color: #f07b3f; */
+      /* border-radius: 8px; */
+      transition: right 0.3s ease;
+      /* font-weight: bold; */
+    }
+
+    .tippy-box[data-theme~="tomato"] {
+      background-color: #4f4f4f;
+      color: white;
+    }
+
+    .edit,
+    .view,
+    .close,
+    .del {
+      cursor: pointer;
+    }
+
+    .slideInPanel {
+      z-index: 9999;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -600px;
+      width: 400px;
+      background-color: rgba(31, 45, 62);
+      color: #e3e3e3;
+      height: 90vh;
+      /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
+      transition: right 0.3s ease;
+      border-radius: 8px;
+    }
+
+    /* Input */
+    .slideInPanel input {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6);
+      color: white;
+    }
+
+    .slideInPanel input::webkit-calen .slideInPanel input:focus {
+      background-color: transparent !important;
+      color: white;
+    }
+
+    .slideInPanel input:hover {
+      background-color: transparent !important;
+      border-color: #627293;
+      color: white;
+    }
+
+    /* Select */
+    .slideInPanel .select2-container {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      color: 627293 !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-selection__rendered,
+    .select2-selection__clear,
+    .select2-selection__arrow {
+      color: white !important;
+      margin-top: 0.25rem !important;
+    }
+
+    .slideInPanel .select:focus {
+      background-color: transparent !important;
+      border-color: #627293;
+    }
+
+    .slideInPanel .select2-container:hover {
+      border-color: #627293;
+    }
+
+    /* TextArea */
+    .slideInPanel textarea {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6);
+    }
+
+    .slideInPanel textarea:focus {
+      background-color: transparent !important;
+    }
+
+    .slideInPanel textarea:hover {
+      border-color: rgba(98, 114, 147, 0.6);
+    }
+
+    Form Control .slideInPanel .form-control {
+      color: #f7f9fc;
+    }
+
+    .slideInPanel .form-control::placeholder {
+      color: #627293;
+    }
+
+    .select2-selection::placeholder {
+      color: #627293;
+    }
+
+    .page-item.active .page-link {
+      color: #fff !important;
+      background-color: #ea5455 !important;
+      border-color: #ea5455 !important;
+    }
+
+    .page-link {
+      color: #000 !important;
+      background-color: #fff !important;
+      border: 1px solid #dee2e6 !important;
+    }
+
+    .page-link:hover {
+      color: #fff !important;
+      background-color: #f17979 !important;
+      border-color: #ea5455 !important;
+    }
+
+    .select2-selection {
+      background-color: transparent !important;
+      border-color: rgba(98, 114, 147, 0.6) !important;
+      height: 35px !important;
+    }
+
+    .select2-dropdown {
+      z-index: 10000 !important;
+    }
+
+    table.dataTable th {
+      text-align: left !important;
+    }
+
+    .canvasjs-chart-credit {
+      display: none;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      /* border: 2px solid #ddd; */
+      border-radius: 50%;
+      /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+      text-decoration: none;
+      color: #333;
+      transition:
+        background-color 0.3s,
+        color 0.3s,
+        box-shadow 0.3s;
+    }
+
+    .icon-button i {
+      font-size: 12px;
+    }
+
+    .icon-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Styles for mobile screens */
+    @media screen and (max-width: 480px) {
+      .dashboardCard {
+        width: 100%;
       }
 
-      .topMenu-item {
-        display: block;
-        text-align: center;
-        text-decoration: none;
-        width: 100px;
-        cursor: pointer;
-      }
-
-      .topMenu-item:hover:not(.topMenu-item-active) {
-        /* border-bottom: 1px solid #ea5455; */
-        color: #ea5455 !important;
-        /* font-weight: bold; */
-        transition: right 0.3s ease;
-        cursor: pointer;
-      }
-
-      .topMenu-item-active {
-        /* border-bottom: 1px solid #ea5455; */
-        color: #ea5455 !important;
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
-
-      .topMenu-item-active .icon-button {
-        /* border-bottom: 1px solid #ea5455; */
-        background-color: #ea5455 !important;
-        color: white;
-
-        /* background-color: #f07b3f; */
-        /* border-radius: 8px; */
-        transition: right 0.3s ease;
-        /* font-weight: bold; */
-      }
-
-      .tippy-box[data-theme~="tomato"] {
-        background-color: #4f4f4f;
-        color: white;
-      }
-
-      .edit,
-      .view,
-      .close,
-      .del {
-        cursor: pointer;
-      }
-
-      .slideInPanel {
-        z-index: 9999;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        right: -600px;
-        width: 400px;
-        background-color: rgba(31, 45, 62);
-        color: #e3e3e3;
-        height: 90vh;
-        /* box-shadow: 0 0 0px rgba(0, 0, 0, 0.2); */
-        transition: right 0.3s ease;
-        border-radius: 8px;
-      }
-
-      /* Input */
-      .slideInPanel input {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6);
-        color: white;
-      }
-
-      .slideInPanel input::webkit-calen .slideInPanel input:focus {
-        background-color: transparent !important;
-        color: white;
-      }
-
-      .slideInPanel input:hover {
-        background-color: transparent !important;
-        border-color: #627293;
-        color: white;
-      }
-
-      /* Select */
-      .slideInPanel .select2-container {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        color: 627293 !important;
-      }
-
-      .select2-container {
-        width: 100% !important;
-      }
-
-      .select2-selection__rendered,
-      .select2-selection__clear,
-      .select2-selection__arrow {
-        color: white !important;
-        margin-top: 0.25rem !important;
-      }
-
-      .slideInPanel .select:focus {
-        background-color: transparent !important;
-        border-color: #627293;
-      }
-
-      .slideInPanel .select2-container:hover {
-        border-color: #627293;
-      }
-
-      /* TextArea */
-      .slideInPanel textarea {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6);
-      }
-
-      .slideInPanel textarea:focus {
-        background-color: transparent !important;
-      }
-
-      .slideInPanel textarea:hover {
-        border-color: rgba(98, 114, 147, 0.6);
-      }
-
-      Form Control .slideInPanel .form-control {
-        color: #f7f9fc;
-      }
-
-      .slideInPanel .form-control::placeholder {
-        color: #627293;
-      }
-
-      .select2-selection::placeholder {
-        color: #627293;
-      }
-
-      .page-item.active .page-link {
-        color: #fff !important;
-        background-color: #ea5455 !important;
-        border-color: #ea5455 !important;
-      }
-
-      .page-link {
-        color: #000 !important;
-        background-color: #fff !important;
-        border: 1px solid #dee2e6 !important;
-      }
-
-      .page-link:hover {
-        color: #fff !important;
-        background-color: #f17979 !important;
-        border-color: #ea5455 !important;
-      }
-
-      .select2-selection {
-        background-color: transparent !important;
-        border-color: rgba(98, 114, 147, 0.6) !important;
-        height: 35px !important;
-      }
-
-      .select2-dropdown {
-        z-index: 10000 !important;
-      }
-
-      table.dataTable th {
-        text-align: left !important;
-      }
-
-      .canvasjs-chart-credit {
+      .chartBtnTxt {
         display: none;
       }
 
-      .icon-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-        background-color: white;
-        /* border: 2px solid #ddd; */
-        border-radius: 50%;
-        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-        text-decoration: none;
-        color: #333;
-        transition:
-          background-color 0.3s,
-          color 0.3s,
-          box-shadow 0.3s;
+      .chartBtnIcn {
+        display: block;
+      }
+    }
+
+    /* Styles for iPads, tablets */
+    @media screen and (min-width: 481px) and (max-width: 768px) {
+      .dashboardCard {
+        width: 100%;
       }
 
-      .icon-button i {
-        font-size: 12px;
+      .chartBtnTxt {
+        display: none;
       }
 
-      .icon-label {
-        font-size: 14px;
-        font-weight: 600;
+      .chartBtnIcn {
+        display: block;
+      }
+    }
+
+    /* Styles for Small screens, laptops */
+    @media screen and (min-width: 769px) and (max-width: 1024px) {
+      .dashboardCard {
+        width: 100%;
       }
 
-      /* Styles for mobile screens */
-      @media screen and (max-width: 480px) {
-        .dashboardCard {
-          width: 100%;
-        }
-
-        .chartBtnTxt {
-          display: none;
-        }
-
-        .chartBtnIcn {
-          display: block;
-        }
+      .chartBtnTxt {
+        display: block;
       }
 
-      /* Styles for iPads, tablets */
-      @media screen and (min-width: 481px) and (max-width: 768px) {
-        .dashboardCard {
-          width: 100%;
-        }
+      .chartBtnIcn {
+        display: none;
+      }
+    }
 
-        .chartBtnTxt {
-          display: none;
-        }
-
-        .chartBtnIcn {
-          display: block;
-        }
+    /* Styles for Desktops, large screens */
+    @media screen and (min-width: 1025px) and (max-width: 1200px) {
+      .dashboardCard {
+        width: 49.5%;
       }
 
-      /* Styles for Small screens, laptops */
-      @media screen and (min-width: 769px) and (max-width: 1024px) {
-        .dashboardCard {
-          width: 100%;
-        }
-
-        .chartBtnTxt {
-          display: block;
-        }
-
-        .chartBtnIcn {
-          display: none;
-        }
+      .chartBtnTxt {
+        display: block;
       }
 
-      /* Styles for Desktops, large screens */
-      @media screen and (min-width: 1025px) and (max-width: 1200px) {
-        .dashboardCard {
-          width: 49.5%;
-        }
+      .chartBtnIcn {
+        display: none;
+      }
+    }
 
-        .chartBtnTxt {
-          display: block;
-        }
-
-        .chartBtnIcn {
-          display: none;
-        }
+    /* Styles for extra large screens */
+    @media screen and (min-width: 1201px) {
+      .dashboardCard {
+        width: 49.5%;
       }
 
-      /* Styles for extra large screens */
-      @media screen and (min-width: 1201px) {
-        .dashboardCard {
-          width: 49.5%;
-        }
-
-        .chartBtnTxt {
-          display: block;
-        }
-
-        .chartBtnIcn {
-          display: none;
-        }
+      .chartBtnTxt {
+        display: block;
       }
-    </style>
-  </head>
 
-  <body>
-    <div class="container-fluid">
-      <div class="row d-flex justify-content-center">
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div
-          class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
-        >
-          <div
-            class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-shopping-bag"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Purchases</span>
-            </div>
+      .chartBtnIcn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------------ Top Menu Container ----------------------------------------------- -->
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <div class="topMenu-container d-flex justify-content-center overflow-auto mt-0">
+        <div class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-shopping-bag"></i>
           </div>
-
-          <div
-            class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-circle-half-stroke"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Adjustment</span>
-            </div>
-          </div>
-
-          <div
-            class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
-          >
-            <div class="icon-button shadow">
-              <i class="fa-solid fa-hand-holding-dollar"></i>
-            </div>
-            <div class="icon-label pt-2">
-              <span>Payments</span>
-            </div>
-          </div>
-        </div>
-        <!-- Top Menu Container Ends -->
-
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------------ Dashboard Container ------------------------------------------------ -->
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container dashboardContainer">
-          <div class="row d-flex justify-content-between">
-            <div class="dashboardCard mt-3 border rounded pt-4 px-4">
-              <div class="dashboardCard-Header d-flex justify-content-between">
-                <span class="fw-bold">Supplier Performance Scorecard</span>
-                <div class="btn-group btn-group-sm">
-                  <div
-                    class="btn btn-danger procurementSpendBtn priceWisePerformanceFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Date-wise Procurement Spent"
-                  >
-                    <span class="chartBtnTxt">Get Price</span>
-                    <i class="fa-solid fa-money-check-dollar chartBtnIcn"></i>
-                  </div>
-                  <div
-                    class="btn btn-outline-danger procurementSpendBtn quantityWisePerformanceFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Date-wise Procured Quantity"
-                  >
-                    <span class="chartBtnTxt">Quantity</span>
-                    <i
-                      class="fa-solid fa-scale-unbalanced-flip chartBtnIcn"
-                    ></i>
-                  </div>
-                </div>
-                <select
-                  id="supplierPerformanceScorecardChartFilter"
-                  class="form-select form-select-sm me-2"
-                  style="
-                    height: 28px !important;
-                    padding-top: 5px;
-                    right: 0;
-                    width: 7rem;
-                  "
-                >
-                  <option value="7" selected>7 days</option>
-                  <option value="30">30 days</option>
-                  <option value="90">3 months</option>
-                  <option value="180">6 months</option>
-                  <!-- <option value="Date Range">Custom Range</option> -->
-                </select>
-              </div>
-              <div class="dashboardCard-Body py-4" style="height: 50vh">
-                <div
-                  id="supplierPerformanceScorecardChart"
-                  style="height: 100%"
-                ></div>
-              </div>
-            </div>
-
-            <div class="dashboardCard mt-3 border rounded pt-4 px-4">
-              <div class="dashboardCard-Header d-flex justify-content-between">
-                <span class="fw-bold">Product Ageing Analysis</span>
-                <select
-                  id="procurementAgeByProductsFilter"
-                  class="form-select form-select-sm me-2"
-                  style="
-                    height: 28px !important;
-                    padding-top: 5px;
-                    right: 0;
-                    width: 7rem;
-                  "
-                >
-                  <option value="7" selected>7 days</option>
-                  <option value="30">30 days</option>
-                  <option value="90">3 months</option>
-                  <option value="180">6 months</option>
-                  <!-- <option value="Date Range">Custom Range</option> -->
-                </select>
-              </div>
-              <div class="dashboardCard-Body py-4" style="height: 50vh">
-                <div
-                  id="procurementAgeByProductsChart"
-                  style="height: 100%"
-                ></div>
-              </div>
-            </div>
-
-            <div class="dashboardCard mt-3 border rounded pt-4 px-4">
-              <div class="dashboardCard-Header d-flex justify-content-between">
-                <span class="fw-bold">Procurement Analysis</span>
-                <div class="btn-group btn-group-sm">
-                  <div
-                    class="btn btn-danger procurementSpendBtn spendByDateFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Date-wise Procurement Spent"
-                  >
-                    <span class="chartBtnTxt">Get Price</span>
-                    <i class="fa-solid fa-money-check-dollar chartBtnIcn"></i>
-                  </div>
-                  <div
-                    class="btn btn-outline-danger procurementSpendBtn quantityByDateFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Date-wise Procured Quantity"
-                  >
-                    <span class="chartBtnTxt">Quantity</span>
-                    <i
-                      class="fa-solid fa-scale-unbalanced-flip chartBtnIcn"
-                    ></i>
-                  </div>
-                </div>
-                <select
-                  id="procurementAnalysisByDateChartFilter"
-                  class="form-select form-select-sm me-2"
-                  style="
-                    height: 28px !important;
-                    padding-top: 5px;
-                    right: 0;
-                    width: 7rem;
-                  "
-                >
-                  <option value="7" selected>7 days</option>
-                  <option value="30">30 days</option>
-                  <option value="90">3 months</option>
-                  <option value="180">6 months</option>
-                  <!-- <option value="Date Range">Custom Range</option> -->
-                </select>
-              </div>
-              <div class="dashboardCard-Body py-4" style="height: 50vh">
-                <div
-                  id="procurementAnalysisByDateChart"
-                  style="height: 100%"
-                ></div>
-              </div>
-            </div>
-
-            <div class="dashboardCard mt-3 border rounded pt-4 px-4">
-              <div class="dashboardCard-Header d-flex justify-content-between">
-                <span class="fw-bold">Procurement Spend</span>
-                <div class="btn-group btn-group-sm">
-                  <div
-                    class="btn btn-danger procurementSpendBtn supplierFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Supplier-wise Procurement Spend"
-                  >
-                    <span class="chartBtnTxt">Supplier</span>
-                    <i class="fa-solid fa-users chartBtnIcn"></i>
-                  </div>
-                  <div
-                    class="btn btn-outline-danger procurementSpendBtn productFilter"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    title="Product-wise Procurement Spend"
-                  >
-                    <span class="chartBtnTxt">Product</span>
-                    <i class="fa-solid fa-box-open chartBtnIcn"></i>
-                  </div>
-                </div>
-                <select
-                  id="procurementSpendChartFilter"
-                  class="form-select form-select-sm me-2"
-                  style="
-                    height: 28px !important;
-                    padding-top: 5px;
-                    right: 0;
-                    width: 7rem;
-                  "
-                >
-                  <option value="7" selected>7 days</option>
-                  <option value="30">30 days</option>
-                  <option value="90">3 months</option>
-                  <option value="180">6 months</option>
-                  <!-- <option value="Date Range">Custom Range</option> -->
-                </select>
-              </div>
-              <div class="dashboardCard-Body py-4" style="height: 50vh">
-                <div id="procurementSpend" style="height: 100%"></div>
-              </div>
-            </div>
+          <div class="icon-label pt-2">
+            <span>Purchases</span>
           </div>
         </div>
 
-        <!-- Dashboard Ends -->
-
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------------ Purchases Container ---------------------------------------------- -->
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container procurementContainer d-none">
-          <!-- Slide-in Panel -->
-          <div
-            id="procurementSlideInPanel"
-            class="slideInPanel px-4 overflow-auto"
-          >
-            <div class="row d-flex justify-content-center">
-              <div class="col-sm-12 col-md-12 col-md-12">
-                <div class="text-center mt-4 d-flex justify-content-between">
-                  <span id="procurementPanelHeading" class="fw-bold"
-                    >Add Procurement Data</span
-                  >
-                  <div class="col my-auto d-flex justify-content-end">
-                    <i
-                      class="fa-solid fa-circle-xmark my-auto panelClose"
-                      id="closeProcurementPanelBtn"
-                    ></i>
-                  </div>
-                </div>
-                <hr />
-                <div class="">
-                  <div class="form-group my-2">
-                    <label for="procurement_date">Date of Purchase</label>
-                    <input
-                      type="date"
-                      class="form-control"
-                      id="procurement_date"
-                      name="procurementDate"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group my-2">
-                    <label for="procurement_unit">Purchase Source</label>
-                    <select
-                      id="procurement_unit"
-                      class="form-control input-dropdown w-100"
-                      name="procurement_unit"
-                      required
-                    ></select>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="procurement_product">Product</label>
-                    <select
-                      id="procurement_product"
-                      class="form-control input-dropdown w-100"
-                      name="procurementProduct"
-                      required
-                    ></select>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="procurement_product_type">Product Type</label>
-                    <select
-                      id="procurement_product_type"
-                      class="form-control input-dropdown w-100"
-                      name="procurementProductType"
-                      required
-                    ></select>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="procurement_quantity"> Quantity (kg)</label>
-                    <input
-                      id="procurement_quantity"
-                      maxlength="10"
-                      class="form-control"
-                      placeholder="eg. 24"
-                      type="number"
-                      name="procurementQuantity"
-                    />
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="procurement_price">Price (INR per kg)</label>
-                    <input
-                      id="procurement_price"
-                      maxlength="10"
-                      class="form-control"
-                      placeholder="eg. 24"
-                      type="number"
-                      name="procurement_price"
-                    />
-                  </div>
-                  <div class="form-group my-3">
-                    <label for="procurement_product_supplier"
-                      >Vendor Name</label
-                    >
-                    <select
-                      id="procurement_product_supplier"
-                      class="form-control input-dropdown w-100"
-                      name="procurementProductSupplier"
-                      required
-                    ></select>
-                  </div>
-                  <div class="form-group my-2">
-                    <label for="procurement_purchaser"> Purchaser</label>
-                    <input
-                      id="procurement_purchaser"
-                      class="form-control"
-                      placeholder="eg. Smith"
-                      type="text"
-                      name="procurementPurchaser"
-                    />
-                  </div>
-                  <div class="d-flex justify-content-between mt-4 py-3 pb-4">
-                    <div id="submitPurchases" class="col-lg-5 btn btn-danger">
-                      Save
-                    </div>
-                    <div
-                      id="resetProcurementDataBtn"
-                      class="col-lg-5 btn btn-outline-danger"
-                    >
-                      Clear
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="topMenu-item adjustmentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-circle-half-stroke"></i>
           </div>
-          <!-- Table Content -->
-          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-            <div class="border p-4 w-100">
-              <!-- Add Button -->
-              <div class="d-flex rounded-2 justify-content-end pb-4">
-                <div
-                  id="openProcurementPanelBtn"
-                  class="btn btn-outline-danger d-flex justify-content-around"
-                  style="width: 100px"
-                >
-                  <i class="fa-solid fa-circle-plus my-auto"></i>
-                  <span style="margin-top: 4px" class="fw-bold my-auto"
-                    >Add</span
-                  >
-                </div>
-              </div>
-              <table
-                id="procurementTable"
-                class="table table-hover nowrap w-100"
-              >
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                    <th class="fw-bold"><span>Purchase Date</span></th>
-                    <th class="fw-bold"><span>Lot no</span></th>
-                    <th class="fw-bold"><span>Total Product Items</span></th>
-                    <th class="fw-bold">
-                      <span>Total Purchased Quantity</span>
-                    </th>
-                    <th class="fw-bold"><span>Total Purchased Price</span></th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
+          <div class="icon-label pt-2">
+            <span>Adjustment</span>
           </div>
         </div>
 
-        <!-- modal-dialog-centered modal-dialog-scrollable -->
-        <!-- Modal -->
-        <div
-          id="procurementProductModal"
-          class="modal hide fade"
-          role="dialog"
-          aria-labelledby="myModalLabel"
-          data-keyboard="false"
-          data-backdrop="static"
-        >
-          <div class="modal-dialog modal-xl">
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">Procurement Products</h4>
-                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
-                </i>
-              </div>
-              <div class="modal-body">
-                <div class="d-flex justify-content-between">
-                  <div class="form-group">
-                    <label class="fw-bold" for="lot_no">Lot No:</label>
-                    <span id="view_lot_no"></span>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="fw-bold" for="total_products"
-                      >Total Products:</label
-                    >
-                    <span id="view_total_products"></span>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="fw-bold" for="total_weight"
-                      >Total Weight:</label
-                    >
-                    <span id="view_total_weight"></span>
-                  </div>
-                </div>
-
-                <hr class="mb-4" />
-
-                <table
-                  id="procurementProductTable"
-                  class="rounded table table-hover nowrap w-100"
-                >
-                  <thead>
-                    <tr>
-                      <th style="border-radius: 4px 0 0 0"></th>
-                      <th class="fw-bold"><span>Product Name</span></th>
-                      <th class="fw-bold">
-                        <span>Purchased Type</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchased Quantity</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchased Price</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Vendor Name</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchaser</span>
-                      </th>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-default"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+        <div class="topMenu-item paymentMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2">
+          <div class="icon-button shadow">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <div class="icon-label pt-2">
+            <span>Payments</span>
           </div>
         </div>
-        <!-- Purchases Container Ends -->
-
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container adjustmentContainer d-none">
-          <!-- Table Content -->
-          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
-            <div class="border p-4 w-100">
-              <table
-                id="adjustmentTable"
-                class="table table-hover nowrap w-100"
-              >
-                <thead>
-                  <tr>
-                    <th class="fw-bold"><span>Lot No</span></th>
-                    <th class="fw-bold"><span>Product</span></th>
-                    <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
-                    <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
-                    <th class="fw-bold"><span>Actual Price (USD)</span></th>
-                    <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
-                    <th class="fw-bold"><span>Reason for Adjustment</span></th>
-                    <th class="fw-bold"><span>Surveyor</span></th>
-                    <th class="fw-bold"><span>Created At</span></th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          </div>
-        </div>
-        <!-- Adjustment Container Ends -->
       </div>
+      <!-- Top Menu Container Ends -->
+
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------------ Dashboard Container ------------------------------------------------ -->
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <div class="menu-container dashboardContainer">
+        <div class="row d-flex justify-content-between">
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Supplier Performance Scorecard</span>
+              <div class="btn-group btn-group-sm">
+                <div class="btn btn-danger procurementSpendBtn priceWisePerformanceFilter" data-bs-toggle="tooltip"
+                  data-bs-placement="bottom" title="Date-wise Procurement Spent">
+                  <span class="chartBtnTxt">Get Price</span>
+                  <i class="fa-solid fa-money-check-dollar chartBtnIcn"></i>
+                </div>
+                <div class="btn btn-outline-danger procurementSpendBtn quantityWisePerformanceFilter"
+                  data-bs-toggle="tooltip" data-bs-placement="bottom" title="Date-wise Procured Quantity">
+                  <span class="chartBtnTxt">Quantity</span>
+                  <i class="fa-solid fa-scale-unbalanced-flip chartBtnIcn"></i>
+                </div>
+              </div>
+              <select id="supplierPerformanceScorecardChartFilter" class="form-select form-select-sm me-2" style="
+                    height: 28px !important;
+                    padding-top: 5px;
+                    right: 0;
+                    width: 7rem;
+                  ">
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div id="supplierPerformanceScorecardChart" style="height: 100%"></div>
+            </div>
+          </div>
+
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Product Ageing Analysis</span>
+              <select id="procurementAgeByProductsFilter" class="form-select form-select-sm me-2" style="
+                    height: 28px !important;
+                    padding-top: 5px;
+                    right: 0;
+                    width: 7rem;
+                  ">
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div id="procurementAgeByProductsChart" style="height: 100%"></div>
+            </div>
+          </div>
+
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Procurement Analysis</span>
+              <div class="btn-group btn-group-sm">
+                <div class="btn btn-danger procurementSpendBtn spendByDateFilter" data-bs-toggle="tooltip"
+                  data-bs-placement="bottom" title="Date-wise Procurement Spent">
+                  <span class="chartBtnTxt">Get Price</span>
+                  <i class="fa-solid fa-money-check-dollar chartBtnIcn"></i>
+                </div>
+                <div class="btn btn-outline-danger procurementSpendBtn quantityByDateFilter" data-bs-toggle="tooltip"
+                  data-bs-placement="bottom" title="Date-wise Procured Quantity">
+                  <span class="chartBtnTxt">Quantity</span>
+                  <i class="fa-solid fa-scale-unbalanced-flip chartBtnIcn"></i>
+                </div>
+              </div>
+              <select id="procurementAnalysisByDateChartFilter" class="form-select form-select-sm me-2" style="
+                    height: 28px !important;
+                    padding-top: 5px;
+                    right: 0;
+                    width: 7rem;
+                  ">
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div id="procurementAnalysisByDateChart" style="height: 100%"></div>
+            </div>
+          </div>
+
+          <div class="dashboardCard mt-3 border rounded pt-4 px-4">
+            <div class="dashboardCard-Header d-flex justify-content-between">
+              <span class="fw-bold">Procurement Spend</span>
+              <div class="btn-group btn-group-sm">
+                <div class="btn btn-danger procurementSpendBtn supplierFilter" data-bs-toggle="tooltip"
+                  data-bs-placement="bottom" title="Supplier-wise Procurement Spend">
+                  <span class="chartBtnTxt">Supplier</span>
+                  <i class="fa-solid fa-users chartBtnIcn"></i>
+                </div>
+                <div class="btn btn-outline-danger procurementSpendBtn productFilter" data-bs-toggle="tooltip"
+                  data-bs-placement="bottom" title="Product-wise Procurement Spend">
+                  <span class="chartBtnTxt">Product</span>
+                  <i class="fa-solid fa-box-open chartBtnIcn"></i>
+                </div>
+              </div>
+              <select id="procurementSpendChartFilter" class="form-select form-select-sm me-2" style="
+                    height: 28px !important;
+                    padding-top: 5px;
+                    right: 0;
+                    width: 7rem;
+                  ">
+                <option value="7" selected>7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">3 months</option>
+                <option value="180">6 months</option>
+                <!-- <option value="Date Range">Custom Range</option> -->
+              </select>
+            </div>
+            <div class="dashboardCard-Body py-4" style="height: 50vh">
+              <div id="procurementSpend" style="height: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Ends -->
+
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------------ Purchases Container ---------------------------------------------- -->
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <div class="menu-container procurementContainer d-none">
+        <!-- Slide-in Panel -->
+        <div id="procurementSlideInPanel" class="slideInPanel px-4 overflow-auto">
+          <div class="row d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-md-12">
+              <div class="text-center mt-4 d-flex justify-content-between">
+                <span id="procurementPanelHeading" class="fw-bold">Add Procurement Data</span>
+                <div class="col my-auto d-flex justify-content-end">
+                  <i class="fa-solid fa-circle-xmark my-auto panelClose" id="closeProcurementPanelBtn"></i>
+                </div>
+              </div>
+              <hr />
+              <div class="">
+                <div class="form-group my-2">
+                  <label for="procurement_date">Date of Purchase</label>
+                  <input type="date" class="form-control" id="procurement_date" name="procurementDate" required />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="procurement_unit">Purchase Source</label>
+                  <select id="procurement_unit" class="form-control input-dropdown w-100" name="procurement_unit"
+                    required></select>
+                </div>
+                <div class="form-group my-2">
+                  <label for="procurement_product">Product</label>
+                  <select id="procurement_product" class="form-control input-dropdown w-100" name="procurementProduct"
+                    required></select>
+                </div>
+                <div class="form-group my-2">
+                  <label for="procurement_product_type">Product Type</label>
+                  <select id="procurement_product_type" class="form-control input-dropdown w-100"
+                    name="procurementProductType" required></select>
+                </div>
+                <div class="form-group my-2">
+                  <label for="procurement_quantity"> Quantity (kg)</label>
+                  <input id="procurement_quantity" maxlength="10" class="form-control" placeholder="eg. 24"
+                    type="number" name="procurementQuantity" />
+                </div>
+                <div class="form-group my-2">
+                  <label for="procurement_price">Price (INR per kg)</label>
+                  <input id="procurement_price" maxlength="10" class="form-control" placeholder="eg. 24" type="number"
+                    name="procurement_price" />
+                </div>
+                <div class="form-group my-3">
+                  <label for="procurement_product_supplier">Vendor Name</label>
+                  <select id="procurement_product_supplier" class="form-control input-dropdown w-100"
+                    name="procurementProductSupplier" required></select>
+                </div>
+                <div class="form-group my-2">
+                  <label for="procurement_purchaser"> Purchaser</label>
+                  <input id="procurement_purchaser" class="form-control" placeholder="eg. Smith" type="text"
+                    name="procurementPurchaser" />
+                </div>
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitPurchases" class="col-lg-5 btn btn-danger">
+                    Save
+                  </div>
+                  <div id="resetProcurementDataBtn" class="col-lg-5 btn btn-outline-danger">
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Table Content -->
+        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+          <div class="border p-4 w-100">
+            <!-- Add Button -->
+            <div class="d-flex rounded-2 justify-content-end pb-4">
+              <div id="openProcurementPanelBtn" class="btn btn-outline-danger d-flex justify-content-around"
+                style="width: 100px">
+                <i class="fa-solid fa-circle-plus my-auto"></i>
+                <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+              </div>
+            </div>
+            <table id="procurementTable" class="table table-hover nowrap w-100">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th class="fw-bold"><span>Purchase Date</span></th>
+                  <th class="fw-bold"><span>Lot no</span></th>
+                  <th class="fw-bold"><span>Total Product Items</span></th>
+                  <th class="fw-bold">
+                    <span>Total Purchased Quantity</span>
+                  </th>
+                  <th class="fw-bold"><span>Total Purchased Price</span></th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-dialog-centered modal-dialog-scrollable -->
+      <!-- Modal -->
+      <div id="procurementProductModal" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel"
+        data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-xl">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Procurement Products</h4>
+              <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+              </i>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex justify-content-between">
+                <div class="form-group">
+                  <label class="fw-bold" for="lot_no">Lot No:</label>
+                  <span id="view_lot_no"></span>
+                </div>
+
+                <div class="form-group">
+                  <label class="fw-bold" for="total_products">Total Products:</label>
+                  <span id="view_total_products"></span>
+                </div>
+
+                <div class="form-group">
+                  <label class="fw-bold" for="total_weight">Total Weight:</label>
+                  <span id="view_total_weight"></span>
+                </div>
+              </div>
+
+              <hr class="mb-4" />
+
+              <table id="procurementProductTable" class="rounded table table-hover nowrap w-100">
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold">
+                      <span>Purchased Type</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchased Quantity</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchased Price</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Vendor Name</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Purchaser</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Purchases Container Ends -->
+
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <!-- ------------------------------------------ Adjustment Container --------------------------------------------- -->
+      <!-- ------------------------------------------------------------------------------------------------------------- -->
+      <div class="menu-container adjustmentContainer d-none">
+        <!-- Table Content -->
+        <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+          <div class="border p-4 w-100">
+            <table id="adjustmentTable" class="table table-hover nowrap w-100">
+              <thead>
+                <tr>
+                  <th class="fw-bold"><span>Lot No</span></th>
+                  <th class="fw-bold"><span>Product</span></th>
+                  <th class="fw-bold"><span>Actual Quantity(kgs)</span></th>
+                  <th class="fw-bold"><span>Adjusted Quantity(kgs)</span></th>
+                  <th class="fw-bold"><span>Actual Price (USD)</span></th>
+                  <th class="fw-bold"><span>Adjusted Price (USD)</span></th>
+                  <th class="fw-bold"><span>Reason for Adjustment</span></th>
+                  <th class="fw-bold"><span>Surveyor</span></th>
+                  <th class="fw-bold"><span>Created At</span></th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Adjustment Container Ends -->
     </div>
-  </body>
+  </div>
+</body>
 
-  <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-      // Declarations
-      App.checkAccess();
+<script type="text/javascript">
+  jQuery(document).ready(function ($) {
+    // Declarations
+    App.checkAccess();
 
-      var tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    new PerfectScrollbar(".slideInPanel", {
+      suppressScrollX: true,
+    }).update();
+
+    toastr.options = {
+      closeButton: false,
+      debug: false,
+      newestOnTop: true,
+      progressBar: true,
+      positionClass: "toast-top-right",
+      preventDuplicates: false,
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "5000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut",
+    };
+
+    // Open Purchases on load (default)
+    // $(".menu-container").addClass("d-none");
+
+    // $(".dashboardContainer").removeClass("d-none");
+    // $(".dashboardContainer").addClass("d-block");
+
+    // loadProcurementTableData();
+
+    // Menu navigation
+    $(".topMenu-item").click(function () {
+      $(".topMenu-item").removeClass("topMenu-item-active");
+
+      $(this).addClass("topMenu-item-active");
+
+      $(".panelClose").click();
+
+      resetAllInputs();
+    });
+
+    // Global Functions
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+
+      // Ensure 2-digit formatting
+      if (day < 10) {
+        day = "0" + day;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+
+      return year + "-" + month + "-" + day;
+    }
+
+    // Function to reset all input fields
+    function resetAllInputs() {
+      $("input").val("");
+
+      // Reset all date inputs
+      var dateInputs = document.querySelectorAll('input[type="date"]');
+      // looping all the date inputs
+      dateInputs.forEach(function (input) {
+        input.value = formatDate(new Date());
+      });
+
+      // Resetting textarea
+      $("textarea").val("");
+
+      // Resetting select field selected option
+      $("#procurement_location").val(null).trigger("change");
+      $("#procurement_unit").val(null).trigger("change");
+      $("#procurement_product").val(null).trigger("change");
+      $("#procurement_product_type").val(null).trigger("change");
+      $("#procurement_product_supplier").val(null).trigger("change");
+    }
+
+    function openSlidePanel(
+      panelId,
+      panelHeadingId,
+      panelType,
+      panelSubmitButton,
+      panelBtnAttrName
+    ) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "0");
+
+      // Changing panel Heading label
+      $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
+
+      // Changing panel save button label
+      $(`#${panelSubmitButton}`).text("Save");
+
+      // Changing panel save button attribute
+      $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
+    }
+
+    function closeSlidePanel(panelId) {
+      // Opening Slide Panel
+      $(`#${panelId}`).css("right", "-600px");
+
+      // Resetting all the input fields' data
+      resetAllInputs();
+
+      // Destroying select2 all the dropdowns
+      // $('select.select2-hidden-accessible').select2('destroy');
+    }
+
+    function loadDropdowns() {
+      loadProcurementProductType();
+      loadProcurementProducts();
+      loadProcurementSuppliers();
+      loadProcurementUnits();
+    }
+
+    // ---------------------------------------------------------
+    // ----------------------- Dashboard -----------------------
+    // ---------------------------------------------------------
+
+    // Loading Charts
+    loadProcurementSpendByVendorsChart(
+      "days",
+      $("#procurementSpendChartFilter").val()
+    );
+    loadProcurementByDateChart(
+      "days",
+      $("#procurementAnalysisByDateChartFilter").val(),
+      null,
+      null,
+      "price"
+    );
+
+    loadProcurementAgeByProductsChart(
+      "days",
+      $("#procurementAgeByProductsFilter").val(),
+      null,
+      null
+    );
+
+    loadSupplierPerformanceScorecardChart(
+      "days",
+      $("#supplierPerformanceScorecardChartFilter").val(),
+      null,
+      null,
+      "price"
+    );
+
+    // Chart Filters
+    $(document).on("change", "#procurementSpendChartFilter", (e) => {
+      if ($(".supplierFilter").hasClass("btn-danger")) {
+        loadProcurementSpendByVendorsChart("days", $(e.target).val());
+      } else if ($(".productFilter").hasClass("btn-danger")) {
+        loadProcurementSpendByProductsChart("days", $(e.target).val());
+      }
+    });
+
+    $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
+      if ($(".spendByDateFilter").hasClass("btn-danger")) {
+        loadProcurementByDateChart(
+          "days",
+          $(e.target).val(),
+          null,
+          null,
+          "price"
+        );
+      } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
+        loadProcurementByDateChart(
+          "days",
+          $(e.target).val(),
+          null,
+          null,
+          "quantity"
+        );
+      }
+    });
+
+    $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
+      if ($(".spendByDateFilter").hasClass("btn-danger")) {
+        loadProcurementByDateChart(
+          "days",
+          $(e.target).val(),
+          null,
+          null,
+          "price"
+        );
+      } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
+        loadProcurementByDateChart(
+          "days",
+          $(e.target).val(),
+          null,
+          null,
+          "quantity"
+        );
+      }
+    });
+
+    $(document).on("change", "#procurementAgeByProductsFilter", (e) => {
+      loadProcurementAgeByProductsChart(
+        "days",
+        $(e.target).val(),
+        null,
+        null
       );
-      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-      });
+    });
 
-      new PerfectScrollbar(".slideInPanel", {
-        suppressScrollX: true,
-      }).update();
-
-      toastr.options = {
-        closeButton: false,
-        debug: false,
-        newestOnTop: true,
-        progressBar: true,
-        positionClass: "toast-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "5000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut",
-      };
-
-      // Open Purchases on load (default)
-      // $(".menu-container").addClass("d-none");
-
-      // $(".dashboardContainer").removeClass("d-none");
-      // $(".dashboardContainer").addClass("d-block");
-
-      // loadProcurementTableData();
-
-      // Menu navigation
-      $(".topMenu-item").click(function () {
-        $(".topMenu-item").removeClass("topMenu-item-active");
-
-        $(this).addClass("topMenu-item-active");
-
-        $(".panelClose").click();
-
-        resetAllInputs();
-      });
-
-      // Global Functions
-      // Function to format date as YYYY-MM-DD
-      function formatDate(date) {
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
-
-        // Ensure 2-digit formatting
-        if (day < 10) {
-          day = "0" + day;
+    $(document).on(
+      "change",
+      "#supplierPerformanceScorecardChartFilter",
+      (e) => {
+        if ($(".priceWisePerformanceFilter").hasClass("btn-danger")) {
+          loadSupplierPerformanceScorecardChart(
+            "days",
+            $(e.target).val(),
+            null,
+            null,
+            "price"
+          );
+        } else if (
+          $(".quantityWisePerformanceFilter").hasClass("btn-danger")
+        ) {
+          loadSupplierPerformanceScorecardChart(
+            "days",
+            $(e.target).val(),
+            null,
+            null,
+            "quantity"
+          );
         }
-        if (month < 10) {
-          month = "0" + month;
-        }
-
-        return year + "-" + month + "-" + day;
       }
+    );
 
-      // Function to reset all input fields
-      function resetAllInputs() {
-        $("input").val("");
+    // Button Click Events
+    $(document).on("click", ".supplierFilter", (e) => {
+      $(".supplierFilter").removeClass("btn-outline-danger");
+      $(".productFilter").removeClass("btn-danger");
 
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+      $(".productFilter").addClass("btn-outline-danger");
+      $(".supplierFilter").addClass("btn-danger");
 
-        // Resetting textarea
-        $("textarea").val("");
-
-        // Resetting select field selected option
-        $("#procurement_location").val(null).trigger("change");
-        $("#procurement_unit").val(null).trigger("change");
-        $("#procurement_product").val(null).trigger("change");
-        $("#procurement_product_type").val(null).trigger("change");
-        $("#procurement_product_supplier").val(null).trigger("change");
-      }
-
-      function openSlidePanel(
-        panelId,
-        panelHeadingId,
-        panelType,
-        panelSubmitButton,
-        panelBtnAttrName
-      ) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "0");
-
-        // Changing panel Heading label
-        $(`#${panelHeadingId}`).text(`Add ${panelType} Data`);
-
-        // Changing panel save button label
-        $(`#${panelSubmitButton}`).text("Save");
-
-        // Changing panel save button attribute
-        $(`#${panelSubmitButton}`).attr(panelBtnAttrName, null);
-      }
-
-      function closeSlidePanel(panelId) {
-        // Opening Slide Panel
-        $(`#${panelId}`).css("right", "-600px");
-
-        // Resetting all the input fields' data
-        resetAllInputs();
-
-        // Destroying select2 all the dropdowns
-        // $('select.select2-hidden-accessible').select2('destroy');
-      }
-
-      function loadDropdowns() {
-        loadProcurementProductType();
-        loadProcurementProducts();
-        loadProcurementSuppliers();
-        loadProcurementUnits();
-      }
-
-      // ---------------------------------------------------------
-      // ----------------------- Dashboard -----------------------
-      // ---------------------------------------------------------
-
-      // Loading Charts
       loadProcurementSpendByVendorsChart(
         "days",
         $("#procurementSpendChartFilter").val()
       );
+    });
+
+    $(document).on("click", ".productFilter", (e) => {
+      $(".productFilter").removeClass("btn-outline-danger");
+      $(".supplierFilter").removeClass("btn-danger");
+
+      $(".supplierFilter").addClass("btn-outline-danger");
+      $(".productFilter").addClass("btn-danger");
+
+      loadProcurementSpendByProductsChart(
+        "days",
+        $("#procurementSpendChartFilter").val()
+      );
+    });
+
+    $(document).on("click", ".spendByDateFilter", (e) => {
+      $(".spendByDateFilter").removeClass("btn-outline-danger");
+      $(".quantityByDateFilter").removeClass("btn-danger");
+
+      $(".quantityByDateFilter").addClass("btn-outline-danger");
+      $(".spendByDateFilter").addClass("btn-danger");
+
       loadProcurementByDateChart(
         "days",
         $("#procurementAnalysisByDateChartFilter").val(),
@@ -1106,13 +1068,30 @@
         null,
         "price"
       );
+    });
 
-      loadProcurementAgeByProductsChart(
+    $(document).on("click", ".quantityByDateFilter", (e) => {
+      $(".quantityByDateFilter").removeClass("btn-outline-danger");
+      $(".spendByDateFilter").removeClass("btn-danger");
+
+      $(".spendByDateFilter").addClass("btn-outline-danger");
+      $(".quantityByDateFilter").addClass("btn-danger");
+
+      loadProcurementByDateChart(
         "days",
-        $("#procurementAgeByProductsFilter").val(),
+        $("#procurementAnalysisByDateChartFilter").val(),
         null,
-        null
+        null,
+        "quantity"
       );
+    });
+
+    $(document).on("click", ".priceWisePerformanceFilter", (e) => {
+      $(".priceWisePerformanceFilter").removeClass("btn-outline-danger");
+      $(".quantityWisePerformanceFilter").removeClass("btn-danger");
+
+      $(".quantityWisePerformanceFilter").addClass("btn-outline-danger");
+      $(".priceWisePerformanceFilter").addClass("btn-danger");
 
       loadSupplierPerformanceScorecardChart(
         "days",
@@ -1121,1611 +1100,1450 @@
         null,
         "price"
       );
+    });
 
-      // Chart Filters
-      $(document).on("change", "#procurementSpendChartFilter", (e) => {
-        if ($(".supplierFilter").hasClass("btn-danger")) {
-          loadProcurementSpendByVendorsChart("days", $(e.target).val());
-        } else if ($(".productFilter").hasClass("btn-danger")) {
-          loadProcurementSpendByProductsChart("days", $(e.target).val());
+    $(document).on("click", ".quantityWisePerformanceFilter", (e) => {
+      $(".quantityWisePerformanceFilter").removeClass("btn-outline-danger");
+      $(".priceWisePerformanceFilter").removeClass("btn-danger");
+
+      $(".priceWisePerformanceFilter").addClass("btn-outline-danger");
+      $(".quantityWisePerformanceFilter").addClass("btn-danger");
+
+      loadSupplierPerformanceScorecardChart(
+        "days",
+        $("#supplierPerformanceScorecardChartFilter").val(),
+        null,
+        null,
+        "quantity"
+      );
+    });
+
+    // Chart Functions
+    function loadProcurementSpendByVendorsChart(
+      filter_type,
+      filter_days,
+      from_date,
+      to_date
+    ) {
+      if (filter_type == "days") {
+        switch (filter_days) {
+          case "7":
+            var d = new Date();
+            d.setDate(d.getDate() - 7);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "90":
+            var d = new Date();
+            d.setDate(d.getDate() - 90);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "180":
+            var d = new Date();
+            d.setDate(d.getDate() - 180);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          default:
+            var d = new Date();
+            d.setDate(d.getDate() - 30);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
         }
-      });
+      }
 
-      $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
-        if ($(".spendByDateFilter").hasClass("btn-danger")) {
-          loadProcurementByDateChart(
-            "days",
-            $(e.target).val(),
-            null,
-            null,
-            "price"
-          );
-        } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
-          loadProcurementByDateChart(
-            "days",
-            $(e.target).val(),
-            null,
-            null,
-            "quantity"
-          );
-        }
-      });
+      $.ajax({
+        url: `/api/v1/procurement/product/chart/spend/by/vendor?from_date=${from_date}&to_date=${to_date}`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          let dataPoints = [];
 
-      $(document).on("change", "#procurementAnalysisByDateChartFilter", (e) => {
-        if ($(".spendByDateFilter").hasClass("btn-danger")) {
-          loadProcurementByDateChart(
-            "days",
-            $(e.target).val(),
-            null,
-            null,
-            "price"
-          );
-        } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
-          loadProcurementByDateChart(
-            "days",
-            $(e.target).val(),
-            null,
-            null,
-            "quantity"
-          );
-        }
-      });
+          data?.data.map((item) => {
+            dataPoints.push({
+              label: item?.VendorMaster?.vendor_name,
+              y: parseFloat(item.total_amount) || 0,
+            });
+          });
 
-      $(document).on("change", "#procurementAgeByProductsFilter", (e) => {
-        loadProcurementAgeByProductsChart(
-          "days",
-          $(e.target).val(),
-          null,
-          null
-        );
-      });
+          let procurementSpendChartOptions = {
+            backgroundColor: "#f7f9fd",
+            animationEnabled: true,
+            zoomEnabled: true,
+            theme: "light2",
+            axisX: {
+              interval: 1,
+            },
+            axisY2: {
+              prefix: "₹ ",
+            },
+            data: [
+              {
+                toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                indexLabel: "₹ {y}",
+                type: "bar",
+                axisYType: "secondary",
+                dataPoints,
+              },
+            ],
+          };
 
-      $(document).on(
-        "change",
-        "#supplierPerformanceScorecardChartFilter",
-        (e) => {
-          if ($(".priceWisePerformanceFilter").hasClass("btn-danger")) {
-            loadSupplierPerformanceScorecardChart(
-              "days",
-              $(e.target).val(),
-              null,
-              null,
-              "price"
-            );
-          } else if (
-            $(".quantityWisePerformanceFilter").hasClass("btn-danger")
-          ) {
-            loadSupplierPerformanceScorecardChart(
-              "days",
-              $(e.target).val(),
-              null,
-              null,
-              "quantity"
-            );
+          new CanvasJS.Chart(
+            "procurementSpend",
+            procurementSpendChartOptions
+          ).render();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
           }
+        },
+      });
+    }
+
+    function loadProcurementSpendByProductsChart(
+      filter_type,
+      filter_days,
+      from_date,
+      to_date
+    ) {
+      if (filter_type == "days") {
+        switch (filter_days) {
+          case "7":
+            var d = new Date();
+            d.setDate(d.getDate() - 7);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "90":
+            var d = new Date();
+            d.setDate(d.getDate() - 90);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "180":
+            var d = new Date();
+            d.setDate(d.getDate() - 180);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          default:
+            var d = new Date();
+            d.setDate(d.getDate() - 30);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
         }
+      }
+
+      $.ajax({
+        url: `/api/v1/procurement/product/chart/spend/by/product?from_date=${from_date}&to_date=${to_date}`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          let dataPoints = [];
+
+          data?.data.map((item) => {
+            dataPoints.push({
+              label: item?.ProductMaster?.product_name,
+              y: parseFloat(item.total_amount) || 0,
+            });
+          });
+
+          let procurementSpendChartOptions = {
+            backgroundColor: "#f7f9fd",
+            animationEnabled: true,
+            zoomEnabled: true,
+            theme: "light2",
+            axisX: {
+              interval: 1,
+            },
+            axisY2: {
+              prefix: "₹ ",
+            },
+            data: [
+              {
+                toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                indexLabel: "₹ {y}",
+                type: "bar",
+                axisYType: "secondary",
+                dataPoints,
+              },
+            ],
+          };
+
+          new CanvasJS.Chart(
+            "procurementSpend",
+            procurementSpendChartOptions
+          ).render();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadProcurementByDateChart(
+      filter_type,
+      filter_days,
+      from_date,
+      to_date,
+      type
+    ) {
+      if (filter_type == "days") {
+        switch (filter_days) {
+          case "7":
+            var d = new Date();
+            d.setDate(d.getDate() - 7);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "90":
+            var d = new Date();
+            d.setDate(d.getDate() - 90);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "180":
+            var d = new Date();
+            d.setDate(d.getDate() - 180);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          default:
+            var d = new Date();
+            d.setDate(d.getDate() - 30);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+        }
+      }
+
+      $.ajax({
+        url: `/api/v1/procurement/product/chart/spend/by/date?from_date=${from_date}&to_date=${to_date}`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          let dataPoints = [];
+
+          data?.data.map((item) => {
+            let procurement_date = new Date(item?.procurement_date);
+
+            dataPoints.push({
+              // label: "₹ " + item.total_amount,
+
+              x: new Date(
+                procurement_date.getFullYear(),
+                procurement_date.getMonth(),
+                procurement_date.getDate()
+              ),
+              y:
+                parseFloat(
+                  type == "price"
+                    ? item.total_amount
+                    : item?.total_adjusted_quantity ||
+                    item?.total_procurement_quantity
+                ) || 0,
+            });
+          });
+
+          let procurementAnalysisByDateChartOptions = {
+            backgroundColor: "#f7f9fd",
+            animationEnabled: true,
+            zoomEnabled: true,
+            theme: "light2",
+            axisX: {
+              valueFormatString: "DD-MMM-YYYY",
+              // crosshair: {
+              //   enabled: true,
+              //   snapToDataPoint: true,
+              // },
+              // minimum: 0,
+            },
+            axisY: {
+              prefix: type == "price" ? "₹ " : "",
+              suffix: type == "quantity" ? " kg" : "",
+              // minimum: 0,
+            },
+            data: [
+              {
+                toolTipContent:
+                  type == "price"
+                    ? "{x}: <strong>₹ {y}</strong>"
+                    : "{x}: <strong>{y} kg</strong>",
+                // indexLabel: "₹ {y}",
+                type: "line",
+                xValueFormatString: "DD-MMM-YYYY",
+                dataPoints,
+              },
+            ],
+          };
+
+          new CanvasJS.Chart(
+            "procurementAnalysisByDateChart",
+            procurementAnalysisByDateChartOptions
+          ).render();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadProcurementAgeByProductsChart(
+      filter_type,
+      filter_days,
+      from_date,
+      to_date
+    ) {
+      if (filter_type == "days") {
+        switch (filter_days) {
+          case "7":
+            var d = new Date();
+            d.setDate(d.getDate() - 7);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "90":
+            var d = new Date();
+            d.setDate(d.getDate() - 90);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "180":
+            var d = new Date();
+            d.setDate(d.getDate() - 180);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          default:
+            var d = new Date();
+            d.setDate(d.getDate() - 30);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+        }
+      }
+
+      $.ajax({
+        url: `/api/v1/procurement/product/chart/age/by/product?from_date=${from_date}&to_date=${to_date}`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          let dataPoints = [];
+
+          data?.data.map((item) => {
+            dataPoints.push({
+              quantity: item?.quantity || 0,
+              label: item?.product_name,
+              y: parseFloat(item.days_old) || 0,
+            });
+          });
+
+          let procurementAgeByProductsChartOptions = {
+            backgroundColor: "#f7f9fd",
+            animationEnabled: true,
+            zoomEnabled: true,
+            theme: "light2",
+            axisX: {
+              interval: 1,
+            },
+            axisY: {
+              title: "Age (Days)",
+            },
+            data: [
+              {
+                toolTipContent: "{label}: <strong>{y} days</strong>",
+                indexLabel: "{y} days ({quantity} kg)",
+                type: "area",
+                dataPoints,
+              },
+            ],
+          };
+
+          new CanvasJS.Chart(
+            "procurementAgeByProductsChart",
+            procurementAgeByProductsChartOptions
+          ).render();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function loadSupplierPerformanceScorecardChart(
+      filter_type,
+      filter_days,
+      from_date,
+      to_date,
+      type
+    ) {
+      if (filter_type == "days") {
+        switch (filter_days) {
+          case "7":
+            var d = new Date();
+            d.setDate(d.getDate() - 7);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "90":
+            var d = new Date();
+            d.setDate(d.getDate() - 90);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          case "180":
+            var d = new Date();
+            d.setDate(d.getDate() - 180);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+            break;
+          default:
+            var d = new Date();
+            d.setDate(d.getDate() - 30);
+
+            from_date = formatDate(d);
+            to_date = formatDate(new Date());
+        }
+      }
+
+      $.ajax({
+        url: `/api/v1/procurement/product/chart/performance/by/vendor?from_date=${from_date}&to_date=${to_date}`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          let dataPointsProcurement = [];
+          let dataPointsAdjustment = [];
+
+          data?.data.map((item) => {
+            dataPointsProcurement.push({
+              label: item?.VendorMaster?.vendor_name,
+              y:
+                parseFloat(
+                  type == "price"
+                    ? item.total_procurement_price
+                    : item?.total_procurement_quantity
+                ) || 0,
+              indexLabel:
+                type == "price"
+                  ? parseFloat(item?.total_procurement_price) > 0
+                    ? "₹ " + parseFloat(item?.total_procurement_price)
+                    : ""
+                  : parseFloat(item?.total_procurement_quantity) > 0
+                    ? parseFloat(item?.total_procurement_quantity) + " kg"
+                    : "",
+            });
+
+            dataPointsAdjustment.push({
+              label: item?.VendorMaster?.vendor_name,
+              y:
+                parseFloat(
+                  type == "price"
+                    ? item.total_adjusted_price
+                    : item?.total_adjusted_quantity
+                ) || 0,
+              indexLabel:
+                type == "price"
+                  ? parseFloat(item?.total_adjusted_price) > 0
+                    ? "₹ " + parseFloat(item?.total_adjusted_price)
+                    : ""
+                  : parseFloat(item?.total_adjusted_quantity) > 0
+                    ? parseFloat(item?.total_adjusted_quantity) + " kg"
+                    : "",
+            });
+          });
+
+          let supplierPerformanceScorecardChartOptions = {
+            backgroundColor: "#f7f9fd",
+            animationEnabled: true,
+            zoomEnabled: true,
+            theme: "light2",
+            axisX: {
+              interval: 1,
+            },
+            axisY2: {
+              prefix: type == "price" ? "₹ " : "",
+              suffix: type == "quantity" ? " kg" : "",
+              // minimum: 0,
+            },
+            data: [
+              {
+                toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                type: "stackedBar",
+                axisYType: "secondary",
+                dataPoints: dataPointsProcurement,
+              },
+              {
+                toolTipContent: "{label}: <strong>₹ {y}</strong>",
+                type: "stackedBar",
+                axisYType: "secondary",
+                dataPoints: dataPointsAdjustment,
+              },
+            ],
+          };
+
+          new CanvasJS.Chart(
+            "supplierPerformanceScorecardChart",
+            supplierPerformanceScorecardChartOptions
+          ).render();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function explodePie(e) {
+      if (
+        typeof e.dataSeries.dataPoints[e.dataPointIndex].exploded ===
+        "undefined" ||
+        !e.dataSeries.dataPoints[e.dataPointIndex].exploded
+      ) {
+        e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+      } else {
+        e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+      }
+      e.chart.render();
+    }
+
+    // ---------------------------------------------------------
+    // ----------------------- Purchases -----------------------
+    // ---------------------------------------------------------
+
+    // Open panel
+    $("#openProcurementPanelBtn").click(function () {
+      openSlidePanel(
+        "procurementSlideInPanel",
+        "procurementPanelHeading",
+        "Procurement",
+        "submitPurchases",
+        "procurement_product_id"
       );
 
-      // Button Click Events
-      $(document).on("click", ".supplierFilter", (e) => {
-        $(".supplierFilter").removeClass("btn-outline-danger");
-        $(".productFilter").removeClass("btn-danger");
+      // Changing panel save button attribute
+      $(`#submitPurchases`).attr("procurement_lot_id", null);
+    });
 
-        $(".productFilter").addClass("btn-outline-danger");
-        $(".supplierFilter").addClass("btn-danger");
+    // Close panel
+    $("#closeProcurementPanelBtn").click(function () {
+      closeSlidePanel("procurementSlideInPanel");
+    });
 
-        loadProcurementSpendByVendorsChart(
-          "days",
-          $("#procurementSpendChartFilter").val()
-        );
-      });
+    $(".procurementMenu").click(function () {
+      $(".menu-container").addClass("d-none");
 
-      $(document).on("click", ".productFilter", (e) => {
-        $(".productFilter").removeClass("btn-outline-danger");
-        $(".supplierFilter").removeClass("btn-danger");
+      $(".procurementContainer").removeClass("d-none");
+      $(".procurementContainer").addClass("d-block");
 
-        $(".supplierFilter").addClass("btn-outline-danger");
-        $(".productFilter").addClass("btn-danger");
+      loadDropdowns();
+      loadProcurementTableData();
+    });
 
-        loadProcurementSpendByProductsChart(
-          "days",
-          $("#procurementSpendChartFilter").val()
-        );
-      });
+    $(document).on("click", ".modal-header .close", () => {
+      $("#procurementProductModal").modal("hide");
+    });
 
-      $(document).on("click", ".spendByDateFilter", (e) => {
-        $(".spendByDateFilter").removeClass("btn-outline-danger");
-        $(".quantityByDateFilter").removeClass("btn-danger");
+    $("#submitPurchases").click(function () {
+      savePurchases();
+    });
 
-        $(".quantityByDateFilter").addClass("btn-outline-danger");
-        $(".spendByDateFilter").addClass("btn-danger");
-
-        loadProcurementByDateChart(
-          "days",
-          $("#procurementAnalysisByDateChartFilter").val(),
-          null,
-          null,
-          "price"
-        );
-      });
-
-      $(document).on("click", ".quantityByDateFilter", (e) => {
-        $(".quantityByDateFilter").removeClass("btn-outline-danger");
-        $(".spendByDateFilter").removeClass("btn-danger");
-
-        $(".spendByDateFilter").addClass("btn-outline-danger");
-        $(".quantityByDateFilter").addClass("btn-danger");
-
-        loadProcurementByDateChart(
-          "days",
-          $("#procurementAnalysisByDateChartFilter").val(),
-          null,
-          null,
-          "quantity"
-        );
-      });
-
-      $(document).on("click", ".priceWisePerformanceFilter", (e) => {
-        $(".priceWisePerformanceFilter").removeClass("btn-outline-danger");
-        $(".quantityWisePerformanceFilter").removeClass("btn-danger");
-
-        $(".quantityWisePerformanceFilter").addClass("btn-outline-danger");
-        $(".priceWisePerformanceFilter").addClass("btn-danger");
-
-        loadSupplierPerformanceScorecardChart(
-          "days",
-          $("#supplierPerformanceScorecardChartFilter").val(),
-          null,
-          null,
-          "price"
-        );
-      });
-
-      $(document).on("click", ".quantityWisePerformanceFilter", (e) => {
-        $(".quantityWisePerformanceFilter").removeClass("btn-outline-danger");
-        $(".priceWisePerformanceFilter").removeClass("btn-danger");
-
-        $(".priceWisePerformanceFilter").addClass("btn-outline-danger");
-        $(".quantityWisePerformanceFilter").addClass("btn-danger");
-
-        loadSupplierPerformanceScorecardChart(
-          "days",
-          $("#supplierPerformanceScorecardChartFilter").val(),
-          null,
-          null,
-          "quantity"
-        );
-      });
-
-      // Chart Functions
-      function loadProcurementSpendByVendorsChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/vendor?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPoints = [];
-
-            data?.data.map((item) => {
-              dataPoints.push({
-                label: item?.VendorMaster?.vendor_name,
-                y: parseFloat(item.total_amount) || 0,
-              });
+    function loadProcurementTableData() {
+      $("#procurementTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/procurement/lot/stats",
+          error: function (xhr, error, code) {
+            $("#procurementTable").DataTable().destroy();
+            $("#procurementTable").DataTable({
+              scrollX: true,
+              ordering: false,
             });
 
-            let procurementSpendChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                interval: 1,
-              },
-              axisY2: {
-                prefix: "₹ ",
-              },
-              data: [
-                {
-                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
-                  indexLabel: "₹ {y}",
-                  type: "bar",
-                  axisYType: "secondary",
-                  dataPoints,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "procurementSpend",
-              procurementSpendChartOptions
-            ).render();
+            toastr.error(xhr.responseJSON.message, "Error");
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
           },
-        });
-      }
-
-      function loadProcurementSpendByProductsChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/product?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPoints = [];
-
-            data?.data.map((item) => {
-              dataPoints.push({
-                label: item?.ProductMaster?.product_name,
-                y: parseFloat(item.total_amount) || 0,
-              });
-            });
-
-            let procurementSpendChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                interval: 1,
-              },
-              axisY2: {
-                prefix: "₹ ",
-              },
-              data: [
-                {
-                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
-                  indexLabel: "₹ {y}",
-                  type: "bar",
-                  axisYType: "secondary",
-                  dataPoints,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "procurementSpend",
-              procurementSpendChartOptions
-            ).render();
+        },
+        columns: [
+          { data: null },
+          { data: null },
+          { data: "procurement_date" },
+          { data: "procurement_lot" },
+          { data: "total_product_count" },
+          { data: "total_purchased_quantity" },
+          { data: "total_purchased_price" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return (
+                '<i class="fa fa-trash del delProcurement" procurement_id=' +
+                row["id"] +
+                ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
+              );
+            },
           },
-        });
-      }
+          {
+            targets: [2],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["procurement_date"]);
 
-      function loadProcurementByDateChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date,
-        type
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
 
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/date?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPoints = [];
-
-            data?.data.map((item) => {
-              let procurement_date = new Date(item?.procurement_date);
-
-              dataPoints.push({
-                // label: "₹ " + item.total_amount,
-
-                x: new Date(
-                  procurement_date.getFullYear(),
-                  procurement_date.getMonth(),
-                  procurement_date.getDate()
-                ),
-                y:
-                  parseFloat(
-                    type == "price"
-                      ? item.total_amount
-                      : item?.total_adjusted_quantity ||
-                          item?.total_procurement_quantity
-                  ) || 0,
-              });
-            });
-
-            let procurementAnalysisByDateChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                valueFormatString: "DD-MMM-YYYY",
-                // crosshair: {
-                //   enabled: true,
-                //   snapToDataPoint: true,
-                // },
-                // minimum: 0,
-              },
-              axisY: {
-                prefix: type == "price" ? "₹ " : "",
-                suffix: type == "quantity" ? " kg" : "",
-                // minimum: 0,
-              },
-              data: [
-                {
-                  toolTipContent:
-                    type == "price"
-                      ? "{x}: <strong>₹ {y}</strong>"
-                      : "{x}: <strong>{y} kg</strong>",
-                  // indexLabel: "₹ {y}",
-                  type: "line",
-                  xValueFormatString: "DD-MMM-YYYY",
-                  dataPoints,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "procurementAnalysisByDateChart",
-              procurementAnalysisByDateChartOptions
-            ).render();
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return day + "-" + month + "-" + date.getFullYear();
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+          {
+            targets: [4],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
           },
-        });
-      }
-
-      function loadProcurementAgeByProductsChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/age/by/product?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPoints = [];
-
-            data?.data.map((item) => {
-              dataPoints.push({
-                quantity: item?.quantity || 0,
-                label: item?.product_name,
-                y: parseFloat(item.days_old) || 0,
-              });
-            });
-
-            let procurementAgeByProductsChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                interval: 1,
-              },
-              axisY: {
-                title: "Age (Days)",
-              },
-              data: [
-                {
-                  toolTipContent: "{label}: <strong>{y} days</strong>",
-                  indexLabel: "{y} days ({quantity} kg)",
-                  type: "area",
-                  dataPoints,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "procurementAgeByProductsChart",
-              procurementAgeByProductsChartOptions
-            ).render();
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              return data || 0;
+            },
           },
-        });
-      }
-
-      function loadSupplierPerformanceScorecardChart(
-        filter_type,
-        filter_days,
-        from_date,
-        to_date,
-        type
-      ) {
-        if (filter_type == "days") {
-          switch (filter_days) {
-            case "7":
-              var d = new Date();
-              d.setDate(d.getDate() - 7);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "90":
-              var d = new Date();
-              d.setDate(d.getDate() - 90);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            case "180":
-              var d = new Date();
-              d.setDate(d.getDate() - 180);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-              break;
-            default:
-              var d = new Date();
-              d.setDate(d.getDate() - 30);
-
-              from_date = formatDate(d);
-              to_date = formatDate(new Date());
-          }
-        }
-
-        $.ajax({
-          url: `/api/v1/procurement/product/chart/performance/by/vendor?from_date=${from_date}&to_date=${to_date}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            let dataPointsProcurement = [];
-            let dataPointsAdjustment = [];
-
-            data?.data.map((item) => {
-              dataPointsProcurement.push({
-                label: item?.VendorMaster?.vendor_name,
-                y:
-                  parseFloat(
-                    type == "price"
-                      ? item.total_procurement_price
-                      : item?.total_procurement_quantity
-                  ) || 0,
-                indexLabel:
-                  type == "price"
-                    ? parseFloat(item?.total_procurement_price) > 0
-                      ? "₹ " + parseFloat(item?.total_procurement_price)
-                      : ""
-                    : parseFloat(item?.total_procurement_quantity) > 0
-                      ? parseFloat(item?.total_procurement_quantity) + " kg"
-                      : "",
-              });
-
-              dataPointsAdjustment.push({
-                label: item?.VendorMaster?.vendor_name,
-                y:
-                  parseFloat(
-                    type == "price"
-                      ? item.total_adjusted_price
-                      : item?.total_adjusted_quantity
-                  ) || 0,
-                indexLabel:
-                  type == "price"
-                    ? parseFloat(item?.total_adjusted_price) > 0
-                      ? "₹ " + parseFloat(item?.total_adjusted_price)
-                      : ""
-                    : parseFloat(item?.total_adjusted_quantity) > 0
-                      ? parseFloat(item?.total_adjusted_quantity) + " kg"
-                      : "",
-              });
-            });
-
-            let supplierPerformanceScorecardChartOptions = {
-              backgroundColor: "#f7f9fd",
-              animationEnabled: true,
-              zoomEnabled: true,
-              theme: "light2",
-              axisX: {
-                interval: 1,
-              },
-              axisY2: {
-                prefix: type == "price" ? "₹ " : "",
-                suffix: type == "quantity" ? " kg" : "",
-                // minimum: 0,
-              },
-              data: [
-                {
-                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
-                  type: "stackedBar",
-                  axisYType: "secondary",
-                  dataPoints: dataPointsProcurement,
-                },
-                {
-                  toolTipContent: "{label}: <strong>₹ {y}</strong>",
-                  type: "stackedBar",
-                  axisYType: "secondary",
-                  dataPoints: dataPointsAdjustment,
-                },
-              ],
-            };
-
-            new CanvasJS.Chart(
-              "supplierPerformanceScorecardChart",
-              supplierPerformanceScorecardChartOptions
-            ).render();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function explodePie(e) {
-        if (
-          typeof e.dataSeries.dataPoints[e.dataPointIndex].exploded ===
-            "undefined" ||
-          !e.dataSeries.dataPoints[e.dataPointIndex].exploded
-        ) {
-          e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
-        } else {
-          e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
-        }
-        e.chart.render();
-      }
-
-      // ---------------------------------------------------------
-      // ----------------------- Purchases -----------------------
-      // ---------------------------------------------------------
-
-      // Open panel
-      $("#openProcurementPanelBtn").click(function () {
-        openSlidePanel(
-          "procurementSlideInPanel",
-          "procurementPanelHeading",
-          "Procurement",
-          "submitPurchases",
-          "procurement_product_id"
-        );
-
-        // Changing panel save button attribute
-        $(`#submitPurchases`).attr("procurement_lot_id", null);
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
       });
 
-      // Close panel
-      $("#closeProcurementPanelBtn").click(function () {
-        closeSlidePanel("procurementSlideInPanel");
-      });
+      $(document).on("click", ".viewProcurementProducts", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
 
-      $(".procurementMenu").click(function () {
-        $(".menu-container").addClass("d-none");
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
 
-        $(".procurementContainer").removeClass("d-none");
-        $(".procurementContainer").addClass("d-block");
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
 
-        loadDropdowns();
-        loadProcurementTableData();
-      });
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
 
-      $(document).on("click", ".modal-header .close", () => {
-        $("#procurementProductModal").modal("hide");
-      });
+        $("#view_lot_no").text(view_lot_no);
 
-      $("#submitPurchases").click(function () {
-        savePurchases();
-      });
-
-      function loadProcurementTableData() {
-        $("#procurementTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/procurement/lot/stats",
-            error: function (xhr, error, code) {
-              $("#procurementTable").DataTable().destroy();
-              $("#procurementTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
-
-              toastr.error(xhr.responseJSON.message, "Error");
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: null },
-            { data: "procurement_date" },
-            { data: "procurement_lot" },
-            { data: "total_product_count" },
-            { data: "total_purchased_quantity" },
-            { data: "total_purchased_price" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delProcurement" procurement_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
-                );
-              },
-            },
-            {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["procurement_date"]);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-          ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
-        });
-
-        $(document).on("click", ".viewProcurementProducts", (e) => {
-          // Changing panel input fields data
-          $("#closeProcurementPanelBtn").click();
-
-          const view_lot_no = $(e.target)
+        $("#view_lot_no").attr(
+          "procurement_lot_id",
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(3)
-            .text();
+            .eq(0)
+            .find("i")
+            .attr("procurement_lot_id")
+        );
 
-          const view_total_products = $(e.target)
+        $("#view_lot_no").attr(
+          "procurement_date",
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_total_products").text(view_total_products);
+
+        $("#view_total_weight").text(view_total_weight);
+
+        // Opening Slied Panel
+        $("#procurementProductModal").modal("show");
+
+        loadProcurementProductTableData(view_lot_no);
+      });
+
+      $(document).on("click", ".delProcurement", (e) => {
+        let procurement_id = $(e.target).attr("procurement_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Procurement Detail?",
+          content: "Are you sure, do you want to remove this Procurement?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/procurement/product?procurement_id=" +
+                    procurement_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadProcurementTableData();
+
+                    toastr.success(
+                      "Procurement detail deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function () {
+                    toastr.error(
+                      "Procurement detail failed to delete!",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Procurement detail is safe now", "Info");
+            },
+          },
+        });
+      });
+    }
+
+    function loadProcurementProductTableData(lot_no) {
+      if (!lot_no) {
+        toastr["warning"]("Lot no should not be empty!");
+      }
+      $("#procurementProductTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: `/api/v1/procurement/product?procurement_lot=${lot_no}`,
+          error: function (xhr, error, code) {
+            $("#procurementProductTable").DataTable().destroy();
+            $("#procurementProductTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
+
+            if (xhr["status"] == 420) {
+              toastr["warning"](xhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](xhr["responseJSON"]["message"]);
+            }
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: null },
+          { data: "ProductMaster.product_name" },
+          { data: "procurement_product_type" },
+          { data: "procurement_quantity" },
+          { data: "procurement_price" },
+          { data: "VendorMaster.vendor_name" },
+          { data: "procurement_purchaser" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+            },
+          },
+          {
+            targets: [1],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
+            },
+          },
+        ],
+        drawCallback: () => { },
+      });
+    }
+
+    $(document).on("click", ".editProcurementProducts", (e) => {
+      // Changing panel input fields data
+
+      $("#procurement_date").val(
+        formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+      );
+
+      $("#procurement_unit")
+        .val(
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(4)
-            .text();
+            .eq(0)
+            .find("i")
+            .attr("unit_master_id")
+        )
+        .trigger("change");
 
-          const view_total_weight = $(e.target)
+      $("#procurement_product")
+        .val(
+          $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(1)
+            .find("span")
+            .attr("product_master_id")
+        )
+        .trigger("change");
+
+      $("#procurement_product_type")
+        .val($(e.target).closest("tr").children("td").eq(2).text())
+        .trigger("change");
+
+      $("#procurement_quantity").val(
+        $(e.target).closest("tr").children("td").eq(3).text()
+      );
+
+      $("#procurement_price").val(
+        $(e.target).closest("tr").children("td").eq(4).text()
+      );
+
+      $("#procurement_product_supplier")
+        .val(
+          $(e.target)
             .closest("tr")
             .children("td")
             .eq(5)
-            .text();
+            .find("span")
+            .attr("vendor_master_id")
+        )
+        .trigger("change");
 
-          $("#view_lot_no").text(view_lot_no);
+      $("#procurement_purchaser").val(
+        $(e.target).closest("tr").children("td").eq(6).text()
+      );
 
-          $("#view_lot_no").attr(
-            "procurement_lot_id",
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("procurement_lot_id")
-          );
+      // Opening Slied Panel
+      $("#openProcurementPanelBtn").click();
 
-          $("#view_lot_no").attr(
-            "procurement_date",
-            $(e.target).closest("tr").children("td").eq(2).text()
-          );
+      // Changing panel heading
+      $("#procurementPanelHeading").text("Edit Procurement Data");
 
-          $("#view_total_products").text(view_total_products);
+      // Changing panel button label
+      $("#submitPurchases").text("Update");
 
-          $("#view_total_weight").text(view_total_weight);
+      // Changing panel button attribute
+      $("#submitPurchases").attr(
+        "procurement_product_id",
+        $(e.target).attr("procurement_product_id")
+      );
 
-          // Opening Slied Panel
-          $("#procurementProductModal").modal("show");
+      $("#submitPurchases").attr(
+        "procurement_lot_id",
+        $("#view_lot_no").attr("procurement_lot_id")
+      );
 
-          loadProcurementProductTableData(view_lot_no);
-        });
+      $("#procurementProductModal").modal("hide");
+    });
 
-        $(document).on("click", ".delProcurement", (e) => {
-          let procurement_id = $(e.target).attr("procurement_id");
-          let currentRow = $(e.target).closest("tr");
-          $.confirm({
-            title: "Delete Procurement Detail?",
-            content: "Are you sure, do you want to remove this Procurement?",
-            backgroundDismiss: false,
-            backgroundDismissAnimation: "glow",
-            type: "red",
-            closeIcon: true,
-            closeIconClass: "fa fa-close",
-            typeAnimated: true,
-            boxWidth: "30%",
-            useBootstrap: false,
-            autoClose: "no|5000",
-            buttons: {
-              delete: {
-                text: "Delete",
-                btnClass: "btn-red",
-                action: function () {
-                  $.ajax({
-                    url:
-                      "/api/v1/procurement/product?procurement_id=" +
-                      procurement_id,
-                    method: "delete",
-                  })
-                    .done(function (response) {
-                      //loading data to table
-                      loadProcurementTableData();
+    function loadProcurementProductType() {
+      $("#procurement_product_type").select2({
+        placeholder: "Choose a Type",
+        allowClear: true,
+        data: [
+          {
+            id: "CLEANED",
+            text: "CLEANED",
+          },
+          {
+            id: "PEELED",
+            text: "PEELED",
+          },
+          {
+            id: "SOAKED",
+            text: "SOAKED",
+          },
+          {
+            id: "RE-GLAZED",
+            text: "RE-GLAZED",
+          },
+          {
+            id: "GRADED",
+            text: "GRADED",
+          },
+          {
+            id: "COOKED",
+            text: "COOKED",
+          },
+          {
+            id: "SORTED",
+            text: "SORTED",
+          },
+          {
+            id: "VALUE-ADDED",
+            text: "VALUE-ADDED",
+          },
+          {
+            id: "UNPROCESSED",
+            text: "UNPROCESSED",
+          },
+        ],
+      });
 
-                      toastr.success(
-                        "Procurement detail deleted successfully",
-                        "Deleted"
-                      );
-                    })
-                    .fail(function () {
-                      toastr.error(
-                        "Procurement detail failed to delete!",
-                        "Error"
-                      );
-                    });
-                },
-              },
-              no: function () {
-                toastr.info("Procurement detail is safe now", "Info");
-              },
-            },
+      // Clearing selected value
+      $("#procurement_product_type").val(null).trigger("change");
+    }
+
+    function loadProcurementProducts() {
+      // Load Products
+      $.ajax({
+        url: "/api/v1/master/product",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_product").select2({
+            placeholder: "Choose a product",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.product_name,
+              };
+            }),
           });
-        });
-      }
 
-      function loadProcurementProductTableData(lot_no) {
-        if (!lot_no) {
-          toastr["warning"]("Lot no should not be empty!");
-        }
-        $("#procurementProductTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: `/api/v1/procurement/product?procurement_lot=${lot_no}`,
-            error: function (xhr, error, code) {
-              $("#procurementProductTable").DataTable().destroy();
-              $("#procurementProductTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
-
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: "ProductMaster.product_name" },
-            { data: "procurement_product_type" },
-            { data: "procurement_quantity" },
-            { data: "procurement_price" },
-            { data: "VendorMaster.vendor_name" },
-            { data: "procurement_purchaser" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["ProcurementLot"]?.["UnitMaster"]?.id} vendor_master_id=${row["ProcurementLot"]?.["VendorMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span vendor_master_id=${row["VendorMaster"]?.id}>${data}</span>`;
-              },
-            },
-          ],
-          drawCallback: () => {},
-        });
-      }
-
-      $(document).on("click", ".editProcurementProducts", (e) => {
-        // Changing panel input fields data
-
-        $("#procurement_date").val(
-          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
-        );
-
-        $("#procurement_unit")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product_type")
-          .val($(e.target).closest("tr").children("td").eq(2).text())
-          .trigger("change");
-
-        $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#procurement_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("vendor_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-
-        // Opening Slied Panel
-        $("#openProcurementPanelBtn").click();
-
-        // Changing panel heading
-        $("#procurementPanelHeading").text("Edit Procurement Data");
-
-        // Changing panel button label
-        $("#submitPurchases").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPurchases").attr(
-          "procurement_product_id",
-          $(e.target).attr("procurement_product_id")
-        );
-
-        $("#submitPurchases").attr(
-          "procurement_lot_id",
-          $("#view_lot_no").attr("procurement_lot_id")
-        );
-
-        $("#procurementProductModal").modal("hide");
-      });
-
-      function loadProcurementProductType() {
-        $("#procurement_product_type").select2({
-          placeholder: "Choose a Type",
-          allowClear: true,
-          data: [
-            {
-              id: "CLEANED",
-              text: "CLEANED",
-            },
-            {
-              id: "PEELED",
-              text: "PEELED",
-            },
-            {
-              id: "SOAKED",
-              text: "SOAKED",
-            },
-            {
-              id: "RE-GLAZED",
-              text: "RE-GLAZED",
-            },
-            {
-              id: "GRADED",
-              text: "GRADED",
-            },
-            {
-              id: "COOKED",
-              text: "COOKED",
-            },
-            {
-              id: "SORTED",
-              text: "SORTED",
-            },
-            {
-              id: "VALUE-ADDED",
-              text: "VALUE-ADDED",
-            },
-            {
-              id: "UNPROCESSED",
-              text: "UNPROCESSED",
-            },
-          ],
-        });
-
-        // Clearing selected value
-        $("#procurement_product_type").val(null).trigger("change");
-      }
-
-      function loadProcurementProducts() {
-        // Load Products
-        $.ajax({
-          url: "/api/v1/master/product",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.product_name,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_product").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadProcurementUnits() {
-        // Load Products
-        $.ajax({
-          url: `/api/v1/master/unit?unit_type=Collection Center`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_unit").select2({
-              placeholder: "Choose an unit",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_unit").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function loadProcurementSuppliers() {
-        // Load Suppliers
-        $.ajax({
-          url: "/api/v1/master/vendor",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product_supplier").select2({
-              placeholder: "Choose a vendor",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.vendor_name,
-                };
-              }),
-            });
-
-            // Clearing selected value
-            $("#procurement_product_supplier").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      function savePurchases() {
-        const procurement_lot_id =
-          $("#submitPurchases").attr("procurement_lot_id");
-        const procurement_product_id = $("#submitPurchases").attr(
-          "procurement_product_id"
-        );
-
-        let url = "/api/v1/procurement/product";
-        let method = "POST";
-        let input_params = {
-          procurement_date: $("#procurement_date").val(),
-          unit_master_id: $("#procurement_unit").val(),
-          product_master_id: $("#procurement_product").val(),
-          procurement_product_type: $("#procurement_product_type").val(),
-          procurement_quantity: $("#procurement_quantity").val(),
-          procurement_price: $("#procurement_price").val(),
-          vendor_master_id: $("#procurement_product_supplier").val(),
-          procurement_purchaser: $("#procurement_purchaser").val(),
-        };
-
-        if (procurement_product_id) {
-          if (!procurement_lot_id) {
-            toastr["warning"]("Procurement lot id must not be empty");
-            return;
+          // Clearing selected value
+          $("#procurement_product").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
           }
-
-          url = "/api/v1/procurement/product";
-          method = "PUT";
-          input_params = {
-            procurement_product_id,
-            procurement_product_data: {
-              procurement_lot_id,
-              ...input_params,
-            },
-          };
-        }
-
-        $.ajax({
-          url,
-          method,
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            toastr["success"](data?.message);
-
-            $("#closeProcurementPanelBtn").click();
-
-            if ($("#view_lot_no").text()) {
-              loadProcurementProductTableData($("#view_lot_no").text());
-            }
-
-            loadProcurementTableData();
-
-            resetAllInputs();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
-      }
-
-      $("#resetProcurementDataBtn").on("click", resetAllInputs);
-
-      // ----------------------------------------------------------
-      // ----------------------- Adjustment -----------------------
-      // ----------------------------------------------------------
-
-      $(".adjustmentMenu").click(function () {
-        $(".menu-container").addClass("d-none");
-
-        $(".adjustmentContainer").removeClass("d-none");
-        $(".adjustmentContainer").addClass("d-block");
-
-        loadAdjustmentTableData();
+        },
       });
+    }
 
-      function loadAdjustmentTableData() {
-        $("#adjustmentTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/procurement/product",
-            error: function (xhr, error, code) {
-              $("#adjustmentTable").DataTable().destroy();
-              $("#adjustmentTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
+    function loadProcurementUnits() {
+      // Load Products
+      $.ajax({
+        url: `/api/v1/master/unit?unit_type=Collection Center`,
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_unit").select2({
+            placeholder: "Choose an unit",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.unit_code,
+              };
+            }),
+          });
 
-              toastr.error(xhr.responseJSON.message, "Error");
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: "pl.procurement_lot" },
-            { data: "ProductMaster.product_name" },
-            { data: "procurement_quantity" },
-            { data: "adjusted_quantity" },
-            { data: "procurement_price" },
-            { data: "adjusted_price" },
-            { data: "adjusted_reason" },
-            { data: "adjusted_surveyor" },
-            { data: "created_at" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span procurement_product_id=${row["id"]}>${data}</span>`;
-              },
-            },
-            {
-              targets: [3],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${
-                  data || 0
-                }></span>`;
-              },
-            },
-            {
-              targets: [5],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${
-                  data || 0
-                }></span>`;
-              },
-            },
-            {
-              targets: [6],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="text" style="width:300px" class="form-control adjusted_reason" placeholder="Type the reason for adjustment" value=${
-                  data || ""
-                }></span>`;
-              },
-            },
-            {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<input type="text" style="width:200px" class="form-control adjusted_surveyor" placeholder="Type the adjustment servoyer name" value=${
-                  data || ""
-                }></span>`;
-              },
-            },
-            {
-              targets: [8],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
-              },
-            },
-          ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
-        });
-      }
-
-      let original_adjusted_quantity = "";
-      let original_adjusted_price = "";
-      let original_adjusted_reason = "";
-      let original_adjusted_surveyor = "";
-
-      $(document).on("focus", "#adjustmentTable > tbody > tr", function (e) {
-        original_adjusted_quantity = $(e.target)
-          .closest("tr")
-          .find(".adjusted_quantity")
-          .val();
-        original_adjusted_price = $(e.target)
-          .closest("tr")
-          .find(".adjusted_price")
-          .val();
-        original_adjusted_reason = $(e.target)
-          .closest("tr")
-          .find(".adjusted_reason")
-          .val();
-        original_adjusted_surveyor = $(e.target)
-          .closest("tr")
-          .find(".adjusted_surveyor")
-          .val();
-      });
-
-      $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
-        const adjusted_quantity = $(e.target)
-          .closest("tr")
-          .find(".adjusted_quantity");
-        const adjusted_price = $(e.target)
-          .closest("tr")
-          .find(".adjusted_price");
-        const adjusted_reason = $(e.target)
-          .closest("tr")
-          .find(".adjusted_reason");
-        const adjusted_surveyor = $(e.target)
-          .closest("tr")
-          .find(".adjusted_surveyor");
-
-        if (
-          adjusted_quantity.val() == 0 ||
-          adjusted_price.val() == 0 ||
-          !adjusted_reason.val() ||
-          !adjusted_surveyor.val()
-        ) {
-          // toastr["warning"]("Fill all the required fields");
-          // if (adjusted_quantity.val() == 0) {
-          //   adjusted_quantity.focus();
-          // } else if (adjusted_price.val() == 0) {
-          //   adjusted_price.focus();
-          // } else if (!adjusted_reason.val()) {
-          //   adjusted_reason.focus();
-          // } else if (!adjusted_surveyor.val()) {
-          //   adjusted_surveyor.focus();
-          // }
-        } else {
-          if (
-            original_adjusted_quantity != adjusted_quantity.val() ||
-            original_adjusted_price != adjusted_price.val() ||
-            original_adjusted_reason != adjusted_reason.val() ||
-            original_adjusted_surveyor != adjusted_surveyor.val()
-          ) {
-            saveAdjustment(
-              $(e.target)
-                .closest("tr")
-                .eq(0)
-                .find("span")
-                .attr("procurement_product_id"),
-              adjusted_quantity.val(),
-              adjusted_price.val(),
-              adjusted_reason.val(),
-              adjusted_surveyor.val()
-            );
+          // Clearing selected value
+          $("#procurement_unit").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
           }
-        }
+        },
       });
+    }
 
-      function saveAdjustment(
-        procurement_product_id,
-        adjusted_quantity,
-        adjusted_price,
-        adjusted_reason,
-        adjusted_surveyor
-      ) {
-        if (!procurement_product_id) {
-          toastr["warning"]("Procurement product id must not be empty");
+    function loadProcurementSuppliers() {
+      // Load Suppliers
+      $.ajax({
+        url: "/api/v1/master/vendor",
+        method: "GET",
+        dataType: "json",
+        contentType: "application/json",
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // Loading data
+          $("#procurement_product_supplier").select2({
+            placeholder: "Choose a vendor",
+            allowClear: true,
+            data: $.map(data?.data?.rows, function (item) {
+              return {
+                id: item.id,
+                text: item.vendor_name,
+              };
+            }),
+          });
+
+          // Clearing selected value
+          $("#procurement_product_supplier").val(null).trigger("change");
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    function savePurchases() {
+      const procurement_lot_id =
+        $("#submitPurchases").attr("procurement_lot_id");
+      const procurement_product_id = $("#submitPurchases").attr(
+        "procurement_product_id"
+      );
+
+      let url = "/api/v1/procurement/product";
+      let method = "POST";
+      let input_params = {
+        procurement_date: $("#procurement_date").val(),
+        unit_master_id: $("#procurement_unit").val(),
+        product_master_id: $("#procurement_product").val(),
+        procurement_product_type: $("#procurement_product_type").val(),
+        procurement_quantity: $("#procurement_quantity").val(),
+        procurement_price: $("#procurement_price").val(),
+        vendor_master_id: $("#procurement_product_supplier").val(),
+        procurement_purchaser: $("#procurement_purchaser").val(),
+      };
+
+      if (procurement_product_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Procurement lot id must not be empty");
           return;
         }
 
-        const input_params = {
+        url = "/api/v1/procurement/product";
+        method = "PUT";
+        input_params = {
           procurement_product_id,
           procurement_product_data: {
-            adjusted_quantity,
-            adjusted_price,
-            adjusted_reason,
-            adjusted_surveyor,
+            procurement_lot_id,
+            ...input_params,
           },
         };
-
-        $.ajax({
-          url: "/api/v1/procurement/product",
-          method: "PUT",
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // toastr["success"](data?.message);
-            // loadAdjustmentTableData();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
       }
 
-      $("#resetAdjustmentDataBtn").on("click", resetAllInputs);
+      $.ajax({
+        url,
+        method,
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          toastr["success"](data?.message);
+
+          $("#closeProcurementPanelBtn").click();
+
+          if ($("#view_lot_no").text()) {
+            loadProcurementProductTableData($("#view_lot_no").text());
+          }
+
+          loadProcurementTableData();
+
+          resetAllInputs();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetProcurementDataBtn").on("click", resetAllInputs);
+
+    // ----------------------------------------------------------
+    // ----------------------- Adjustment -----------------------
+    // ----------------------------------------------------------
+
+    $(".adjustmentMenu").click(function () {
+      $(".menu-container").addClass("d-none");
+
+      $(".adjustmentContainer").removeClass("d-none");
+      $(".adjustmentContainer").addClass("d-block");
+
+      loadAdjustmentTableData();
     });
-  </script>
+
+    function loadAdjustmentTableData() {
+      $("#adjustmentTable").DataTable({
+        // searching: true,
+        destroy: true,
+        responsive: false,
+        processing: true,
+        serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
+        scrollY: "40vh",
+        ordering: false,
+        ajax: {
+          type: "GET",
+          url: "/api/v1/procurement/product",
+          error: function (xhr, error, code) {
+            $("#adjustmentTable").DataTable().destroy();
+            $("#adjustmentTable").DataTable({
+              scrollX: true,
+              ordering: false,
+            });
+
+            toastr.error(xhr.responseJSON.message, "Error");
+          },
+          dataSrc: function (json) {
+            json.iTotalRecords = json.data?.rows?.length;
+            json.iTotalDisplayRecords = json.data?.count;
+
+            // Return the data to be displayed in the DataTable
+            return json?.data?.rows;
+          },
+        },
+        columns: [
+          { data: "pl.procurement_lot" },
+          { data: "ProductMaster.product_name" },
+          { data: "procurement_quantity" },
+          { data: "adjusted_quantity" },
+          { data: "procurement_price" },
+          { data: "adjusted_price" },
+          { data: "adjusted_reason" },
+          { data: "adjusted_surveyor" },
+          { data: "created_at" },
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<span procurement_product_id=${row["id"]}>${data}</span>`;
+            },
+          },
+          {
+            targets: [3],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${data || 0
+                }></span>`;
+            },
+          },
+          {
+            targets: [5],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${data || 0
+                }></span>`;
+            },
+          },
+          {
+            targets: [6],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="text" style="width:300px" class="form-control adjusted_reason" placeholder="Type the reason for adjustment" value=${data || ""
+                }></span>`;
+            },
+          },
+          {
+            targets: [7],
+            className: "text-left",
+            render: function (data, type, row) {
+              return `<input type="text" style="width:200px" class="form-control adjusted_surveyor" placeholder="Type the adjustment servoyer name" value=${data || ""
+                }></span>`;
+            },
+          },
+          {
+            targets: [8],
+            className: "text-left",
+            render: function (data, type, row) {
+              const date = new Date(row["created_at"]);
+
+              var months = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ];
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12; // Handle midnight (0 hours)
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              var strTime = hours + ":" + minutes + " " + ampm;
+              var month = months[date.getMonth()];
+              var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+              return (
+                day + "-" + month + "-" + date.getFullYear() + " " + strTime
+              );
+            },
+          },
+        ],
+        // "infoCallback": function (settings, start, end, max, total, pre) {
+        //   return start + " to " + end;
+        // }
+      });
+    }
+
+    let original_adjusted_quantity = "";
+    let original_adjusted_price = "";
+    let original_adjusted_reason = "";
+    let original_adjusted_surveyor = "";
+
+    $(document).on("focus", "#adjustmentTable > tbody > tr", function (e) {
+      original_adjusted_quantity = $(e.target)
+        .closest("tr")
+        .find(".adjusted_quantity")
+        .val();
+      original_adjusted_price = $(e.target)
+        .closest("tr")
+        .find(".adjusted_price")
+        .val();
+      original_adjusted_reason = $(e.target)
+        .closest("tr")
+        .find(".adjusted_reason")
+        .val();
+      original_adjusted_surveyor = $(e.target)
+        .closest("tr")
+        .find(".adjusted_surveyor")
+        .val();
+    });
+
+    $(document).on("focusout", "#adjustmentTable > tbody > tr", function (e) {
+      const adjusted_quantity = $(e.target)
+        .closest("tr")
+        .find(".adjusted_quantity");
+      const adjusted_price = $(e.target)
+        .closest("tr")
+        .find(".adjusted_price");
+      const adjusted_reason = $(e.target)
+        .closest("tr")
+        .find(".adjusted_reason");
+      const adjusted_surveyor = $(e.target)
+        .closest("tr")
+        .find(".adjusted_surveyor");
+
+      if (
+        adjusted_quantity.val() == 0 ||
+        adjusted_price.val() == 0 ||
+        !adjusted_reason.val() ||
+        !adjusted_surveyor.val()
+      ) {
+        // toastr["warning"]("Fill all the required fields");
+        // if (adjusted_quantity.val() == 0) {
+        //   adjusted_quantity.focus();
+        // } else if (adjusted_price.val() == 0) {
+        //   adjusted_price.focus();
+        // } else if (!adjusted_reason.val()) {
+        //   adjusted_reason.focus();
+        // } else if (!adjusted_surveyor.val()) {
+        //   adjusted_surveyor.focus();
+        // }
+      } else {
+        if (
+          original_adjusted_quantity != adjusted_quantity.val() ||
+          original_adjusted_price != adjusted_price.val() ||
+          original_adjusted_reason != adjusted_reason.val() ||
+          original_adjusted_surveyor != adjusted_surveyor.val()
+        ) {
+          saveAdjustment(
+            $(e.target)
+              .closest("tr")
+              .eq(0)
+              .find("span")
+              .attr("procurement_product_id"),
+            adjusted_quantity.val(),
+            adjusted_price.val(),
+            adjusted_reason.val(),
+            adjusted_surveyor.val()
+          );
+        }
+      }
+    });
+
+    function saveAdjustment(
+      procurement_product_id,
+      adjusted_quantity,
+      adjusted_price,
+      adjusted_reason,
+      adjusted_surveyor
+    ) {
+      if (!procurement_product_id) {
+        toastr["warning"]("Procurement product id must not be empty");
+        return;
+      }
+
+      const input_params = {
+        procurement_product_id,
+        procurement_product_data: {
+          adjusted_quantity,
+          adjusted_price,
+          adjusted_reason,
+          adjusted_surveyor,
+        },
+      };
+
+      $.ajax({
+        url: "/api/v1/procurement/product",
+        method: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify(input_params),
+        crossDomain: true,
+        processData: false,
+        success: (data) => {
+          // toastr["success"](data?.message);
+          // loadAdjustmentTableData();
+        },
+        error: (jqXhr, textStatus, errorThrown) => {
+          if (jqXhr["status"] == 420) {
+            toastr["warning"](jqXhr["responseJSON"]["message"]);
+          } else {
+            toastr["error"](jqXhr["responseJSON"]["message"]);
+          }
+        },
+      });
+    }
+
+    $("#resetAdjustmentDataBtn").on("click", resetAllInputs);
+  });
+</script>
+
 </html>
