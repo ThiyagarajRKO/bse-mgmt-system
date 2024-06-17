@@ -1605,6 +1605,7 @@
     jQuery(document).ready(function ($) {
       // Declarations
       App.checkAccess();
+      let view_payment_lot_id = "";
 
       var tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -2669,106 +2670,185 @@
           //   return start + " to " + end;
           // }
         });
+      }
 
-        $(document).on("click", ".viewProcurementProducts", (e) => {
-          // Changing panel input fields data
-          $("#closeProcurementPanelBtn").click();
+      $(document).on("click", ".viewProcurementProducts", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
 
-          const view_lot_no = $(e.target)
+        const view_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .text();
+
+        const view_total_products = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .text();
+
+        const view_total_weight = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .text();
+
+        $("#view_lot_no").text(view_lot_no);
+
+        $("#view_lot_no").attr(
+          "procurement_lot_id",
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(3)
-            .text();
+            .eq(0)
+            .find("i")
+            .attr("procurement_lot_id")
+        );
 
-          const view_total_products = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(4)
-            .text();
+        $("#view_lot_no").attr(
+          "procurement_date",
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
 
-          const view_total_weight = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(5)
-            .text();
+        $("#view_total_products").text(view_total_products);
 
-          $("#view_lot_no").text(view_lot_no);
+        $("#view_total_weight").text(view_total_weight);
 
-          $("#view_lot_no").attr(
-            "procurement_lot_id",
+        // Opening Slied Panel
+        $("#procurementProductModal").modal("show");
+
+        loadProcurementProductTableData(view_lot_no);
+      });
+
+      $(document).on("click", ".editProcurementProducts", (e) => {
+        // Changing panel input fields data
+
+        $("#procurement_date").val(
+          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+        );
+
+        $("#procurement_unit")
+          .val(
             $(e.target)
               .closest("tr")
               .children("td")
               .eq(0)
               .find("i")
-              .attr("procurement_lot_id")
-          );
+              .attr("unit_master_id")
+          )
+          .trigger("change");
 
-          $("#view_lot_no").attr(
-            "procurement_date",
-            $(e.target).closest("tr").children("td").eq(2).text()
-          );
+        $("#procurement_product")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(1)
+              .find("span")
+              .attr("product_master_id")
+          )
+          .trigger("change");
 
-          $("#view_total_products").text(view_total_products);
+        $("#procurement_product_type")
+          .val($(e.target).closest("tr").children("td").eq(2).text())
+          .trigger("change");
 
-          $("#view_total_weight").text(view_total_weight);
+        $("#procurement_quantity").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
 
-          // Opening Slied Panel
-          $("#procurementProductModal").modal("show");
+        $("#procurement_price").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
 
-          loadProcurementProductTableData(view_lot_no);
-        });
+        $("#procurement_product_supplier")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("supplier_master_id")
+          )
+          .trigger("change");
 
-        $(document).on("click", ".delProcurement", (e) => {
-          let procurement_id = $(e.target).attr("procurement_id");
-          let currentRow = $(e.target).closest("tr");
-          $.confirm({
-            title: "Delete Procurement Detail?",
-            content: "Are you sure, do you want to remove this Procurement?",
-            backgroundDismiss: false,
-            backgroundDismissAnimation: "glow",
-            type: "red",
-            closeIcon: true,
-            closeIconClass: "fa fa-close",
-            typeAnimated: true,
-            boxWidth: "30%",
-            useBootstrap: false,
-            autoClose: "no|5000",
-            buttons: {
-              delete: {
-                text: "Delete",
-                btnClass: "btn-red",
-                action: function () {
-                  $.ajax({
-                    url:
-                      "/api/v1/procurement/product?procurement_id=" +
-                      procurement_id,
-                    method: "delete",
+        $("#procurement_purchaser").val(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        // Opening Slied Panel
+        $("#openProcurementPanelBtn").click();
+
+        // Changing panel heading
+        $("#procurementPanelHeading").text("Edit Procurement Data");
+
+        // Changing panel button label
+        $("#submitPurchases").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPurchases").attr(
+          "procurement_product_id",
+          $(e.target).attr("procurement_product_id")
+        );
+
+        $("#submitPurchases").attr(
+          "procurement_lot_id",
+          $("#view_lot_no").attr("procurement_lot_id")
+        );
+
+        $("#procurementProductModal").modal("hide");
+      });
+
+      $(document).on("click", ".delProcurement", (e) => {
+        let procurement_id = $(e.target).attr("procurement_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Procurement Detail?",
+          content: "Are you sure, do you want to remove this Procurement?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/procurement/product?procurement_id=" +
+                    procurement_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadProcurementTableData();
+
+                    toastr.success(
+                      "Procurement detail deleted successfully",
+                      "Deleted"
+                    );
                   })
-                    .done(function (response) {
-                      //loading data to table
-                      loadProcurementTableData();
-
-                      toastr.success(
-                        "Procurement detail deleted successfully",
-                        "Deleted"
-                      );
-                    })
-                    .fail(function () {
-                      toastr.error(
-                        "Procurement detail failed to delete!",
-                        "Error"
-                      );
-                    });
-                },
-              },
-              no: function () {
-                toastr.info("Procurement detail is safe now", "Info");
+                  .fail(function () {
+                    toastr.error(
+                      "Procurement detail failed to delete!",
+                      "Error"
+                    );
+                  });
               },
             },
-          });
+            no: function () {
+              toastr.info("Procurement detail is safe now", "Info");
+            },
+          },
         });
-      }
+      });
 
       function loadProcurementProductTableData(lot_no) {
         if (!lot_no) {
@@ -2869,85 +2949,6 @@
           drawCallback: () => {},
         });
       }
-
-      $(document).on("click", ".editProcurementProducts", (e) => {
-        // Changing panel input fields data
-
-        $("#procurement_date").val(
-          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
-        );
-
-        $("#procurement_unit")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product_type")
-          .val($(e.target).closest("tr").children("td").eq(2).text())
-          .trigger("change");
-
-        $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#procurement_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("supplier_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-
-        // Opening Slied Panel
-        $("#openProcurementPanelBtn").click();
-
-        // Changing panel heading
-        $("#procurementPanelHeading").text("Edit Procurement Data");
-
-        // Changing panel button label
-        $("#submitPurchases").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPurchases").attr(
-          "procurement_product_id",
-          $(e.target).attr("procurement_product_id")
-        );
-
-        $("#submitPurchases").attr(
-          "procurement_lot_id",
-          $("#view_lot_no").attr("procurement_lot_id")
-        );
-
-        $("#procurementProductModal").modal("hide");
-      });
 
       function loadProcurementProductType() {
         $("#procurement_product_type").select2({
@@ -3741,7 +3742,7 @@
         );
 
         // Changing panel save button attribute
-        $(`#submitPayment`).attr("payment_lot_id", null);
+        $(`#submitPayment`).attr("purchase_payment_id", null);
       });
 
       // Close panel
@@ -3992,30 +3993,70 @@
         });
 
         $(document).on("click", ".editPayment", (e) => {
-          // Changing panel input fields data
-          $("#closePaymentPanelBtn").click();
-
-          const purchase_payment_id = $(e.target).attr("purchase_payment_id");
-
-          $("#view_payment_id").text(purchase_payment_id);
-
-          $("#view_transaction_id").text(
+          $("#transaction_id").val(
             $(e.target).closest("tr").children("td").eq(3).text()
           );
 
-          $("#view_lot_no").attr(
-            "payment_date",
-            $(e.target).closest("tr").children("td").eq(2).text()
+          $("#payment_date").val(
+            formatDate(
+              new Date($(e.target).closest("tr").children("td").eq(4).text())
+            )
           );
 
-          $("#view_total_products").text(view_total_products);
+          view_payment_lot_id = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(6)
+            .find("span")
+            .attr("procurement_lot_id");
 
-          $("#view_total_weight").text(view_total_weight);
+          $("#paymentSupplierNames")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(5)
+                .find("span")
+                .attr("supplier_master_id")
+            )
+            .trigger("change");
+
+          $("#paymentMethods")
+            .val($(e.target).closest("tr").children("td").eq(8).text())
+            .trigger("change");
+
+          $("#total_paid").val(
+            $(e.target).closest("tr").children("td").eq(10).text()
+          );
+
+          $("#payment_discount").val(
+            $(e.target).closest("tr").children("td").eq(12).text()
+          );
+
+          $("#penalty").val(
+            $(e.target).closest("tr").children("td").eq(13).text()
+          );
+
+          $("#tax_amount").val(
+            $(e.target).closest("tr").children("td").eq(14).text()
+          );
 
           // Opening Slied Panel
-          $("#paymentProductModal").modal("show");
+          $("#openPaymentPanelBtn").click();
 
-          loadPaymentProductTableData(view_lot_no);
+          // Changing panel heading
+          $("#paymentPanelHeading").text("Edit Payment Data");
+
+          // Changing panel button label
+          $("#submitPayment").text("Update");
+
+          // Changing panel button attribute
+          $("#submitPayment").attr(
+            "purchase_payment_id",
+            $(e.target).attr("purchase_payment_id")
+          );
+
+          $("#paymentProductModal").modal("hide");
         });
 
         $(document).on("click", ".delPayment", (e) => {
@@ -4291,8 +4332,13 @@
               }),
             });
 
-            // Clearing selected value
-            $("#paymentLotNo").val(null).trigger("change");
+            if (view_payment_lot_id) {
+              // Clearing selected value
+              $("#paymentLotNo").val(view_payment_lot_id).trigger("change");
+            } else {
+              // Clearing selected value
+              $("#paymentLotNo").val(null).trigger("change");
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -4345,7 +4391,9 @@
           parseFloat($(e.target).val()) &&
           parseFloat($(e.target).val()) > total_amount
         ) {
-          toastr["warning"]("Amount should not be greater than the total");
+          toastr["warning"](
+            "Paid amount should not be greater than the total amount"
+          );
         }
       });
 
@@ -4384,7 +4432,14 @@
             $("#due_amount").text("0.00");
           }
 
-          resolve({ net_amount, due_amount });
+          if (due_amount < 0) {
+            toastr["warning"](
+              "Paid amount should not be greater than the total amount"
+            );
+            return reject();
+          }
+
+          return resolve({ net_amount, due_amount });
         });
       }
 
