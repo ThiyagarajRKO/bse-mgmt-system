@@ -862,7 +862,7 @@
                     ></select>
                   </div>
                   <div class="form-group my-2">
-                    <label for="procurement_purchaser"> Purchaser</label>
+                    <label for="procurement_purchaser">Purchaser</label>
                     <input
                       id="procurement_purchaser"
                       class="form-control"
@@ -1317,11 +1317,11 @@
                   <div class="form-group my-2">
                     <label for="totalPaid">Tax Amount</label>
                     <input
-                      id="tax"
+                      id="tax_amount"
                       class="form-control"
                       type="number"
                       placeholder="eg. 100"
-                      name="tax"
+                      name="tax_amount"
                       required
                     />
                   </div>
@@ -1329,7 +1329,7 @@
                   <div class="total mt-3">
                     <table>
                       <tr>
-                        <td>Total Paid&nbsp;</td>
+                        <td>Net Amount&nbsp;</td>
                         <td>:</td>
                         <td>
                           &nbsp;
@@ -1348,11 +1348,11 @@
                   </div>
 
                   <div class="d-flex justify-content-between mt-3 pb-4">
-                    <div id="submitPurchases" class="col-lg-5 btn btn-danger">
+                    <div id="submitPayment" class="col-lg-5 btn btn-danger">
                       Save
                     </div>
                     <div
-                      id="resetProcurementDataBtn"
+                      id="resetPaymentDataBtn"
                       class="col-lg-5 btn btn-outline-danger"
                     >
                       Clear
@@ -1551,6 +1551,7 @@
       // Function to reset all input fields
       function resetAllInputs() {
         $("input").val("");
+        $("input[type=number]").val(0);
 
         // Reset all date inputs
         var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -1567,6 +1568,9 @@
         $("#procurement_product").val(null).trigger("change");
         $("#procurement_product_type").val(null).trigger("change");
         $("#procurement_product_supplier").val(null).trigger("change");
+        $("#paymentMethods").val(null).trigger("change");
+        $("#paymentSupplierNames").val(null).trigger("change");
+        $("#paymentLotNo").val(null).trigger("change");
 
         // Select2 Initialization
         $("#procurement_unit").select2({
@@ -4107,10 +4111,79 @@
       }
 
       $(document).on("change", "#paymentLotNo", (e) => {
-        const total_amount = $(e.target).select2("data")?.[0]?.total_amount;
+        if ($(e.target).val()) {
+          const total_amount = $(e.target).select2("data")?.[0]?.total_amount;
 
-        $("#total_payment_amount").text(total_amount || "0.00");
+          $("#total_payment_amount").text(total_amount || "0.00");
+        }
+        $("#payment_discount").keyup();
       });
+
+      $(document).on("keyup", "#payment_discount", (e) => {
+        const discount = parseFloat($(e.target).val());
+
+        const total_amount = parseFloat($("#total_payment_amount").text());
+
+        if (discount > 0 && total_amount > 0) {
+          $("#total_payment_amount").text(
+            total_amount +
+              " (-" +
+              discount +
+              ") = " +
+              (total_amount - discount) || "0.00"
+          );
+        } else {
+          $("#total_payment_amount").text(total_amount || "0.00");
+        }
+
+        calculateTotalPaid();
+      });
+
+      $(document).on("keyup", "#total_paid", (e) => {
+        const payment_discount = parseFloat($("#payment_discount").val() || 0);
+
+        const total_amount =
+          parseFloat($("#paymentLotNo").select2("data")?.[0]?.total_amount) -
+          payment_discount;
+
+        if (parseFloat($(e.target).val()) <= total_amount) {
+          calculateTotalPaid();
+        } else if (parseFloat($(e.target).val())) {
+          toastr["warning"]("Amount should not be greater than the total");
+        }
+      });
+
+      $(document).on("keyup", "#penalities", (e) => {
+        calculateTotalPaid();
+      });
+
+      $(document).on("keyup", "#tax_amount", (e) => {
+        calculateTotalPaid();
+      });
+
+      function calculateTotalPaid() {
+        const payment_discount = parseFloat($("#payment_discount").val() || 0);
+
+        const total_amount = $("#paymentLotNo").val()
+          ? parseFloat($("#paymentLotNo").select2("data")?.[0]?.total_amount) -
+            payment_discount
+          : 0;
+
+        const total_paid = parseFloat($("#total_paid").val() || 0);
+        const penalities = parseFloat($("#penalities").val() || 0);
+        const tax_amount = parseFloat($("#tax_amount").val() || 0);
+        const due_amount = total_amount - total_paid || 0;
+
+        if (total_amount > 0 && total_paid > 0) {
+          const sum_paid_amount =
+            total_paid + penalities + tax_amount - payment_discount;
+          $("#payment_total_paid").text(sum_paid_amount);
+          $("#payment_due_amount").text(due_amount);
+        } else {
+          $("#payment_total_paid").text("0.00");
+          $("#payment_due_amount").text("0.00");
+        }
+      }
 
       function loadPaymentMethods() {
         $("#paymentMethods").select2({

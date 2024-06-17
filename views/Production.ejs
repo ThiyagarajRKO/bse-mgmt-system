@@ -1886,6 +1886,7 @@
 
       function resetAllInputs() {
         $("input").val("");
+        $("input[type=number]").val(0);
 
         // Reset all date inputs
         var dateInputs = document.querySelectorAll('input[type="date"]');
