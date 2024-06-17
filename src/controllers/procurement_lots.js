@@ -350,7 +350,12 @@ export const GetLots = ({ supplier_id, start = 0, length = 10 }) => {
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id and pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND
+              ${
+                supplier_id != "null" && supplier_id != undefined
+                  ? "pp.supplier_master_id = '" + supplier_id + "' and"
+                  : ""
+              } pp.is_active = true)`
             ),
             "total_amount",
           ],
