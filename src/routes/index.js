@@ -37,6 +37,7 @@ import { ValidateUser } from "../middlewares/authentication";
 
 // Controllers
 import { AuditLogs, ModuleMasters } from "../controllers";
+import purchasePaymentRoute from "./purchase_payments";
 
 //Public Routes
 export const PublicRouters = (fastify, opts, done) => {
@@ -147,6 +148,8 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/master/pricelist/product",
   });
   fastify.register(shippingMasterRoute, { prefix: "/master/shipping" });
+
+  fastify.register(purchasePaymentRouteRoute, { prefix: "purchase/payment" });
 
   fastify.register(auditLogsRoute, { prefix: "/logs" });
 

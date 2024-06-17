@@ -32,6 +32,7 @@ module.exports = {
       },
       payment_method: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       discount: {
         type: Sequelize.FLOAT,
@@ -44,17 +45,20 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      penality: {
+      penalty: {
         type: Sequelize.FLOAT,
       },
       tax_percentage: {
         type: Sequelize.FLOAT,
+        allowNull: false,
       },
       tax_amount: {
         type: Sequelize.FLOAT,
+        allowNull: false,
       },
       due_amount: {
         type: Sequelize.FLOAT,
+        allowNull: false,
       },
       is_active: {
         defaultValue: false,
