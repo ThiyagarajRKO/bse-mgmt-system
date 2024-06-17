@@ -29,18 +29,39 @@ export const Insert = async (profile_id, purchse_payment_data) => {
       if (!purchase_payment_data?.procurement_lots) {
         return reject({
           statusCode: 420,
-          message: "Vehicle brand must not be empty!",
+          message: "Procurement Lot must not be empty!",
         });
       }
 
-      if (!vehicle_data?.model_number) {
+      if (!purchase_payment_data?.total_amount) {
         return reject({
           statusCode: 420,
-          message: "Model number must not be empty!",
+          message: "Total Amount must not be empty!",
         });
       }
 
-      const result = await models.VehicleMaster.create(vehicle_data, {
+      if (!purchase_payment_data?.net_amount) {
+        return reject({
+          statusCode: 420,
+          message: "Net Amount must not be empty!",
+        });
+      }
+
+      if (!purchase_payment_data?.tax_amount) {
+        return reject({
+          statusCode: 420,
+          message: "Tax Amount must not be empty!",
+        });
+      }
+
+      if (!purchase_payment_data?.due_amount) {
+        return reject({
+          statusCode: 420,
+          message: "Due Amount must not be empty!",
+        });
+      }
+
+      const result = await models.PurchasePayment.create(purchase_payment_data, {
         profile_id,
       });
       resolve(result);
@@ -48,7 +69,7 @@ export const Insert = async (profile_id, purchse_payment_data) => {
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
           statusCode: 420,
-          message: "Vehicle already exists!",
+          message: "Purchase Payment data already exists!",
         });
       }
       reject(err);
@@ -56,13 +77,13 @@ export const Insert = async (profile_id, purchse_payment_data) => {
   });
 };
 
-export const Update = async (profile_id, id, vehicle_data) => {
+export const Update = async (profile_id, id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Vehicle master id must not be empty!",
+          message: "purchase Payment id must not be empty!",
         });
       }
 
@@ -73,14 +94,14 @@ export const Update = async (profile_id, id, vehicle_data) => {
         });
       }
 
-      if (!vehicle_data) {
+      if (!purchase_payment_data) {
         return reject({
           statusCode: 420,
-          message: "Vehicle data must not be empty!",
+          message: "purchase Payment data must not be empty!",
         });
       }
 
-      const result = await models.VehicleMaster.update(vehicle_data, {
+      const result = await models.PurchasePayment.update(purchase_payment_data, {
         where: {
           id,
           is_active: true,
@@ -101,11 +122,11 @@ export const Get = ({ id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Vehicle Master ID field must not be empty!",
+          message: "Purchase Payment ID field must not be empty!",
         });
       }
 
-      const vehicle = await models.VehicleMaster.findOne({
+      const vehicle = await models.PurchasePayment.findOne({
         where: {
           id,
           is_active: true,
@@ -122,9 +143,16 @@ export const Get = ({ id }) => {
 export const GetAll = ({
   start,
   length,
-  vehicle_number,
-  vehicle_brand,
-  model_number,
+  supplier_master_id,
+    procurement_lots,
+    payment_method,
+    discount,
+    total_paid,
+    net_amount,
+    penalty,
+    tax_percentage,
+    tax_amount,
+    due_amount,
   search,
 }) => {
   return new Promise(async (resolve, reject) => {
@@ -133,74 +161,67 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (vehicle_number) {
-        where.vehicle_number = { [Op.iLike]: `%${vehicle_number}%` };
+      if (supplier_master_id) {
+        where.supplier_master_id = { [Op.iLike]: `%${supplier_master_id}%` };
       }
 
-      if (vehicle_brand) {
-        where.vehicle_brand = { [Op.iLike]: `%${vehicle_brand}%` };
+      if (procurement_lots) {
+        where.procurement_lots = { [Op.iLike]: `%${procurement_lots}%` };
       }
 
-      if (model_number) {
-        where.model_number = { [Op.iLike]: `%${model_number}%` };
+      if (payment_method) {
+        where.payment_method = { [Op.iLike]: `%${payment_method}%` };
       }
+
+      if (total_paid) {
+        where.total_paid = { [Op.iLike]: `%${total_paid}%` };
+      }
+
+      if (net_amount) {
+        where.net_amount = { [Op.iLike]: `%${net_amount}%` };
+      }
+
+      if (penalty) {
+        where.penalty = { [Op.iLike]: `%${penalty}%` };
+      }
+
+      if (tax_percentage) {
+        where.tax_percentage = { [Op.iLike]: `%${tax_percentage}%` };
+      }
+
+      if (tax_amount) {
+        where.tax_amount = { [Op.iLike]: `%${tax_amount}%` };
+      }
+
+      if (due_amount) {
+        where.due_amount = { [Op.iLike]: `%${due_amount}%` };
+      }
+
+
+
 
       if (search) {
         where[Op.or] = [
-          { vehicle_number: { [Op.iLike]: `%${search}%` } },
-          { vehicle_brand: { [Op.iLike]: `%${search}%` } },
-          { model_number: { [Op.iLike]: `%${search}%` } },
-          { insurance_provider: { [Op.iLike]: `%${search}%` } },
-          { insurance_number: { [Op.iLike]: `%${search}%` } },
-          // {
-          //   [Op.and]: sequelize.literal(
-          //     `CAST("insurance_expiring_on" AS VARCHAR) ILIKE '%${search}%'`
-          //   ),
-          // },
-          // { last_fc_date: { [Op.iLike]: `%${search}%` } },
+          { supplier_master_id: { [Op.iLike]: `%${search}%` } },
+          { procurement_lots: { [Op.iLike]: `%${search}%` } },
+          { payment_method: { [Op.iLike]: `%${search}%` } },
+          { total_paid: { [Op.iLike]: `%${search}%` } },
+          { net_amount: { [Op.iLike]: `%${search}%` } },
+          { penalty: { [Op.iLike]: `%${search}%` } },
+          { tax_percentage: { [Op.iLike]: `%${search}%` } },
+          { tax_amount: { [Op.iLike]: `%${search}%` } },
+          { due_amount: { [Op.iLike]: `%${search}%` } },
         ];
       }
 
-      const suppliers = await models.VehicleMaster.findAndCountAll({
+      const purchase_payments = await models.PurchasePayment.findAndCountAll({
         where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
       });
 
-      resolve(suppliers);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const Count = ({ id, vehicle_number }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Vehicle Master ID field must not be empty!",
-        });
-      }
-
-      let where = {
-        is_active: true,
-      };
-
-      if (id) {
-        where[id] = id;
-      } else if (vehicle_number) {
-        where[vehicle_number] = vehicle_number;
-      }
-
-      const vehicle = await models.VehicleMaster.count({
-        where,
-        raw: true,
-      });
-
-      resolve(vehicle);
+      resolve(purchase_payments);
     } catch (err) {
       reject(err);
     }
@@ -213,7 +234,7 @@ export const Delete = ({ profile_id, id }) => {
       if (!id) {
         return reject({
           statusCode: 420,
-          message: "Vehicle ID field must not be empty!",
+          message: "Purchase Payment ID field must not be empty!",
         });
       }
 
@@ -224,7 +245,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const supplier = await models.VehicleMaster.destroy({
+      const purchase_payment = await models.PurchasePayment.destroy({
         where: {
           id,
           is_active: true,
@@ -234,7 +255,7 @@ export const Delete = ({ profile_id, id }) => {
         profile_id,
       });
 
-      resolve(supplier);
+      resolve(purchase_payment);
     } catch (err) {
       reject(err);
     }
