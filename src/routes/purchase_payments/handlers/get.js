@@ -1,10 +1,10 @@
-import { PurchasePayment } from "../../../controllers";
+import { PurchasePayments } from "../../../controllers";
 
-export const Get = ({ id }, session, fastify) => {
+export const Get = ({ purchase_payment_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let purchase_payment = await PurchasePayment.Get({
-        id: id,
+      let purchase_payment = await PurchasePayments.Get({
+        id: purchase_payment_id,
       });
 
       if (!purchase_payment) {

@@ -10,6 +10,9 @@ module.exports = {
       payment_date: {
         type: Sequelize.DATE,
       },
+      transaction_id: {
+        type: Sequelize.STRING,
+      },
       supplier_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -50,15 +53,12 @@ module.exports = {
       },
       tax_percentage: {
         type: Sequelize.FLOAT,
-        allowNull: false,
       },
       tax_amount: {
         type: Sequelize.FLOAT,
-        allowNull: false,
       },
       due_amount: {
         type: Sequelize.FLOAT,
-        allowNull: false,
       },
       is_active: {
         defaultValue: false,

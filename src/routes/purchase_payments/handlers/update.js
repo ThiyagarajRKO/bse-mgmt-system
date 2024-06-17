@@ -1,15 +1,15 @@
-import { PurchasePayment } from "../../../controllers";
+import { PurchasePayments } from "../../../controllers";
 
 export const Update = (
-  { profile_id, id, purchse_payment_data },
+  { profile_id, purchase_payment_id, purchase_payment_data },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const updated_data = await PurchasePayment.Update(
+      const updated_data = await PurchasePayments.Update(
         profile_id,
-        id,
+        purchase_payment_id,
         purchase_payment_data
       );
 

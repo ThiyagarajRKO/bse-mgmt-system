@@ -1,12 +1,12 @@
-import purchase_payments from "../../../../models/purchase_payments";
-import { SupplierMaster, ProcurementLots, PurchasePayment } from "../../../controllers";
+import { PurchasePayments } from "../../../controllers";
 
 export const Create = (
   {
     profile_id,
-    id,
+    transaction_id,
+    payment_date,
     supplier_master_id,
-    procurement_lots,
+    procurement_lot_id,
     payment_method,
     discount,
     total_paid,
@@ -21,10 +21,11 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const vehicle_master = await PurchasePayment.Insert(profile_id, {
-        id,
+      const purchase_payment = await PurchasePayments.Insert(profile_id, {
+        transaction_id,
+        payment_date,
         supplier_master_id,
-        procurement_lots,
+        procurement_lot_id,
         payment_method,
         discount,
         total_paid,
@@ -39,7 +40,7 @@ export const Create = (
       resolve({
         message: "Purchase Payment has been inserted successfully",
         data: {
-          id: purchase_payments?.id,
+          id: purchase_payment?.id,
         },
       });
     } catch (err) {

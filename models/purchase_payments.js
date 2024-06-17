@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      transaction_id: {
+        type: DataTypes.STRING,
+      },
+      payment_date: {
+        type: DataTypes.DATE,
+      },
       payment_method: {
         type: DataTypes.STRING,
       },
@@ -52,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       net_amount: {
         type: DataTypes.FLOAT,
       },
-      penality: {
+      penalty: {
         type: DataTypes.FLOAT,
       },
       tax_percentage: {

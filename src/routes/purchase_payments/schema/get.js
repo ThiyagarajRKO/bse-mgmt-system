@@ -2,9 +2,9 @@ export const getSchema = {
   schema: {
     params: {
       type: "object",
-      required: ["vehicle_master_id"],
+      required: ["purchase_payment_id"],
       properties: {
-        vehicle_master_id: { type: "string" },
+        purchase_payment_id: { type: "string" },
       },
     },
   },

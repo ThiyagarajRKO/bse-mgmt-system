@@ -1,24 +1,15 @@
-import { PurchasePayment} from "../../../controllers";
+import { PurchasePayments } from "../../../controllers";
 
 export const GetAll = (
-  {
-    start,
-    length,
-    id,
-    supplier_master_id,
-    procurement_lots,
-    "search[value]": search,
-  },
+  { start, length, "search[value]": search },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let purchase_payment = await PurchasePayment.GetAll({
+      let purchase_payment = await PurchasePayments.GetAll({
         start,
         length,
-        supplier_master_id,
-        procurement_lots,
         search,
       });
 

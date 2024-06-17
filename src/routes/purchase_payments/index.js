@@ -8,7 +8,7 @@ import { Delete } from "./handlers/delete";
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 
 export const purchasePaymentRoute = (fastify, opts, done) => {
@@ -50,7 +50,7 @@ export const purchasePaymentRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:id", getSchema, async (req, reply) => {
+  fastify.get("/:purchase_payment_id", getSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.params };
 

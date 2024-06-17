@@ -31,13 +31,13 @@ import shippingMasterRoute from "./shipping_master";
 import auditLogsRoute from "./audit_logs";
 import ordersRoute from "./orders";
 import orderProductsRoute from "./order_products";
+import purchasePaymentRoute from "./purchase_payments";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
 
 // Controllers
 import { AuditLogs, ModuleMasters } from "../controllers";
-import purchasePaymentRoute from "./purchase_payments";
 
 //Public Routes
 export const PublicRouters = (fastify, opts, done) => {
@@ -98,6 +98,10 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/procurement/product",
   });
 
+  fastify.register(purchasePaymentRoute, {
+    prefix: "/purchase/payment",
+  });
+
   fastify.register(dispatchRoute, { prefix: "/dispatch" });
 
   fastify.register(peelingRoute, { prefix: "/peeling" });
@@ -148,8 +152,6 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/master/pricelist/product",
   });
   fastify.register(shippingMasterRoute, { prefix: "/master/shipping" });
-
-  fastify.register(purchasePaymentRouteRoute, { prefix: "purchase/payment" });
 
   fastify.register(auditLogsRoute, { prefix: "/logs" });
 

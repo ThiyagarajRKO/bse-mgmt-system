@@ -1,11 +1,15 @@
-import { SupplierMaster, ProcurementLots, PurchasePayment } from "../../../controllers";
+import { PurchasePayments } from "../../../controllers";
 
-export const Delete = ({ profile_id, id }, session, fastify) => {
+export const Delete = (
+  { profile_id, purchase_payment_id },
+  session,
+  fastify
+) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const purchase_payment = await PurchasePayment.Delete({
+      const purchase_payment = await PurchasePayments.Delete({
         profile_id,
-        id: id,
+        id: purchase_payment_id,
       });
 
       if (purchase_payment > 0) {

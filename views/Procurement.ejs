@@ -1232,7 +1232,7 @@
 
                 <hr />
 
-                <div class="">
+                <div>
                   <div class="form-group my-2">
                     <label for="lot_no">Payment Date</label>
                     <input
@@ -1264,6 +1264,18 @@
                   </div>
 
                   <div class="form-group my-2">
+                    <label for="lot_no">Transaction ID</label>
+                    <input
+                      id="transaction_id"
+                      class="form-control"
+                      type="text"
+                      placeholder="eg. TNSDKH89698698"
+                      name="transaction_id"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
                     <label for="s">Payment Methods</label>
                     <select
                       class="form-control input-dropdown w-100"
@@ -1273,7 +1285,7 @@
                   </div>
 
                   <div class="form-group my-2">
-                    <label for="totalPaid">Discount</label>
+                    <label for="discount">Discount</label>
                     <input
                       id="payment_discount"
                       class="form-control"
@@ -1303,13 +1315,13 @@
                   </div>
 
                   <div class="form-group my-2">
-                    <label for="penalities">Penalities</label>
+                    <label for="penalty">Penalty</label>
                     <input
-                      id="penalities"
+                      id="penalty"
                       class="form-control"
                       type="number"
                       placeholder="eg. 1000"
-                      name="penalities"
+                      name="penalty"
                       required
                     />
                   </div>
@@ -1333,7 +1345,7 @@
                         <td>:</td>
                         <td>
                           &nbsp;
-                          <span id="payment_total_paid">0.00</span>
+                          <span id="net_amount">0.00</span>
                         </td>
                       </tr>
                       <tr>
@@ -1341,7 +1353,7 @@
                         <td>:</td>
                         <td>
                           &nbsp;
-                          <span id="payment_due_amount">0.00</span>
+                          <span id="due_amount">0.00</span>
                         </td>
                       </tr>
                     </table>
@@ -1383,15 +1395,20 @@
                   <tr>
                     <th></th>
                     <th></th>
+                    <th></th>
                     <th class="fw-bold"><span>Transaction ID</span></th>
                     <th class="fw-bold"><span>Payment Date</span></th>
                     <th class="fw-bold"><span>Supplier</span></th>
+                    <th class="fw-bold"><span>Lot No</span></th>
                     <th class="fw-bold"><span>Total Products</span></th>
                     <th class="fw-bold"><span>Payment Method</span></th>
+                    <th class="fw-bold"><span>Total Amount</span></th>
                     <th class="fw-bold"><span>Total Paid</span></th>
                     <th class="fw-bold"><span>Due amount</span></th>
                     <th class="fw-bold"><span>Discount</span></th>
-                    <th class="fw-bold"><span>Penalities</span></th>
+                    <th class="fw-bold"><span>Penalty</span></th>
+                    <th class="fw-bold"><span>Tax Paid</span></th>
+                    <th class="fw-bold"><span>Net Amount</span></th>
                   </tr>
                 </thead>
               </table>
@@ -1551,7 +1568,7 @@
       // Function to reset all input fields
       function resetAllInputs() {
         $("input").val("");
-        $("input[type=number]").val(0);
+        $("input[type=number]").val("");
 
         // Reset all date inputs
         var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -1604,7 +1621,7 @@
         });
 
         $("#paymentLotNo").select2({
-          placeholder: "Choose a Lot no",
+          placeholder: "Choose a lot no",
           allowClear: true,
         });
       }
@@ -3677,7 +3694,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/payment/lot/stats",
+            url: "/api/v1/purchase/payment",
             error: function (xhr, error, code) {
               $("#paymentTable").DataTable().destroy();
               $("#paymentTable").DataTable({
@@ -3698,33 +3715,49 @@
           columns: [
             { data: null },
             { data: null },
+            { data: null },
+            { data: "transaction_id" },
             { data: "payment_date" },
-            { data: "payment_lot" },
-            { data: "total_product_count" },
-            { data: "total_purchased_quantity" },
-            { data: "total_purchased_price" },
+            { data: "SupplierMaster.supplier_name" },
+            { data: "ProcurementLot.procurement_lot" },
+            { data: "total_products" },
+            { data: "payment_method" },
+            { data: null },
+            { data: "total_paid" },
+            { data: "due_amount" },
+            { data: "discount" },
+            { data: "penalty" },
+            { data: "tax_amount" },
+            { data: "net_amount" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewPaymentProducts" payment_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Payment"></i>`;
+                return `<i class="fa-solid fa-eye view viewPayments" purchase_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this payment"></i>`;
               },
             },
             {
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
+                return `<i class="fa fa-pen-to-square edit editPayment" purchase_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this payment"></i>`;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-trash del delPayment" payment_id=' +
+                  '<i class="fa fa-trash del delPayment" purchase_payment_id=' +
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment"></i>'
                 );
               },
             },
             {
-              targets: [2],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["payment_date"]);
@@ -3750,24 +3783,41 @@
               },
             },
             {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
+                return `<span supplier_master_id=${row["supplier_master_id"]}>${data}</span>`;
               },
             },
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
+                return `<span procurement_lot_id=${row["procurement_lot_id"]}>${data}</span>`;
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
                 return data || 0;
+              },
+            },
+            {
+              targets: [9],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(
+                  parseFloat(data["total_paid"] || 0) +
+                    parseFloat(data["due_amount"] || 0)
+                ).toFixed(2);
+              },
+            },
+            {
+              targets: [10, 11, 12, 13, 14, 15],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
               },
             },
           ],
@@ -3776,7 +3826,56 @@
           // }
         });
 
-        $(document).on("click", ".viewPaymentProducts", (e) => {
+        $(document).on("click", ".viewPayments", (e) => {
+          // Changing panel input fields data
+          $("#closePaymentPanelBtn").click();
+
+          const view_lot_no = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(3)
+            .text();
+
+          const view_total_products = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(4)
+            .text();
+
+          const view_total_weight = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(5)
+            .text();
+
+          $("#view_lot_no").text(view_lot_no);
+
+          $("#view_lot_no").attr(
+            "payment_lot_id",
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("payment_lot_id")
+          );
+
+          $("#view_lot_no").attr(
+            "payment_date",
+            $(e.target).closest("tr").children("td").eq(2).text()
+          );
+
+          $("#view_total_products").text(view_total_products);
+
+          $("#view_total_weight").text(view_total_weight);
+
+          // Opening Slied Panel
+          $("#paymentProductModal").modal("show");
+
+          loadPaymentProductTableData(view_lot_no);
+        });
+
+        $(document).on("click", ".editPayment", (e) => {
           // Changing panel input fields data
           $("#closePaymentPanelBtn").click();
 
@@ -3826,7 +3925,7 @@
         });
 
         $(document).on("click", ".delPayment", (e) => {
-          let payment_id = $(e.target).attr("payment_id");
+          let purchase_payment_id = $(e.target).attr("purchase_payment_id");
           let currentRow = $(e.target).closest("tr");
           $.confirm({
             title: "Delete Payment Detail?",
@@ -3846,7 +3945,9 @@
                 btnClass: "btn-red",
                 action: function () {
                   $.ajax({
-                    url: "/api/v1/payment/product?payment_id=" + payment_id,
+                    url:
+                      "/api/v1/purchase/payment?purchase_payment_id=" +
+                      purchase_payment_id,
                     method: "delete",
                   })
                     .done(function (response) {
@@ -3887,7 +3988,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/payment/product?payment_lot=${lot_no}`,
+            url: `/api/v1/purchase/payment?purchase_payment_id=${lot_no}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({
@@ -4146,14 +4247,16 @@
           parseFloat($("#paymentLotNo").select2("data")?.[0]?.total_amount) -
           payment_discount;
 
-        if (parseFloat($(e.target).val()) <= total_amount) {
-          calculateTotalPaid();
-        } else if (parseFloat($(e.target).val())) {
+        calculateTotalPaid();
+        if (
+          parseFloat($(e.target).val()) &&
+          parseFloat($(e.target).val()) > total_amount
+        ) {
           toastr["warning"]("Amount should not be greater than the total");
         }
       });
 
-      $(document).on("keyup", "#penalities", (e) => {
+      $(document).on("keyup", "#penalty", (e) => {
         calculateTotalPaid();
       });
 
@@ -4162,27 +4265,34 @@
       });
 
       function calculateTotalPaid() {
-        const payment_discount = parseFloat($("#payment_discount").val() || 0);
+        return new Promise((resolve, reject) => {
+          const payment_discount = parseFloat(
+            $("#payment_discount").val() || 0
+          );
 
-        const total_amount = $("#paymentLotNo").val()
-          ? parseFloat($("#paymentLotNo").select2("data")?.[0]?.total_amount) -
-            payment_discount
-          : 0;
+          const total_amount = $("#paymentLotNo").val()
+            ? parseFloat(
+                $("#paymentLotNo").select2("data")?.[0]?.total_amount
+              ) - payment_discount
+            : 0;
 
-        const total_paid = parseFloat($("#total_paid").val() || 0);
-        const penalities = parseFloat($("#penalities").val() || 0);
-        const tax_amount = parseFloat($("#tax_amount").val() || 0);
-        const due_amount = total_amount - total_paid || 0;
+          const total_paid = parseFloat($("#total_paid").val() || 0);
+          const penalty = parseFloat($("#penalty").val() || 0);
+          const tax_amount = parseFloat($("#tax_amount").val() || 0);
+          const due_amount = total_amount - total_paid || 0;
+          let net_amount = 0;
 
-        if (total_amount > 0 && total_paid > 0) {
-          const sum_paid_amount =
-            total_paid + penalities + tax_amount - payment_discount;
-          $("#payment_total_paid").text(sum_paid_amount);
-          $("#payment_due_amount").text(due_amount);
-        } else {
-          $("#payment_total_paid").text("0.00");
-          $("#payment_due_amount").text("0.00");
-        }
+          if (total_amount > 0 && total_paid > 0) {
+            net_amount = total_paid + penalty + tax_amount - payment_discount;
+            $("#net_amount").text(net_amount?.toFixed(2));
+            $("#due_amount").text(due_amount?.toFixed(2));
+          } else {
+            $("#net_amount").text("0.00");
+            $("#due_amount").text("0.00");
+          }
+
+          resolve({ net_amount, due_amount });
+        });
       }
 
       function loadPaymentMethods() {
@@ -4228,36 +4338,40 @@
         $("#paymentMethods").val(null).trigger("change");
       }
 
-      function savePayment() {
-        const payment_lot_id = $("#submitPayment").attr("payment_lot_id");
-        const payment_product_id =
-          $("#submitPayment").attr("payment_product_id");
+      async function savePayment() {
+        const purchase_payment_id = $("#submitPayment").attr(
+          "purchase_payment_id"
+        );
 
-        let url = "/api/v1/payment/product";
+        let { net_amount, due_amount } = await calculateTotalPaid();
+
+        if (net_amount <= 0) {
+          return toastr["warning"]("Net amount should not be empty!");
+        }
+
+        let url = "/api/v1/purchase/payment";
         let method = "POST";
         let input_params = {
+          transaction_id: $("#transaction_id").val(),
           payment_date: $("#payment_date").val(),
-          unit_master_id: $("#payment_unit").val(),
-          product_master_id: $("#payment_product").val(),
-          payment_product_type: $("#payment_product_type").val(),
-          payment_quantity: $("#payment_quantity").val(),
-          payment_price: $("#payment_price").val(),
-          supplier_master_id: $("#payment_product_supplier").val(),
-          payment_purchaser: $("#payment_purchaser").val(),
+          supplier_master_id: $("#paymentSupplierNames").val(),
+          procurement_lot_id: $("#paymentLotNo").val(),
+          payment_method: $("#paymentMethods").val(),
+          discount: $("#payment_discount").val(),
+          total_paid: $("#total_paid").val(),
+          penalty: $("#penalty").val(),
+          tax_amount: $("#tax_amount").val(),
+          net_amount,
+          due_amount,
         };
 
-        if (payment_product_id) {
-          if (!payment_lot_id) {
-            toastr["warning"]("Payment lot id must not be empty");
-            return;
-          }
-
-          url = "/api/v1/payment/product";
+        if (purchase_payment_id) {
+          url = "/api/v1/purchase/payment";
           method = "PUT";
           input_params = {
-            payment_product_id,
-            payment_product_data: {
-              payment_lot_id,
+            purchase_payment_id,
+            purchase_payment_data: {
+              purchase_payment_id,
               ...input_params,
             },
           };
@@ -4275,10 +4389,6 @@
             toastr["success"](data?.message);
 
             $("#closePaymentPanelBtn").click();
-
-            if ($("#view_lot_no").text()) {
-              loadPaymentProductTableData($("#view_lot_no").text());
-            }
 
             loadPaymentTableData();
 
