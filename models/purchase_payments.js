@@ -94,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(
-        "Error while inserting a vehicle details",
+        "Error while inserting a purchase payment details",
         err?.message || err
       );
     }
@@ -106,7 +106,10 @@ module.exports = (sequelize, DataTypes) => {
       data.updated_at = new Date();
       data.updated_by = options?.profile_id;
     } catch (err) {
-      console.log("Error while updating a vehicle", err?.message || err);
+      console.log(
+        "Error while updating a purchase payment",
+        err?.message || err
+      );
     }
   });
 
@@ -118,7 +121,10 @@ module.exports = (sequelize, DataTypes) => {
 
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
-      console.log("Error while deleting a vehicle", err?.message || err);
+      console.log(
+        "Error while deleting a purchase payment",
+        err?.message || err
+      );
     }
   });
 
