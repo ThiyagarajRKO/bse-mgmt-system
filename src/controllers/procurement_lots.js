@@ -332,17 +332,52 @@ export const Delete = ({ profile_id, id }) => {
   });
 };
 
-export const GetLots = ({ start = 0, length = 10 }) => {
+export const GetLots = ({ supplier_id, start = 0, length = 10 }) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let supplierWhere = {
+        is_active: true,
+      };
+
+      if (supplier_id) {
+        supplierWhere.id = supplier_id;
+      }
+
       const procurements = await models.ProcurementLots.findAll({
-        attributes: ["id", "procurement_lot"],
+        subQuery: false,
+        attributes: [
+          "id",
+          "procurement_lot",
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id and pp.is_active = true)`
+            ),
+            "total_amount",
+          ],
+        ],
+        include: [
+          {
+            attributes: [],
+            model: models.ProcurementProducts,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: [],
+                model: models.SupplierMaster,
+                where: supplierWhere,
+              },
+            ],
+          },
+        ],
         where: {
           is_active: true,
         },
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
+        group: ["ProcurementLots.id"],
       });
 
       resolve(procurements);
@@ -417,7 +452,7 @@ export const GetStats = ({
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_price) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.procurement_totalamount) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
             ),
             "total_purchased_price",
           ],

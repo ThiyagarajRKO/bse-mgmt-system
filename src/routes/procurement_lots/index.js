@@ -29,6 +29,7 @@ import { getDispatchLotsSchema } from "./schema/get_dispatch_lots";
 import { getPeeledLotsSchema } from "./schema/get_peeled_lots";
 import { getPackingLotsSchema } from "./schema/get_packing_lots";
 import { getPackingStatsSchema } from "./schema/get_packing_stats";
+import { getLotsSchema } from "./schema/get_lots";
 
 export const procurementLotsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -149,7 +150,7 @@ export const procurementLotsRoute = (fastify, opts, done) => {
   // ------------------------------ Lots ----------------------------------
   // ----------------------------------------------------------------------
 
-  fastify.get("/lots", getStatsSchema, async (req, reply) => {
+  fastify.get("/lots", getLotsSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 

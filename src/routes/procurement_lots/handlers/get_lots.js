@@ -1,9 +1,13 @@
 import { ProcurementLots } from "../../../controllers";
 
-export const GetLots = ({ start, length }, session, fastify) => {
+export const GetLots = ({ supplier_id, start, length }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementLots.GetLots({ start, length });
+      let procurement = await ProcurementLots.GetLots({
+        supplier_id,
+        start,
+        length,
+      });
 
       if (!procurement) {
         return reject({
