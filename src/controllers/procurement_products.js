@@ -211,6 +211,7 @@ export const GetAll = ({
   procurement_totalamount,
   procurement_purchaser,
   supplier_id,
+  purchase_payment_id,
   start,
   length,
   search,
@@ -267,6 +268,14 @@ export const GetAll = ({
         supplierWhere.id = supplier_id;
       }
 
+      let paymentWhere = {
+        is_active: true,
+      };
+
+      if (purchase_payment_id) {
+        paymentWhere.id = purchase_payment_id;
+      }
+
       if (search) {
         where[Op.or] = [
           sequelize.where(
@@ -290,6 +299,7 @@ export const GetAll = ({
       }
 
       const procurements = await models.ProcurementProducts.findAndCountAll({
+        subQuery: false,
         include: [
           {
             as: "pl",
@@ -307,6 +317,11 @@ export const GetAll = ({
                 where: {
                   is_active: true,
                 },
+              },
+              {
+                attributes: ["id"],
+                model: models.PurchasePayments,
+                where: paymentWhere,
               },
             ],
             where: procurementLotsWhere,

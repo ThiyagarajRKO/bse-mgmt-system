@@ -1435,60 +1435,159 @@
                 </i>
               </div>
               <div class="modal-body">
-                <div class="d-flex justify-content-between">
-                  <div class="form-group">
-                    <label class="fw-bold" for="lot_no">Lot No:</label>
-                    <span id="view_lot_no"></span>
-                  </div>
+                <div id="paymentItemsDataContainer">
+                  <fieldset
+                    class="form-group border p-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Payment Details</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_id"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Transaction ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_transaction_id"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Payment Date</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_date"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Supplier</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_supplier"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Lot No</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_lot_no"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Total Products</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_total_products"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Payment Method</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_method"></span>
+                          </td>
+                        </tr>
+                      </table>
 
-                  <div class="form-group">
-                    <label class="fw-bold" for="total_products"
-                      >Total Products:</label
-                    >
-                    <span id="view_total_products"></span>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="fw-bold" for="total_weight"
-                      >Total Weight:</label
-                    >
-                    <span id="view_total_weight"></span>
-                  </div>
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Total Amount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_total_amount"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Total Paid</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_total_paid"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Discount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_discount"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Tax Paid</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_tax_paid"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Penalty</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_penalty"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Net Amount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_net_amount"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Due Amount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_due_amount"></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </fieldset>
                 </div>
 
-                <hr class="mb-4" />
-
-                <table
-                  id="paymentProductTable"
-                  class="rounded table table-hover nowrap w-100"
-                >
-                  <thead>
-                    <tr>
-                      <th style="border-radius: 4px 0 0 0"></th>
-                      <th class="fw-bold"><span>Product Name</span></th>
-                      <th class="fw-bold">
-                        <span>Purchased Type</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchased Quantity</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchased Price</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Vendor Name</span>
-                      </th>
-                      <th class="fw-bold">
-                        <span>Purchaser</span>
-                      </th>
-                    </tr>
-                  </thead>
-                </table>
+                <div>
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Products</legend>
+                    <table
+                      id="paymentProductTable"
+                      class="rounded table table-hover nowrap w-100"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="fw-bold"><span>Product Name</span></th>
+                          <th class="fw-bold">
+                            <span>Purchased Type</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Purchased Quantity</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Price per KG</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Total Amount</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Purchaser</span>
+                          </th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </fieldset>
+                </div>
               </div>
               <div class="modal-footer">
                 <button
                   type="button"
-                  class="btn btn-default"
+                  class="close btn btn-danger"
                   data-dismiss="modal"
                 >
                   Close
@@ -3830,83 +3929,78 @@
           // Changing panel input fields data
           $("#closePaymentPanelBtn").click();
 
-          const view_lot_no = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(3)
-            .text();
+          const purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
-          const view_total_products = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(4)
-            .text();
+          $("#view_payment_id").text(purchase_payment_id);
 
-          const view_total_weight = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(5)
-            .text();
-
-          $("#view_lot_no").text(view_lot_no);
-
-          $("#view_lot_no").attr(
-            "payment_lot_id",
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("payment_lot_id")
+          $("#view_transaction_id").text(
+            $(e.target).closest("tr").children("td").eq(3).text()
           );
 
-          $("#view_lot_no").attr(
-            "payment_date",
-            $(e.target).closest("tr").children("td").eq(2).text()
+          $("#view_payment_date").text(
+            $(e.target).closest("tr").children("td").eq(4).text()
           );
 
-          $("#view_total_products").text(view_total_products);
+          $("#view_supplier").text(
+            $(e.target).closest("tr").children("td").eq(5).text()
+          );
 
-          $("#view_total_weight").text(view_total_weight);
+          $("#view_payment_lot_no").text(
+            $(e.target).closest("tr").children("td").eq(6).text()
+          );
+
+          $("#view_payment_total_products").text(
+            $(e.target).closest("tr").children("td").eq(7).text()
+          );
+
+          $("#view_payment_method").text(
+            $(e.target).closest("tr").children("td").eq(8).text()
+          );
+
+          $("#view_total_amount").text(
+            $(e.target).closest("tr").children("td").eq(9).text()
+          );
+
+          $("#view_total_paid").text(
+            $(e.target).closest("tr").children("td").eq(10).text()
+          );
+
+          $("#view_due_amount").text(
+            $(e.target).closest("tr").children("td").eq(11).text()
+          );
+
+          $("#view_discount").text(
+            $(e.target).closest("tr").children("td").eq(12).text()
+          );
+
+          $("#view_penalty").text(
+            $(e.target).closest("tr").children("td").eq(13).text()
+          );
+
+          $("#view_tax_paid").text(
+            $(e.target).closest("tr").children("td").eq(14).text()
+          );
+
+          $("#view_net_amount").text(
+            $(e.target).closest("tr").children("td").eq(15).text()
+          );
 
           // Opening Slied Panel
           $("#paymentProductModal").modal("show");
 
-          loadPaymentProductTableData(view_lot_no);
+          loadPaymentProductTableData(purchase_payment_id);
         });
 
         $(document).on("click", ".editPayment", (e) => {
           // Changing panel input fields data
           $("#closePaymentPanelBtn").click();
 
-          const view_lot_no = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(3)
-            .text();
+          const purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
-          const view_total_products = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(4)
-            .text();
+          $("#view_payment_id").text(purchase_payment_id);
 
-          const view_total_weight = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(5)
-            .text();
-
-          $("#view_lot_no").text(view_lot_no);
-
-          $("#view_lot_no").attr(
-            "payment_lot_id",
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("payment_lot_id")
+          $("#view_transaction_id").text(
+            $(e.target).closest("tr").children("td").eq(3).text()
           );
 
           $("#view_lot_no").attr(
@@ -3972,9 +4066,9 @@
         });
       }
 
-      function loadPaymentProductTableData(lot_no) {
-        if (!lot_no) {
-          toastr["warning"]("Lot no should not be empty!");
+      function loadPaymentProductTableData(purchase_payment_id) {
+        if (!purchase_payment_id) {
+          toastr["warning"]("Payment ID should not be empty!");
         }
         $("#paymentProductTable").DataTable({
           // searching: true,
@@ -3988,7 +4082,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/purchase/payment?purchase_payment_id=${lot_no}`,
+            url: `/api/v1/procurement/product?purchase_payment_id=${purchase_payment_id}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({
@@ -4011,31 +4105,30 @@
             },
           },
           columns: [
-            { data: null },
             { data: "ProductMaster.product_name" },
-            { data: "payment_product_type" },
-            { data: "payment_quantity" },
-            { data: "payment_price" },
-            { data: "SupplierMaster.supplier_name" },
-            { data: "payment_purchaser" },
+            { data: "procurement_product_type" },
+            { data: "procurement_quantity" },
+            { data: "procurement_price" },
+            { data: "procurement_totalamount" },
+            { data: "procurement_purchaser" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editPaymentProducts" payment_product_id=${row?.id} unit_master_id=${row["PaymentLot"]?.["UnitMaster"]?.id} supplier_master_id=${row["PaymentLot"]?.["SupplierMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
             {
-              targets: [5],
+              targets: [2, 3, 4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
+              },
+            },
+            {
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
