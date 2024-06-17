@@ -319,6 +319,7 @@ export const GetAll = ({
                 },
               },
               {
+                required: false,
                 attributes: ["id"],
                 model: models.PurchasePayments,
                 where: paymentWhere,
