@@ -992,6 +992,9 @@
                       <th class="fw-bold">
                         <span>Purchaser</span>
                       </th>
+                      <th class="fw-bold">
+                        <span>Payment Status</span>
+                      </th>
                     </tr>
                   </thead>
                 </table>
@@ -2811,6 +2814,8 @@
           .eq(3)
           .text();
 
+        const procurement_lot_id = $(e.target).attr("procurement_lot_id");
+
         const view_total_products = $(e.target)
           .closest("tr")
           .children("td")
@@ -2825,15 +2830,7 @@
 
         $("#view_lot_no").text(view_lot_no);
 
-        $("#view_lot_no").attr(
-          "procurement_lot_id",
-          $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(0)
-            .find("i")
-            .attr("procurement_lot_id")
-        );
+        $("#view_lot_no").attr("procurement_lot_id", procurement_lot_id);
 
         $("#view_lot_no").attr(
           "procurement_date",
@@ -2847,7 +2844,7 @@
         // Opening Slied Panel
         $("#procurementProductModal").modal("show");
 
-        loadProcurementProductTableData(view_lot_no);
+        loadProcurementProductTableData(procurement_lot_id);
       });
 
       $(document).on("click", ".editProcurementProducts", (e) => {
@@ -2979,8 +2976,8 @@
         });
       });
 
-      function loadProcurementProductTableData(lot_no) {
-        if (!lot_no) {
+      function loadProcurementProductTableData(procurement_lot_id) {
+        if (!procurement_lot_id) {
           toastr["warning"]("Lot no should not be empty!");
         }
         $("#procurementProductTable").DataTable({
@@ -2995,7 +2992,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product?procurement_lot=${lot_no}`,
+            url: `/api/v1/procurement/product?procurement_lot_id=${procurement_lot_id}`,
             error: function (xhr, error, code) {
               $("#procurementProductTable").DataTable().destroy();
               $("#procurementProductTable").DataTable({
@@ -3026,6 +3023,7 @@
             { data: "procurement_totalamount" },
             { data: "SupplierMaster.supplier_name" },
             { data: "procurement_purchaser" },
+            { data: null },
           ],
           columnDefs: [
             {
@@ -3072,6 +3070,15 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.pl?.["PurchasePayments"]?.length > 0
+                  ? `<span class="text-success">Success <i class="fa-solid fa-circle-check"></i></span>`
+                  : `<span class="text-info">Pending <i class="fa-solid fa-hourglass-half"></i></span>`;
               },
             },
           ],

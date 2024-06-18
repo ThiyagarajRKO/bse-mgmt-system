@@ -4,6 +4,7 @@ export const getAllSchema = {
       type: "object",
       required: [],
       properties: {
+        procurement_lot_id: { type: "string" },
         procurement_lot: { type: "string" },
         procurement_unit: { type: "string" },
         procurement_species: { type: "string" },

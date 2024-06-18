@@ -2,6 +2,7 @@ import { ProcurementProducts } from "../../../controllers";
 
 export const GetAll = (
   {
+    procurement_lot_id,
     procurement_lot,
     procurement_product_type,
     procurement_quantity,
@@ -24,6 +25,7 @@ export const GetAll = (
   return new Promise(async (resolve, reject) => {
     try {
       let procurement = await ProcurementProducts.GetAll({
+        procurement_lot_id,
         procurement_lot,
         procurement_product_type,
         procurement_quantity,

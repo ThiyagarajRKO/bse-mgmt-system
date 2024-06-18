@@ -203,6 +203,7 @@ export const GetQuantity = ({ id }) => {
 };
 
 export const GetAll = ({
+  procurement_lot_id,
   procurement_lot,
   product_master_name,
   procurement_product_type,
@@ -255,6 +256,10 @@ export const GetAll = ({
       let procurementLotsWhere = {
         is_active: true,
       };
+
+      if (procurement_lot_id) {
+        procurementLotsWhere.id = procurement_lot_id;
+      }
 
       if (procurement_lot) {
         procurementLotsWhere.procurement_lot = procurement_lot;
@@ -314,6 +319,14 @@ export const GetAll = ({
               {
                 attributes: ["id", "unit_name"],
                 model: models.UnitMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+              {
+                required: false,
+                attributes: ["id"],
+                model: models.PurchasePayments,
                 where: {
                   is_active: true,
                 },
