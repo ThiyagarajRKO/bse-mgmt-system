@@ -14,6 +14,8 @@ export const GetAll = (
     unit_master_name,
     supplier_id,
     purchase_payment_id,
+    start,
+    length,
     "search[value]": search,
   },
   session,
@@ -34,6 +36,8 @@ export const GetAll = (
         unit_master_name,
         supplier_id,
         purchase_payment_id,
+        start,
+        length,
         search,
       });
 

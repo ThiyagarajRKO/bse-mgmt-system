@@ -318,12 +318,6 @@ export const GetAll = ({
                   is_active: true,
                 },
               },
-              {
-                required: false,
-                attributes: ["id"],
-                model: models.PurchasePayments,
-                where: paymentWhere,
-              },
             ],
             where: procurementLotsWhere,
           },
@@ -369,6 +363,98 @@ export const GetAll = ({
           },
         ],
         where,
+        offset: start,
+        limit: length,
+        order: [[sequelize.col(`"pl".procurement_date`), "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetPaymentItems = ({
+  purchase_payment_id,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let paymentWhere = {
+        is_active: true,
+      };
+
+      if (purchase_payment_id) {
+        paymentWhere.id = purchase_payment_id;
+      }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(
+              sequelize.col("procurement_product_type"),
+              "varchar"
+            ),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const procurements = await models.ProcurementProducts.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "procurement_product_type",
+          "procurement_quantity",
+          "procurement_quantity",
+          "adjusted_quantity",
+          "procurement_price",
+          "adjusted_price",
+          "adjusted_reason",
+          "adjusted_surveyor",
+          "procurement_purchaser",
+          "created_at",
+        ],
+        include: [
+          {
+            as: "pl",
+            attributes: ["id"],
+            model: models.ProcurementLots,
+            include: [
+              {
+                attributes: ["id"],
+                model: models.PurchasePayments,
+                where: paymentWhere,
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          is_active: true,
+        },
         offset: start,
         limit: length,
         order: [[sequelize.col(`"pl".procurement_date`), "desc"]],

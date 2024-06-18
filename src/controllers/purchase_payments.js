@@ -191,17 +191,48 @@ export const GetAll = ({ start, length, search }) => {
             ),
             "total_products",
           ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_amount",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.procurement_quantity) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.adjusted_quantity) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_adjusted_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.adjusted_price) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_adjusted_price",
+          ],
         ],
         include: [
           {
-            attributes: ["id", "supplier_name"],
+            attributes: [
+              "id",
+              "supplier_name",
+              "phone",
+              "email",
+              "address",
+              "representative",
+            ],
             model: models.SupplierMaster,
             where: {
               is_active: true,
             },
           },
           {
-            attributes: ["id", "procurement_lot"],
+            attributes: ["id", "procurement_lot", "created_at"],
             model: models.ProcurementLots,
             where: {
               is_active: true,

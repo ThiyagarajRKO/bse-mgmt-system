@@ -1435,12 +1435,12 @@
                 </i>
               </div>
               <div class="modal-body">
-                <div id="paymentItemsDataContainer">
+                <div id="supplierDataContainer">
                   <fieldset
                     class="form-group border p-3"
                     style="border-color: rgba(129, 145, 179, 0.6) !important"
                   >
-                    <legend class="w-auto px-2">Payment Details</legend>
+                    <legend class="w-auto px-2">Supplier</legend>
                     <!-- 1st row -->
                     <div class="d-flex justify-content-between">
                       <table class="col">
@@ -1448,28 +1448,66 @@
                           <th class="align-top">ID</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_payment_id"></span>
+                            <span id="view_payment_supplier_id"></span>
                           </td>
                         </tr>
                         <tr>
-                          <th class="align-top">Transaction ID</th>
+                          <th class="align-top">Name</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_transaction_id"></span>
+                            <span id="view_payment_supplier_name"></span>
                           </td>
                         </tr>
                         <tr>
-                          <th class="align-top">Payment Date</th>
+                          <th class="align-top">Country</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_payment_date"></span>
+                            <span id="view_payment_supplier_address"></span>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Email</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_supplier_email"></span>
                           </td>
                         </tr>
                         <tr>
-                          <th class="align-top">Supplier</th>
+                          <th class="align-top">Phone</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_supplier"></span>
+                            <span id="view_payment_supplier_phone"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Rating</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_supplier_rating"></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div id="purchaseOrderDataContainer">
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Purchase Order</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_purchase_order_id"></span>
                           </td>
                         </tr>
                         <tr>
@@ -1480,6 +1518,16 @@
                           </td>
                         </tr>
                         <tr>
+                          <th class="align-top">Purchased Date</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_purchase_date"></span>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <table class="col">
+                        <tr>
                           <th class="align-top">Total Products</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
@@ -1487,62 +1535,17 @@
                           </td>
                         </tr>
                         <tr>
-                          <th class="align-top">Payment Method</th>
+                          <th class="align-top">Purchased Quantity</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_payment_method"></span>
+                            <span id="view_total_quantity"></span>
                           </td>
                         </tr>
-                      </table>
-
-                      <table class="col">
                         <tr>
                           <th class="align-top">Total Amount</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
                             <span id="view_total_amount"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Total Paid</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_total_paid"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Discount</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_discount"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Tax Paid</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_tax_paid"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Penalty</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_penalty"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Net Amount</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_net_amount"></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="align-top">Due Amount</th>
-                          <td class="align-top">:</td>
-                          <td class="align-top">
-                            <span id="view_due_amount"></span>
                           </td>
                         </tr>
                       </table>
@@ -1581,6 +1584,132 @@
                         </tr>
                       </thead>
                     </table>
+                  </fieldset>
+                </div>
+
+                <div id="amountDataContainer">
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Payment Details</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_supplier_payment_id"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Transaction ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_transaction_id"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Payment Method</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_method"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Total Paid</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_total_paid"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Due Amount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_due_amount"></span>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Payment Status</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_payment_status"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Tax Paid</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_tax_paid"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Penalty</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_penalty"></span>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <th class="align-top">Discount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_discount"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Net Amount</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_net_amount"></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div id="qualityDataContainer">
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Quality Control</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Quantity Status</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_quality_status"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Adjusted Quantity</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_adjusted_quantity"></span>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Adjusted Price</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_adjusted_price"></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
                   </fieldset>
                 </div>
               </div>
@@ -3835,7 +3964,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewPayments" purchase_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this payment"></i>`;
+                return `<i class="fa-solid fa-eye view viewPayments" purchase_payment_id=${row?.id} total_amount="${row["total_amount"]}" total_quantity="${row["total_quantity"] || row["total_adjusted_quantity"]}" total_adjusted_quantity="${row["total_adjusted_quantity"]}" total_adjusted_price="${row["total_adjusted_price"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this payment"></i>`;
               },
             },
             {
@@ -3886,14 +4015,14 @@
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span supplier_master_id=${row["supplier_master_id"]}>${data}</span>`;
+                return `<span supplier_master_id=${row["supplier_master_id"]} email="${row["SupplierMaster"]?.email}" phone="${row["SupplierMaster"]?.phone}" address="${row["SupplierMaster"]?.address}" representative="${row["SupplierMaster"]?.representative}">${data}</span>`;
               },
             },
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span procurement_lot_id=${row["procurement_lot_id"]}>${data}</span>`;
+                return `<span procurement_lot_id=${row["procurement_lot_id"]} created_at="${row["ProcurementLot"]?.created_at}">${data}</span>`;
               },
             },
             {
@@ -3926,24 +4055,61 @@
           // }
         });
 
-        $(document).on("click", ".viewPayments", (e) => {
+        $(document).on("click", ".viewPayments", async (e) => {
           // Changing panel input fields data
           $("#closePaymentPanelBtn").click();
 
           const purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
-          $("#view_payment_id").text(purchase_payment_id);
-
-          $("#view_transaction_id").text(
-            $(e.target).closest("tr").children("td").eq(3).text()
+          // Suppliers
+          $("#view_payment_supplier_id").text(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("supplier_master_id")
           );
 
-          $("#view_payment_date").text(
-            $(e.target).closest("tr").children("td").eq(4).text()
-          );
-
-          $("#view_supplier").text(
+          $("#view_payment_supplier_name").text(
             $(e.target).closest("tr").children("td").eq(5).text()
+          );
+
+          $("#view_payment_supplier_email").text(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("email")
+          );
+
+          $("#view_payment_supplier_phone").text(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("phone")
+          );
+
+          $("#view_payment_supplier_address").text(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("address")
+          );
+
+          // Purchase Order
+          $("#view_purchase_order_id").text(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(6)
+              .find("span")
+              .attr("procurement_lot_id")
           );
 
           $("#view_payment_lot_no").text(
@@ -3954,12 +4120,54 @@
             $(e.target).closest("tr").children("td").eq(7).text()
           );
 
-          $("#view_payment_method").text(
-            $(e.target).closest("tr").children("td").eq(8).text()
+          $("#view_total_amount").text(
+            parseFloat(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(0)
+                .find("i")
+                .attr("total_amount")
+            ).toFixed(2)
           );
 
-          $("#view_total_amount").text(
-            $(e.target).closest("tr").children("td").eq(9).text()
+          $("#view_total_quantity").text(
+            parseFloat(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(0)
+                .find("i")
+                .attr("total_quantity")
+            ).toFixed(2)
+          );
+
+          $("#view_payment_purchase_date").text(
+            formatDate(
+              new Date(
+                $(e.target)
+                  .closest("tr")
+                  .children("td")
+                  .eq(6)
+                  .find("span")
+                  .attr("created_at")
+              )
+            )
+          );
+
+          // Payment Information
+          $("#view_supplier_payment_id").text(purchase_payment_id);
+
+          $("#view_transaction_id").text(
+            $(e.target).closest("tr").children("td").eq(3).text()
+          );
+
+          $("#view_payment_date").text(
+            $(e.target).closest("tr").children("td").eq(4).text()
+          );
+
+          $("#view_payment_method").text(
+            $(e.target).closest("tr").children("td").eq(8).text()
           );
 
           $("#view_total_paid").text(
@@ -3984,6 +4192,50 @@
 
           $("#view_net_amount").text(
             $(e.target).closest("tr").children("td").eq(15).text()
+          );
+
+          // Quality Control
+          $("#view_inspector_name").text(
+            parseFloat(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(0)
+                .find("i")
+                .attr("inspector_name")
+            ).toFixed(2)
+          );
+
+          const view_adjusted_quantity = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(0)
+            .find("i")
+            .attr("total_adjusted_quantity");
+
+          $("#view_adjusted_quantity").text(
+            parseFloat(
+              view_adjusted_quantity != "null" ? view_adjusted_quantity : 0
+            ).toFixed(2)
+          );
+
+          const view_adjusted_price = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(0)
+            .find("i")
+            .attr("total_adjusted_price");
+
+          $("#view_adjusted_price").text(
+            parseFloat(
+              view_adjusted_price != "null" ? view_adjusted_price : 0
+            ).toFixed(2)
+          );
+
+          $("#view_quality_status").html(
+            view_adjusted_quantity != "null" || view_adjusted_price != "null"
+              ? `Adjusted <i class="text-warning fa-solid fa-pencil"></i>`
+              : `OK <i class="text-success fa-solid fa-circle-check"></i>`
           );
 
           // Opening Slied Panel
@@ -4123,7 +4375,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product?purchase_payment_id=${purchase_payment_id}`,
+            url: `/api/v1/procurement/product/payment/items?purchase_payment_id=${purchase_payment_id}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({
