@@ -426,6 +426,7 @@ export const GetPaymentItems = ({
           "adjusted_reason",
           "adjusted_surveyor",
           "procurement_purchaser",
+          "procurement_totalamount",
           "created_at",
         ],
         include: [
