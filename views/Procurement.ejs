@@ -2930,18 +2930,14 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["pl"]?.["UnitMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${row?.id} unit_master_id=${row["pl"]?.["UnitMaster"]?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f;${parseFloat(row["total_paid"] || 0) > 0 ? "display:none" : ""}" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
             },
             {
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delProcurementProduct" procurement_product_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
-                );
+                return `<i class="fa fa-trash del delProcurementProduct" procurement_product_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f;${parseFloat(row["total_paid"] || 0) > 0 ? "display:none" : ""}" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>`;
               },
             },
             {
