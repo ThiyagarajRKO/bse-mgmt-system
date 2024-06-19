@@ -83,10 +83,29 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
+      if (!procurement_data?.supplier_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Supplier master data must not be empty!",
+        });
+      }
+
       if (!procurement_data) {
         return reject({
           statusCode: 420,
           message: "Purchase data must not be empty!",
+        });
+      }
+
+      const paidStatus = await GetPaidStatus({
+        id,
+        supplier_master_id: procurement_data?.supplier_master_id,
+      });
+
+      if (paidStatus > 0) {
+        return reject({
+          statusCode: 420,
+          message: "Unable to edit the paid products",
         });
       }
 
@@ -305,6 +324,32 @@ export const GetAll = ({
 
       const procurements = await models.ProcurementProducts.findAndCountAll({
         subQuery: false,
+        attributes: [
+          "id",
+          "procurement_product_type",
+          "procurement_quantity",
+          "procurement_quantity",
+          "adjusted_quantity",
+          "procurement_price",
+          "adjusted_price",
+          "adjusted_reason",
+          "adjusted_surveyor",
+          "procurement_purchaser",
+          "procurement_totalamount",
+          "created_at",
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.total_paid) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_paid",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp LEFT JOIN purchase_payments ppt ON ppt.supplier_master_id = pp.supplier_master_id and ppt.procurement_lot_id = pp.procurement_lot_id and ppt.is_active = true WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
+            ),
+            "total_amount",
+          ],
+        ],
         include: [
           {
             as: "pl",
@@ -319,14 +364,6 @@ export const GetAll = ({
               {
                 attributes: ["id", "unit_name"],
                 model: models.UnitMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                required: false,
-                attributes: ["id"],
-                model: models.PurchasePayments,
                 where: {
                   is_active: true,
                 },
@@ -390,6 +427,7 @@ export const GetAll = ({
 
 export const GetPaymentItems = ({
   purchase_payment_id,
+  supplier_master_id,
   start,
   length,
   search,
@@ -468,6 +506,7 @@ export const GetPaymentItems = ({
         ],
         where: {
           is_active: true,
+          supplier_master_id,
         },
         offset: start,
         limit: length,
@@ -658,7 +697,7 @@ export const Delete = ({
         });
       }
 
-      const paidStatus = await PaidStatus({ id, supplier_master_id });
+      const paidStatus = await GetPaidStatus({ id, supplier_master_id });
 
       if (paidStatus > 0) {
         return reject({
@@ -693,7 +732,7 @@ export const Delete = ({
   });
 };
 
-export const PaidStatus = ({ id, supplier_master_id }) => {
+export const GetPaidStatus = ({ id, supplier_master_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const lot = await models.ProcurementProducts.count({
@@ -718,6 +757,7 @@ export const PaidStatus = ({ id, supplier_master_id }) => {
         where: {
           is_active: true,
           id,
+          supplier_master_id,
         },
       });
 

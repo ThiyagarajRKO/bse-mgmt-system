@@ -2952,7 +2952,7 @@
               },
             },
             {
-              targets: [3],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -2987,9 +2987,19 @@
               targets: [9],
               className: "text-left",
               render: function (data, type, row) {
-                return row?.pl?.["PurchasePayments"]?.length > 0
-                  ? `<span class="text-success">Success <i class="fa-solid fa-circle-check"></i></span>`
-                  : `<span class="text-info">Pending <i class="fa-solid fa-hourglass-half"></i></span>`;
+                if (parseFloat(row["total_paid"] || 0) == 0) {
+                  return `<span class="text-secondary">Pending <i class="fa-solid fa-hourglass-half"></i></span>`;
+                } else if (
+                  parseFloat(row["total_amount"] || 0) ==
+                  parseFloat(row["total_paid"] || 0)
+                ) {
+                  return `<span class="text-success">Paid <i class="fa-solid fa-circle-check"></i></span>`;
+                } else if (
+                  parseFloat(row["total_amount"] || 0) >
+                  parseFloat(row["total_paid"] || 0)
+                ) {
+                  return `<span class="text-info">Due <i class="fa-solid fa-money-bill-transfer"></i></span>`;
+                }
               },
             },
           ],
@@ -2997,8 +3007,27 @@
         });
       }
 
-      $(document).on("click", ".editProcurementProducts", (e) => {
+      $(document).on("click", ".editProcurementProducts", async (e) => {
         // Changing panel input fields data
+
+        const supplier_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(7)
+          .find("span")
+          .attr("supplier_master_id");
+
+        let paidStatus = await getPaidStatus(
+          $(e.target).attr("procurement_product_id"),
+          supplier_master_id
+        );
+
+        if (paidStatus > 0) {
+          return toastr.warning(
+            "Unable to edit the paid product",
+            "Already Paid"
+          );
+        }
 
         $("#procurement_date").val(
           formatDate(new Date($("#view_lot_no").attr("procurement_date")))
@@ -3039,14 +3068,7 @@
         );
 
         $("#procurement_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(7)
-              .find("span")
-              .attr("supplier_master_id")
-          )
+          .val(supplier_master_id)
           .trigger("change");
 
         $("#procurement_purchaser").val(
@@ -3077,6 +3099,7 @@
       });
 
       $(document).on("click", ".delProcurementProduct", (e) => {
+        const procurement_lot_id = $("#view_lot_no").attr("procurement_lot_id");
         const procurement_product_id = $(e.target).attr(
           "procurement_product_id"
         );
@@ -3114,7 +3137,8 @@
                 })
                   .done(function (response) {
                     //loading data to table
-                    loadProcurementProductTableData();
+                    if (procurement_lot_id)
+                      loadProcurementProductTableData(procurement_lot_id);
                     loadProcurementTableData();
 
                     toastr.success(
@@ -3143,6 +3167,40 @@
           },
         });
       });
+
+      function getPaidStatus(procurement_product_id, supplier_master_id) {
+        return new Promise((resolve, reject) => {
+          if (!procurement_product_id || !supplier_master_id) {
+            return toastr["warning"](
+              "Product and supplier master id must not be empty"
+            );
+          }
+          // Load Products
+          $.ajax({
+            url: `/api/v1/procurement/product/paid/status?procurement_product_id=${procurement_product_id}&supplier_master_id=${supplier_master_id}`,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            processData: false,
+            success: ({ data }) => {
+              resolve(data);
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+              if (jqXhr["responseJSON"]["message"] == "No data found!") {
+                return resolve();
+              } else {
+                if (jqXhr["status"] == 420) {
+                  toastr["warning"](jqXhr["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](jqXhr["responseJSON"]["message"]);
+                }
+              }
+              reject();
+            },
+          });
+        });
+      }
 
       function loadProcurementProductType() {
         $("#procurement_product_type").select2({
@@ -3347,9 +3405,9 @@
 
             $("#closeProcurementPanelBtn").click();
 
-            if ($("#view_lot_no").text()) {
-              loadProcurementProductTableData($("#view_lot_no").text());
-            }
+            // if (procurement_lot_id) {
+            //   loadProcurementProductTableData(procurement_lot_id);
+            // }
 
             loadProcurementTableData();
 
@@ -4126,15 +4184,15 @@
 
           const purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
+          const supplier_master_id = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(5)
+            .find("span")
+            .attr("supplier_master_id");
+
           // Suppliers
-          $("#view_payment_supplier_id").text(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("supplier_master_id")
-          );
+          $("#view_payment_supplier_id").text(supplier_master_id);
 
           $("#view_payment_supplier_name").text(
             $(e.target).closest("tr").children("td").eq(5).text()
@@ -4275,7 +4333,7 @@
           // Opening Slied Panel
           $("#paymentProductModal").modal("show");
 
-          loadPaymentProductTableData(purchase_payment_id);
+          loadPaymentProductTableData(purchase_payment_id, supplier_master_id);
         });
 
         $(document).on("click", ".editPayment", (e) => {
@@ -4393,9 +4451,16 @@
         });
       }
 
-      function loadPaymentProductTableData(purchase_payment_id) {
+      function loadPaymentProductTableData(
+        purchase_payment_id,
+        supplier_master_id
+      ) {
         if (!purchase_payment_id) {
-          toastr["warning"]("Payment ID should not be empty!");
+          return toastr["warning"]("Payment ID should not be empty!");
+        }
+
+        if (!supplier_master_id) {
+          return toastr["warning"]("Supplier ID should not be empty!");
         }
         $("#paymentProductTable").DataTable({
           // searching: true,
@@ -4409,7 +4474,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product/payment/items?purchase_payment_id=${purchase_payment_id}`,
+            url: `/api/v1/procurement/product/payment/items?purchase_payment_id=${purchase_payment_id}&supplier_master_id=${supplier_master_id}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({

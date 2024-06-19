@@ -1,24 +1,15 @@
 import { ProcurementProducts } from "../../../controllers";
 
-export const GetPaymentItems = (
-  {
-    purchase_payment_id,
-    supplier_master_id,
-    start,
-    length,
-    "search[value]": search,
-  },
+export const GetPaidStatus = (
+  { procurement_product_id, supplier_master_id },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementProducts.GetPaymentItems({
-        purchase_payment_id,
+      let procurement = await ProcurementProducts.GetPaidStatus({
+        id: procurement_product_id,
         supplier_master_id,
-        start,
-        length,
-        search,
       });
 
       if (!procurement) {
