@@ -130,7 +130,7 @@ export const GetAll = ({ start, length, search }) => {
           { transaction_id: { [Op.iLike]: `%${search}%` } },
           { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
           {
-            "$ProcurementLots.procurement_lot$": { [Op.iLike]: `%${search}%` },
+            "$ProcurementLot.procurement_lot$": { [Op.iLike]: `%${search}%` },
           },
           {
             payment_method: { [Op.iLike]: `%${search}%` },
