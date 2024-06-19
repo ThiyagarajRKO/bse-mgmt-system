@@ -3150,7 +3150,7 @@
                     if (response.status == 420) {
                       toastr.warning(
                         response?.responseJSON?.message,
-                        "Warning"
+                        "Already Paid"
                       );
                     } else {
                       toastr.error(
@@ -4341,10 +4341,15 @@
             $(e.target).closest("tr").children("td").eq(3).text()
           );
 
+          const paidDateTime = $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(4)
+            .find("span")
+            .attr("payment_date");
+
           $("#payment_date").val(
-            formatDate(
-              new Date($(e.target).closest("tr").children("td").eq(4).text())
-            )
+            paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
           );
 
           view_payment_lot_id = $(e.target)
