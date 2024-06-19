@@ -1,7 +1,12 @@
 import { ProcurementProducts } from "../../../controllers";
 
 export const Delete = (
-  { profile_id, procurement_product_id },
+  {
+    profile_id,
+    procurement_product_id,
+    procurement_lot_id,
+    supplier_master_id,
+  },
   session,
   fastify
 ) => {
@@ -10,6 +15,8 @@ export const Delete = (
       const procurement = await ProcurementProducts.Delete({
         profile_id,
         id: procurement_product_id,
+        procurement_lot_id,
+        supplier_master_id,
       });
 
       if (procurement > 0) {

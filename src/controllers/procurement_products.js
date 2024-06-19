@@ -635,13 +635,19 @@ export const CheckLot = ({
   });
 };
 
-export const Delete = ({ profile_id, id }) => {
+export const Delete = ({
+  profile_id,
+  id,
+  procurement_lot_id,
+  supplier_master_id,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id) {
+      if ((!id && !procurement_lot_id) || !supplier_master_id) {
         return reject({
           statusCode: 420,
-          message: "Purchase ID field must not be empty!",
+          message:
+            "Purchase Lot, Product ID, or Supplier ID field must not be empty!",
         });
       }
 
@@ -652,17 +658,70 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
+      const paidStatus = await PaidStatus({ id, supplier_master_id });
+
+      if (paidStatus > 0) {
+        return reject({
+          statusCode: 420,
+          message: "Unable to delete the paid products.",
+        });
+      }
+
+      let where = {
+        is_active: true,
+        created_by: profile_id,
+      };
+
+      if (id) {
+        where.id = id;
+      }
+
+      if (procurement_lot_id) {
+        where.procurement_lot_id = procurement_lot_id;
+      }
+
       const procurement = await models.ProcurementProducts.destroy({
-        where: {
-          id,
-          is_active: true,
-          created_by: profile_id,
-        },
+        where,
         individualHooks: true,
         profile_id,
       });
 
       resolve(procurement);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const PaidStatus = ({ id, supplier_master_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const lot = await models.ProcurementProducts.count({
+        include: [
+          {
+            as: "pl",
+            model: models.ProcurementLots,
+            include: [
+              {
+                model: models.PurchasePayments,
+                where: {
+                  is_active: true,
+                  supplier_master_id,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          is_active: true,
+          id,
+        },
+      });
+
+      resolve(lot);
     } catch (err) {
       reject(err);
     }

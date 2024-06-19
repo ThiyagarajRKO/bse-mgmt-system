@@ -789,7 +789,7 @@
                   </div>
                 </div>
                 <hr />
-                <div class="">
+                <div>
                   <div class="form-group my-2">
                     <label for="procurement_date">Date of Purchase</label>
                     <input
@@ -840,7 +840,7 @@
                     />
                   </div>
                   <div class="form-group my-2">
-                    <label for="procurement_price">Price (INR per kg)</label>
+                    <label for="procurement_price">Price per KG</label>
                     <input
                       id="procurement_price"
                       maxlength="10"
@@ -909,7 +909,6 @@
                 <thead>
                   <tr>
                     <th></th>
-                    <th></th>
                     <th class="fw-bold"><span>Purchase Date</span></th>
                     <th class="fw-bold"><span>Lot no</span></th>
                     <th class="fw-bold"><span>Total Product Items</span></th>
@@ -972,6 +971,7 @@
                 >
                   <thead>
                     <tr>
+                      <th style="border-radius: 4px 0 0 0"></th>
                       <th style="border-radius: 4px 0 0 0"></th>
                       <th class="fw-bold"><span>Product Name</span></th>
                       <th class="fw-bold">
@@ -1241,7 +1241,7 @@
                     <input
                       id="payment_date"
                       class="form-control"
-                      type="date"
+                      type="datetime-local"
                       placeholder="eg. 10"
                       name="payment_date"
                       required
@@ -1638,10 +1638,10 @@
 
                       <table class="col">
                         <tr>
-                          <th class="align-top">Payment Status</th>
+                          <th class="align-top">Payment Date</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_payment_status"></span>
+                            <span id="view_payment_date"></span>
                           </td>
                         </tr>
                         <tr>
@@ -1796,10 +1796,46 @@
         return year + "-" + month + "-" + day;
       }
 
+      function formatDateTime(dateTime) {
+        var months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        var hours = dateTime.getHours();
+        var minutes = dateTime.getMinutes();
+        var ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Handle midnight (0 hours)
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        var strTime = hours + ":" + minutes + " " + ampm;
+        var month = months[dateTime.getMonth()];
+        var day = dateTime.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+        return day + "-" + month + "-" + dateTime.getFullYear() + " " + strTime;
+      }
+
       // Function to reset all input fields
       function resetAllInputs() {
         $("input").val("");
         $("input[type=number]").val("");
+
+        // Reset all date inputs
+        var dateTimeInputs = document.querySelectorAll(
+          'input[type="datetime-local"]'
+        );
+        // looping all the date inputs
+        dateTimeInputs.forEach(function (input) {
+          input.value = formatDate(new Date());
+        });
 
         // Reset all date inputs
         var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -2723,7 +2759,6 @@
           },
           columns: [
             { data: null },
-            { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
             { data: "total_product_count" },
@@ -2740,17 +2775,6 @@
             },
             {
               targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delProcurement" procurement_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
-                );
-              },
-            },
-            {
-              targets: [2],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["procurement_date"]);
@@ -2776,21 +2800,21 @@
               },
             },
             {
-              targets: [4],
+              targets: [3],
               className: "text-left",
               render: function (data, type, row) {
                 return data || 0;
               },
             },
             {
-              targets: [5],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
               },
             },
             {
-              targets: [6],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
@@ -2818,13 +2842,13 @@
         const view_total_products = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(4)
+          .eq(3)
           .text();
 
         const view_total_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(5)
+          .eq(4)
           .text();
 
         $("#view_lot_no").text(view_lot_no);
@@ -2833,12 +2857,12 @@
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(1).text()
         );
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(1).text()
         );
 
         $("#view_total_products").text(view_total_products);
@@ -2849,135 +2873,6 @@
         $("#procurementProductModal").modal("show");
 
         loadProcurementProductTableData(procurement_lot_id);
-      });
-
-      $(document).on("click", ".editProcurementProducts", (e) => {
-        // Changing panel input fields data
-
-        $("#procurement_date").val(
-          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
-        );
-
-        $("#procurement_unit")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_product_type")
-          .val($(e.target).closest("tr").children("td").eq(2).text())
-          .trigger("change");
-
-        $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#procurement_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(6)
-              .find("span")
-              .attr("supplier_master_id")
-          )
-          .trigger("change");
-
-        $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
-
-        // Opening Slied Panel
-        $("#openProcurementPanelBtn").click();
-
-        // Changing panel heading
-        $("#procurementPanelHeading").text("Edit Procurement Data");
-
-        // Changing panel button label
-        $("#submitPurchases").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPurchases").attr(
-          "procurement_product_id",
-          $(e.target).attr("procurement_product_id")
-        );
-
-        $("#submitPurchases").attr(
-          "procurement_lot_id",
-          $("#view_lot_no").attr("procurement_lot_id")
-        );
-
-        $("#procurementProductModal").modal("hide");
-      });
-
-      $(document).on("click", ".delProcurement", (e) => {
-        let procurement_id = $(e.target).attr("procurement_id");
-        let currentRow = $(e.target).closest("tr");
-        $.confirm({
-          title: "Delete Procurement Detail?",
-          content: "Are you sure, do you want to remove this Procurement?",
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
-          type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
-          buttons: {
-            delete: {
-              text: "Delete",
-              btnClass: "btn-red",
-              action: function () {
-                $.ajax({
-                  url:
-                    "/api/v1/procurement/product?procurement_id=" +
-                    procurement_id,
-                  method: "delete",
-                })
-                  .done(function (response) {
-                    //loading data to table
-                    loadProcurementTableData();
-
-                    toastr.success(
-                      "Procurement detail deleted successfully",
-                      "Deleted"
-                    );
-                  })
-                  .fail(function () {
-                    toastr.error(
-                      "Procurement detail failed to delete!",
-                      "Error"
-                    );
-                  });
-              },
-            },
-            no: function () {
-              toastr.info("Procurement detail is safe now", "Info");
-            },
-          },
-        });
       });
 
       function loadProcurementProductTableData(procurement_lot_id) {
@@ -3020,6 +2915,7 @@
           },
           columns: [
             { data: null },
+            { data: null },
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
@@ -3041,6 +2937,17 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-trash del delProcurementProduct" procurement_product_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement"></i>'
+                );
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
@@ -3054,7 +2961,7 @@
               },
             },
             {
-              targets: [4],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -3063,21 +2970,21 @@
               },
             },
             {
-              targets: [5],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
               },
             },
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
               },
             },
             {
-              targets: [8],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
                 return row?.pl?.["PurchasePayments"]?.length > 0
@@ -3089,6 +2996,153 @@
           drawCallback: () => {},
         });
       }
+
+      $(document).on("click", ".editProcurementProducts", (e) => {
+        // Changing panel input fields data
+
+        $("#procurement_date").val(
+          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+        );
+
+        $("#procurement_unit")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("unit_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_product")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(2)
+              .find("span")
+              .attr("product_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_product_type")
+          .val($(e.target).closest("tr").children("td").eq(3).text())
+          .trigger("change");
+
+        $("#procurement_quantity").val(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#procurement_price").val(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#procurement_product_supplier")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(7)
+              .find("span")
+              .attr("supplier_master_id")
+          )
+          .trigger("change");
+
+        $("#procurement_purchaser").val(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+        // Opening Slied Panel
+        $("#openProcurementPanelBtn").click();
+
+        // Changing panel heading
+        $("#procurementPanelHeading").text("Edit Procurement Data");
+
+        // Changing panel button label
+        $("#submitPurchases").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPurchases").attr(
+          "procurement_product_id",
+          $(e.target).attr("procurement_product_id")
+        );
+
+        $("#submitPurchases").attr(
+          "procurement_lot_id",
+          $("#view_lot_no").attr("procurement_lot_id")
+        );
+
+        $("#procurementProductModal").modal("hide");
+      });
+
+      $(document).on("click", ".delProcurementProduct", (e) => {
+        const procurement_product_id = $(e.target).attr(
+          "procurement_product_id"
+        );
+        const supplier_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(7)
+          .find("span")
+          .attr("supplier_master_id");
+        const currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Product Detail?",
+          content: "Are you sure, do you want to remove this Product?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/procurement/product?procurement_product_id=" +
+                    procurement_product_id +
+                    "&supplier_master_id=" +
+                    supplier_master_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadProcurementProductTableData();
+                    loadProcurementTableData();
+
+                    toastr.success(
+                      "Procurement product has been deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (response) {
+                    if (response.status == 420) {
+                      toastr.warning(
+                        response?.responseJSON?.message,
+                        "Warning"
+                      );
+                    } else {
+                      toastr.error(
+                        "Procurement product detail failed to delete!",
+                        "Error"
+                      );
+                    }
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Procurement product detail is safe now", "Info");
+            },
+          },
+        });
+      });
 
       function loadProcurementProductType() {
         $("#procurement_product_type").select2({
@@ -4019,7 +4073,7 @@
 
                 var month = months[date.getMonth()];
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
+                return `<span payment_date="${row["payment_date"]}">${day + "-" + month + "-" + date.getFullYear()}</span>`;
               },
             },
             {
@@ -4154,7 +4208,7 @@
           );
 
           $("#view_payment_purchase_date").text(
-            formatDate(
+            formatDateTime(
               new Date(
                 $(e.target)
                   .closest("tr")
@@ -4205,48 +4259,17 @@
             $(e.target).closest("tr").children("td").eq(15).text()
           );
 
-          // Quality Control
-          $("#view_inspector_name").text(
-            parseFloat(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(0)
-                .find("i")
-                .attr("inspector_name")
-            ).toFixed(2)
-          );
-
-          const view_adjusted_quantity = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(0)
-            .find("i")
-            .attr("total_adjusted_quantity");
-
-          $("#view_adjusted_quantity").text(
-            parseFloat(
-              view_adjusted_quantity != "null" ? view_adjusted_quantity : 0
-            ).toFixed(2)
-          );
-
-          const view_adjusted_price = $(e.target)
-            .closest("tr")
-            .children("td")
-            .eq(0)
-            .find("i")
-            .attr("total_adjusted_price");
-
-          $("#view_adjusted_price").text(
-            parseFloat(
-              view_adjusted_price != "null" ? view_adjusted_price : 0
-            ).toFixed(2)
-          );
-
-          $("#view_quality_status").html(
-            view_adjusted_quantity != "null" || view_adjusted_price != "null"
-              ? `Adjusted <i class="text-warning fa-solid fa-pencil"></i>`
-              : `OK <i class="text-success fa-solid fa-circle-check"></i>`
+          $("#view_payment_date").text(
+            formatDateTime(
+              new Date(
+                $(e.target)
+                  .closest("tr")
+                  .children("td")
+                  .eq(4)
+                  .find("span")
+                  .attr("payment_date")
+              )
+            )
           );
 
           // Opening Slied Panel
@@ -4442,85 +4465,6 @@
           drawCallback: () => {},
         });
       }
-
-      $(document).on("click", ".editPaymentProducts", (e) => {
-        // Changing panel input fields data
-
-        $("#payment_date").val(
-          formatDate(new Date($("#view_lot_no").attr("payment_date")))
-        );
-
-        $("#payment_unit")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(0)
-              .find("i")
-              .attr("unit_master_id")
-          )
-          .trigger("change");
-
-        $("#payment_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(1)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
-
-        $("#payment_product_type")
-          .val($(e.target).closest("tr").children("td").eq(2).text())
-          .trigger("change");
-
-        $("#payment_quantity").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
-
-        $("#payment_price").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-
-        $("#payment_product_supplier")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(6)
-              .find("span")
-              .attr("supplier_master_id")
-          )
-          .trigger("change");
-
-        $("#payment_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
-
-        // Opening Slied Panel
-        $("#openPaymentPanelBtn").click();
-
-        // Changing panel heading
-        $("#paymentPanelHeading").text("Edit Payment Data");
-
-        // Changing panel button label
-        $("#submitPayment").text("Update");
-
-        // Changing panel button attribute
-        $("#submitPayment").attr(
-          "payment_product_id",
-          $(e.target).attr("payment_product_id")
-        );
-
-        $("#submitPayment").attr(
-          "payment_lot_id",
-          $("#view_lot_no").attr("payment_lot_id")
-        );
-
-        $("#paymentProductModal").modal("hide");
-      });
 
       function loadPaymentSuppliers() {
         // Load Suppliers
@@ -4768,10 +4712,10 @@
           supplier_master_id: $("#paymentSupplierNames").val(),
           procurement_lot_id: $("#paymentLotNo").val(),
           payment_method: $("#paymentMethods").val(),
-          discount: $("#payment_discount").val(),
+          discount: $("#payment_discount").val() || 0,
           total_paid: $("#total_paid").val(),
-          penalty: $("#penalty").val(),
-          tax_amount: $("#tax_amount").val(),
+          penalty: $("#penalty").val() || 0,
+          tax_amount: $("#tax_amount").val() || 0,
           net_amount,
           due_amount,
         };
