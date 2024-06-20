@@ -1309,8 +1309,8 @@
                       name="total_paid"
                       required
                     />
-                    <span style="font-size: 12px"
-                      >Total Price :
+                    <span style="font-size: 12px">
+                      <span id="total_amount_paid">Total Price :</span>
                       <span class="fw-bold" id="total_payment_amount"
                         >0</span
                       ></span
@@ -4155,10 +4155,7 @@
               targets: [9],
               className: "text-left",
               render: function (data, type, row) {
-                return parseFloat(
-                  parseFloat(data["total_paid"] || 0) +
-                    parseFloat(data["due_amount"] || 0)
-                ).toFixed(2);
+                return parseFloat(data["total_amount"] || 0).toFixed(2);
               },
             },
             {
@@ -4585,7 +4582,8 @@
 
         // Load Suppliers
         $.ajax({
-          url: "/api/v1/procurement/lot/lots?supplier_id=" + supplier_id,
+          url:
+            "/api/v1/procurement/lot/lots/payment?supplier_id=" + supplier_id,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4600,7 +4598,11 @@
                 return {
                   id: item.id,
                   text: item.procurement_lot,
-                  total_amount: item?.total_amount,
+                  total_amount:
+                    parseFloat(item?.total_amount) -
+                    parseFloat(item?.total_paid || 0),
+                  total_paid: item?.total_paid,
+                  is_due: parseFloat(item?.total_paid || 0) > 0 ? true : false,
                 };
               }),
             });
@@ -4626,7 +4628,11 @@
       $(document).on("change", "#paymentLotNo", (e) => {
         if ($(e.target).val()) {
           const total_amount = $(e.target).select2("data")?.[0]?.total_amount;
+          const is_due = $(e.target).select2("data")?.[0]?.is_due;
 
+          $("#total_amount_paid").text(
+            is_due ? "Total Due :" : "Total Amount :"
+          );
           $("#total_payment_amount").text(total_amount || "0.00");
         }
         $("#payment_discount").keyup();
@@ -4636,6 +4642,14 @@
         const discount = parseFloat($(e.target).val());
 
         const total_amount = parseFloat($("#total_payment_amount").text());
+
+        if ($("#paymentLotNo").val()) {
+          const is_due = $("#paymentLotNo").select2("data")?.[0]?.is_due;
+
+          $("#total_amount_paid").text(
+            is_due ? "Total Due :" : "Total Amount :"
+          );
+        }
 
         if (discount > 0 && total_amount > 0) {
           $("#total_payment_amount").text(
@@ -4660,14 +4674,6 @@
           payment_discount;
 
         calculateTotalPaid();
-        if (
-          parseFloat($(e.target).val()) &&
-          parseFloat($(e.target).val()) > total_amount
-        ) {
-          toastr["warning"](
-            "Paid amount should not be greater than the total amount"
-          );
-        }
       });
 
       $(document).on("keyup", "#penalty", (e) => {

@@ -13,6 +13,7 @@ import { GetDispatchLots } from "./handlers/get_dispatch_lots";
 import { GetPeeledLots } from "./handlers/get_peeled_lots";
 import { GetPackingLots } from "./handlers/get_packing_lots";
 import { GetPackingStats } from "./handlers/get_packing_stats";
+import { GetPaymentLots } from "./handlers/get_payment_lots";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -30,6 +31,7 @@ import { getPeeledLotsSchema } from "./schema/get_peeled_lots";
 import { getPackingLotsSchema } from "./schema/get_packing_lots";
 import { getPackingStatsSchema } from "./schema/get_packing_stats";
 import { getLotsSchema } from "./schema/get_lots";
+import { getPaymentLotsSchema } from "./schema/get_payment_lots";
 
 export const procurementLotsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -212,6 +214,25 @@ export const procurementLotsRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await GetPackingLots(params, req?.session, fastify);
+
+      reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/lots/payment", getPaymentLotsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetPaymentLots(params, req?.session, fastify);
 
       reply.code(result.statusCode || 200).send({
         success: true,

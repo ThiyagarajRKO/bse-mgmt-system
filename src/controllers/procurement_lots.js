@@ -332,7 +332,27 @@ export const Delete = ({ profile_id, id }) => {
   });
 };
 
-export const GetLots = ({ supplier_id, start = 0, length = 10 }) => {
+export const GetLots = ({ start = 0, length = 10 }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const procurements = await models.ProcurementLots.findAll({
+        attributes: ["id", "procurement_lot"],
+        where: {
+          is_active: true,
+        },
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetPaymentLots = ({ supplier_id, start = 0, length = 10 }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let supplierWhere = {
@@ -358,6 +378,17 @@ export const GetLots = ({ supplier_id, start = 0, length = 10 }) => {
               } pp.is_active = true)`
             ),
             "total_amount",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.total_paid) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND
+              ${
+                supplier_id != "null" && supplier_id != undefined
+                  ? "pp.supplier_master_id = '" + supplier_id + "' and"
+                  : ""
+              } pp.is_active = true)`
+            ),
+            "total_paid",
           ],
         ],
         include: [
