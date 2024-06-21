@@ -187,31 +187,31 @@ export const GetAll = ({ start, length, search }) => {
           "created_at",
           [
             sequelize.literal(
-              `(SELECT COUNT(pp.id) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+              `(SELECT COUNT(pp.id) FROM procurement_products pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
             ),
             "total_products",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
             ),
             "total_amount",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_quantity) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_quantity) FROM procurement_products pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
             ),
             "total_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.adjusted_quantity) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+              `(SELECT SUM(pp.adjusted_quantity) FROM procurement_products pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
             ),
             "total_adjusted_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.adjusted_price) FROM procurement_products pp JOIN procurement_lots pl ON pl.id = pp.procurement_lot_id and pl.is_active = true WHERE pl.id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
+              `(SELECT SUM(pp.adjusted_price) FROM procurement_products pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true)`
             ),
             "total_adjusted_price",
           ],

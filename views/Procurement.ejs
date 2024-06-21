@@ -4517,13 +4517,6 @@
                 return parseFloat(data || 0).toFixed(2);
               },
             },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
-              },
-            },
           ],
           drawCallback: () => {},
         });

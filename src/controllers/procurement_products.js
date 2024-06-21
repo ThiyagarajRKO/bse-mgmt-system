@@ -328,7 +328,6 @@ export const GetAll = ({
           "id",
           "procurement_product_type",
           "procurement_quantity",
-          "procurement_quantity",
           "adjusted_quantity",
           "procurement_price",
           "adjusted_price",
@@ -345,7 +344,7 @@ export const GetAll = ({
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp LEFT JOIN purchase_payments ppt ON ppt.supplier_master_id = pp.supplier_master_id and ppt.procurement_lot_id = pp.procurement_lot_id and ppt.is_active = true WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
             ),
             "total_amount",
           ],
@@ -469,7 +468,6 @@ export const GetPaymentItems = ({
         attributes: [
           "id",
           "procurement_product_type",
-          "procurement_quantity",
           "procurement_quantity",
           "adjusted_quantity",
           "procurement_price",
