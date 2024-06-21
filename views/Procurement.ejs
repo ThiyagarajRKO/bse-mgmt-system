@@ -4090,18 +4090,14 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editPayment" purchase_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this payment"></i>`;
+                return `<i class="fa fa-pen-to-square edit editPayment" purchase_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f;${row["is_last_payment"] ? "" : "display:none"}" data-toggle="tooltip" data-placement="top" title="Click this button to edit this payment"></i>`;
               },
             },
             {
               targets: [2],
               className: "text-left",
               render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delPayment" purchase_payment_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment"></i>'
-                );
+                return `<i class="fa fa-trash del delPayment" purchase_payment_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f;${row["is_last_payment"] ? "" : "display:none"}" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment"></i>`;
               },
             },
             {

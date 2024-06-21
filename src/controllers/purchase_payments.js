@@ -215,6 +215,12 @@ export const GetAll = ({ start, length, search }) => {
             ),
             "total_adjusted_price",
           ],
+          [
+            sequelize.literal(
+              `(SELECT CASE WHEN pp.id = "PurchasePayments".id THEN true ELSE false END FROM purchase_payments pp WHERE pp.procurement_lot_id = "PurchasePayments".procurement_lot_id and pp.supplier_master_id = "PurchasePayments".supplier_master_id and pp.is_active = true order by pp.created_at DESC LIMIT 1)`
+            ),
+            "is_last_payment",
+          ],
         ],
         include: [
           {
