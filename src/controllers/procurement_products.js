@@ -230,7 +230,7 @@ export const GetAll = ({
   procurement_price,
   procurement_totalamount,
   procurement_purchaser,
-  supplier_id,
+  supplier_master_id,
   purchase_payment_id,
   start,
   length,
@@ -288,8 +288,8 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (supplier_id) {
-        supplierWhere.id = supplier_id;
+      if (supplier_master_id) {
+        supplierWhere.id = supplier_master_id;
       }
 
       let paymentWhere = {

@@ -352,15 +352,16 @@ export const GetLots = ({ start = 0, length = 10 }) => {
   });
 };
 
-export const GetPaymentLots = ({ supplier_id, start = 0, length = 10 }) => {
+export const GetPaymentLots = ({
+  supplier_master_id,
+  purchase_payment_id,
+  start = 0,
+  length = 10,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let supplierWhere = {
-        is_active: true,
-      };
-
-      if (supplier_id) {
-        supplierWhere.id = supplier_id;
+      if (!supplier_master_id) {
+        return reject({ message: "Supplier master data must not be empty" });
       }
 
       const procurements = await models.ProcurementLots.findAll({
@@ -370,23 +371,20 @@ export const GetPaymentLots = ({ supplier_id, start = 0, length = 10 }) => {
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND
-              ${
-                supplier_id != "null" && supplier_id != undefined
-                  ? "pp.supplier_master_id = '" + supplier_id + "' and"
-                  : ""
-              } pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND pp.supplier_master_id = '${supplier_master_id}' AND pp.is_active = true)`
             ),
             "total_amount",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(pp.total_paid) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND
+              `(SELECT SUM(pp.total_paid) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND pp.supplier_master_id = '${supplier_master_id}' 
               ${
-                supplier_id != "null" && supplier_id != undefined
-                  ? "pp.supplier_master_id = '" + supplier_id + "' and"
+                purchase_payment_id != "null" &&
+                purchase_payment_id != undefined &&
+                purchase_payment_id != ""
+                  ? "AND pp.id != '" + purchase_payment_id + "'"
                   : ""
-              } pp.is_active = true)`
+              } AND pp.is_active = true)`
             ),
             "total_paid",
           ],
@@ -397,14 +395,8 @@ export const GetPaymentLots = ({ supplier_id, start = 0, length = 10 }) => {
             model: models.ProcurementProducts,
             where: {
               is_active: true,
+              supplier_master_id,
             },
-            include: [
-              {
-                attributes: [],
-                model: models.SupplierMaster,
-                where: supplierWhere,
-              },
-            ],
           },
         ],
         where: {

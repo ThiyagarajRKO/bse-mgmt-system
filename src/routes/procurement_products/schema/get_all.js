@@ -15,7 +15,7 @@ export const getAllSchema = {
         procurement_totalamount: { type: "integer" },
         procurement_purchaser: { type: "string" },
         procurement_supplier: { type: "string" },
-        supplier_id: { type: "string" },
+        supplier_master_id: { type: "string" },
         purchase_payment_id: { type: "string" },
         start: { type: "string" },
         length: { type: "string" },

@@ -1087,7 +1087,7 @@
                           <th class="align-top">ID</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_supplier_id"></span>
+                            <span id="view_supplier_master_id"></span>
                           </td>
                         </tr>
                         <tr>
@@ -1451,7 +1451,7 @@
                           <th class="align-top">ID</th>
                           <td class="align-top">:</td>
                           <td class="align-top">
-                            <span id="view_payment_supplier_id"></span>
+                            <span id="view_payment_supplier_master_id"></span>
                           </td>
                         </tr>
                         <tr>
@@ -1737,6 +1737,7 @@
       // Declarations
       App.checkAccess();
       let view_payment_lot_id = "";
+      let view_purchase_payment_id = "";
 
       var tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -3565,7 +3566,7 @@
               targets: [10],
               className: "text-center",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewSupplierProducts" supplier_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this Supplier Orders"></i>`;
+                return `<i class="fa-solid fa-eye view viewSupplierProducts" supplier_master_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this Supplier Orders"></i>`;
               },
             },
           ],
@@ -3576,13 +3577,13 @@
         // Changing panel input fields data
         $("#closeSupplierPanelBtn").click();
 
-        const supplier_id = $(e.target)
+        const supplier_master_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(0)
           .text();
 
-        $("#view_supplier_id").text(supplier_id);
+        $("#view_supplier_master_id").text(supplier_master_id);
 
         $("#view_supplier_name").text(
           $(e.target).closest("tr").children("td").eq(1).text()
@@ -3603,11 +3604,11 @@
         // Opening Slied Panel
         $("#supplierProductModal").modal("show");
 
-        loadSupplierProductTableData(supplier_id);
+        loadSupplierProductTableData(supplier_master_id);
       });
 
-      function loadSupplierProductTableData(supplier_id) {
-        if (!supplier_id) {
+      function loadSupplierProductTableData(supplier_master_id) {
+        if (!supplier_master_id) {
           toastr["warning"]("Supplier ID should not be empty!");
         }
         $("#supplierProductTable").DataTable({
@@ -3622,7 +3623,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product?supplier_id=${supplier_id}`,
+            url: `/api/v1/procurement/product?supplier_master_id=${supplier_master_id}`,
             error: function (xhr, error, code) {
               $("#supplierProductTable").DataTable().destroy();
               $("#supplierProductTable").DataTable({
@@ -3988,14 +3989,18 @@
           "submitPayment",
           "payment_product_id"
         );
-
-        // Changing panel save button attribute
-        $(`#submitPayment`).attr("purchase_payment_id", null);
       });
 
       // Close panel
       $("#closePaymentPanelBtn").click(function () {
         closeSlidePanel("paymentSlideInPanel");
+
+        // Changing panel save button attribute
+        $(`#submitPayment`).attr("purchase_payment_id", null);
+
+        $("#total_payment_amount").text("0.00");
+        view_purchase_payment_id = "";
+        view_payment_lot_id = "";
       });
 
       $(".paymentMenu").click(function () {
@@ -4097,7 +4102,7 @@
               targets: [2],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-trash del delPayment" purchase_payment_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f;${row["is_last_payment"] ? "" : "display:none"}" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment"></i>`;
+                return `<i class="fa fa-trash del delPayment" purchase_payment_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment"></i>`;
               },
             },
             {
@@ -4166,284 +4171,286 @@
           //   return start + " to " + end;
           // }
         });
+      }
 
-        $(document).on("click", ".viewPayments", async (e) => {
-          // Changing panel input fields data
-          $("#closePaymentPanelBtn").click();
+      $(document).on("click", ".viewPayments", async (e) => {
+        // Changing panel input fields data
+        $("#closePaymentPanelBtn").click();
 
-          const purchase_payment_id = $(e.target).attr("purchase_payment_id");
+        const purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
-          const supplier_master_id = $(e.target)
+        const supplier_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .find("span")
+          .attr("supplier_master_id");
+
+        // Suppliers
+        $("#view_payment_supplier_master_id").text(supplier_master_id);
+
+        $("#view_payment_supplier_name").text(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#view_payment_supplier_email").text(
+          $(e.target)
             .closest("tr")
             .children("td")
             .eq(5)
             .find("span")
-            .attr("supplier_master_id");
+            .attr("email")
+        );
 
-          // Suppliers
-          $("#view_payment_supplier_id").text(supplier_master_id);
-
-          $("#view_payment_supplier_name").text(
-            $(e.target).closest("tr").children("td").eq(5).text()
-          );
-
-          $("#view_payment_supplier_email").text(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("email")
-          );
-
-          $("#view_payment_supplier_phone").text(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("phone")
-          );
-
-          $("#view_payment_supplier_address").text(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("address")
-          );
-
-          // Purchase Order
-          $("#view_purchase_order_id").text(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(6)
-              .find("span")
-              .attr("procurement_lot_id")
-          );
-
-          $("#view_payment_lot_no").text(
-            $(e.target).closest("tr").children("td").eq(6).text()
-          );
-
-          $("#view_payment_total_products").text(
-            $(e.target).closest("tr").children("td").eq(7).text()
-          );
-
-          $("#view_total_amount").text(
-            parseFloat(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(0)
-                .find("i")
-                .attr("total_amount")
-            ).toFixed(2)
-          );
-
-          $("#view_total_quantity").text(
-            parseFloat(
-              $(e.target)
-                .closest("tr")
-                .children("td")
-                .eq(0)
-                .find("i")
-                .attr("total_quantity")
-            ).toFixed(2)
-          );
-
-          $("#view_payment_purchase_date").text(
-            formatDateTime(
-              new Date(
-                $(e.target)
-                  .closest("tr")
-                  .children("td")
-                  .eq(6)
-                  .find("span")
-                  .attr("created_at")
-              )
-            )
-          );
-
-          // Payment Information
-          $("#view_supplier_payment_id").text(purchase_payment_id);
-
-          $("#view_transaction_id").text(
-            $(e.target).closest("tr").children("td").eq(3).text()
-          );
-
-          $("#view_payment_date").text(
-            $(e.target).closest("tr").children("td").eq(4).text()
-          );
-
-          $("#view_payment_method").text(
-            $(e.target).closest("tr").children("td").eq(8).text()
-          );
-
-          $("#view_total_paid").text(
-            $(e.target).closest("tr").children("td").eq(10).text()
-          );
-
-          $("#view_due_amount").text(
-            $(e.target).closest("tr").children("td").eq(11).text()
-          );
-
-          $("#view_discount").text(
-            $(e.target).closest("tr").children("td").eq(12).text()
-          );
-
-          $("#view_penalty").text(
-            $(e.target).closest("tr").children("td").eq(13).text()
-          );
-
-          $("#view_tax_paid").text(
-            $(e.target).closest("tr").children("td").eq(14).text()
-          );
-
-          $("#view_net_amount").text(
-            $(e.target).closest("tr").children("td").eq(15).text()
-          );
-
-          $("#view_payment_date").text(
-            formatDateTime(
-              new Date(
-                $(e.target)
-                  .closest("tr")
-                  .children("td")
-                  .eq(4)
-                  .find("span")
-                  .attr("payment_date")
-              )
-            )
-          );
-
-          // Opening Slied Panel
-          $("#paymentProductModal").modal("show");
-
-          loadPaymentProductTableData(purchase_payment_id, supplier_master_id);
-        });
-
-        $(document).on("click", ".editPayment", (e) => {
-          $("#transaction_id").val(
-            $(e.target).closest("tr").children("td").eq(3).text()
-          );
-
-          const paidDateTime = $(e.target)
+        $("#view_payment_supplier_phone").text(
+          $(e.target)
             .closest("tr")
             .children("td")
-            .eq(4)
+            .eq(5)
             .find("span")
-            .attr("payment_date");
+            .attr("phone")
+        );
 
-          $("#payment_date").val(
-            paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
-          );
+        $("#view_payment_supplier_address").text(
+          $(e.target)
+            .closest("tr")
+            .children("td")
+            .eq(5)
+            .find("span")
+            .attr("address")
+        );
 
-          view_payment_lot_id = $(e.target)
+        // Purchase Order
+        $("#view_purchase_order_id").text(
+          $(e.target)
             .closest("tr")
             .children("td")
             .eq(6)
             .find("span")
-            .attr("procurement_lot_id");
+            .attr("procurement_lot_id")
+        );
 
-          $("#paymentSupplierNames")
-            .val(
+        $("#view_payment_lot_no").text(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        $("#view_payment_total_products").text(
+          $(e.target).closest("tr").children("td").eq(7).text()
+        );
+
+        $("#view_total_amount").text(
+          parseFloat(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("total_amount")
+          ).toFixed(2)
+        );
+
+        $("#view_total_quantity").text(
+          parseFloat(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(0)
+              .find("i")
+              .attr("total_quantity")
+          ).toFixed(2)
+        );
+
+        $("#view_payment_purchase_date").text(
+          formatDateTime(
+            new Date(
               $(e.target)
                 .closest("tr")
                 .children("td")
-                .eq(5)
+                .eq(6)
                 .find("span")
-                .attr("supplier_master_id")
+                .attr("created_at")
             )
-            .trigger("change");
+          )
+        );
 
-          $("#paymentMethods")
-            .val($(e.target).closest("tr").children("td").eq(8).text())
-            .trigger("change");
+        // Payment Information
+        $("#view_supplier_payment_id").text(purchase_payment_id);
 
-          $("#total_paid").val(
-            $(e.target).closest("tr").children("td").eq(10).text()
-          );
+        $("#view_transaction_id").text(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
 
-          $("#payment_discount").val(
-            $(e.target).closest("tr").children("td").eq(12).text()
-          );
+        $("#view_payment_date").text(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
 
-          $("#penalty").val(
-            $(e.target).closest("tr").children("td").eq(13).text()
-          );
+        $("#view_payment_method").text(
+          $(e.target).closest("tr").children("td").eq(8).text()
+        );
 
-          $("#tax_amount").val(
-            $(e.target).closest("tr").children("td").eq(14).text()
-          );
+        $("#view_total_paid").text(
+          $(e.target).closest("tr").children("td").eq(10).text()
+        );
 
-          // Opening Slied Panel
-          $("#openPaymentPanelBtn").click();
+        $("#view_due_amount").text(
+          $(e.target).closest("tr").children("td").eq(11).text()
+        );
 
-          // Changing panel heading
-          $("#paymentPanelHeading").text("Edit Payment Data");
+        $("#view_discount").text(
+          $(e.target).closest("tr").children("td").eq(12).text()
+        );
 
-          // Changing panel button label
-          $("#submitPayment").text("Update");
+        $("#view_penalty").text(
+          $(e.target).closest("tr").children("td").eq(13).text()
+        );
 
-          // Changing panel button attribute
-          $("#submitPayment").attr(
-            "purchase_payment_id",
-            $(e.target).attr("purchase_payment_id")
-          );
+        $("#view_tax_paid").text(
+          $(e.target).closest("tr").children("td").eq(14).text()
+        );
 
-          $("#paymentProductModal").modal("hide");
-        });
+        $("#view_net_amount").text(
+          $(e.target).closest("tr").children("td").eq(15).text()
+        );
 
-        $(document).on("click", ".delPayment", (e) => {
-          let purchase_payment_id = $(e.target).attr("purchase_payment_id");
-          let currentRow = $(e.target).closest("tr");
-          $.confirm({
-            title: "Delete Payment Detail?",
-            content: "Are you sure, do you want to remove this Payment?",
-            backgroundDismiss: false,
-            backgroundDismissAnimation: "glow",
-            type: "red",
-            closeIcon: true,
-            closeIconClass: "fa fa-close",
-            typeAnimated: true,
-            boxWidth: "30%",
-            useBootstrap: false,
-            autoClose: "no|5000",
-            buttons: {
-              delete: {
-                text: "Delete",
-                btnClass: "btn-red",
-                action: function () {
-                  $.ajax({
-                    url:
-                      "/api/v1/purchase/payment?purchase_payment_id=" +
-                      purchase_payment_id,
-                    method: "delete",
+        $("#view_payment_date").text(
+          formatDateTime(
+            new Date(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(4)
+                .find("span")
+                .attr("payment_date")
+            )
+          )
+        );
+
+        // Opening Slied Panel
+        $("#paymentProductModal").modal("show");
+
+        loadPaymentProductTableData(purchase_payment_id, supplier_master_id);
+      });
+
+      $(document).on("click", ".editPayment", (e) => {
+        $("#transaction_id").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        const paidDateTime = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(4)
+          .find("span")
+          .attr("payment_date");
+
+        $("#payment_date").val(
+          paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
+        );
+
+        view_payment_lot_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .find("span")
+          .attr("procurement_lot_id");
+
+        view_purchase_payment_id = $(e.target).attr("purchase_payment_id");
+
+        $("#paymentSupplierNames")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(5)
+              .find("span")
+              .attr("supplier_master_id")
+          )
+          .trigger("change");
+
+        $("#paymentMethods")
+          .val($(e.target).closest("tr").children("td").eq(8).text())
+          .trigger("change");
+
+        $("#total_paid").val(
+          $(e.target).closest("tr").children("td").eq(10).text()
+        );
+
+        $("#payment_discount").val(
+          $(e.target).closest("tr").children("td").eq(12).text()
+        );
+
+        $("#penalty").val(
+          $(e.target).closest("tr").children("td").eq(13).text()
+        );
+
+        $("#tax_amount").val(
+          $(e.target).closest("tr").children("td").eq(14).text()
+        );
+
+        // Opening Slied Panel
+        $("#openPaymentPanelBtn").click();
+
+        // Changing panel heading
+        $("#paymentPanelHeading").text("Edit Payment Data");
+
+        // Changing panel button label
+        $("#submitPayment").text("Update");
+
+        // Changing panel button attribute
+        $("#submitPayment").attr(
+          "purchase_payment_id",
+          view_purchase_payment_id
+        );
+
+        $("#paymentProductModal").modal("hide");
+      });
+
+      $(document).on("click", ".delPayment", (e) => {
+        let purchase_payment_id = $(e.target).attr("purchase_payment_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Payment Detail?",
+          content: "Are you sure, do you want to remove this Payment?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/purchase/payment?purchase_payment_id=" +
+                    purchase_payment_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadPaymentTableData();
+
+                    toastr.success(
+                      "Payment detail deleted successfully",
+                      "Deleted"
+                    );
                   })
-                    .done(function (response) {
-                      //loading data to table
-                      loadPaymentTableData();
-
-                      toastr.success(
-                        "Payment detail deleted successfully",
-                        "Deleted"
-                      );
-                    })
-                    .fail(function () {
-                      toastr.error("Payment detail failed to delete!", "Error");
-                    });
-                },
-              },
-              no: function () {
-                toastr.info("Payment detail is safe now", "Info");
+                  .fail(function () {
+                    toastr.error("Payment detail failed to delete!", "Error");
+                  });
               },
             },
-          });
+            no: function () {
+              toastr.info("Payment detail is safe now", "Info");
+            },
+          },
         });
-      }
+      });
 
       function loadPaymentProductTableData(
         purchase_payment_id,
@@ -4554,25 +4561,24 @@
       }
 
       $(document).on("change", "#paymentSupplierNames", (e) => {
-        const supplier_id = $(e.target).val();
+        const supplier_master_id = $(e.target).val();
         $("#paymentLotNo").empty();
 
-        if (supplier_id) {
-          loadPaymentLotNo(supplier_id);
+        if (supplier_master_id) {
+          loadPaymentLotNo(supplier_master_id);
         }
       });
 
-      function loadPaymentLotNo(supplier_id) {
+      function loadPaymentLotNo(supplier_master_id) {
         $("#paymentLotNo").empty();
 
-        if (!supplier_id) {
+        if (!supplier_master_id) {
           return toastr["warning"]("Supplier ID must not be empty");
         }
 
         // Load Suppliers
         $.ajax({
-          url:
-            "/api/v1/procurement/lot/lots/payment?supplier_id=" + supplier_id,
+          url: `/api/v1/procurement/lot/lots/payment?supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
