@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const BulkUpsert = async (profile_id, order_products_data) => {
   return new Promise(async (resolve, reject) => {
@@ -104,6 +104,120 @@ export const GetAll = ({ order_id, start, length, search }) => {
       });
 
       resolve(suppliers);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetPaymentItems = ({
+  sales_payment_id,
+  customer_master_id,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let paymentWhere = {
+        is_active: true,
+      };
+
+      if (sales_payment_id) {
+        paymentWhere.id = sales_payment_id;
+      }
+
+      let where = {
+        is_active: true,
+      };
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("Order.order_no"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          {
+            "$Packing.pd.pp.ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+        ];
+      }
+
+      const procurements = await models.OrderProducts.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "unit",
+          "discount",
+          "price",
+          "total_price",
+          "description",
+          "created_at",
+        ],
+        include: [
+          {
+            attributes: ["id"],
+            model: models.Orders,
+            include: [
+              {
+                attributes: ["id"],
+                model: models.SalesPayments,
+                where: paymentWhere,
+              },
+            ],
+            where: {
+              is_active: true,
+              customer_master_id,
+            },
+          },
+          {
+            attributes: ["id"],
+            model: models.Packing,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                as: "pd",
+                attributes: ["id"],
+                model: models.PeeledDispatches,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    as: "pp",
+                    attributes: ["id"],
+                    model: models.PeelingProducts,
+                    where: {
+                      is_active: true,
+                    },
+                    include: [
+                      {
+                        attributes: ["id", "product_name"],
+                        model: models.ProductMaster,
+                        where: {
+                          is_active: true,
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [[sequelize.col(`"OrderProducts".created_at`), "desc"]],
+      });
+
+      resolve(procurements);
     } catch (err) {
       reject(err);
     }

@@ -1,4 +1,4 @@
-import { Orders } from "../../../controllers";
+import { SalesPayments } from "../../../controllers";
 
 export const GetAll = (
   { start, length, "search[value]": search },
@@ -7,14 +7,13 @@ export const GetAll = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Creating User
-      let orders = await Orders.GetAll({
+      let sales_payment = await SalesPayments.GetAll({
         start,
         length,
         search,
       });
 
-      if (!orders) {
+      if (!sales_payment) {
         return reject({
           statusCode: 420,
           message: "No data found!",
@@ -22,7 +21,7 @@ export const GetAll = (
       }
 
       resolve({
-        data: orders,
+        data: sales_payment,
       });
     } catch (err) {
       fastify.log.error(err);

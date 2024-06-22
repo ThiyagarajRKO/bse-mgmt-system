@@ -3,7 +3,6 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
-import { GetOrderNumbers } from "./handlers/get_order_no";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -11,9 +10,8 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
-import { getOrderNumbersSchema } from "./schema/get_order_no";
 
-export const ordersRoute = (fastify, opts, done) => {
+export const salesPaymentRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
@@ -22,7 +20,6 @@ export const ordersRoute = (fastify, opts, done) => {
 
       reply.code(result.statusCode || 200).send({
         success: true,
-        statusCode: result?.statusCode,
         message: result.message,
         data: result?.data,
       });
@@ -53,7 +50,7 @@ export const ordersRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:order_id", getSchema, async (req, reply) => {
+  fastify.get("/:sales_payment_id", getSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.params };
 
@@ -91,25 +88,6 @@ export const ordersRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/numbers", getOrderNumbersSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
-
-      const result = await GetOrderNumbers(params, req?.session, fastify);
-
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
-    }
-  });
-
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
@@ -132,4 +110,4 @@ export const ordersRoute = (fastify, opts, done) => {
   done();
 };
 
-export default ordersRoute;
+export default salesPaymentRoute;

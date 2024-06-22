@@ -1,17 +1,18 @@
 import { Orders } from "../../../controllers";
 
-export const GetAll = (
-  { start, length, "search[value]": search },
+export const GetOrderNumbers = (
+  { customer_master_id, sales_payment_id, start, length },
   session,
   fastify
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Creating User
-      let orders = await Orders.GetAll({
+      let orders = await Orders.GetOrderNumbers({
+        customer_master_id,
+        sales_payment_id,
         start,
         length,
-        search,
       });
 
       if (!orders) {

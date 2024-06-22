@@ -261,6 +261,70 @@ export const GetAll = ({ start, length, search }) => {
   });
 };
 
+export const GetOrderNumbers = ({
+  customer_master_id,
+  sales_payment_id,
+  start,
+  length,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!customer_master_id) {
+        return reject({ message: "Customer master data must not be empty" });
+      }
+
+      let where = {
+        is_active: true,
+      };
+
+      const suppliers = await models.Orders.findAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "order_no",
+          [
+            sequelize.literal(
+              `(SELECT SUM(op.total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+            ),
+            "total_amount",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(sp.total_paid) FROM sales_payments sp WHERE sp.order_id = "Orders".id AND sp.customer_master_id = '${customer_master_id}' 
+              ${
+                sales_payment_id != "null" &&
+                sales_payment_id != undefined &&
+                sales_payment_id != ""
+                  ? "AND sp.id != '" + sales_payment_id + "'"
+                  : ""
+              } AND sp.is_active = true)`
+            ),
+            "total_paid",
+          ],
+        ],
+        include: [
+          {
+            attributes: [],
+            model: models.CustomerMaster,
+            where: {
+              is_active: true,
+              id: customer_master_id,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(suppliers);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const Delete = ({ profile_id, id }) => {
   return new Promise(async (resolve, reject) => {
     try {
