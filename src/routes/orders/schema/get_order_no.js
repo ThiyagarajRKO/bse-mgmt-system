@@ -8,6 +8,7 @@ export const getOrderNumbersSchema = {
         sales_payment_id: { type: "string" },
         start: { type: "number" },
         length: { type: "number" },
+        search: { type: "string" },
       },
     },
   },

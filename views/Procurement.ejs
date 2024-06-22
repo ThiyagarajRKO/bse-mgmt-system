@@ -1829,21 +1829,24 @@
         $("input").val("");
         $("input[type=number]").val("");
 
-        // Reset all date inputs
-        var dateTimeInputs = document.querySelectorAll(
-          'input[type="datetime-local"]'
-        );
-        // looping all the date inputs
-        dateTimeInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+        $('input[type="datetime-local]').val("");
+        $("input[type=date]").val("");
 
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+        // // Reset all date inputs
+        // var dateTimeInputs = document.querySelectorAll(
+        //   'input[type="datetime-local"]'
+        // );
+        // // looping all the date inputs
+        // dateTimeInputs.forEach(function (input) {
+        //   input.value = "";
+        // });
+
+        // // Reset all date inputs
+        // var dateInputs = document.querySelectorAll('input[type="date"]');
+        // // looping all the date inputs
+        // dateInputs.forEach(function (input) {
+        //   input.value = "";
+        // });
 
         // Resetting textarea
         $("textarea").val("");

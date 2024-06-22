@@ -104,7 +104,13 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length, customer_name, search }) => {
+export const GetAll = ({
+  start,
+  length,
+  customer_name,
+  tableSearch,
+  search,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
@@ -115,17 +121,26 @@ export const GetAll = ({ start, length, customer_name, search }) => {
         where.customer_name = { [Op.iLike]: `%${customer_name}%` };
       }
 
-      if (search) {
+      if (tableSearch) {
         where[Op.or] = [
-          { customer_name: { [Op.iLike]: `%${search}%` } },
-          { customer_address: { [Op.iLike]: `%${search}%` } },
-          { customer_country: { [Op.iLike]: `%${search}%` } },
-          { customer_phone: { [Op.iLike]: `%${search}%` } },
-          { customer_email: { [Op.iLike]: `%${search}%` } },
-          { customer_paymentterms: { [Op.iLike]: `%${search}%` } },
-          { customer_credit: { [Op.iLike]: `%${search}%` } },
-          { customer_type: { [Op.iLike]: `%${search}%` } },
+          { customer_name: { [Op.iLike]: `%${tableSearch}%` } },
+          { customer_address: { [Op.iLike]: `%${tableSearch}%` } },
+          { customer_country: { [Op.iLike]: `%${tableSearch}%` } },
+          { customer_phone: { [Op.iLike]: `%${tableSearch}%` } },
+          { customer_email: { [Op.iLike]: `%${tableSearch}%` } },
+          { customer_paymentterms: { [Op.iLike]: `%${tableSearch}%` } },
+          sequelize.where(
+            sequelize.cast(sequelize.col("customer_credit"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { customer_type: { [Op.iLike]: `%${tableSearch}%` } },
         ];
+      }
+
+      if (search) {
+        where.customer_name = { [Op.iLike]: `%${search}%` };
       }
 
       const customers = await models.CustomerMaster.findAndCountAll({

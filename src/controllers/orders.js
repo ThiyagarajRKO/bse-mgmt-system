@@ -135,7 +135,12 @@ export const GetAll = ({ start, length, search }) => {
 
       if (search) {
         where[Op.or] = [
-          { order_no: { [Op.iLike]: `%${search}%` } },
+          sequelize.where(
+            sequelize.cast(sequelize.col("order_no"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
           { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
           { "$ShippingMaster.shipping_source$": { [Op.iLike]: `%${search}%` } },
           {
@@ -266,6 +271,7 @@ export const GetOrderNumbers = ({
   sales_payment_id,
   start,
   length,
+  search,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -277,7 +283,18 @@ export const GetOrderNumbers = ({
         is_active: true,
       };
 
-      const suppliers = await models.Orders.findAll({
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("order_no"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+        ];
+      }
+
+      const suppliers = await models.Orders.findAndCountAll({
         subQuery: false,
         attributes: [
           "id",

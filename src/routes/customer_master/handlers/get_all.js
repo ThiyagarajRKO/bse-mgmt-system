@@ -1,7 +1,7 @@
 import { CustomerMaster } from "../../../controllers";
 
 export const GetAll = (
-  { start, length, customer_name, "search[value]": search },
+  { start, length, customer_name, "search[value]": tableSearch, search },
   session,
   fastify
 ) => {
@@ -13,6 +13,7 @@ export const GetAll = (
         length,
         customer_name,
         search,
+        tableSearch,
       });
 
       if (!customer_master) {

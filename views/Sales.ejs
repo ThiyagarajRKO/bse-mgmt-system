@@ -1882,18 +1882,31 @@
         var strTime = hours + ":" + minutes + " " + ampm;
         var month = months[dateTime.getMonth()];
         var day = dateTime.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+
         return day + "-" + month + "-" + dateTime.getFullYear() + " " + strTime;
       }
 
       function resetAllInputs() {
         $("input").val("");
 
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+        // // Reset all date time inputs
+        // var dateTimeInputs = document.querySelectorAll(
+        //   'input[type="datetime-local"]'
+        // );
+        // // looping all the date inputs
+        // dateTimeInputs.forEach(function (input) {
+        //   input.value = ""; //formatDateTime(new Date(), true);
+        // });
+
+        // // Reset all date inputs
+        // var dateInputs = document.querySelectorAll('input[type="date"]');
+        // // looping all the date inputs
+        // dateInputs.forEach(function (input) {
+        //   input.value = "";
+        // });
+
+        $('input[type="datetime-local]').val("");
+        $("input[type=date]").val("");
 
         // Resetting textarea
         $("textarea").val("");
@@ -1905,6 +1918,8 @@
         $("#shippingDestinations").val(null).trigger("change");
         $("#shippingMethods").val(null).trigger("change");
         $("#orderProductNames").val(null).trigger("change");
+        $("#paymentCustomerNames").val(null).trigger("change");
+        $("#paymentOrderNo").val(null).trigger("change");
 
         $("#customerNames").select2({
           placeholder: "Choose a customer",
@@ -1933,6 +1948,16 @@
 
         $("#orderProductNames").select2({
           placeholder: "Choose a method",
+          allowClear: true,
+        });
+
+        $("#paymentCustomerNames").select2({
+          placeholder: "Choose a customer name",
+          allowClear: true,
+        });
+
+        $("#paymentOrderNo").select2({
+          placeholder: "Choose a order no",
           allowClear: true,
         });
 
@@ -2143,67 +2168,67 @@
       ) {
         $("#orderProductContainer")
           .append(`<div class="vl-top vl-top-${index}"></div><fieldset
-                              class="form-group border p-3 mt-3 orderProduct orderProduct_${index}"
-                              style="
-                                border-color: rgba(129, 145, 179, 0.6) !important;
-                                margin-top: 2.2rem !important;
-                              "
-                            >
-                              <legend class="mb-2 w-auto px-2">Product ${index}</legend>
-                              <div class="form-group">
-                                <label for="product_name">Product Name:</label>
-                                <select
-                                  current_index=""${index}"
-                                  class="form-control input-dropdown w-100 orderProductNames orderProductNames_${index}"
-                                  peeled_product_id=${peeled_product_id}
-                                  name="orderProductNames"
-                                ></select>
-                              </div>
+                                  class="form-group border p-3 mt-3 orderProduct orderProduct_${index}"
+                                  style="
+                                    border-color: rgba(129, 145, 179, 0.6) !important;
+                                    margin-top: 2.2rem !important;
+                                  "
+                                >
+                                  <legend class="mb-2 w-auto px-2">Product ${index}</legend>
+                                  <div class="form-group">
+                                    <label for="product_name">Product Name:</label>
+                                    <select
+                                      current_index=""${index}"
+                                      class="form-control input-dropdown w-100 orderProductNames orderProductNames_${index}"
+                                      peeled_product_id=${peeled_product_id}
+                                      name="orderProductNames"
+                                    ></select>
+                                  </div>
 
-                              <div class="form-group mt-2">
-                                <label for="product_unit">Quantity</label>
-                                <input
-                                  current_index="${index}"
-                                  class="form-control product_unit product_unit_${index}"
-                                  type="number"
-                                  placeholder="eg. 10"
-                                  name="product_unit"
-                                  required
-                                />
-                                <span style="font-size: 12px">Total Quantity :
-                                  <b><span
-                                    class="total_quantity total_quantity_1"
-                                  ></b></span
-                                ></span>
-                              </div>
+                                  <div class="form-group mt-2">
+                                    <label for="product_unit">Quantity</label>
+                                    <input
+                                      current_index="${index}"
+                                      class="form-control product_unit product_unit_${index}"
+                                      type="number"
+                                      placeholder="eg. 10"
+                                      name="product_unit"
+                                      required
+                                    />
+                                    <span style="font-size: 12px">Total Quantity :
+                                      <b><span
+                                        class="total_quantity total_quantity_1"
+                                      ></b></span
+                                    ></span>
+                                  </div>
 
-                              <div class="form-group mt-2">
-                                <label for="product_price">Price per KG</label>
-                                <input
-                                  current_index="${index}"
-                                  class="form-control product_price product_price_${index}"
-                                  type="number"
-                                  placeholder="eg. 10"
-                                  name="product_price"
-                                  required
-                                />
-                              </div>
+                                  <div class="form-group mt-2">
+                                    <label for="product_price">Price per KG</label>
+                                    <input
+                                      current_index="${index}"
+                                      class="form-control product_price product_price_${index}"
+                                      type="number"
+                                      placeholder="eg. 10"
+                                      name="product_price"
+                                      required
+                                    />
+                                  </div>
 
-                              <div class="form-group mt-2">
-                                <label for="product_desc">Description</label>
-                                <textarea
-                                  row="3"
-                                  class="form-control input-dropdown w-100 product_desc product_desc_${index}"
-                                  name="product_desc"
-                                ></textarea>
-                              </div>
+                                  <div class="form-group mt-2">
+                                    <label for="product_desc">Description</label>
+                                    <textarea
+                                      row="3"
+                                      class="form-control input-dropdown w-100 product_desc product_desc_${index}"
+                                      name="product_desc"
+                                    ></textarea>
+                                  </div>
 
-                              <div class="form-group mt-2">
-                                <label for="product_price">Total Price :</label>
-                                <b><span current_index="${index}" class="total_price total_price_${index}">0.00</span></b>
-                              </div>
+                                  <div class="form-group mt-2">
+                                    <label for="product_price">Total Price :</label>
+                                    <b><span current_index="${index}" class="total_price total_price_${index}">0.00</span></b>
+                                  </div>
 
-                            </fieldset>`);
+                                </fieldset>`);
 
         $(`.orderProductNames_${index}`).select2({
           placeholder: "Choose a product",
@@ -3878,38 +3903,47 @@
       }
 
       function loadPaymentCustomers() {
-        // Load Customers
-        $.ajax({
-          url: "/api/v1/master/customer",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#paymentCustomerNames").select2({
-              placeholder: "Choose a customer",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.customer_name,
-                };
-              }),
-            });
+        try {
+          $("#paymentCustomerNames").select2({
+            placeholder: "Choose a customer",
+            allowClear: true,
+            ajax: {
+              url: "/api/v1/master/customer",
+              data: (params) => {
+                params.page = params.page || 1;
+                params.length = 25;
+                params.start = (params.page - 1) * params.length;
 
-            // Clearing selected value
-            $("#paymentCustomerNames").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
+                let query = {
+                  search: params.term,
+                  start: params.start,
+                  length: params.length,
+                };
+
+                // Query parameters will be ?search=[term]&page=[page]
+                return query;
+              },
+              processResults: (data, params) => {
+                return {
+                  results: $.map(data?.data?.rows, function (item) {
+                    return {
+                      id: item.id,
+                      text: item.customer_name,
+                    };
+                  }),
+                  pagination: {
+                    more: params.page * params.length < data?.data?.count,
+                  },
+                };
+              },
+            },
+          });
+
+          // Clearing selected value
+          $("#paymentCustomerNames").val(null).trigger("change");
+        } catch (err) {
+          toastr["error"](err?.message);
+        }
       }
 
       $(document).on("change", "#paymentCustomerNames", (e) => {
@@ -3922,54 +3956,64 @@
       });
 
       function loadOrderNo(customer_master_id) {
-        $("#paymentOrderNo").empty();
+        try {
+          $("#paymentOrderNo").empty();
 
-        if (!customer_master_id) {
-          return toastr["warning"]("Customer ID must not be empty");
-        }
+          if (!customer_master_id) {
+            return toastr["warning"]("Customer ID must not be empty");
+          }
 
-        // Load Customers
-        $.ajax({
-          url: `/api/v1/order/numbers?customer_master_id=${customer_master_id}&sales_payment_id=${view_sales_payment_id}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#paymentOrderNo").select2({
-              placeholder: "Choose a order no",
-              allowClear: true,
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.order_no,
-                  total_amount:
-                    parseFloat(item?.total_amount) -
-                    parseFloat(item?.total_paid || 0),
-                  total_paid: item?.total_paid,
-                  is_due: parseFloat(item?.total_paid || 0) > 0 ? true : false,
+          $("#paymentOrderNo").select2({
+            placeholder: "Choose a order no",
+            allowClear: true,
+            ajax: {
+              url: `/api/v1/order/numbers?customer_master_id=${customer_master_id}&sales_payment_id=${view_sales_payment_id}`,
+              data: (params) => {
+                params.page = params.page || 1;
+                params.length = 25;
+                params.start = (params.page - 1) * params.length;
+
+                let query = {
+                  search: params.term,
+                  start: params.start,
+                  length: params.length,
                 };
-              }),
-            });
 
-            if (view_payment_order_id) {
-              // Clearing selected value
-              $("#paymentOrderNo").val(view_payment_order_id).trigger("change");
-            } else {
-              // Clearing selected value
-              $("#paymentOrderNo").val(null).trigger("change");
-            }
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
-        });
+                // Query parameters will be ?search=[term]&page=[page]
+                return query;
+              },
+              processResults: (data, params) => {
+                return {
+                  results: $.map(data?.data?.rows, (item) => {
+                    return {
+                      id: item.id,
+                      text: item.order_no,
+                      total_amount:
+                        parseFloat(item?.total_amount) -
+                        parseFloat(item?.total_paid || 0),
+                      total_paid: item?.total_paid,
+                      is_due:
+                        parseFloat(item?.total_paid || 0) > 0 ? true : false,
+                    };
+                  }),
+                  pagination: {
+                    more: params.page * params.length < data?.data?.count,
+                  },
+                };
+              },
+            },
+          });
+
+          if (view_payment_order_id) {
+            // Clearing selected value
+            $("#paymentOrderNo").val(view_payment_order_id).trigger("change");
+          } else {
+            // Clearing selected value
+            $("#paymentOrderNo").val(null).trigger("change");
+          }
+        } catch (err) {
+          toastr["error"](err?.message);
+        }
       }
 
       $(document).on("change", "#paymentOrderNo", (e) => {

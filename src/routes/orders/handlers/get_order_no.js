@@ -1,7 +1,7 @@
 import { Orders } from "../../../controllers";
 
 export const GetOrderNumbers = (
-  { customer_master_id, sales_payment_id, start, length },
+  { customer_master_id, sales_payment_id, start, length, search },
   session,
   fastify
 ) => {
@@ -13,6 +13,7 @@ export const GetOrderNumbers = (
         sales_payment_id,
         start,
         length,
+        search,
       });
 
       if (!orders) {

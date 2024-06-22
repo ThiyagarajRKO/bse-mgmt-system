@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
       },
       customer_credit: {
-        type: DataTypes.STRING,
+        type: DataTypes.FLOAT,
       },
       customer_type: {
         type: DataTypes.STRING(100),
