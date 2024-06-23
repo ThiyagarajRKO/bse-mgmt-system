@@ -450,7 +450,7 @@
           class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
         >
           <div
-            class="topMenu-item topMenu-item-active purchaseMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            class="topMenu-item topMenu-item-active purchaseInventoryMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
               <i class="fa-solid fa-shopping-bag"></i>
@@ -474,270 +474,9 @@
         <!-- Top Menu Container Ends -->
 
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <!-- ------------------------------------- Orders Container ---------------------------------------------------- -->
+        <!-- ------------------------------------- Purchase Inventory Container ------------------------------------------ -->
         <!-- ------------------------------------------------------------------------------------------------------------- -->
-        <div class="menu-container orderContainer d-none">
-          <!-- Slide-in Panel -->
-          <div id="orderSlideInPanel" class="slideInPanel px-4 overflow-auto">
-            <div class="row d-flex justify-content-center">
-              <div class="col-sm-12 col-md-12 col-md-12">
-                <div class="text-center mt-4 d-flex justify-content-between">
-                  <span id="orderPanelHeading" class="fw-bold fs-5"
-                    >Add Orders Data</span
-                  >
-                  <div class="col my-auto d-flex justify-content-end">
-                    <i
-                      class="fa-solid fa-circle-xmark my-auto panelClose"
-                      id="closeOrdersPanelBtn"
-                    ></i>
-                  </div>
-                </div>
-
-                <hr />
-
-                <div id="smarttab" class="border-0">
-                  <ul class="nav">
-                    <li>
-                      <a class="nav-link">Order</a>
-                    </li>
-                    <li>
-                      <a class="nav-link">Products</a>
-                    </li>
-                  </ul>
-
-                  <div class="tab-content">
-                    <div id="tab-1" class="tab-pane p-0" role="tabpanel">
-                      <div class="form-group mt-2">
-                        <label for="order_date">Order Date</label>
-                        <input
-                          id="order_date"
-                          class="form-control"
-                          type="date"
-                          name="order_date"
-                          required
-                        />
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="customer_name">Customer Name</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="customerNames"
-                          name="customer_name"
-                        ></select>
-                        <span style="font-size: 12px"
-                          >Customer Country :
-                          <span class="fw-bold" id="customer_country"></span
-                        ></span>
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="payment_terms">Payment Terms</label>
-                        <input
-                          id="payment_terms"
-                          class="form-control"
-                          type="text"
-                          placeholder="eg. in 15 days"
-                          name="payment_terms"
-                          required
-                        />
-                      </div>
-
-                      <div class="form-group mt-2">
-                        <label for="payment_type">Payment Type</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="paymentTypes"
-                          name="payment_type"
-                        ></select>
-                      </div>
-
-                      <div id="orderShippingContainer">
-                        <fieldset
-                          class="form-group border p-3 shippingData"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                            margin-top: 2.2rem !important;
-                          "
-                        >
-                          <legend class="mb-2 w-auto px-2">Shipping</legend>
-
-                          <div class="form-group mt-2">
-                            <label for="product_name">Shipping Date</label>
-                            <input
-                              id="shipping_date"
-                              class="form-control"
-                              type="date"
-                              name="shipping_date"
-                              required
-                            />
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shippingSources">Shipping Source</label>
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingSources"
-                              name="shippingSources"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_name"
-                              >Shipping Destination</label
-                            >
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingDestinations"
-                              name="shippingDestinations"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shippingMethods">Shipping Method</label>
-                            <select
-                              class="form-control input-dropdown w-100"
-                              id="shippingMethods"
-                              name="shippingMethods"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="shipping_address"
-                              >Shipping Address</label
-                            >
-                            <textarea
-                              row="3"
-                              id="shipping_address"
-                              class="form-control input-dropdown w-100"
-                              name="shipping_address"
-                              placeholder="Shipping address"
-                              readonly
-                            ></textarea>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="expected_delivery_date"
-                              >Expected Delivery Date</label
-                            >
-                            <input
-                              id="expected_delivery_date"
-                              class="form-control"
-                              type="date"
-                              name="expected_delivery_date"
-                              required
-                            />
-                          </div>
-                        </fieldset>
-                      </div>
-                    </div>
-                    <div id="tab-2" class="tab-pane p-0" role="tabpanel">
-                      <div id="orderProductContainer">
-                        <fieldset
-                          class="form-group border p-3 orderProduct orderProduct_1"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                            margin-top: 2.2rem !important;
-                          "
-                        >
-                          <legend class="mb-2 w-auto px-2">Product 1</legend>
-                          <div class="form-group">
-                            <label for="product_name">Product Name:</label>
-                            <select
-                              current_index="1"
-                              class="form-control input-dropdown w-100 orderProductNames orderProductNames_1"
-                              name="orderProductNames"
-                            ></select>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_unit">Quantity</label>
-                            <input
-                              current_index="1"
-                              class="form-control product_unit product_unit_1"
-                              type="number"
-                              placeholder="eg. 10"
-                              name="product_unit"
-                              required
-                            />
-                            <span style="font-size: 12px"
-                              >Total Quantity :
-                              <b
-                                ><span
-                                  class="total_quantity total_quantity_1"
-                                ></span></b
-                            ></span>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_price_1">Price per KG</label>
-                            <input
-                              current_index="1"
-                              class="form-control product_price product_price_1"
-                              type="number"
-                              placeholder="eg. 10"
-                              name="product_price_1"
-                              required
-                            />
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="product_desc">Description</label>
-                            <textarea
-                              row="3"
-                              class="form-control input-dropdown w-100 product_desc product_desc_1"
-                              name="product_desc"
-                            ></textarea>
-                          </div>
-
-                          <div class="form-group mt-2">
-                            <label for="total_price">Total Price :</label>
-                            <b
-                              ><span class="total_price total_price_1"
-                                >0.00</span
-                              ></b
-                            >
-                          </div>
-                        </fieldset>
-                      </div>
-
-                      <div class="vl"></div>
-                      <div
-                        id="appendProducts"
-                        style="border-color: rgba(98, 114, 147, 0.6) !important"
-                        class="btn border rounded d-flex justify-content-center mt-4"
-                      >
-                        <i class="fa-solid fa-circle-plus fs-5 my-1"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="total mt-4">
-                  <span
-                    >No. of Products: <span id="no_of_products">0</span></span
-                  ><br />
-                  <span>Total Amount: <span id="total_amount">0.00</span></span>
-                </div>
-
-                <div class="d-flex justify-content-between mt-2 py-3 pb-4">
-                  <div id="submitOrders" class="col-lg-auto btn btn-danger">
-                    Save
-                  </div>
-                  <div id="nextOrders" class="col-lg-auto btn btn-outline-info">
-                    Next
-                  </div>
-                  <div
-                    id="resetOrdersDataBtn"
-                    class="col-lg-auto btn btn-outline-warning"
-                  >
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <div class="menu-container purchaseInventoryContainer d-none">
           <!-- Table Content -->
           <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
             <div class="border p-4 w-100">
@@ -749,9 +488,11 @@
                   <tr>
                     <th></th>
                     <th class="fw-bold"><span>Item ID</span></th>
+                    <th class="fw-bold"><span>Item Name</span></th>
+                    <th class="fw-bold"><span>Item Species Name</span></th>
                     <th class="fw-bold"><span>Item Category</span></th>
-                    <th class="fw-bold"><span>Item Type</span></th>
                     <th class="fw-bold"><span>Item Size</span></th>
+                    <th class="fw-bold"><span>Item Type</span></th>
                     <th class="fw-bold"><span>Quantity</span></th>
                   </tr>
                 </thead>
@@ -763,7 +504,7 @@
         <!-- modal-dialog-centered modal-dialog-scrollable -->
         <!-- Modal -->
         <div
-          id="productModal"
+          id="purchaseInventoryProductModal"
           class="modal hide fade modal-xl"
           tabindex="-1"
           role="dialog"
@@ -1213,25 +954,25 @@
       // Open Location on load (default)
       $(".menu-container").addClass("d-none");
 
-      $(".orderContainer").removeClass("d-none");
-      $(".orderContainer").addClass("d-block");
+      $(".purchaseInventoryContainer").removeClass("d-none");
+      $(".purchaseInventoryContainer").addClass("d-block");
 
-      loadOrdersTableData();
+      loadPurchaseInventoryTableData();
 
-      // ---------------------------------------------------------
-      // -------------------------- Purchase ---------------------
-      // ---------------------------------------------------------
+      // -------------------------------------------------------------------
+      // -------------------------- Purchase Inventory ---------------------
+      // -------------------------------------------------------------------
 
-      $(".purchaseMenu").click(function () {
+      $(".purchaseInventoryMenu").click(function () {
         $(".menu-container").addClass("d-none");
 
-        $(".orderContainer").removeClass("d-none");
-        $(".orderContainer").addClass("d-block");
+        $(".purchaseInventoryContainer").removeClass("d-none");
+        $(".purchaseInventoryContainer").addClass("d-block");
 
-        loadOrdersTableData();
+        loadPurchaseInventoryTableData();
       });
 
-      function loadOrdersTableData() {
+      function loadPurchaseInventoryTableData() {
         $("#purchaseInventoryTable").DataTable({
           // searching: true,
           destroy: true,
@@ -1244,7 +985,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/orders",
+            url: "/api/v1/inventory/purchase",
             error: function (xhr, error, code) {
               $("#purchaseInventoryTable").DataTable().destroy();
               $("#purchaseInventoryTable").DataTable({
@@ -1269,11 +1010,13 @@
           columns: [
             { data: null },
             { data: "item_id" },
+            { data: "item_name" },
             {
-              data: "ProductMaster.ProductCategoryMaster.SpeciesMaster.species_name",
+              data: "SpeciesMaster.species_name",
             },
-            { data: "ProductMaster.ProductCategoryMaster.product_category" },
+            { data: "ProductCategoryMaster.product_category" },
             { data: "SizeMaster.size" },
+            { data: "procurement_product_type" },
             { data: "quantity" },
           ],
           columnDefs: [

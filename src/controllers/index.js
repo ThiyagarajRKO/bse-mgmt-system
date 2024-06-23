@@ -32,3 +32,4 @@ export * as Orders from "./orders";
 export * as OrderProducts from "./order_products";
 export * as PurchasePayments from "./purchase_payments";
 export * as SalesPayments from "./sales_payments";
+export * as PurchaseInventory from "./purchase_inventory";

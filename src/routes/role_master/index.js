@@ -1,7 +1,7 @@
 import { GetAll } from "./handlers/get_all";
 
 // Schema
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 
 export const roleMasterRoute = (fastify, opts, done) => {
   fastify.get("/", getAllSchema, async (req, reply) => {

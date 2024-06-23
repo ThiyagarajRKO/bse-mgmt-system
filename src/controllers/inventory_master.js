@@ -109,7 +109,7 @@ export const Get = ({ id, inventory_name }) => {
         });
       }
 
-      const inventory = await models.inventoryMaster.findOne({
+      const inventory = await models.InventoryMaster.findOne({
         where: {
           id,
           is_active: true,

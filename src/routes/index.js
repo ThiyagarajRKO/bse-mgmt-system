@@ -33,6 +33,7 @@ import ordersRoute from "./orders";
 import orderProductsRoute from "./order_products";
 import purchasePaymentRoute from "./purchase_payments";
 import salesPaymentRoute from "./sales_payments";
+import purchaseInventoryRoute from "./purchase_inventory";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -159,6 +160,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(shippingMasterRoute, { prefix: "/master/shipping" });
 
   fastify.register(auditLogsRoute, { prefix: "/logs" });
+
+  fastify.register(purchaseInventoryRoute, { prefix: "/inventory/purchase" });
 
   done();
 };
