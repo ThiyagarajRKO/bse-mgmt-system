@@ -112,6 +112,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  // Create Hook
+  Dispatches.afterCreate(async (data, options) => {
+    updateInventoryQuantity(sequelize, data);
+  });
+
   // Update Hook
   Dispatches.beforeUpdate(async (data, options) => {
     try {
@@ -120,6 +125,11 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log("Error while updating an dispatch data", err?.message || err);
     }
+  });
+
+  // Update Hook
+  Dispatches.afterUpdate(async (data, options) => {
+    updateInventoryQuantity(sequelize, data);
   });
 
   // Delete Hook
@@ -135,4 +145,62 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   return Dispatches;
+};
+
+const updateInventoryQuantity = async (sequelize, data) => {
+  try {
+    const procurementProductData =
+      await sequelize.models.ProcurementProducts.findOne({
+        attributes: ["product_master_id", "procurement_product_type"],
+        where: {
+          id: data?.procurement_product_id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+    const procurementProduct =
+      await sequelize.models.ProcurementProducts.findOne({
+        attributes: [
+          [
+            sequelize.fn("sum", sequelize.col("procurement_quantity")),
+            "total_quantity",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("adjusted_quantity")),
+            "total_adjusted_quantity",
+          ],
+        ],
+        where: {
+          product_master_id: procurementProductData?.product_master_id,
+          procurement_product_type:
+            procurementProductData?.procurement_product_type,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+    const finalQuantity =
+      (procurementProduct?.total_adjusted_quantity ||
+        procurementProduct?.total_quantity) - data?.dispatch_quantity;
+
+    await sequelize.models.PurchaseInventory.update(
+      {
+        quantity: finalQuantity,
+      },
+      {
+        where: {
+          product_master_id: procurementProductData?.product_master_id,
+          procurement_product_type:
+            procurementProductData?.procurement_product_type,
+          is_active: true,
+        },
+      }
+    ).catch(console.log);
+  } catch (err) {
+    console.log(
+      "Error while inserting a procurements data",
+      err?.message || err
+    );
+  }
 };

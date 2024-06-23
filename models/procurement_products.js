@@ -120,69 +120,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Create Hook
   ProcurementProducts.afterCreate(async (data, options) => {
-    try {
-      const procurementProduct =
-        await sequelize.models.ProcurementProducts.findOne({
-          attributes: [
-            [
-              sequelize.fn("sum", sequelize.col("procurement_quantity")),
-              "total_quantity",
-            ],
-            [
-              sequelize.fn("sum", sequelize.col("adjusted_quantity")),
-              "total_adjusted_quantity",
-            ],
-          ],
-          where: {
-            product_master_id: data?.product_master_id,
-            procurement_product_type: data?.procurement_product_type,
-            is_active: true,
-          },
-          raw: true,
-        });
-
-      const inventoryData = await sequelize.models.PurchaseInventory.findOne({
-        attributes: ["id"],
-        where: {
-          product_master_id: data?.product_master_id,
-          procurement_product_type: data?.procurement_product_type,
-          is_active: true,
-        },
-        raw: true,
-      });
-
-      if (inventoryData?.id) {
-        await sequelize.models.PurchaseInventory.update(
-          {
-            quantity:
-              procurementProduct?.total_adjusted_quantity ||
-              procurementProduct?.total_quantity,
-          },
-          {
-            where: {
-              id: inventoryData?.id,
-              is_active: true,
-            },
-          }
-        ).catch(console.log);
-      } else {
-        await sequelize.models.PurchaseInventory.create({
-          procurement_product_id: data?.id,
-          product_master_id: data?.product_master_id,
-          procurement_product_type: data?.procurement_product_type,
-          quantity:
-            procurementProduct?.total_adjusted_quantity ||
-            procurementProduct?.total_quantity,
-          is_active: true,
-          created_by: options?.profile_id,
-        }).catch(console.log);
-      }
-    } catch (err) {
-      console.log(
-        "Error while inserting a procurements data",
-        err?.message || err
-      );
-    }
+    updateInvenoryQuantity(sequelize, data);
   });
 
   // Update Hook
@@ -205,71 +143,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // Create Hook
+  // Update Hook
   ProcurementProducts.afterUpdate(async (data, options) => {
-    try {
-      const procurementProduct =
-        await sequelize.models.ProcurementProducts.findOne({
-          attributes: [
-            [
-              sequelize.fn("sum", sequelize.col("procurement_quantity")),
-              "total_quantity",
-            ],
-            [
-              sequelize.fn("sum", sequelize.col("adjusted_quantity")),
-              "total_adjusted_quantity",
-            ],
-          ],
-          where: {
-            product_master_id: data?.product_master_id,
-            procurement_product_type: data?.procurement_product_type,
-            is_active: true,
-          },
-          raw: true,
-        });
-
-      const inventoryData = await sequelize.models.PurchaseInventory.findOne({
-        attributes: ["id"],
-        where: {
-          product_master_id: data?.product_master_id,
-          procurement_product_type: data?.procurement_product_type,
-          is_active: true,
-        },
-        raw: true,
-      });
-
-      if (inventoryData?.id) {
-        await sequelize.models.PurchaseInventory.update(
-          {
-            quantity:
-              procurementProduct?.total_adjusted_quantity ||
-              procurementProduct?.total_quantity,
-          },
-          {
-            where: {
-              id: inventoryData?.id,
-              is_active: true,
-            },
-          }
-        ).catch(console.log);
-      } else {
-        await sequelize.models.PurchaseInventory.create({
-          procurement_product_id: data?.id,
-          product_master_id: data?.product_master_id,
-          procurement_product_type: data?.procurement_product_type,
-          quantity: procurementProduct?.total_adjusted_quantity
-            ? procurementProduct?.total_adjusted_quantity
-            : procurementProduct?.total_quantity,
-          is_active: true,
-          created_by: options?.profile_id,
-        }).catch(console.log);
-      }
-    } catch (err) {
-      console.log(
-        "Error while inserting a procurements data",
-        err?.message || err
-      );
-    }
+    updateInvenoryQuantity(sequelize, data);
   });
 
   // Delete Hook
@@ -291,4 +167,82 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   return ProcurementProducts;
+};
+
+// Utils Functions
+const updateInvenoryQuantity = async (sequelize, data) => {
+  try {
+    const procurementProduct =
+      await sequelize.models.ProcurementProducts.findOne({
+        subQuery: false,
+        attributes: [
+          [
+            sequelize.fn("sum", sequelize.col("procurement_quantity")),
+            "total_quantity",
+          ],
+          [
+            sequelize.fn("sum", sequelize.col("adjusted_quantity")),
+            "total_adjusted_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`
+            ),
+            "total_dispatched_quantity",
+          ],
+        ],
+        where: {
+          product_master_id: data?.product_master_id,
+          procurement_product_type: data?.procurement_product_type,
+          is_active: true,
+        },
+        group: ["ProcurementProducts.id"],
+        raw: true,
+      });
+
+    const inventoryData = await sequelize.models.PurchaseInventory.findOne({
+      attributes: ["id"],
+      where: {
+        product_master_id: data?.product_master_id,
+        procurement_product_type: data?.procurement_product_type,
+        is_active: true,
+      },
+      raw: true,
+    });
+
+    const finalQuantity =
+      (procurementProduct?.total_adjusted_quantity ||
+        procurementProduct?.total_quantity) -
+      procurementProduct?.total_dispatched_quantity;
+
+    if (inventoryData?.id) {
+      await sequelize.models.PurchaseInventory.update(
+        {
+          quantity: finalQuantity,
+        },
+        {
+          where: {
+            id: inventoryData?.id,
+            is_active: true,
+          },
+        }
+      ).catch(console.log);
+    } else {
+      await sequelize.models.PurchaseInventory.create({
+        procurement_product_id: data?.id,
+        product_master_id: data?.product_master_id,
+        procurement_product_type: data?.procurement_product_type,
+        quantity: procurementProduct?.total_adjusted_quantity
+          ? procurementProduct?.total_adjusted_quantity
+          : procurementProduct?.total_quantity,
+        is_active: true,
+        created_by: options?.profile_id,
+      }).catch(console.log);
+    }
+  } catch (err) {
+    console.log(
+      "Error while inserting a procurements data",
+      err?.message || err
+    );
+  }
 };
