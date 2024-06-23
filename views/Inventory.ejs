@@ -1009,13 +1009,13 @@
           },
           columns: [
             { data: null },
-            { data: "item_id" },
-            { data: "item_name" },
+            { data: "id" },
+            { data: "ProductMaster.product_name" },
             {
-              data: "SpeciesMaster.species_name",
+              data: "ProductMaster.ProductCategoryMaster.SpeciesMaster.species_name",
             },
-            { data: "ProductCategoryMaster.product_category" },
-            { data: "SizeMaster.size" },
+            { data: "ProductMaster.ProductCategoryMaster.product_category" },
+            { data: "ProductMaster.SizeMaster.size" },
             { data: "procurement_product_type" },
             { data: "quantity" },
           ],
@@ -1025,6 +1025,20 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<i class="fa-solid fa-eye view viewPurchaseInventoryProducts" item_id='${row?.id}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this inventory items"></i>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
               },
             },
           ],

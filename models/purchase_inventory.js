@@ -25,26 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
-      PurchaseInventory.belongsTo(models.SpeciesMaster, {
-        foreignKey: "species_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      PurchaseInventory.belongsTo(models.ProductCategoryMaster, {
-        foreignKey: "product_category_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
-      PurchaseInventory.belongsTo(models.SizeMaster, {
-        foreignKey: "size_master_id",
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
-      });
-
       PurchaseInventory.belongsTo(models.ProductMaster, {
         foreignKey: "product_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      PurchaseInventory.belongsTo(models.ProcurementProducts, {
+        foreignKey: "procurement_product_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });

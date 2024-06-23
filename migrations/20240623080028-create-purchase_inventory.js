@@ -17,33 +17,13 @@ module.exports = {
           key: "id",
         },
       },
-      species_master_id: {
+      procurement_product_id: {
         type: Sequelize.UUID,
         allowNull: false,
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         references: {
-          model: { tableName: "species_master" },
-          key: "id",
-        },
-      },
-      product_category_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "product_category_master" },
-          key: "id",
-        },
-      },
-      size_master_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        onDelete: "RESTRICT",
-        onUpdate: "CASCADE",
-        references: {
-          model: { tableName: "size_master" },
+          model: { tableName: "procurement_products" },
           key: "id",
         },
       },

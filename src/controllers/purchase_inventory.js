@@ -43,37 +43,21 @@ export const GetAll = ({ start, length, search }) => {
               [Op.iLike]: `%${search}%`,
             }
           ),
-          { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
-          {
-            "$ProductCategoryMaster.product_category$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          { "$SizeMaster.size$": { [Op.iLike]: `%${search}%` } },
+          // {
+          //   "$ProcurementProducts.ProcurementLots.procurement_lot$": {
+          //     [Op.iLike]: `%${search}%`,
+          //   },
+          // },
           { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
         ];
       }
 
       const inventories = await models.PurchaseInventory.findAndCountAll({
-        attributes: ["id", "procurement_product_type"],
+        attributes: ["id", "procurement_product_type", "quantity"],
         include: [
           {
-            attributes: ["id", "species_name"],
-            model: models.SpeciesMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            attributes: ["id", "product_category"],
-            model: models.ProductCategoryMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            attributes: ["id", "size"],
-            model: models.SizeMaster,
+            attributes: ["id"],
+            model: models.ProcurementProducts,
             where: {
               is_active: true,
             },
@@ -84,6 +68,32 @@ export const GetAll = ({ start, length, search }) => {
             where: {
               is_active: true,
             },
+            include: [
+              {
+                attributes: ["id", "product_category"],
+                model: models.ProductCategoryMaster,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    attributes: ["id", "species_name"],
+                    model: models.SpeciesMaster,
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+              },
+              {
+                required: false,
+                attributes: ["id", "size"],
+                model: models.SizeMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
           },
         ],
         where,
