@@ -114,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Create Hook
   Dispatches.afterCreate(async (data, options) => {
-    updateInventoryQuantity(sequelize, data);
+    updateInventoryQuantity(sequelize, data, options);
   });
 
   // Update Hook
@@ -129,7 +129,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Update Hook
   Dispatches.afterUpdate(async (data, options) => {
-    updateInventoryQuantity(sequelize, data);
+    updateInventoryQuantity(sequelize, data, options);
   });
 
   // Delete Hook
@@ -147,7 +147,7 @@ module.exports = (sequelize, DataTypes) => {
   return Dispatches;
 };
 
-const updateInventoryQuantity = async (sequelize, data) => {
+const updateInventoryQuantity = async (sequelize, data, options) => {
   try {
     const procurementProductData =
       await sequelize.models.ProcurementProducts.findOne({
@@ -170,6 +170,12 @@ const updateInventoryQuantity = async (sequelize, data) => {
             sequelize.fn("sum", sequelize.col("adjusted_quantity")),
             "total_adjusted_quantity",
           ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(dp.dispatch_quantity) FROM dispatches dp WHERE dp.procurement_product_id = "ProcurementProducts".id and dp.is_active = true)`
+            ),
+            "total_dispatched_quantity",
+          ],
         ],
         where: {
           product_master_id: procurementProductData?.product_master_id,
@@ -177,16 +183,20 @@ const updateInventoryQuantity = async (sequelize, data) => {
             procurementProductData?.procurement_product_type,
           is_active: true,
         },
+        group: ["ProcurementProducts.id"],
         raw: true,
       });
 
     const finalQuantity =
       (procurementProduct?.total_adjusted_quantity ||
-        procurementProduct?.total_quantity) - data?.dispatch_quantity;
+        procurementProduct?.total_quantity) -
+      procurementProduct?.total_dispatched_quantity;
 
     await sequelize.models.PurchaseInventory.update(
       {
         quantity: finalQuantity,
+        updated_at: new Date(),
+        updated_by: options?.profile_id,
       },
       {
         where: {

@@ -461,7 +461,7 @@
           </div>
 
           <div
-            class="topMenu-item salesMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            class="topMenu-item salesInventoryMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
               <i class="fa-solid fa-cart-flatbed"></i>
@@ -669,7 +669,170 @@
           </div>
         </div>
 
-        <!-- Orders Container Ends -->
+        <!-- Purchase Inventory Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------- Sales Inventory Container ------------------------------------------ -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container salesInventoryContainer d-none">
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <table
+                id="salesInventoryTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th class="fw-bold"><span>Item ID</span></th>
+                    <th class="fw-bold"><span>Item Name</span></th>
+                    <th class="fw-bold"><span>Item Species Name</span></th>
+                    <th class="fw-bold"><span>Item Category</span></th>
+                    <th class="fw-bold"><span>Item Size</span></th>
+                    <th class="fw-bold"><span>Quantity</span></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- modal-dialog-centered modal-dialog-scrollable -->
+        <!-- Modal -->
+        <div
+          id="salesInventoryProductModal"
+          class="modal hide fade"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          data-keyboard="false"
+          data-backdrop="static"
+        >
+          <div class="modal-dialog modal-xl">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Payment Products</h4>
+                <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
+                </i>
+              </div>
+              <div class="modal-body">
+                <div id="supplierDataContainer">
+                  <fieldset
+                    class="form-group border p-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Inventory</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Item ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_item_id"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Item Name</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_item_name"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Species Name</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_species_name"></span>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Item Type</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_item_type"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Item Size</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_item_size"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Quantity</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_sales_quantity"></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div>
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Products</legend>
+                    <table
+                      id="salesInventoryProductTable"
+                      class="rounded table table-hover nowrap w-100"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="fw-bold"><span>Product Name</span></th>
+                          <th class="fw-bold">
+                            <span>Stock Quantity</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Sold Quantity</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Batch ID</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Packing Container</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Size</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Grade</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Expiry Date</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Sales Order</span>
+                          </th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </fieldset>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="close btn btn-danger"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Inventory Ends -->
       </div>
     </div>
   </body>
@@ -712,6 +875,17 @@
             keyRight: [39], // Right key code
           },
         });
+      });
+
+      // Menu navigation
+      $(".topMenu-item").click(function () {
+        $(".topMenu-item").removeClass("topMenu-item-active");
+
+        $(this).addClass("topMenu-item-active");
+
+        $(".panelClose").click();
+
+        resetAllInputs();
       });
 
       // Global Functions
@@ -1091,7 +1265,258 @@
         });
       }
 
-      // -------------------- End of Orders -----------------
+      // -------------------- End of Purchase Inventory --------------------
+
+      // -------------------------------------------------------------------
+      // -------------------------- Sales Inventory ------------------------
+      // -------------------------------------------------------------------
+
+      $(".salesInventoryMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".salesInventoryContainer").removeClass("d-none");
+        $(".salesInventoryContainer").addClass("d-block");
+
+        loadSalesInventoryTableData();
+      });
+
+      $(document).on("click", ".modal-header .close", () => {
+        $("#salesInventoryProductModal").modal("hide");
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#salesInventoryProductModal").modal("hide");
+        }
+      );
+
+      function loadSalesInventoryTableData() {
+        $("#salesInventoryTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/inventory/sales",
+            error: function (xhr, error, code) {
+              $("#salesInventoryTable").DataTable().destroy();
+              $("#salesInventoryTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: "id" },
+            { data: "ProductMaster.product_name" },
+            {
+              data: "ProductMaster.ProductCategoryMaster.SpeciesMaster.species_name",
+            },
+            { data: "ProductMaster.ProductCategoryMaster.product_category" },
+            { data: "ProductMaster.SizeMaster.size" },
+            { data: "quantity" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view viewSalesInventoryProducts" item_id='${row?.id}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this inventory items"></i>`;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewSalesInventoryProducts", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
+
+        const product_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("product_master_id");
+
+        const procurement_product_type = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .text();
+
+        $("#view_sales_item_id").text(
+          $(e.target).closest("tr").children("td").eq(1).text()
+        );
+
+        $("#view_sales_item_name").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_sales_species_name").text(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#view_sales_item_type").text(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#view_sales_item_size").text(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#view_sales_quantity").text(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        // Opening Slied Panel
+        $("#salesInventoryProductModal").modal("show");
+
+        loadSalesInventoryProductTableData(
+          product_master_id,
+          procurement_product_type
+        );
+      });
+
+      function loadSalesInventoryProductTableData(
+        product_master_id,
+        procurement_product_type
+      ) {
+        if (!product_master_id) {
+          return toastr["warning"]("Product Master should not be empty!");
+        }
+
+        if (!procurement_product_type) {
+          return toastr["warning"]("Procurement Type should not be empty!");
+        }
+
+        $("#salesInventoryProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/procurement/product/inventory/sales/items?product_master_id=${product_master_id}&procurement_product_type=${procurement_product_type}`,
+            error: function (xhr, error, code) {
+              $("#salesInventoryProductTable").DataTable().destroy();
+              $("#salesInventoryProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: "pd.pp.ProductMaster.product_name" },
+            { data: "total_quantity" },
+            { data: "sold_quantity" },
+            { data: "id" },
+            { data: "PackagingMaster.packaging_code" },
+            { data: "SizeMaster.size" },
+            { data: "GradeMaster.grade_name" },
+            { data: "expiry_date" },
+            { data: "total_sales_orders" },
+          ],
+          columnDefs: [
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(data);
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return `<span payment_date="${row["payment_date"]}">${day + "-" + month + "-" + date.getFullYear()}</span>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      // -------------------- End of Sales Inventory -----------------
     });
   </script>
 </html>

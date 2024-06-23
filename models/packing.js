@@ -55,6 +55,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      //hsa Many
+      Packing.hasMany(models.OrderProducts, {
+        foreignKey: "packing_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   Packing.init(
@@ -111,26 +118,21 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Packing.afterCreate(async (data, options) => {
-    try {
-      data.created_by = options.profile_id;
-    } catch (err) {
-      console.log("Error while appending a packing data", err?.message || err);
-    }
+    updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Update Hook
   Packing.beforeUpdate(async (data, options) => {
     try {
+      data.updated_at = new Date();
+      data.updated_by = options?.profile_id;
     } catch (err) {
       console.log("Error while updating a packing data", err?.message || err);
     }
   });
 
   Packing.afterUpdate(async (data, options) => {
-    try {
-    } catch (err) {
-      console.log("Error while updating a packing data", err?.message || err);
-    }
+    updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Delete Hook
@@ -146,4 +148,83 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   return Packing;
+};
+
+// Utils Functions
+const updateInvenoryQuantity = async (sequelize, data, options) => {
+  try {
+    const packingData = await sequelize.models.Packing.findOne({
+      subQuery: false,
+      attributes: [
+        [
+          sequelize.fn("sum", sequelize.col("packing_quantity")),
+          "total_quantity",
+        ],
+      ],
+      include: [
+        {
+          as: "pd",
+          attributes: ["id"],
+          model: sequelize.models.PeeledDispatches,
+          include: [
+            {
+              as: "pp",
+              attributes: ["id", "product_master_id"],
+              model: sequelize.models.PeelingProducts,
+              where: {
+                is_active: true,
+              },
+            },
+          ],
+          where: {
+            is_active: true,
+            id: data?.peeled_dispatch_id,
+          },
+        },
+      ],
+      where: {
+        is_active: true,
+      },
+      group: ["Packing.id", "pd.id", "pd->pp.id"],
+    });
+
+    const product_master_id = packingData?.pd?.pp?.product_master_id;
+
+    const inventoryData = await sequelize.models.SalesInventory.findOne({
+      attributes: ["id"],
+      where: {
+        product_master_id,
+        is_active: true,
+      },
+      raw: true,
+    });
+
+    const finalQuantity = packingData?.dataValues?.total_quantity || 0;
+
+    if (inventoryData?.id) {
+      await sequelize.models.SalesInventory.update(
+        {
+          quantity: finalQuantity,
+          updated_at: new Date(),
+          updated_by: options?.profile_id,
+        },
+        {
+          where: {
+            id: inventoryData?.id,
+            is_active: true,
+          },
+        }
+      ).catch(console.log);
+    } else {
+      await sequelize.models.SalesInventory.create({
+        packing_id: data?.id,
+        product_master_id,
+        quantity: finalQuantity,
+        is_active: true,
+        created_by: options?.profile_id,
+      }).catch(console.log);
+    }
+  } catch (err) {
+    console.log("Error while inserting a packing data", err?.message || err);
+  }
 };

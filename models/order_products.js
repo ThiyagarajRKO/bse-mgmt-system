@@ -109,6 +109,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  // Bulk Create Hook
+  OrderProducts.afterBulkCreate(async (data, options) => {
+    try {
+      data?.map((item) => {
+        updateInventoryQuantity(sequelize, item, options);
+      });
+    } catch (err) {
+      console.log(
+        "Error while appending an peeling products data",
+        err?.message || err
+      );
+    }
+  });
+
   // Create Hook
   OrderProducts.beforeCreate(async (data, options) => {
     try {
@@ -128,6 +142,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  // Create Hook
+  OrderProducts.afterCreate(async (data, options) => {
+    updateInventoryQuantity(sequelize, data, options);
+  });
+
   // Update Hook
   OrderProducts.beforeUpdate(async (data, options) => {
     try {
@@ -139,6 +158,11 @@ module.exports = (sequelize, DataTypes) => {
         err?.message || err
       );
     }
+  });
+
+  // Update Hook
+  OrderProducts.afterUpdate(async (data, options) => {
+    updateInventoryQuantity(sequelize, data, options);
   });
 
   // Delete Hook
@@ -157,4 +181,101 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   return OrderProducts;
+};
+
+const updateInventoryQuantity = async (sequelize, data, options) => {
+  try {
+    // Finding Product Master Id
+    const packingData = await sequelize.models.Packing.findOne({
+      attributes: ["id"],
+      include: [
+        {
+          as: "pd",
+          attributes: ["id"],
+          model: sequelize.models.PeeledDispatches,
+          where: {
+            is_active: true,
+          },
+          include: [
+            {
+              as: "pp",
+              attributes: ["product_master_id"],
+              model: sequelize.models.PeelingProducts,
+              where: {
+                is_active: true,
+              },
+            },
+          ],
+        },
+      ],
+      where: {
+        id: data?.packing_id,
+        is_active: true,
+      },
+    });
+
+    const packing = await sequelize.models.Packing.findOne({
+      subQuery: false,
+      attributes: [
+        [
+          sequelize.fn("sum", sequelize.col("packing_quantity")),
+          "total_quantity",
+        ],
+        [
+          sequelize.literal(
+            '(SELECT SUM(op.unit) FROM order_products op WHERE op.packing_id = "Packing".id)'
+          ),
+          "total_sold_quantity",
+        ],
+      ],
+      where: {
+        is_active: true,
+      },
+      include: [
+        {
+          as: "pd",
+          attributes: [],
+          model: sequelize.models.PeeledDispatches,
+          where: {
+            is_active: true,
+          },
+          include: [
+            {
+              as: "pp",
+              attributes: [],
+              model: sequelize.models.PeelingProducts,
+              where: {
+                is_active: true,
+                product_master_id: packingData?.pd?.pp?.product_master_id,
+              },
+            },
+          ],
+        },
+      ],
+      group: ["Packing.id"],
+    });
+
+    const finalQuantity =
+      packing?.dataValues?.total_quantity -
+      packing?.dataValues?.total_sold_quantity;
+
+    await sequelize.models.SalesInventory.update(
+      {
+        quantity: finalQuantity,
+        updated_at: new Date(),
+        updated_by: options?.profile_id,
+      },
+      {
+        where: {
+          product_master_id: packingData?.pd?.pp?.product_master_id,
+          is_active: true,
+        },
+      }
+    ).catch(console.log);
+  } catch (err) {
+    console.log(
+      "Error while inserting a sales order data",
+      err?.message || err
+    );
+  }
 };

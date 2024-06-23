@@ -120,7 +120,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Create Hook
   ProcurementProducts.afterCreate(async (data, options) => {
-    updateInvenoryQuantity(sequelize, data);
+    updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Update Hook
@@ -145,7 +145,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Update Hook
   ProcurementProducts.afterUpdate(async (data, options) => {
-    updateInvenoryQuantity(sequelize, data);
+    updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Delete Hook
@@ -170,7 +170,7 @@ module.exports = (sequelize, DataTypes) => {
 };
 
 // Utils Functions
-const updateInvenoryQuantity = async (sequelize, data) => {
+const updateInvenoryQuantity = async (sequelize, data, options) => {
   try {
     const procurementProduct =
       await sequelize.models.ProcurementProducts.findOne({
@@ -213,12 +213,14 @@ const updateInvenoryQuantity = async (sequelize, data) => {
     const finalQuantity =
       (procurementProduct?.total_adjusted_quantity ||
         procurementProduct?.total_quantity) -
-      procurementProduct?.total_dispatched_quantity;
+      (procurementProduct?.total_dispatched_quantity || 0);
 
     if (inventoryData?.id) {
       await sequelize.models.PurchaseInventory.update(
         {
           quantity: finalQuantity,
+          updated_at: new Date(),
+          updated_by: options?.profile_id,
         },
         {
           where: {
@@ -232,9 +234,7 @@ const updateInvenoryQuantity = async (sequelize, data) => {
         procurement_product_id: data?.id,
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
-        quantity: procurementProduct?.total_adjusted_quantity
-          ? procurementProduct?.total_adjusted_quantity
-          : procurementProduct?.total_quantity,
+        quantity: finalQuantity,
         is_active: true,
         created_by: options?.profile_id,
       }).catch(console.log);

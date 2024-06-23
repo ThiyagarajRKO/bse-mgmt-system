@@ -618,6 +618,120 @@ export const GetPurchaseInventoryProducts = ({
   });
 };
 
+export const GetSalesInventoryProducts = ({
+  product_master_id,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!product_master_id) {
+        return reject({ message: "Product Master Data must not be empty" });
+      }
+
+      if (search) {
+        where[Op.or] = [
+          { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
+          { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
+          { "$CustomerMaster.customer_email$": { [Op.iLike]: `%${search}%` } },
+          { "$CustomerMaster.customer_phone$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$CustomerMaster.customer_address$": { [Op.iLike]: `%${search}%` },
+          },
+        ];
+      }
+
+      const procurements = await models.Packing.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "expiry_date",
+          [
+            sequelize.literal(
+              `(SELECT SUM(packing_quantity) FROM packing pk JOIN peeled_dispatches pd ON pd.id = pk.peeled_dispatch_id and pd.is_active = true JOIN peeling_products pp ON pp.id = pd.peeled_product_id and pp.product_master_id = '${product_master_id}' and pp.is_active = true WHERE pk.is_active = true)`
+            ),
+            "total_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(unit) FROM order_products op WHERE op.packing_id = "Packing".id and op.is_active = true)`
+            ),
+            "sold_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT COUNT(o.id) FROM orders o JOIN order_products op ON o.id = op.order_id and op.is_active = true WHERE op.packing_id = "Packing".id and op.is_active = true)`
+            ),
+            "total_sales_orders",
+          ],
+        ],
+        include: [
+          {
+            as: "pd",
+            attributes: ["id"],
+            model: models.PeeledDispatches,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                as: "pp",
+                attributes: ["id"],
+                model: models.PeelingProducts,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    attributes: ["id", "product_name"],
+                    model: models.ProductMaster,
+                    where: {
+                      is_active: true,
+                      id: product_master_id,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            attributes: ["size"],
+            model: models.SizeMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["grade_name"],
+            model: models.GradeMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["packaging_code"],
+            model: models.PackagingMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where: {
+          is_active: true,
+        },
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 // Retrive Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,

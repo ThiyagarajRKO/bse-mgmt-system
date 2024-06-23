@@ -6,6 +6,8 @@ import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
 import { GetPaymentItems } from "./handlers/get_payment_products";
 import { GetPaidStatus } from "./handlers/get_paid_status";
+import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
+import { GetSalesInventoryItems } from "./handlers/get_sales_inventory_products";
 
 // Chart Handler
 import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
@@ -23,6 +25,7 @@ import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
 import { getPaymentItemsSchema } from "./schema/get_payment_products";
 import { getPaidStatusSchema } from "./schema/get_paid_status";
+import { getPurchaseInventoryItemsSchema } from "./schema/get_purchase_inventory_products";
 
 // Chart Schema
 import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
@@ -30,8 +33,6 @@ import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procu
 import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
 import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
 import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
-import { getPurchaseInventoryItemsSchema } from "./schema/get_purchase_inventory_products";
-import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -156,6 +157,33 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
         const result = await GetPurchaseInventoryItems(
+          params,
+          req?.session,
+          fastify
+        );
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/inventory/sales/items",
+    getPurchaseInventoryItemsSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetSalesInventoryItems(
           params,
           req?.session,
           fastify
