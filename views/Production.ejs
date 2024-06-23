@@ -1900,13 +1900,14 @@
       function resetAllInputs() {
         $("input").val("");
         $("input[type=number]").val("");
+        $('input[type="date"]').val("");
 
-        // Reset all date inputs
-        var dateInputs = document.querySelectorAll('input[type="date"]');
-        // looping all the date inputs
-        dateInputs.forEach(function (input) {
-          input.value = formatDate(new Date());
-        });
+        // // Reset all date inputs
+        // var dateInputs = document.querySelectorAll('input[type="date"]');
+        // // looping all the date inputs
+        // dateInputs.forEach(function (input) {
+        //   input.value = formatDate(new Date());
+        // });
 
         // Resetting textarea
         $("textarea").val("");
@@ -4930,7 +4931,6 @@
                 /*-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>;*/
               },
             },
-
             {
               targets: [4],
               className: "text-left",
@@ -4978,7 +4978,7 @@
               },
             },
             {
-              targets: [10,11],
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(data);
@@ -5008,6 +5008,33 @@
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
                 return (
                   day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+            {
+              targets: [11],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(data);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear()
                 );
               },
             },
@@ -5084,7 +5111,7 @@
         );
 
          $("#expiry_date").val(
-          $(e.target).closest("tr").children("td").eq(11).text()
+          formatDate(new Date($(e.target).closest("tr").children("td").eq(11).text()))
         );
 
         // Opening Slide Panel
