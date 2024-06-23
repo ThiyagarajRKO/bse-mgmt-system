@@ -505,286 +505,152 @@
         <!-- Modal -->
         <div
           id="purchaseInventoryProductModal"
-          class="modal hide fade modal-xl"
-          tabindex="-1"
+          class="modal hide fade"
           role="dialog"
           aria-labelledby="myModalLabel"
-          aria-hidden="true"
+          data-keyboard="false"
+          data-backdrop="static"
         >
-          <div
-            class="modal-dialog modal-fullscreen modal-dialog-scrollable w-100 mt-3"
-            style="height: 90vh"
-          >
+          <div class="modal-dialog modal-xl">
             <!-- Modal content-->
-            <div class="modal-content rounded">
-              <div class="modal-header mx-2">
-                <h4 class="modal-title">Sales Orders</h4>
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Payment Products</h4>
                 <i class="close fa-solid fa-circle-xmark" data-dismiss="modal">
                 </i>
               </div>
               <div class="modal-body">
-                <div class="container-fluid">
-                  <div class="row">
-                    <!-- Panel 1 -->
-                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4">
-                      <!-- Order Data Container -->
-                      <div id="orderDataContainer">
-                        <fieldset
-                          class="form-group border p-3"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Order Data</legend>
-                          <!-- 1st row -->
-                          <div class="d-flex justify-content-between">
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Order No</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_order_no"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Order Date</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_order_date"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Order Status</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_delivery_status"></span>
-                                </td>
-                              </tr>
-                            </table>
+                <div id="supplierDataContainer">
+                  <fieldset
+                    class="form-group border p-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Inventory</legend>
+                    <!-- 1st row -->
+                    <div class="d-flex justify-content-between">
+                      <table class="col">
+                        <!-- <tr>
+                          <th class="align-top">Item ID</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_item_id"></span>
+                          </td>
+                        </tr> -->
+                        <tr>
+                          <th class="align-top">Item Name</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_item_name"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Species Name</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_species_name"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Item Type</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_item_type"></span>
+                          </td>
+                        </tr>
+                      </table>
 
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Payment Terms</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_payment_terms"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Payment Type</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_payment_type"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Total Price</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_total_price"></span>
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                        </fieldset>
-                      </div>
-
-                      <!-- Order Products Container -->
-                      <div id="orderedProductsContainer">
-                        <fieldset
-                          class="form-group border p-3 mt-4"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Ordered Products</legend>
-
-                          <table
-                            id="orderProductTable"
-                            class="rounded table table-hover nowrap w-100"
-                          >
-                            <thead>
-                              <tr>
-                                <th style="border-radius: 4px 0 0 0"></th>
-                                <th style="border-radius: 4px 0 0 0"></th>
-                                <th class="fw-bold">
-                                  <span>Product Name</span>
-                                </th>
-                                <th class="fw-bold"><span>Quantity</span></th>
-                                <th class="fw-bold">
-                                  <span>Price per KG</span>
-                                </th>
-                                <th class="fw-bold">
-                                  <span>Total Price</span>
-                                </th>
-                              </tr>
-                            </thead>
-                          </table>
-                        </fieldset>
-                      </div>
-
-                      <!-- Customer Info Container -->
-                      <div id="customerContainer">
-                        <fieldset
-                          class="form-group border p-3 mt-4"
-                          style="
-                            border-color: rgba(129, 145, 179, 0.6) !important;
-                          "
-                        >
-                          <legend class="w-auto px-2">Customer Info</legend>
-
-                          <!-- Customer Info -->
-                          <div class="d-flex justify-content-between">
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Name</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_name"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Country</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_country"></span>
-                                </td>
-                              </tr>
-                            </table>
-
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Email</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_email"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Phone</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_phone"></span>
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                        </fieldset>
-                      </div>
+                      <table class="col">
+                        <tr>
+                          <th class="align-top">Item Category</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_item_category"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Item Size</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_item_size"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="align-top">Quantity</th>
+                          <td class="align-top">:</td>
+                          <td class="align-top">
+                            <span id="view_quantity"></span>
+                          </td>
+                        </tr>
+                      </table>
                     </div>
+                  </fieldset>
+                </div>
 
-                    <!-- Panel 2 -->
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4">
-                      <div
-                        class="d-flex flex-column justify-content-between"
-                        style="height: 100%"
-                      >
-                        <!-- Order Tracking Container -->
-                        <div id="orderTrackingContainer">
-                          <fieldset
-                            class="form-group border p-3"
-                            style="
-                              border-color: rgba(129, 145, 179, 0.6) !important;
-                            "
-                          >
-                            <legend class="w-auto px-2">Order Tracking</legend>
-
-                            <!-- Order Tracking -->
-                          </fieldset>
-                        </div>
-                        <!-- Shipping Container -->
-                        <div id="shippingContainer">
-                          <fieldset
-                            class="form-group border p-3 mt-4"
-                            style="
-                              border-color: rgba(129, 145, 179, 0.6) !important;
-                            "
-                          >
-                            <legend class="w-auto px-2">Shipping Info</legend>
-
-                            <!-- Shipping Info -->
-
-                            <table class="w-100">
-                              <tr>
-                                <th class="align-top">Shipping Date</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_date"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Destination</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_destination"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Method</th>
-                                <td class="align-top">:</td>
-                                <td>
-                                  <span id="view_shipping_method"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Expected Delivery</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_expected_delivery"></span>
-                                </td>
-                              </tr>
-                            </table>
-
-                            <!-- <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_date"
-                                >Shipping Date:</label
-                              >
-                              <span id="view_shipping_date"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_carrier"
-                                >Shipping Carrier:</label
-                              >
-                              <span id="view_shipping_carrier"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_source"
-                                >Shipping Source:</label
-                              >
-                              <span id="view_shipping_source"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label
-                                class="fw-bold"
-                                for="view_shipping_destination"
-                                >Shipping Destination:</label
-                              >
-                              <span id="view_shipping_destination"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_method"
-                                >Shipping Method:</label
-                              >
-                              <span id="view_shipping_method"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label
-                                class="fw-bold"
-                                for="view_expected_delivery"
-                                >Expected Delivery:</label
-                              >
-                              <span id="view_expected_delivery"></span>
-                            </div> -->
-                          </fieldset>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  <fieldset
+                    class="form-group border p-3 mt-3"
+                    style="border-color: rgba(129, 145, 179, 0.6) !important"
+                  >
+                    <legend class="w-auto px-2">Products</legend>
+                    <table
+                      id="purchaseInventoryProductTable"
+                      class="rounded table table-hover nowrap w-100"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="fw-bold"><span>Product Name</span></th>
+                          <th class="fw-bold">
+                            <span>Purchased Type</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Purchased Quantity</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Price per KG</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Total Amount</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Purchaser</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Quality Status</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Adjusted Price (per KG)</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Adjusted Quantity</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Adjusted Notes</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Adjusted Surveyor</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Lot No</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Procured Date</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Supplier Name</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Supplier Email</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Supplier Phone</span>
+                          </th>
+                          <th class="fw-bold">
+                            <span>Supplier Address</span>
+                          </th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </fieldset>
                 </div>
               </div>
               <div class="modal-footer">
@@ -972,6 +838,18 @@
         loadPurchaseInventoryTableData();
       });
 
+      $(document).on("click", ".modal-header .close", () => {
+        $("#purchaseInventoryProductModal").modal("hide");
+      });
+
+      $(document).on(
+        "click",
+        ".modal-header .close, .modal-footer .close",
+        () => {
+          $("#purchaseInventoryProductModal").modal("hide");
+        }
+      );
+
       function loadPurchaseInventoryTableData() {
         $("#purchaseInventoryTable").DataTable({
           // searching: true,
@@ -1028,6 +906,13 @@
               },
             },
             {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+              },
+            },
+            {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
@@ -1039,6 +924,162 @@
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
+              },
+            },
+          ],
+          drawCallback: () => {},
+        });
+      }
+
+      $(document).on("click", ".viewPurchaseInventoryProducts", (e) => {
+        // Changing panel input fields data
+        $("#closeProcurementPanelBtn").click();
+
+        const product_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("product_master_id");
+
+        const procurement_product_type = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .text();
+
+        $("#view_item_name").text(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+
+        $("#view_species_name").text(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        $("#view_item_category").text(
+          $(e.target).closest("tr").children("td").eq(4).text()
+        );
+
+        $("#view_item_size").text(
+          $(e.target).closest("tr").children("td").eq(5).text()
+        );
+
+        $("#view_item_type").text(
+          $(e.target).closest("tr").children("td").eq(6).text()
+        );
+
+        $("#view_quantity").text(
+          $(e.target).closest("tr").children("td").eq(7).text()
+        );
+
+        // Opening Slied Panel
+        $("#purchaseInventoryProductModal").modal("show");
+
+        loadPurchaseInventoryProductTableData(
+          product_master_id,
+          procurement_product_type
+        );
+      });
+
+      function loadPurchaseInventoryProductTableData(
+        product_master_id,
+        procurement_product_type
+      ) {
+        if (!product_master_id) {
+          return toastr["warning"]("Product Master should not be empty!");
+        }
+
+        if (!procurement_product_type) {
+          return toastr["warning"]("Procurement Type should not be empty!");
+        }
+
+        $("#purchaseInventoryProductTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/v1/procurement/product/inventory/purchase/items?product_master_id=${product_master_id}&procurement_product_type=${procurement_product_type}`,
+            error: function (xhr, error, code) {
+              $("#purchaseInventoryProductTable").DataTable().destroy();
+              $("#purchaseInventoryProductTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: "ProductMaster.product_name" },
+            { data: "procurement_product_type" },
+            { data: "procurement_quantity" },
+            { data: "procurement_price" },
+            { data: "procurement_totalamount" },
+            { data: "procurement_purchaser" },
+            { data: null },
+            { data: "adjusted_price" },
+            { data: "adjusted_quantity" },
+            { data: "adjusted_reason" },
+            { data: "adjusted_surveyor" },
+            { data: "pl.procurement_lot" },
+            { data: "pl.procurement_date" },
+            { data: "SupplierMaster.supplier_name" },
+            { data: "SupplierMaster.email" },
+            { data: "SupplierMaster.phone" },
+            { data: "SupplierMaster.address" },
+          ],
+          columnDefs: [
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.adjusted_price || row?.adjusted_quantity
+                  ? `Adjusted &nbsp;<i class="text-warning fa-solid fa-pencil"></i>`
+                  : `OK &nbsp;<i class="text-success fa-solid fa-circle-check"></i>`;
+              },
+            },
+            {
+              targets: [12],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(data);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return `<span payment_date="${row["payment_date"]}">${day + "-" + month + "-" + date.getFullYear()}</span>`;
               },
             },
           ],

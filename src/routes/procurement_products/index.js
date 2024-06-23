@@ -30,6 +30,8 @@ import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procu
 import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
 import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
 import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
+import { getPurchaseInventoryItemsSchema } from "./schema/get_purchase_inventory_products";
+import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -145,6 +147,33 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  fastify.get(
+    "/inventory/purchase/items",
+    getPurchaseInventoryItemsSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetPurchaseInventoryItems(
+          params,
+          req?.session,
+          fastify
+        );
+
+        reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
 
   fastify.get("/paid/status", getPaidStatusSchema, async (req, reply) => {
     try {

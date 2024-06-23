@@ -518,6 +518,100 @@ export const GetPaymentItems = ({
   });
 };
 
+export const GetPurchaseInventoryProducts = ({
+  product_master_id,
+  procurement_product_type,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (procurement_product_type) {
+        where.procurement_product_type = procurement_product_type;
+      }
+
+      if (product_master_id) {
+        where.product_master_id = product_master_id;
+      }
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.email$": { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.phone$": { [Op.iLike]: `%${search}%` } },
+          { "$SupplierMaster.address$": { [Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      const procurements = await models.ProcurementProducts.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "procurement_product_type",
+          "procurement_quantity",
+          "procurement_price",
+          "adjusted_quantity",
+          "adjusted_price",
+          "adjusted_reason",
+          "adjusted_surveyor",
+          "procurement_purchaser",
+          "procurement_totalamount",
+          "created_at",
+        ],
+        include: [
+          {
+            as: "pl",
+            attributes: [
+              "id",
+              "procurement_lot",
+              "procurement_date",
+              "created_at",
+            ],
+            model: models.ProcurementLots,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "supplier_name", "email", "phone", "address"],
+            model: models.SupplierMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            where: {
+              is_active: true,
+            },
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [[sequelize.col(`"pl".procurement_date`), "desc"]],
+      });
+
+      resolve(procurements);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 // Retrive Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,
