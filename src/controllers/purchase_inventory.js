@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models from "../../models";
+import models, { sequelize } from "../../models";
 
 export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
@@ -36,19 +36,30 @@ export const GetAll = ({ start, length, search }) => {
         where[Op.or] = [
           sequelize.where(
             sequelize.cast(
-              sequelize.col("procurement_product_type"),
+              sequelize.col("PurchaseInventory.procurement_product_type"),
               "varchar"
             ),
             {
               [Op.iLike]: `%${search}%`,
             }
           ),
-          // {
-          //   "$ProcurementProducts.ProcurementLots.procurement_lot$": {
-          //     [Op.iLike]: `%${search}%`,
-          //   },
-          // },
           { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$ProductMaster.ProductCategoryMaster.product_category$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            "$ProductMaster.ProductCategoryMaster.SpeciesMaster.species_name$":
+              {
+                [Op.iLike]: `%${search}%`,
+              },
+          },
+          {
+            "$ProductMaster.SizeMaster.size$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ];
       }
 
