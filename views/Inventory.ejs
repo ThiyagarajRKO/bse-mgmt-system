@@ -606,6 +606,9 @@
                             <span>Purchased Quantity</span>
                           </th>
                           <th class="fw-bold">
+                            <span>Dispatched Quantity</span>
+                          </th>
+                          <th class="fw-bold">
                             <span>Price per KG</span>
                           </th>
                           <th class="fw-bold">
@@ -1031,6 +1034,7 @@
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
+            { data: "total_dispatched_quantity" },
             { data: "procurement_price" },
             { data: "procurement_totalamount" },
             { data: "procurement_purchaser" },
@@ -1048,7 +1052,7 @@
           ],
           columnDefs: [
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return row?.adjusted_price || row?.adjusted_quantity
@@ -1057,7 +1061,7 @@
               },
             },
             {
-              targets: [12],
+              targets: [13],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(data);

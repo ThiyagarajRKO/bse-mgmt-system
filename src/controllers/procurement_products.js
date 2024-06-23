@@ -569,6 +569,12 @@ export const GetPurchaseInventoryProducts = ({
           "procurement_purchaser",
           "procurement_totalamount",
           "created_at",
+          [
+            sequelize.literal(
+              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`
+            ),
+            "total_dispatched_quantity",
+          ],
         ],
         include: [
           {
