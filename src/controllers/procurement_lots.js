@@ -1135,10 +1135,13 @@ export const GetPackingStats = ({
           Sequelize.where(
             sequelize.literal(
               `(SELECT
-                  COUNT(pk.id) FROM packing pk
-                  JOIN peeled_dispatches pd on pk.peeled_dispatch_id=pd.id
+                  COUNT(pk.id) 
+                FROM 
+                  packing pk
+                JOIN 
+                  peeled_dispatches pd on pk.peeled_dispatch_id = pd.id and pd.is_active = true
                 JOIN
-                  peeling_products pp ON pp.id = pd.peeled_product_id
+                  peeling_products pp ON pp.id = pd.peeled_product_id and pp.is_active = true
 	              JOIN 
                   peeling p on p.id = pp.peeling_id and p.is_active = true
 	              JOIN 
@@ -1184,11 +1187,13 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT 
-                  sum(p.peeling_quantity) FROM peeling p
+                  sum(p.peeling_quantity) 
+                FROM 
+                  peeling p
 	              JOIN 
                   dispatches d on d.id = p.dispatch_id and d.is_active = true
 	              JOIN 
-                  procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
+                  procurement_products prp on prp.id=d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
             ),
@@ -1197,7 +1202,9 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT 
-                  sum(pp.yield_quantity) FROM public.peeling_products pp
+                  sum(pp.yield_quantity) 
+                FROM 
+                  public.peeling_products pp
 	              JOIN 
                   peeling p on p.id = pp.peeling_id and p.is_active = true
 	              JOIN 
@@ -1212,7 +1219,9 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT
-                  COUNT(pd.id) FROM peeled_dispatches pd
+                  COUNT(pd.id) 
+                FROM
+                  peeled_dispatches pd
                 JOIN
                   peeling_products pp ON pp.id = pd.peeled_product_id
 	              JOIN 
@@ -1229,7 +1238,9 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT 
-                  sum(pd.peeled_dispatch_quantity) FROM peeled_dispatches pd
+                  sum(pd.peeled_dispatch_quantity) 
+                FROM 
+                  peeled_dispatches pd
                 JOIN
                   peeling_products pp ON pp.id = pd.peeled_product_id
 	              JOIN 
