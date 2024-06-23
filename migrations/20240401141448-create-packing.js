@@ -71,13 +71,16 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: true,
       },
-
       packing_status: {
         type: Sequelize.ENUM("In Progress", "Ready for Sales"),
         defaultValue: "In Progress",
       },
       packing_notes: {
         type: Sequelize.TEXT,
+      },
+      expiry_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
       },
       is_active: {
         defaultValue: false,

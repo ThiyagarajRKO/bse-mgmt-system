@@ -8,6 +8,7 @@ export const Create = async (
     packing_quantity,
     grade_master_id,
     size_master_id,
+    expiry_date,
     packaging_master_id,
     packing_notes,
   },
@@ -38,6 +39,7 @@ export const Create = async (
         grade_master_id,
         size_master_id,
         packaging_master_id,
+        expiry_date,
         packing_notes,
         is_active: true,
       });

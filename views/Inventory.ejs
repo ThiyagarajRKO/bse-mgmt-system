@@ -747,13 +747,12 @@
               >
                 <thead>
                   <tr>
-                    <th class="fw-bold"><span>Product ID</span></th>
-                    <th class="fw-bold"><span>Product Name</span></th>
-                    <th class="fw-bold"><span>Supplier Name</span></th>
-                    <th class="fw-bold"><span>Order Date</span></th>
-                    <th class="fw-bold"><span>Delivery Date</span></th>
-                    <th class="fw-bold"><span>Payment Terms</span></th>
-                    <th class="fw-bold"><span>Purchase Order Status</span></th>
+                    <th></th>
+                    <th class="fw-bold"><span>Item ID</span></th>
+                    <th class="fw-bold"><span>Item Category</span></th>
+                    <th class="fw-bold"><span>Item Type</span></th>
+                    <th class="fw-bold"><span>Item Size</span></th>
+                    <th class="fw-bold"><span>Quantity</span></th>
                   </tr>
                 </thead>
               </table>
@@ -1268,64 +1267,21 @@
             },
           },
           columns: [
-            { data: "order_no" },
             { data: null },
-            { data: null },
-            { data: "total_products_price" },
-            { data: "delivery_status" },
+            { data: "item_id" },
+            {
+              data: "ProductMaster.ProductCategoryMaster.SpeciesMaster.species_name",
+            },
+            { data: "ProductMaster.ProductCategoryMaster.product_category" },
+            { data: "SizeMaster.size" },
+            { data: "quantity" },
           ],
           columnDefs: [
             {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row?.created_at);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return day + "-" + month + "-" + date.getFullYear();
-              },
-            },
-            {
-              targets: [2],
-              className: "text-left",
-              render: (data, type, row) => {
-                return row?.OrdersProducts?.length || 0;
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: (data, type, row) => {
-                return `<span class=${
-                  data == "Delivered" ? "text-success" : "text-warning"
-                }>${data} <i class="fa-solid ${
-                  data == "Delivered"
-                    ? "fa-circle-check"
-                    : "fa-truck-fast fa-fade"
-                }"></i></span>`;
+                return `<i class="fa-solid fa-eye view viewPurchaseInventoryProducts" item_id='${row?.id}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this inventory items"></i>`;
               },
             },
           ],

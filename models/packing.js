@@ -73,6 +73,9 @@ module.exports = (sequelize, DataTypes) => {
       packing_notes: {
         type: DataTypes.TEXT,
       },
+      expiry_date: {
+        type: DataTypes.DATE,
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -107,11 +110,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  Packing.afterCreate(async (data, options) => {
+    try {
+      data.created_by = options.profile_id;
+    } catch (err) {
+      console.log("Error while appending a packing data", err?.message || err);
+    }
+  });
+
   // Update Hook
   Packing.beforeUpdate(async (data, options) => {
     try {
-      data.updated_at = new Date();
-      data.updated_by = options.profile_id;
+    } catch (err) {
+      console.log("Error while updating a packing data", err?.message || err);
+    }
+  });
+
+  Packing.afterUpdate(async (data, options) => {
+    try {
     } catch (err) {
       console.log("Error while updating a packing data", err?.message || err);
     }

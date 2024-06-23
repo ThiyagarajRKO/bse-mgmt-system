@@ -1670,6 +1670,18 @@
                 </div>
 
                 <div class="form-group mt-4">
+                  <label for="expiry_date">Expiry Date</label>
+                  <input
+                    id="expiry_date"
+                    class="form-control"
+                    type="date"
+                    placeholder="eg. 10"
+                    name="expiry_date"
+                    required
+                  />
+                </div>
+
+                <div class="form-group mt-4">
                   <label for="packing_notes">Packing Notes</label>
                   <textarea
                     row="3"
@@ -1795,6 +1807,7 @@
                       <th class="fw-bold"><span>Packing Notes</span></th>
                       <th class="fw-bold"><span>Packing Status</span></th>
                       <th class="fw-bold"><span>Packed Date</span></th>
+                      <th class="fw-bold"><span>Expiry Date</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -4730,12 +4743,11 @@
           },
           columns: [
             { data: null },
-            { data: "peeling_date" },
+            { data: "procurement_date" },
             { data: "procurement_lot" },
             { data: "total_peeled_dispatched_quantity" },
             { data: "total_packing_count" },
             { data: "total_packing_quantity" },
-
           ],
           columnDefs: [
             {
@@ -4749,7 +4761,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                const date = new Date(row?.procurement_date);
+                const date = new Date(data);
 
                 var months = [
                   "Jan",
@@ -4899,6 +4911,7 @@
             { data: "packing_notes" },
             { data: "packing_status" },
             { data: "created_at" },
+            { data: "expiry_date" },
           ],
           columnDefs: [
             {
@@ -4946,7 +4959,6 @@
                 return `<span packaging_master_id='${row["PackagingMaster"]?.id}'>${data}</i>`;
               },
             },
-
             {
               targets: [8],
               className: "text-left",
@@ -4966,10 +4978,10 @@
               },
             },
             {
-              targets: [10],
+              targets: [10,11],
               className: "text-left",
               render: function (data, type, row) {
-                const date = new Date(row?.created_at);
+                const date = new Date(data);
 
                 var months = [
                   "Jan",
@@ -5069,6 +5081,10 @@
 
         $("#packing_notes").val(
           $(e.target).closest("tr").children("td").eq(8).text()
+        );
+
+         $("#expiry_date").val(
+          $(e.target).closest("tr").children("td").eq(11).text()
         );
 
         // Opening Slide Panel
@@ -5407,6 +5423,7 @@
           grade_master_id: $("#packingGrade").val(),
           size_master_id: $("#packingSize").val(),
           packaging_master_id: $("#packingPackage").val(),
+          expiry_date: $("#expiry_date").val(),
           packing_notes: $("#packing_notes").val(),
         };
 

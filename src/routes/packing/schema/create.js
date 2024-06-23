@@ -9,6 +9,7 @@ export const createSchema = {
         "grade_master_id",
         "size_master_id",
         "packaging_master_id",
+        "expiry_date",
         "packing_notes",
       ],
       properties: {
@@ -19,6 +20,7 @@ export const createSchema = {
         grade_master_id: { type: "string" },
         size_master_id: { type: "string" },
         packaging_master_id: { type: "string" },
+        expiry_date: { type: "string" },
         packing_notes: { type: "string" },
       },
     },

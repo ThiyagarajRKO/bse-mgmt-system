@@ -1,6 +1,4 @@
-import { Op } from "sequelize";
-import models, { sequelize } from "../../models";
-import { ProcurementLots } from ".";
+import models from "../../models";
 
 export const Insert = async (profile_id, packing_data) => {
   return new Promise(async (resolve, reject) => {
@@ -108,33 +106,6 @@ export const GetAll = ({ start, length }) => {
       let procurementLotsWhere = {
         is_active: true,
       };
-
-      // if (search) {
-      //   where[Op.or] = [
-      //     sequelize.where(
-      //       sequelize.cast(sequelize.col("packing_quantity"), "varchar"),
-      //       {
-      //         [Op.iLike]: `%${search}%`,
-      //       }
-      //     ),
-      //     { packing_notes: { [Op.iLike]: `%${search}%` } },
-      //     sequelize.where(
-      //       sequelize.cast(sequelize.col("packing_status"), "varchar"),
-      //       {
-      //         [Op.iLike]: `%${search}%`,
-      //       }
-      //     ),
-      //     {
-      //       "$PeeledDispatches->PeelingProducts->ProductMaster.product_name$": {
-      //         [Op.iLike]: `%${search}%`,
-      //       },
-      //     },
-      //     { "$UnitMaster.unit_code$": { [Op.iLike]: `%${search}%` } },
-      //     { "$GradeMaster.grade_name$": { [Op.iLike]: `%${search}%` } },
-      //     { "$SizeMaster.size$": { [Op.iLike]: `%${search}%` } },
-      //     { "$PackagingMaster.packaging_code$": { [Op.iLike]: `%${search}%` } },
-      //   ];
-      // }
 
       const packing_count = await models.Packing.count({
         raw: true,
@@ -246,6 +217,7 @@ export const GetAll = ({ start, length }) => {
           "packing_notes",
           "packing_status",
           "packing_quantity",
+          "expiry_date",
         ],
         include: [
           {
