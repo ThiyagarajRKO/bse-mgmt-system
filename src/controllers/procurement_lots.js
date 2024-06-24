@@ -1201,35 +1201,36 @@ export const GetPackingStats = ({
           ],
           [
             sequelize.literal(
-              `(SELECT 
-                  sum(pp.yield_quantity) 
-                FROM 
-                  public.peeling_products pp
-	              JOIN 
-                  peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
-                  procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
-	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+             `(SELECT 
+              sum(pd.peeled_dispatch_quantity) FROM peeled_dispatches pd
+            JOIN
+              peeling_products pp ON pp.id = pd.peeled_product_id
+            JOIN 
+              peeling p on p.id = pp.peeling_id and p.is_active = true
+            JOIN 
+              dispatches d on d.id = p.dispatch_id and d.is_active = true
+            JOIN 
+              procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
+            WHERE 
+              prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)` 
             ),
             "total_peeled_dispatched_quantity",
           ],
           [
             sequelize.literal(
               `(SELECT
-                  COUNT(pd.id) 
-                FROM
-                  peeled_dispatches pd
-                JOIN
-                  peeling_products pp ON pp.id = pd.peeled_product_id
-	              JOIN 
-                  peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
-                  procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
+                COUNT(pk.id) 
+              FROM
+              Packing pk 
+                join peeled_dispatches pd on pd.id=pk.peeled_dispatch_id
+              JOIN
+                peeling_products pp ON pp.id = pd.peeled_product_id
+              JOIN 
+                peeling p on p.id = pp.peeling_id and p.is_active = true
+              JOIN 
+                dispatches d on d.id = p.dispatch_id and d.is_active = true
+              JOIN 
+                procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
             ),
@@ -1237,18 +1238,19 @@ export const GetPackingStats = ({
           ],
           [
             sequelize.literal(
-              `(SELECT 
-                  sum(pd.peeled_dispatch_quantity) 
-                FROM 
-                  peeled_dispatches pd
-                JOIN
-                  peeling_products pp ON pp.id = pd.peeled_product_id
-	              JOIN 
-                  peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
-                  procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
+              `(SELECT
+                sum(pk.packing_quantity) 
+              FROM
+              Packing pk 
+                join peeled_dispatches pd on pd.id=pk.peeled_dispatch_id
+              JOIN
+                peeling_products pp ON pp.id = pd.peeled_product_id
+              JOIN 
+                peeling p on p.id = pp.peeling_id and p.is_active = true
+              JOIN 
+                dispatches d on d.id = p.dispatch_id and d.is_active = true
+              JOIN 
+                procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
             ),
