@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import models, { Sequelize, sequelize } from "../../models";
+import models from "../../models";
 
 export const Insert = async (profile_id, product_master_data) => {
   return new Promise(async (resolve, reject) => {
@@ -138,6 +138,7 @@ export const GetAll = ({
   start,
   length,
   search,
+  dropdownSearch,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -145,8 +146,10 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (product_name) {
-        where.product_name = { [Op.iLike]: `%${product_name}%` };
+      if (product_name || dropdownSearch) {
+        where.product_name = {
+          [Op.iLike]: `%${product_name || dropdownSearch}%`,
+        };
       }
 
       let speciesWhere = {

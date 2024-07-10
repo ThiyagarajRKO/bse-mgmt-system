@@ -11,6 +11,7 @@ export const GetAll = (
     product_category_name,
     product_size,
     "search[value]": search,
+    dropdownSearch,
   },
   session,
   fastify
@@ -27,6 +28,7 @@ export const GetAll = (
         product_category_name,
         product_size,
         search,
+        dropdownSearch,
       });
 
       if (!product_master) {

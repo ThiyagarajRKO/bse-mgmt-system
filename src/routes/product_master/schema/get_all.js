@@ -13,6 +13,7 @@ export const getAllSchema = {
         product_category_name: { type: "string" },
         product_size: { type: "string" },
         "search[value]": { type: "string" },
+        dropdownSearch: { type: "string" },
       },
     },
   },

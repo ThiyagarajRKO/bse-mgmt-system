@@ -3252,37 +3252,44 @@
 
       function loadProcurementProducts() {
         // Load Products
-        $.ajax({
-          url: "/api/v1/master/product",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.product_name,
-                };
-              }),
-            });
 
-            // Clearing selected value
-            $("#procurement_product").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+        $("#procurement_product").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          ajax: {
+            url: "/api/v1/master/product",
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data?.rows, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.product_name,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
         });
+
+        // // Clearing selected value
+        // $("#procurement_product").val(null).trigger("change");
       }
 
       function loadProcurementUnits() {
@@ -3322,37 +3329,45 @@
 
       function loadProcurementSuppliers() {
         // Load Suppliers
-        $.ajax({
-          url: "/api/v1/master/supplier",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#procurement_product_supplier").select2({
-              placeholder: "Choose a supplier",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.supplier_name,
-                };
-              }),
-            });
 
-            // Clearing selected value
-            $("#procurement_product_supplier").val(null).trigger("change");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+        // Loading data
+        $("#procurement_product_supplier").select2({
+          placeholder: "Choose a supplier",
+          allowClear: true,
+          ajax: {
+            url: "/api/v1/master/supplier",
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data?.rows, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.supplier_name,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
         });
+
+        // // Clearing selected value
+        // $("#procurement_product_supplier").val(null).trigger("change");
       }
 
       function savePurchases() {

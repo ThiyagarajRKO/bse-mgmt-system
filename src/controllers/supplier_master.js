@@ -110,6 +110,7 @@ export const GetAll = ({
   supplier_name,
   location_master_name,
   search,
+  dropdownSearch,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -117,8 +118,10 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (supplier_name) {
-        where.supplier_name = { [Op.iLike]: `%${supplier_name}%` };
+      if (supplier_name || dropdownSearch) {
+        where.supplier_name = {
+          [Op.iLike]: `%${supplier_name || dropdownSearch}%`,
+        };
       }
 
       let locationWhere = {

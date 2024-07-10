@@ -7,6 +7,7 @@ export const GetAll = (
     supplier_name,
     location_master_name,
     "search[value]": search,
+    dropdownSearch,
   },
   session,
   fastify
@@ -20,6 +21,7 @@ export const GetAll = (
         supplier_name,
         location_master_name,
         search,
+        dropdownSearch,
       });
 
       if (!supplier_master) {

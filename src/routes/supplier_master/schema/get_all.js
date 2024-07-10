@@ -9,6 +9,7 @@ export const getAllSchema = {
         supplier_name: { type: "string" },
         location_master_name: { type: "string" },
         "search[value]": { type: "string" },
+        dropdownSearch: { type: "string" },
       },
     },
   },
