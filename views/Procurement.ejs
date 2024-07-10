@@ -3017,6 +3017,27 @@
           .find("span")
           .attr("supplier_master_id");
 
+        const supplier_master_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(7)
+          .find("span")
+          .text();
+
+        const product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("product_master_id");
+
+        const product_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .text();
+
         let paidStatus = await getPaidStatus(
           $(e.target).attr("procurement_product_id"),
           supplier_master_id
@@ -3044,16 +3065,13 @@
           )
           .trigger("change");
 
-        $("#procurement_product")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(2)
-              .find("span")
-              .attr("product_master_id")
-          )
-          .trigger("change");
+        // $("#procurement_product")
+        //   .val(
+
+        //   )
+        //   .trigger("change");
+
+        loadProcurementProducts(product_id, product_name);
 
         $("#procurement_product_type")
           .val($(e.target).closest("tr").children("td").eq(3).text())
@@ -3067,9 +3085,11 @@
           $(e.target).closest("tr").children("td").eq(5).text()
         );
 
-        $("#procurement_product_supplier")
-          .val(supplier_master_id)
-          .trigger("change");
+        // $("#procurement_product_supplier")
+        //   .val(supplier_master_id)
+        //   .trigger("change");
+
+        loadProcurementSuppliers(supplier_master_id, supplier_master_name);
 
         $("#procurement_purchaser").val(
           $(e.target).closest("tr").children("td").eq(8).text()
@@ -3250,9 +3270,8 @@
         $("#procurement_product_type").val(null).trigger("change");
       }
 
-      function loadProcurementProducts() {
+      function loadProcurementProducts(product_id, product_name) {
         // Load Products
-
         $("#procurement_product").select2({
           placeholder: "Choose a product",
           allowClear: true,
@@ -3286,10 +3305,11 @@
               };
             },
           },
+          data: [{ id: product_id, text: product_name }],
         });
 
-        // // Clearing selected value
-        // $("#procurement_product").val(null).trigger("change");
+        // Clearing selected value
+        $("#procurement_product").val(product_id).trigger("change");
       }
 
       function loadProcurementUnits() {
@@ -3327,10 +3347,8 @@
         });
       }
 
-      function loadProcurementSuppliers() {
+      function loadProcurementSuppliers(supplier_id, supplier_name) {
         // Load Suppliers
-
-        // Loading data
         $("#procurement_product_supplier").select2({
           placeholder: "Choose a supplier",
           allowClear: true,
@@ -3364,10 +3382,14 @@
               };
             },
           },
+          data:
+            supplier_id && supplier_name
+              ? [{ id: supplier_id, text: supplier_name }]
+              : [],
         });
 
         // // Clearing selected value
-        // $("#procurement_product_supplier").val(null).trigger("change");
+        $("#procurement_product_supplier").val(supplier_id).trigger("change");
       }
 
       function savePurchases() {
