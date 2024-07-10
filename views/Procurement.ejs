@@ -1738,6 +1738,10 @@
       App.checkAccess();
       let view_payment_lot_id = "";
       let view_purchase_payment_id = "";
+      let selcted_proc_product_id = "";
+      let selcted_proc_product_name = "";
+      let selcted_proc_supplier_id = "";
+      let selcted_proc_supplier_name = "";
 
       var tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -1930,8 +1934,8 @@
 
       function loadDropdowns() {
         loadProcurementProductType();
-        loadProcurementProducts();
-        loadProcurementSuppliers();
+        // loadProcurementProducts();
+        // loadProcurementSuppliers();
         loadProcurementUnits();
       }
 
@@ -2695,6 +2699,8 @@
           "procurement_product_id"
         );
 
+        loadProcurementProducts();
+        loadProcurementSuppliers();
         // Changing panel save button attribute
         $(`#submitPurchases`).attr("procurement_lot_id", null);
       });
@@ -2702,6 +2708,11 @@
       // Close panel
       $("#closeProcurementPanelBtn").click(function () {
         closeSlidePanel("procurementSlideInPanel");
+
+        selcted_proc_product_id = "";
+        selcted_proc_product_name = "";
+        selcted_proc_supplier_id = "";
+        selcted_proc_supplier_name = "";
       });
 
       $(".procurementMenu").click(function () {
@@ -3017,27 +3028,6 @@
           .find("span")
           .attr("supplier_master_id");
 
-        const supplier_master_name = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(7)
-          .find("span")
-          .text();
-
-        const product_id = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(2)
-          .find("span")
-          .attr("product_master_id");
-
-        const product_name = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(2)
-          .find("span")
-          .text();
-
         let paidStatus = await getPaidStatus(
           $(e.target).attr("procurement_product_id"),
           supplier_master_id
@@ -3071,7 +3061,19 @@
         //   )
         //   .trigger("change");
 
-        loadProcurementProducts(product_id, product_name);
+        selcted_proc_product_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .attr("product_master_id");
+
+        selcted_proc_product_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(2)
+          .find("span")
+          .text();
 
         $("#procurement_product_type")
           .val($(e.target).closest("tr").children("td").eq(3).text())
@@ -3089,7 +3091,13 @@
         //   .val(supplier_master_id)
         //   .trigger("change");
 
-        loadProcurementSuppliers(supplier_master_id, supplier_master_name);
+        selcted_proc_supplier_id = supplier_master_id;
+        selcted_proc_supplier_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(7)
+          .find("span")
+          .text();
 
         $("#procurement_purchaser").val(
           $(e.target).closest("tr").children("td").eq(8).text()
@@ -3270,7 +3278,7 @@
         $("#procurement_product_type").val(null).trigger("change");
       }
 
-      function loadProcurementProducts(product_id, product_name) {
+      function loadProcurementProducts() {
         // Load Products
         $("#procurement_product").select2({
           placeholder: "Choose a product",
@@ -3305,11 +3313,21 @@
               };
             },
           },
-          data: [{ id: product_id, text: product_name }],
+          data:
+            selcted_proc_product_id && selcted_proc_product_id
+              ? [
+                  {
+                    id: selcted_proc_product_id,
+                    text: selcted_proc_product_name,
+                  },
+                ]
+              : [],
         });
 
         // Clearing selected value
-        $("#procurement_product").val(product_id).trigger("change");
+        $("#procurement_product")
+          .val(selcted_proc_product_id)
+          .trigger("change");
       }
 
       function loadProcurementUnits() {
@@ -3347,7 +3365,7 @@
         });
       }
 
-      function loadProcurementSuppliers(supplier_id, supplier_name) {
+      function loadProcurementSuppliers() {
         // Load Suppliers
         $("#procurement_product_supplier").select2({
           placeholder: "Choose a supplier",
@@ -3383,13 +3401,20 @@
             },
           },
           data:
-            supplier_id && supplier_name
-              ? [{ id: supplier_id, text: supplier_name }]
+            selcted_proc_supplier_id && selcted_proc_product_name
+              ? [
+                  {
+                    id: selcted_proc_supplier_id,
+                    text: selcted_proc_product_name,
+                  },
+                ]
               : [],
         });
 
         // // Clearing selected value
-        $("#procurement_product_supplier").val(supplier_id).trigger("change");
+        $("#procurement_product_supplier")
+          .val(selcted_proc_supplier_id)
+          .trigger("change");
       }
 
       function savePurchases() {
