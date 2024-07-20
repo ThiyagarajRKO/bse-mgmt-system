@@ -353,6 +353,7 @@ export const GetLots = ({ start = 0, length = 10 }) => {
 };
 
 export const GetPaymentLots = ({
+  procurement_lot_id,
   supplier_master_id,
   purchase_payment_id,
   start = 0,
@@ -362,6 +363,14 @@ export const GetPaymentLots = ({
     try {
       if (!supplier_master_id) {
         return reject({ message: "Supplier master data must not be empty" });
+      }
+
+      let where = {
+        is_active: true,
+      };
+
+      if (procurement_lot_id) {
+        where["id"] = procurement_lot_id;
       }
 
       const procurements = await models.ProcurementLots.findAll({
@@ -399,9 +408,7 @@ export const GetPaymentLots = ({
             },
           },
         ],
-        where: {
-          is_active: true,
-        },
+        where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
@@ -1201,7 +1208,7 @@ export const GetPackingStats = ({
           ],
           [
             sequelize.literal(
-             `(SELECT 
+              `(SELECT 
               sum(pd.peeled_dispatch_quantity) FROM peeled_dispatches pd
             JOIN
               peeling_products pp ON pp.id = pd.peeled_product_id
@@ -1212,7 +1219,7 @@ export const GetPackingStats = ({
             JOIN 
               procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
             WHERE 
-              prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)` 
+              prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
             ),
             "total_peeled_dispatched_quantity",
           ],

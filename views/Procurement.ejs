@@ -1736,12 +1736,15 @@
     jQuery(document).ready(function ($) {
       // Declarations
       App.checkAccess();
-      let view_payment_lot_id = "";
       let view_purchase_payment_id = "";
-      let selcted_proc_product_id = "";
-      let selcted_proc_product_name = "";
-      let selcted_proc_supplier_id = "";
-      let selcted_proc_supplier_name = "";
+      let selected_proc_product_id = "";
+      let selected_proc_product_name = "";
+      let selected_proc_supplier_id = "";
+      let selected_proc_supplier_name = "";
+      let selected_payment_supplier_id = "";
+      let selected_payment_supplier_name = "";
+      let selected_payment_lot_id = "";
+      let selected_payment_lot_no = "";
 
       var tooltipTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -2710,9 +2713,12 @@
         closeSlidePanel("procurementSlideInPanel");
 
         selcted_proc_product_id = "";
-        selcted_proc_product_name = "";
-        selcted_proc_supplier_id = "";
-        selcted_proc_supplier_name = "";
+        selected_proc_product_name = "";
+        selected_proc_supplier_id = "";
+        selected_proc_supplier_name = "";
+
+        $("#procurement_product").empty();
+        $("#procurement_product_supplier").empty();
       });
 
       $(".procurementMenu").click(function () {
@@ -3068,7 +3074,7 @@
           .find("span")
           .attr("product_master_id");
 
-        selcted_proc_product_name = $(e.target)
+        selected_proc_product_name = $(e.target)
           .closest("tr")
           .children("td")
           .eq(2)
@@ -3091,8 +3097,8 @@
         //   .val(supplier_master_id)
         //   .trigger("change");
 
-        selcted_proc_supplier_id = supplier_master_id;
-        selcted_proc_supplier_name = $(e.target)
+        selected_proc_supplier_id = supplier_master_id;
+        selected_proc_supplier_name = $(e.target)
           .closest("tr")
           .children("td")
           .eq(7)
@@ -3314,20 +3320,20 @@
             },
           },
           data:
-            selcted_proc_product_id && selcted_proc_product_id
+            selcted_proc_product_id && selected_proc_product_name
               ? [
                   {
                     id: selcted_proc_product_id,
-                    text: selcted_proc_product_name,
+                    text: selected_proc_product_name,
                   },
                 ]
               : [],
         });
 
-        // Clearing selected value
-        $("#procurement_product")
-          .val(selcted_proc_product_id)
-          .trigger("change");
+        // // Clearing selected value
+        // $("#procurement_product")
+        //   .val(selcted_proc_product_id)
+        //   .trigger("change");
       }
 
       function loadProcurementUnits() {
@@ -3401,20 +3407,20 @@
             },
           },
           data:
-            selcted_proc_supplier_id && selcted_proc_product_name
+            selected_proc_supplier_id && selected_proc_supplier_name
               ? [
                   {
-                    id: selcted_proc_supplier_id,
-                    text: selcted_proc_product_name,
+                    id: selected_proc_supplier_id,
+                    text: selected_proc_supplier_name,
                   },
                 ]
               : [],
         });
 
-        // // Clearing selected value
-        $("#procurement_product_supplier")
-          .val(selcted_proc_supplier_id)
-          .trigger("change");
+        // // // Clearing selected value
+        // $("#procurement_product_supplier")
+        //   .val(selected_proc_supplier_id)
+        //   .trigger("change");
       }
 
       function savePurchases() {
@@ -4054,6 +4060,8 @@
           "submitPayment",
           "payment_product_id"
         );
+
+        loadPaymentSuppliers();
       });
 
       // Close panel
@@ -4065,7 +4073,13 @@
 
         $("#total_payment_amount").text("0.00");
         view_purchase_payment_id = "";
-        view_payment_lot_id = "";
+        selected_payment_supplier_id = "";
+        selected_payment_supplier_name = "";
+        selected_payment_lot_id = "";
+        selected_payment_lot_no = "";
+
+        $("#paymentSupplierNames").empty();
+        $("#paymentLotNo").empty();
       });
 
       $(".paymentMenu").click(function () {
@@ -4095,7 +4109,7 @@
       });
 
       function loadPaymentDropdowns() {
-        loadPaymentSuppliers();
+        // loadPaymentSuppliers();
         loadPaymentMethods();
       }
 
@@ -4412,25 +4426,35 @@
           paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
         );
 
-        view_payment_lot_id = $(e.target)
+        selected_payment_lot_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(6)
           .find("span")
           .attr("procurement_lot_id");
 
+        selected_payment_lot_no = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(6)
+          .find("span")
+          .text();
+
         view_purchase_payment_id = $(e.target).attr("purchase_payment_id");
 
-        $("#paymentSupplierNames")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("supplier_master_id")
-          )
-          .trigger("change");
+        selected_payment_supplier_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .find("span")
+          .attr("supplier_master_id");
+
+        selected_payment_supplier_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .find("span")
+          .text();
 
         $("#paymentMethods")
           .val($(e.target).closest("tr").children("td").eq(8).text())
@@ -4592,37 +4616,56 @@
 
       function loadPaymentSuppliers() {
         // Load Suppliers
-        $.ajax({
-          url: "/api/v1/master/supplier",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#paymentSupplierNames").select2({
-              placeholder: "Choose a supplier",
-              allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
-                return {
-                  id: item.id,
-                  text: item.supplier_name,
-                };
-              }),
-            });
+        $("#paymentSupplierNames").empty();
 
-            // Clearing selected value
-            $("#paymentSupplierNames").val(null).trigger("change");
+        $("#paymentSupplierNames").select2({
+          placeholder: "Choose a supplier",
+          allowClear: true,
+          ajax: {
+            url: "/api/v1/master/supplier",
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data?.rows, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.supplier_name,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
+          data:
+            selected_payment_supplier_id && selected_payment_supplier_name
+              ? [
+                  {
+                    id: selected_payment_supplier_id,
+                    text: selected_payment_supplier_name,
+                  },
+                ]
+              : [],
         });
+
+        if (selected_payment_supplier_id) {
+          // Clearing selected value
+          $("#paymentSupplierNames").change();
+        }
       }
 
       $(document).on("change", "#paymentSupplierNames", (e) => {
@@ -4634,54 +4677,99 @@
         }
       });
 
-      function loadPaymentLotNo(supplier_master_id) {
+      async function loadPaymentLotNo(supplier_master_id) {
         $("#paymentLotNo").empty();
 
         if (!supplier_master_id) {
           return toastr["warning"]("Supplier ID must not be empty");
         }
 
-        // Load Suppliers
-        $.ajax({
-          url: `/api/v1/procurement/lot/lots/payment?supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            // Loading data
-            $("#paymentLotNo").select2({
-              placeholder: "Choose a lot no",
-              allowClear: true,
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.procurement_lot,
-                  total_amount:
-                    parseFloat(item?.total_amount) -
-                    parseFloat(item?.total_paid || 0),
-                  total_paid: item?.total_paid,
-                  is_due: parseFloat(item?.total_paid || 0) > 0 ? true : false,
-                };
-              }),
-            });
+        let selectedData = [];
 
-            if (view_payment_lot_id) {
-              // Clearing selected value
-              $("#paymentLotNo").val(view_payment_lot_id).trigger("change");
-            } else {
-              // Clearing selected value
-              $("#paymentLotNo").val(null).trigger("change");
-            }
+        if (selected_payment_lot_id) {
+          let result = await getPaymentLotNo(supplier_master_id);
+          if (result) {
+            selectedData.push(result);
+          }
+        }
+
+        $("#paymentLotNo").select2({
+          placeholder: "Choose a lot no",
+          allowClear: true,
+          ajax: {
+            url: `/api/v1/procurement/lot/lots/payment?supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.procurement_lot,
+                    total_amount:
+                      parseFloat(item?.total_amount) -
+                      parseFloat(item?.total_paid || 0),
+                    total_paid: item?.total_paid,
+                    is_due:
+                      parseFloat(item?.total_paid || 0) > 0 ? true : false,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
+          data: selectedData,
+        });
+
+        if (selectedData.length > 0) {
+          $("#paymentLotNo").change();
+        }
+      }
+
+      function getPaymentLotNo(supplier_master_id) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            url: `/api/v1/procurement/lot/lots/payment?procurement_lot_id=${selected_payment_lot_id}&supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            processData: false,
+            success: (data) => {
+              resolve({
+                id: data?.data[0].id,
+                text: data?.data[0].procurement_lot,
+                total_amount:
+                  parseFloat(data?.data[0]?.total_amount) -
+                  parseFloat(data?.data[0]?.total_paid || 0),
+                total_paid: data?.data[0]?.total_paid,
+                is_due:
+                  parseFloat(data?.data[0]?.total_paid || 0) > 0 ? true : false,
+              });
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
+              reject();
+            },
+          });
         });
       }
 
