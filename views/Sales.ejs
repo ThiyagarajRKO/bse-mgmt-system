@@ -1794,6 +1794,10 @@
       // Declarations
       let is_updated_data = false;
       let productNamesArray = [];
+      let view_sales_payment_id = "";
+      let selected_payment_order_id = "";
+      let selected_customer_id = "";
+      let selected_customer_name = "";
 
       toastr.options = {
         closeButton: false,
@@ -3370,6 +3374,8 @@
           "submitPayment",
           "payment_product_id"
         );
+
+        loadPaymentCustomers();
       });
 
       // Close panel
@@ -3381,7 +3387,9 @@
 
         $("#total_payment_amount").text("0.00");
         view_sales_payment_id = "";
-        view_payment_order_id = "";
+        selected_payment_order_id = "";
+        selected_customer_id = "";
+        selected_customer_name = "";
       });
 
       $(".paymentMenu").click(function () {
@@ -3411,7 +3419,6 @@
       });
 
       function loadPaymentDropdowns() {
-        loadPaymentCustomers();
         loadPaymentMethods();
       }
 
@@ -3728,7 +3735,7 @@
           paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
         );
 
-        view_payment_order_id = $(e.target)
+        selected_payment_order_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(6)
@@ -3737,16 +3744,19 @@
 
         view_sales_payment_id = $(e.target).attr("sales_payment_id");
 
-        $("#paymentCustomerNames")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(5)
-              .find("span")
-              .attr("customer_master_id")
-          )
-          .trigger("change");
+        selected_customer_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .find("span")
+          .attr("customer_master_id");
+
+        selected_customer_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(5)
+          .find("span")
+          .text();
 
         $("#paymentMethods")
           .val($(e.target).closest("tr").children("td").eq(8).text())
@@ -3937,10 +3947,23 @@
                 };
               },
             },
+            data:
+              selected_customer_id && selected_customer_name
+                ? [
+                    {
+                      id: selected_customer_id,
+                      text: selected_customer_name,
+                    },
+                  ]
+                : [],
           });
 
+          if (selected_customer_id) {
+            $("#paymentCustomerNames").change();
+          }
+
           // Clearing selected value
-          $("#paymentCustomerNames").val(null).trigger("change");
+          // $("#paymentCustomerNames").val(null).trigger("change");
         } catch (err) {
           toastr["error"](err?.message);
         }
@@ -3955,12 +3978,21 @@
         }
       });
 
-      function loadOrderNo(customer_master_id) {
+      async function loadOrderNo(customer_master_id) {
         try {
           $("#paymentOrderNo").empty();
 
           if (!customer_master_id) {
             return toastr["warning"]("Customer ID must not be empty");
+          }
+
+          let selectedData = [];
+
+          if (selected_payment_order_id) {
+            let result = await getOrderNo(customer_master_id);
+            if (result) {
+              selectedData.push(result);
+            }
           }
 
           $("#paymentOrderNo").select2({
@@ -4002,18 +4034,50 @@
                 };
               },
             },
+            data: selectedData,
           });
 
-          if (view_payment_order_id) {
-            // Clearing selected value
-            $("#paymentOrderNo").val(view_payment_order_id).trigger("change");
-          } else {
-            // Clearing selected value
-            $("#paymentOrderNo").val(null).trigger("change");
+          if (selectedData.length > 0) {
+            $("#paymentOrderNo").change();
           }
         } catch (err) {
           toastr["error"](err?.message);
         }
+      }
+
+      function getOrderNo(customer_master_id) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            url: `/api/v1/order/numbers?order_id=${selected_payment_order_id}&customer_master_id=${customer_master_id}&sales_payment_id=${view_sales_payment_id}`,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            processData: false,
+            success: (data) => {
+              resolve({
+                id: data.data.rows[0]?.id,
+                text: data.data.rows[0]?.order_no,
+                total_amount:
+                  parseFloat(data.data.rows[0]?.total_amount) -
+                  parseFloat(data.data.rows[0]?.total_paid || 0),
+                total_paid: data.data.rows[0]?.total_paid,
+                is_due:
+                  parseFloat(data.data.rows[0]?.total_paid || 0) > 0
+                    ? true
+                    : false,
+              });
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
+              reject();
+            },
+          });
+        });
       }
 
       $(document).on("change", "#paymentOrderNo", (e) => {

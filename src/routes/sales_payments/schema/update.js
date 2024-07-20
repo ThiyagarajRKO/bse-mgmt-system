@@ -2,10 +2,10 @@ export const updateSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["purchase_payment_id", "purchase_payment_data"],
+      required: ["sales_payment_id", "sales_payment_data"],
       properties: {
-        purchase_payment_id: { type: "string" },
-        purchase_payment_data: { type: "object" },
+        sales_payment_id: { type: "string" },
+        sales_payment_data: { type: "object" },
       },
     },
   },
