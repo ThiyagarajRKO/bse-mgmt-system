@@ -397,6 +397,19 @@ export const GetPaymentLots = ({
             ),
             "total_paid",
           ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(pp.discount) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND pp.supplier_master_id = '${supplier_master_id}' 
+              ${
+                purchase_payment_id != "null" &&
+                purchase_payment_id != undefined &&
+                purchase_payment_id != ""
+                  ? "AND pp.id != '" + purchase_payment_id + "'"
+                  : ""
+              } AND pp.is_active = true)`
+            ),
+            "total_discount",
+          ],
         ],
         include: [
           {

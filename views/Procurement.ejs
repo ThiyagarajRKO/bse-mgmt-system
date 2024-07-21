@@ -4790,7 +4790,9 @@
                     text: item.procurement_lot,
                     total_amount:
                       parseFloat(item?.total_amount) -
-                      parseFloat(item?.total_paid || 0),
+                      parseFloat(item?.total_paid || 0) -
+                      parseFloat(item?.total_discount || 0),
+                    total_discount: parseFloat(item?.total_discount),
                     total_paid: item?.total_paid,
                     is_due:
                       parseFloat(item?.total_paid || 0) > 0 ? true : false,
@@ -4825,7 +4827,9 @@
                 text: data?.data[0].procurement_lot,
                 total_amount:
                   parseFloat(data?.data[0]?.total_amount) -
-                  parseFloat(data?.data[0]?.total_paid || 0),
+                  parseFloat(data?.data[0]?.total_paid || 0) -
+                  parseFloat(item?.total_discount || 0),
+                total_discount: parseFloat(item?.total_discount),
                 total_paid: data?.data[0]?.total_paid,
                 is_due:
                   parseFloat(data?.data[0]?.total_paid || 0) > 0 ? true : false,
@@ -4921,7 +4925,7 @@
           let net_amount = 0;
 
           if (total_amount > 0 && total_paid > 0) {
-            net_amount = total_paid + penalty + tax_amount - payment_discount;
+            net_amount = total_paid + penalty + tax_amount;
             $("#net_amount").text(net_amount?.toFixed(2));
             $("#due_amount").text(due_amount?.toFixed(2));
           } else {
