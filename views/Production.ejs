@@ -1315,6 +1315,7 @@
                       <th class="fw-bold"><span>Peeling Method</span></th>
                       <th class="fw-bold"><span>Peeling Center</span></th>
                       <th class="fw-bold"><span>Peeling Date</span></th>
+                      <th class="fw-bold"><span>Supplier Name</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -1833,6 +1834,8 @@
     jQuery(document).ready(async function ($) {
       // Declarations
       let is_updated_data = false;
+      let view_procurement_product_id = "";
+      let view_dispatch_id = "";
 
       toastr.options = {
         closeButton: false,
@@ -2455,7 +2458,6 @@
         });
       }
 
-      let view_procurement_product_id = "";
       $(document).on("click", ".editDispatch", (e) => {
         // Changing panel input fields data
 
@@ -3218,6 +3220,7 @@
             { data: "peeling_method" },
             { data: "UnitMaster.unit_code" },
             { data: "created_at" },
+            { data: "dis.pp.SupplierMaster.supplier_name" },
           ],
           columnDefs: [
             {
@@ -3232,7 +3235,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["SupplierMaster"]?.supplier_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
+                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name?.replaceAll("-WHOLE","")}</i>`;
               },
             },
             {
@@ -3609,12 +3612,11 @@
                   quantity:
                     (parseFloat(item?.dispatch_quantity) || 0) -
                     (parseFloat(item?.peeling_quantity) || 0),
-                  text: `${item?.pp?.ProductMaster?.product_name
-                    }-${item?.pp?.procurement_product_type
+                  text: `${item?.pp?.ProductMaster?.product_name?.replaceAll("-WHOLE","")
                     }-${item?.pp?.SupplierMaster?.supplier_name?.replaceAll(
                       " ",
                       ""
-                    )}-${item?.dispatch_quantity || 0}`,
+                    )} (${item?.dispatch_quantity || 0})`,
                 };
               }),
             });
