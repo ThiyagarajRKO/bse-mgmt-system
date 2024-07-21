@@ -135,6 +135,7 @@ export const GetAll = ({
   species_master_name,
   product_category_name,
   product_size,
+  is_product_size_empty,
   start,
   length,
   search,
@@ -150,6 +151,10 @@ export const GetAll = ({
         where.product_name = {
           [Op.iLike]: `%${product_name || dropdownSearch}%`,
         };
+      }
+
+      if (is_product_size_empty) {
+        where.size_master_id = { [Op.eq]: null };
       }
 
       let speciesWhere = {
@@ -212,9 +217,11 @@ export const GetAll = ({
       const products = await models.ProductMaster.findAndCountAll({
         include: [
           {
+            attributes: ["id"],
             model: models.ProductCategoryMaster,
             include: [
               {
+                attributes: ["id", "species_name"],
                 model: models.SpeciesMaster,
                 where: speciesWhere,
               },

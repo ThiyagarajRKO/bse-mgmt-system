@@ -811,20 +811,20 @@
                     ></select>
                   </div>
                   <div class="form-group my-2">
-                    <label for="procurement_product">Product</label>
-                    <select
-                      id="procurement_product"
-                      class="form-control input-dropdown w-100"
-                      name="procurementProduct"
-                      required
-                    ></select>
-                  </div>
-                  <div class="form-group my-2">
                     <label for="procurement_product_type">Product Type</label>
                     <select
                       id="procurement_product_type"
                       class="form-control input-dropdown w-100"
                       name="procurementProductType"
+                      required
+                    ></select>
+                  </div>
+                  <div class="form-group my-2">
+                    <label for="procurement_product">Product</label>
+                    <select
+                      id="procurement_product"
+                      class="form-control input-dropdown w-100"
+                      name="procurementProduct"
                       required
                     ></select>
                   </div>
@@ -1937,7 +1937,7 @@
 
       function loadDropdowns() {
         loadProcurementProductType();
-        // loadProcurementProducts();
+
         // loadProcurementSuppliers();
         loadProcurementUnits();
       }
@@ -2702,7 +2702,6 @@
           "procurement_product_id"
         );
 
-        loadProcurementProducts();
         loadProcurementSuppliers();
         // Changing panel save button attribute
         $(`#submitPurchases`).attr("procurement_lot_id", null);
@@ -2712,7 +2711,7 @@
       $("#closeProcurementPanelBtn").click(function () {
         closeSlidePanel("procurementSlideInPanel");
 
-        selcted_proc_product_id = "";
+        selected_proc_product_id = "";
         selected_proc_product_name = "";
         selected_proc_supplier_id = "";
         selected_proc_supplier_name = "";
@@ -3067,7 +3066,7 @@
         //   )
         //   .trigger("change");
 
-        selcted_proc_product_id = $(e.target)
+        selected_proc_product_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(2)
@@ -3284,13 +3283,27 @@
         $("#procurement_product_type").val(null).trigger("change");
       }
 
-      function loadProcurementProducts() {
+      $(document).on("change", "#procurement_product_type", (e) => {
+        let productDisplayType = "";
+
+        if ($(e.target).val() == "UNPROCESSED") {
+          productDisplayType = "UNPROCESSED";
+        } else {
+          productDisplayType = "Others";
+        }
+
+        if ($(e.target).val()) loadProcurementProducts(productDisplayType);
+      });
+
+      function loadProcurementProducts(productDisplayType) {
         // Load Products
+        $("#procurement_product").empty();
+
         $("#procurement_product").select2({
           placeholder: "Choose a product",
           allowClear: true,
           ajax: {
-            url: "/api/v1/master/product",
+            url: `/api/v1/master/product?${productDisplayType == "UNPROCESSED" ? "product_category_name=Whole&is_product_size_empty=true" : ""}`,
             data: (params) => {
               params.page = params.page || 1;
               params.length = 25;
@@ -3310,7 +3323,11 @@
                 results: $.map(data?.data?.rows, (item) => {
                   return {
                     id: item.id,
-                    text: item.product_name,
+                    text:
+                      productDisplayType == "UNPROCESSED"
+                        ? item?.ProductCategoryMaster?.SpeciesMaster
+                            ?.species_name
+                        : item.product_name,
                   };
                 }),
                 pagination: {
@@ -3320,20 +3337,15 @@
             },
           },
           data:
-            selcted_proc_product_id && selected_proc_product_name
+            selected_proc_product_id && selected_proc_product_name
               ? [
                   {
-                    id: selcted_proc_product_id,
+                    id: selected_proc_product_id,
                     text: selected_proc_product_name,
                   },
                 ]
               : [],
         });
-
-        // // Clearing selected value
-        // $("#procurement_product")
-        //   .val(selcted_proc_product_id)
-        //   .trigger("change");
       }
 
       function loadProcurementUnits() {
