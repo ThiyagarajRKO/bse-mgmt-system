@@ -5,6 +5,7 @@ export const Create = async (
     profile_id,
     peeled_dispatch_id,
     unit_master_id,
+    cold_storage_id,
     packing_quantity,
     grade_master_id,
     size_master_id,
@@ -35,6 +36,7 @@ export const Create = async (
       const packing = await Packing.Insert(profile_id, {
         peeled_dispatch_id,
         unit_master_id,
+        cold_storage_id,
         packing_quantity,
         grade_master_id,
         size_master_id,

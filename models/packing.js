@@ -33,7 +33,15 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Packing.belongsTo(models.UnitMaster, {
+        as: "dc",
         foreignKey: "unit_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
+      Packing.belongsTo(models.UnitMaster, {
+        as: "cs",
+        foreignKey: "cold_storage_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });

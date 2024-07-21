@@ -116,6 +116,7 @@ export const GetAll = ({
   start,
   length,
   search,
+  dropdownSearch,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -123,8 +124,8 @@ export const GetAll = ({
         is_active: true,
       };
 
-      if (unit_code) {
-        where.unit_code = { [Op.iLike]: `%${unit_code}%` };
+      if (unit_code || dropdownSearch) {
+        where.unit_code = { [Op.iLike]: `%${unit_code || dropdownSearch}%` };
       }
 
       if (unit_name) {

@@ -82,14 +82,139 @@ export const Get = ({ id }) => {
         });
       }
 
-      const packing = await models.Packing.findOne({
+      const data = await models.Packing.findOne({
+        subQuery: false,
+        attributes: [
+          "id",
+          "created_at",
+          "packing_notes",
+          "packing_status",
+          "packing_quantity",
+          "expiry_date",
+        ],
+        include: [
+          {
+            as: "pd",
+            model: models.PeeledDispatches,
+            attributes: ["id", "peeled_dispatch_quantity"],
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                as: "pp",
+                attributes: ["id"],
+                model: models.PeelingProducts,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    as: "pln",
+                    model: models.Peeling,
+                    attributes: [],
+                    where: {
+                      is_active: true,
+                    },
+                    include: [
+                      {
+                        as: "dis",
+                        model: models.Dispatches,
+                        attributes: [],
+                        where: {
+                          is_active: true,
+                        },
+                        include: [
+                          {
+                            as: "pp",
+                            attributes: [],
+                            model: models.ProcurementProducts,
+                            where: {
+                              is_active: true,
+                            },
+                            include: [
+                              {
+                                as: "pl",
+                                model: models.ProcurementLots,
+                                attributes: [],
+                                where: {
+                                  is_active: true,
+                                },
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    model: models.ProductMaster,
+                    attributes: ["id", "product_name"],
+                    where: {
+                      is_active: true,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            as: "dc",
+            model: models.UnitMaster,
+            attributes: ["id", "unit_code"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            as: "cs",
+            model: models.UnitMaster,
+            attributes: ["id", "unit_code"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.GradeMaster,
+            attributes: ["id", "grade_name"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.SizeMaster,
+            attributes: ["id", "size"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            model: models.PackagingMaster,
+            attributes: ["id", "packaging_code"],
+            where: {
+              is_active: true,
+            },
+          },
+        ],
         where: {
-          id,
           is_active: true,
+          id,
         },
+        group: [
+          "Packing.id",
+          "pd.id",
+          "pd->pp.id",
+          "pd->pp->ProductMaster.id",
+          //"pd->pp->pln.id",
+          "dc.id",
+          "cs.id",
+          "GradeMaster.id",
+          "SizeMaster.id",
+          "PackagingMaster.id",
+        ],
       });
 
-      resolve(packing);
+      resolve(data);
     } catch (err) {
       reject(err);
     }
@@ -175,6 +300,15 @@ export const GetAll = ({ start, length }) => {
             ],
           },
           {
+            as: "dc",
+            model: models.UnitMaster,
+            attributes: [],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            as: "cs",
             model: models.UnitMaster,
             attributes: [],
             where: {
@@ -286,6 +420,16 @@ export const GetAll = ({ start, length }) => {
             ],
           },
           {
+            as: "dc",
+            model: models.UnitMaster,
+            attributes: ["id", "unit_code"],
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: false,
+            as: "cs",
             model: models.UnitMaster,
             attributes: ["id", "unit_code"],
             where: {
@@ -324,7 +468,8 @@ export const GetAll = ({ start, length }) => {
           "pd->pp.id",
           "pd->pp->ProductMaster.id",
           //"pd->pp->pln.id",
-          "UnitMaster.id",
+          "dc.id",
+          "cs.id",
           "GradeMaster.id",
           "SizeMaster.id",
           "PackagingMaster.id",

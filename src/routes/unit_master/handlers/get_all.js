@@ -9,6 +9,7 @@ export const GetAll = (
     unit_name,
     location_master_name,
     "search[value]": search,
+    dropdownSearch,
   },
   session,
   fastify
@@ -23,6 +24,7 @@ export const GetAll = (
         unit_type,
         location_master_name,
         search,
+        dropdownSearch,
       });
 
       if (!unit_master) {

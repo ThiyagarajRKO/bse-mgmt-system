@@ -5,6 +5,7 @@ export const createSchema = {
       required: [
         "peeled_dispatch_id",
         "unit_master_id",
+        "cold_storage_id",
         "packing_quantity",
         "grade_master_id",
         "size_master_id",
@@ -17,6 +18,7 @@ export const createSchema = {
         unit_master_id: { type: "string" },
         packing_quantity: { type: "string" },
         unit_master_id: { type: "string" },
+        cold_storage_id: { type: "string" },
         grade_master_id: { type: "string" },
         size_master_id: { type: "string" },
         packaging_master_id: { type: "string" },

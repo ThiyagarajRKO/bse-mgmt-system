@@ -37,6 +37,16 @@ module.exports = {
           key: "id",
         },
       },
+      cold_storage_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "unit_master" },
+          key: "id",
+        },
+      },
       grade_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
