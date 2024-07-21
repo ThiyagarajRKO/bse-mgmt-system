@@ -1568,6 +1568,7 @@
                     >
                       <thead>
                         <tr>
+                          <th class="fw-bold"><span>Purchase Date</span></th>
                           <th class="fw-bold"><span>Product Name</span></th>
                           <th class="fw-bold">
                             <span>Purchased Type</span>
@@ -4625,6 +4626,7 @@
             },
           },
           columns: [
+            { data: "pl.procurement_date" },
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
@@ -4637,11 +4639,41 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
+                const date = new Date(row["pl"]["procurement_date"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (row["procurement_product_type"] == "UNPROCESSED") {
+                  data = data.replaceAll("-WHOLE", "");
+                }
+
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
             {
-              targets: [2, 3, 4],
+              targets: [3, 4, 5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);

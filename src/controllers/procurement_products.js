@@ -481,7 +481,7 @@ export const GetPaymentItems = ({
         include: [
           {
             as: "pl",
-            attributes: ["id"],
+            attributes: ["id", "procurement_date"],
             model: models.ProcurementLots,
             include: [
               {
