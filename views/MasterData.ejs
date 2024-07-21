@@ -3691,10 +3691,10 @@
             },
             {
               targets: [1],
-              className: "text-left d-none",
+              className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-trash del delProduct" product_master_id=' +
+                  '<i class="fa fa-trash del delProduct d-none" product_master_id=' +
                   row["id"] +
                   ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this product"></i>'
                 );

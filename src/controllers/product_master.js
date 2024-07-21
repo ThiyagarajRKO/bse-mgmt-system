@@ -215,9 +215,10 @@ export const GetAll = ({
       }
 
       const products = await models.ProductMaster.findAndCountAll({
+        attributes: ["id", "product_name", "created_at"],
         include: [
           {
-            attributes: ["id"],
+            attributes: ["id", "product_category"],
             model: models.ProductCategoryMaster,
             include: [
               {
@@ -229,6 +230,7 @@ export const GetAll = ({
             where: productCategoryWhere,
           },
           {
+            attributes: ["id", "size"],
             required: false,
             model: models.SizeMaster,
             where: sizeWhere,
