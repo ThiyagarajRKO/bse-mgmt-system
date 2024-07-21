@@ -2964,6 +2964,10 @@
               targets: [2],
               className: "text-left",
               render: function (data, type, row) {
+                if (row["procurement_product_type"] == "UNPROCESSED") {
+                  data = data.replaceAll("-WHOLE", "");
+                }
+
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
@@ -3241,6 +3245,10 @@
           allowClear: true,
           data: [
             {
+              id: "UNPROCESSED",
+              text: "UNPROCESSED / RAW",
+            },
+            {
               id: "CLEANED",
               text: "CLEANED",
             },
@@ -3271,10 +3279,6 @@
             {
               id: "VALUE-ADDED",
               text: "VALUE-ADDED",
-            },
-            {
-              id: "UNPROCESSED",
-              text: "UNPROCESSED",
             },
           ],
         });
@@ -3766,6 +3770,17 @@
               },
             },
             {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (row["procurement_product_type"] == "UNPROCESSED") {
+                  data = data.replaceAll("-WHOLE", "");
+                }
+
+                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+              },
+            },
+            {
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
@@ -3858,6 +3873,17 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span procurement_product_id=${row["id"]}>${data}</span>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (row["procurement_product_type"] == "UNPROCESSED") {
+                  data = data.replaceAll("-WHOLE", "");
+                }
+
+                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
             {
