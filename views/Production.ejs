@@ -1950,8 +1950,14 @@
 
         // Peeled Dispatch
         $("#peeledLotNumbers").val(null).trigger("change");
+        $("#peeledProductNames").val(null).trigger("change");
         $("#distributionLocation").val(null).trigger("change");
         $(".peeledProductNames").val(null).trigger("change");
+
+        $("#peeledProductNames").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+        });
 
         //Packing
         $("#packingLotNumbers").val(null).trigger("change");
@@ -4148,7 +4154,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row["pp"]?.id}'>${data}-${row?.["pp"]?.yield_quantity}</i>`;
+                return `<span peeled_product_id='${row["pp"]?.id}'>${data}</i>`;
               },
             },
             {
@@ -4409,7 +4415,7 @@
                   (parseFloat(item?.yield_quantity) || 0) -
                   (parseFloat(item?.peeled_quantity) || 0),
                 text:
-                  item?.ProductMaster.product_name + "-" + item.yield_quantity,
+                  item?.ProductMaster.product_name + " (" + item.yield_quantity + ")",
               });
             });
 
@@ -5209,7 +5215,7 @@
                   (parseFloat(item?.peeled_dispatch_quantity) || 0) -
                   (parseFloat(item?.packed_quantity) || 0),
                 text:
-                  item?.pp?.ProductMaster.product_name + "-" + item?.peeled_dispatch_quantity,
+                  item?.pp?.ProductMaster.product_name + " (" + item?.peeled_dispatch_quantity + ")",
               });
             });
 
