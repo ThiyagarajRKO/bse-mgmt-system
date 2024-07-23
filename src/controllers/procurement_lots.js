@@ -540,25 +540,52 @@ export const GetStats = ({
 // ---------------------------------- Dispatch ------------------------------------
 // --------------------------------------------------------------------------------
 
-export const GetDispatchLots = ({ start = 0, length = 10 }) => {
+export const GetDispatchLots = ({
+  unit_master_id,
+  start = 0,
+  length = 10,
+  dropdownSearch,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const procurements = await models.ProcurementLots.findAll({
+      if (!unit_master_id) {
+        reject({ message: "Unit master id must not be empty!" });
+      }
+
+      let where = {
+        is_active: true,
+      };
+
+      if (dropdownSearch) {
+        where.procurement_lot = {
+          [Op.iLike]: `%${dropdownSearch}%`,
+        };
+      }
+
+      const procurements = await models.ProcurementLots.findAndCountAll({
         subQuery: false,
         attributes: ["id", "procurement_lot"],
         include: [
           {
-            required: true,
             attributes: [],
             model: models.ProcurementProducts,
             include: [
               {
-                required: true,
                 attributes: [],
                 model: models.Dispatches,
                 where: {
                   is_active: true,
                 },
+                include: [
+                  {
+                    attributes: [],
+                    model: models.UnitMaster,
+                    where: {
+                      is_active: true,
+                      id: unit_master_id,
+                    },
+                  },
+                ],
               },
             ],
             where: {
@@ -566,9 +593,7 @@ export const GetDispatchLots = ({ start = 0, length = 10 }) => {
             },
           },
         ],
-        where: {
-          is_active: true,
-        },
+        where,
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
@@ -867,27 +892,22 @@ export const GetPeeledDispatchLots = ({ start = 0, length = 10 }) => {
         attributes: ["id", "procurement_lot"],
         include: [
           {
-            required: true,
             attributes: [],
             model: models.ProcurementProducts,
             include: [
               {
-                required: true,
                 attributes: [],
                 model: models.Dispatches,
                 include: [
                   {
-                    required: true,
                     attributes: [],
                     model: models.Peeling,
                     include: [
                       {
-                        required: true,
                         attributes: [],
                         model: models.PeelingProducts,
                         include: [
                           {
-                            required: true,
                             attributes: [],
                             model: models.PeeledDispatches,
                             where: {
@@ -1080,27 +1100,22 @@ export const GetPackingLots = ({ start = 0, length = 10 }) => {
         attributes: ["id", "procurement_lot"],
         include: [
           {
-            required: true,
             attributes: [],
             model: models.ProcurementProducts,
             include: [
               {
-                required: true,
                 attributes: [],
                 model: models.Dispatches,
                 include: [
                   {
-                    required: true,
                     attributes: [],
                     model: models.Peeling,
                     include: [
                       {
-                        required: true,
                         attributes: [],
                         model: models.PeelingProducts,
                         include: [
                           {
-                            required: true,
                             attributes: [],
                             model: models.PeeledDispatches,
 

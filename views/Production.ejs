@@ -1083,20 +1083,20 @@
                   <div class="tab-content">
                     <div id="tab-1" class="tab-pane p-0" role="tabpanel">
                       <div class="form-group mt-4">
-                        <label for="lot_no">Lot No:</label>
-                        <select
-                          class="form-control input-dropdown w-100"
-                          id="peelingLotNumbers"
-                          name="peelingLotNumbers"
-                        ></select>
-                      </div>
-
-                      <div class="form-group mt-4">
                         <label for="s">Peeling Center</label>
                         <select
                           class="form-control input-dropdown w-100"
                           id="peelingCenters"
                           name="peelingCenters"
+                        ></select>
+                      </div>
+
+                      <div class="form-group mt-4">
+                        <label for="lot_no">Lot No:</label>
+                        <select
+                          class="form-control input-dropdown w-100"
+                          id="peelingLotNumbers"
+                          name="peelingLotNumbers"
                         ></select>
                       </div>
 
@@ -1850,6 +1850,14 @@
       let view_dispatch_id = "";
       let selected_cold_storage_id = ""
       let selected_cold_storage_name = ""
+      let view_raw_material_id = "";
+
+      // Peeling
+      let current_peeling_id = "";
+      let selected_peeling_center_id = ""
+      let selected_peeling_center_name = ""
+      let selected_peeling_lot_id = ""
+      let selected_peeling_lot_name = ""
 
       toastr.options = {
         closeButton: false,
@@ -1943,14 +1951,18 @@
         });
 
         // Peeling
-        $("#peeledLotNumbers").val(null).trigger("change");
         $("#peelingCenters").val(null).trigger("change");
+        $("#peelingLotNumbers").val(null).trigger("change");
         $("#rawMaterials").val(null).trigger("change");
         $(".peelingProductNames").val(null).trigger("change");
         $("#peelingMethods").val(null).trigger("change");
 
         $("#peelingCenters").select2({
           placeholder: "Choose a peeling center",
+          allowClear: true,
+        });
+        $("#peelingLotNumbers").select2({
+          placeholder: "Choose a lot",
           allowClear: true,
         });
         $("#rawMaterials").select2({
@@ -1966,10 +1978,19 @@
         $("#peeledLotNumbers").val(null).trigger("change");
         $("#peeledProductNames").val(null).trigger("change");
         $("#distributionLocation").val(null).trigger("change");
-        $(".peeledProductNames").val(null).trigger("change");
+
+        $("#peeledLotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+        });
 
         $("#peeledProductNames").select2({
           placeholder: "Choose a product",
+          allowClear: true,
+        });
+
+        $("#distributionLocation").select2({
+          placeholder: "Choose a destination",
           allowClear: true,
         });
 
@@ -2886,14 +2907,20 @@
         $("#balance_dispatched_quantity").text("").css({ color: "white" });
 
         $("#smarttab").smartTab("first");
+
+        loadPeelingCenters();
       });
 
       // Close panel
       $("#closePeelingPanelBtn").click(function () {
         closeSlidePanel("peelingSlideInPanel");
 
-        view_peeling_center_id = "";
         view_raw_material_id = "";
+        current_peeling_id = "";
+        selected_peeling_center_id = ""
+        selected_peeling_center_name = ""
+        selected_peeling_lot_id = ""
+        selected_peeling_lot_name = ""
       });
 
       $(".peelingMenu").click(async function () {
@@ -2955,7 +2982,7 @@
 
       function loadPeelingDropdowns() {
         // Peeling Dropdown
-        loadPeelingLotNumber();
+        // loadPeelingLotNumber();
 
         loadPeelingMethods();
       }
@@ -3414,15 +3441,14 @@
                             </table>`;
       }
 
-      let view_peeling_center_id = "";
-      let view_raw_material_id = "";
       $(document).on("click", ".editPeeling", (e) => {
         // Changing panel input fields data
         is_updated_data = true;
 
-        $("#peelingLotNumbers")
-          .val($("#view_peeling_lot_no").attr("procurement_lot_id"))
-          .trigger("change");
+        current_peeling_id = $(e.target).attr("peeling_id")
+
+        selected_peeling_lot_id = $("#view_peeling_lot_no").attr("procurement_lot_id")
+        selected_peeling_lot_name = $("#view_peeling_lot_no").text()
 
         view_raw_material_id = $(e.target)
           .closest("tr")
@@ -3431,12 +3457,19 @@
           .find("span")
           .attr("dispatch_id");
 
-        view_peeling_center_id = $(e.target)
+        selected_peeling_center_id = $(e.target)
           .closest("tr")
           .children("td")
           .eq(9)
           .find("span")
           .attr("unit_master_id");
+
+        selected_peeling_center_name = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(9)
+          .find("span")
+          .text();
 
         $("#peeling_quantity").val(
           $(e.target).closest("tr").children("td").eq(5).text()
@@ -3500,102 +3533,116 @@
         $("#peelingModal").modal("hide");
       });
 
-      function loadPeelingLotNumber() {
-        $.ajax({
-          url: `/api/v1/procurement/lot/lots/dispatch`,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#peelingLotNumbers").select2({
-              placeholder: "Choose a lot",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.procurement_lot,
-                };
-              }),
-            });
+      function loadPeelingCenters() {
+        $("#peelingCenters").empty();
 
-            $("#peelingLotNumbers").val(null).trigger("change");
+        $("#peelingCenters").select2({
+          placeholder: "Choose a peeling center",
+          allowClear: true,
+          ajax: {
+            url: `/api/v1/master/unit?unit_type=Peeling Center`,
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data?.rows, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.unit_code,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
+          data: selected_peeling_center_id && selected_peeling_center_name ? [{ id: selected_peeling_center_id, text: selected_peeling_center_name }] : [],
         });
+
+        if(selected_peeling_center_id && selected_peeling_center_name)
+        $("#peelingCenters").change()
       }
 
-      $(document).on("change", "#peelingLotNumbers", () => {
+      $(document).on("change", "#peelingCenters", (e) => {
+
         $("#balance_dispatched_quantity").text("");
 
-        let lot_no = $("#peelingLotNumbers").val();
+        let unit_master_id = $(e.target).val();
 
-        $("#peelingCenters").empty();
         $("#rawMaterials").empty();
         $(".peelingProductNames").empty();
         productNamesArray = [];
 
-        if (lot_no) {
-          loadPeelingCenters(lot_no);
+        if (unit_master_id) {
+          loadPeelingLotNumber(unit_master_id);
         }
       });
 
-      function loadPeelingCenters(procurement_lot_id) {
-        if (!procurement_lot_id) {
-          toastr["warning"]("Lot number must not be empty");
-          return
+      function loadPeelingLotNumber(unit_master_id) {
+        if (!unit_master_id) {
+          return toastr["warning"]("Invalid Peeling center!");
         }
 
-        $.ajax({
-          url:
-            "/api/v1/master/unit/dispatch/destination?procurement_lot_id=" +
-            procurement_lot_id,
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            $("#peelingCenters").select2({
-              placeholder: "Choose a peeling center",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
-            });
+        $("#peelingLotNumbers").empty();
 
-            if (view_peeling_center_id) {
-              $("#peelingCenters")
-                .val(view_peeling_center_id)
-                .trigger("change");
-            } else {
-              $("#peelingCenters").val(null).trigger("change");
-            }
+        $("#peelingLotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+          ajax: {
+            url: `/api/v1/procurement/lot/lots/dispatch?unit_master_id=${unit_master_id}`,
+            data: (params) => {
+              params.page = params.page || 1;
+              params.length = 25;
+              params.start = (params.page - 1) * params.length;
+
+              let query = {
+                dropdownSearch: params.term,
+                start: params.start,
+                length: params.length,
+              };
+
+              // Query parameters will be ?search=[term]&page=[page]
+              return query;
+            },
+            processResults: (data, params) => {
+              return {
+                results: $.map(data?.data?.rows, (item) => {
+                  return {
+                    id: item.id,
+                    text: item.procurement_lot,
+                  };
+                }),
+                pagination: {
+                  more: params.page * params.length < data?.data?.count,
+                },
+              };
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
-          },
+          data: selected_peeling_lot_id && selected_peeling_lot_name ? [{ id: selected_peeling_lot_id, text: selected_peeling_lot_name }] : [],
         });
+
+        if(selected_peeling_lot_id && selected_peeling_lot_name) {
+          $("#peelingLotNumbers").change()
+        }
       }
 
-      $(document).on("change", "#peelingCenters", () => {
-        $("#balance_dispatched_quantity").text("");
+      $(document).on("change", "#peelingLotNumbers", (e) => {
+         $("#balance_dispatched_quantity").text("");
 
-        let lot_no = $("#peelingLotNumbers").val();
+        let lot_no = $(e.target).val();
         let unit_master_id = $("#peelingCenters").val();
 
         $("#rawMaterials").empty();
@@ -3606,6 +3653,7 @@
           loadPeelingRawMaterials(lot_no, unit_master_id);
         }
       });
+
 
       function loadPeelingRawMaterials(lot_no, unit_master_id) {
         if (!lot_no) {
@@ -3619,7 +3667,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${$("#submitPeeling").attr("peeling_id") || null}`,
+          url: `/api/v1/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${current_peeling_id || null}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",

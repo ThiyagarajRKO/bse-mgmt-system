@@ -2,14 +2,12 @@ export const getDispatchLotsSchema = {
   schema: {
     query: {
       type: "object",
-      required: [],
+      required: ["unit_master_id"],
       properties: {
-        procurement_date: { type: "string", format: "date" },
-        procurement_lot: { type: "string" },
-        procurement_unit: { type: "string" },
-        procurement_supplier: { type: "string" },
+        unit_master_id: { type: "string" },
         start: { type: "number" },
         length: { type: "number" },
+        dropdownSearch: { type: "string" },
       },
     },
   },
