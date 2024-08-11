@@ -5372,6 +5372,12 @@
           $("#packingProductNames").select2("data")[0]?.quantity
         );
 
+        if(!$("#packingProductNames").val()) {
+          toastr["warning"]("Please choose the product name!");
+          $(e.target).val("")
+          return;
+        }
+
         if (!currentPackingQuantity) {
           $("#balance_packed_quantity").text(balance_peeled_dispatch_quantity);
           $("#balance_packed_quantity").css({ color: "white" });
@@ -5384,7 +5390,7 @@
         $("#balance_packed_quantity").text(
           !isNaN(balancePeeledDispatchQuantity)
             ? balancePeeledDispatchQuantity
-            : currentPackingQuantity
+            : -1
         );
 
         if (balancePeeledDispatchQuantity > 0) {
@@ -5575,7 +5581,7 @@
         const packing_id = $("#submitPacking").attr(
           "packing_id"
         );
-        const current_packing_weight_balance = $("#balance_peeled_dispatch_quantity").text();
+        const current_packing_weight_balance = $("#balance_packed_quantity").text();
 
         if (parseFloat(current_packing_weight_balance) <= -1) {
           toastr["warning"]("Invalid packing quantity");

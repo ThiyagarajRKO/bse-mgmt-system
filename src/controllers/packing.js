@@ -17,6 +17,55 @@ export const Insert = async (profile_id, packing_data) => {
         });
       }
 
+      if (!packing_data.unit_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Unit data must not be empty!",
+        });
+      }
+
+      if (!packing_data.packing_quantity) {
+        return reject({
+          statusCode: 420,
+          message: "Packing quantity data must not be empty!",
+        });
+      }
+
+      if (!packing_data.grade_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Grade data must not be empty!",
+        });
+      }
+
+      if (!packing_data.size_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Size data must not be empty!",
+        });
+      }
+
+      if (!packing_data.packaging_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Packing data must not be empty!",
+        });
+      }
+
+      if (!packing_data.cold_storage_id) {
+        return reject({
+          statusCode: 420,
+          message: "Cold Storage data must not be empty!",
+        });
+      }
+
+      if (!packing_data.expiry_date) {
+        return reject({
+          statusCode: 420,
+          message: "Expiry date must not be empty!",
+        });
+      }
+
       const result = await models.Packing.create(packing_data, {
         profile_id,
       });

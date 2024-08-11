@@ -362,8 +362,8 @@ export const GetQuantity = ({ id }) => {
         });
       }
 
-      const product = await models.PeelingProducts.findOne({
-        attributes: ["yield_quantity"],
+      const product = await models.PeeledDispatches.findOne({
+        attributes: ["peeled_dispatch_quantity"],
         where: {
           id,
           is_active: true,
