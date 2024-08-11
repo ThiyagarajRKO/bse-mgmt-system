@@ -83,13 +83,6 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.supplier_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Supplier master data must not be empty!",
-        });
-      }
-
       if (!procurement_data) {
         return reject({
           statusCode: 420,
@@ -97,16 +90,18 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
-      const paidStatus = await GetPaidStatus({
-        id,
-        supplier_master_id: procurement_data?.supplier_master_id,
-      });
-
-      if (paidStatus > 0) {
-        return reject({
-          statusCode: 420,
-          message: "Unable to edit the paid products",
+      if (procurement_data?.supplier_master_id) {
+        const paidStatus = await GetPaidStatus({
+          id,
+          supplier_master_id: procurement_data?.supplier_master_id,
         });
+
+        if (paidStatus > 0) {
+          return reject({
+            statusCode: 420,
+            message: "Unable to edit the paid products",
+          });
+        }
       }
 
       const result = await models.ProcurementProducts.update(procurement_data, {

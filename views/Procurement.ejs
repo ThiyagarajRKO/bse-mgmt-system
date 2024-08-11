@@ -4003,9 +4003,9 @@
           .find(".adjusted_surveyor");
 
         if (
-          adjusted_quantity.val() == 0 ||
-          adjusted_price.val() == 0 ||
-          !adjusted_reason.val() ||
+          adjusted_quantity.val() == 0 &&
+          adjusted_price.val() == 0 &&
+          !adjusted_reason.val() &&
           !adjusted_surveyor.val()
         ) {
           // toastr["warning"]("Fill all the required fields");
@@ -4828,8 +4828,8 @@
                 total_amount:
                   parseFloat(data?.data[0]?.total_amount) -
                   parseFloat(data?.data[0]?.total_paid || 0) -
-                  parseFloat(item?.total_discount || 0),
-                total_discount: parseFloat(item?.total_discount),
+                  parseFloat(data?.data[0]?.total_discount || 0),
+                total_discount: parseFloat(data?.data[0]?.total_discount),
                 total_paid: data?.data[0]?.total_paid,
                 is_due:
                   parseFloat(data?.data[0]?.total_paid || 0) > 0 ? true : false,
