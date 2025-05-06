@@ -1257,7 +1257,7 @@ export const GetPackingStats = ({
                 COUNT(pk.id) 
               FROM
               Packing pk 
-                join peeled_dispatches pd on pd.id=pk.peeled_dispatch_id
+                join peeled_dispatches pd on pd.id=pk.peeled_dispatched_product_id
               JOIN
                 peeling_products pp ON pp.id = pd.peeled_product_id
               JOIN 
@@ -1277,7 +1277,7 @@ export const GetPackingStats = ({
                 sum(pk.packing_quantity) 
               FROM
               Packing pk 
-                join peeled_dispatches pd on pd.id=pk.peeled_dispatch_id
+                join peeled_dispatches pd on pd.id=pk.peeled_dispatched_product_id
               JOIN
                 peeling_products pp ON pp.id = pd.peeled_product_id
               JOIN 

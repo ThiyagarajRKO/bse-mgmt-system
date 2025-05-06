@@ -536,7 +536,7 @@ export const GetProductNames = ({
               END
             FROM "packing"
             WHERE
-              peeled_dispatch_id = "PeeledDispatches"."id" AND
+              peeled_dispatched_product_id = "PeeledDispatches"."id" AND
               ${
                 packing_id != "null" && packing_id != undefined
                   ? "id != '" + packing_id + "' and"

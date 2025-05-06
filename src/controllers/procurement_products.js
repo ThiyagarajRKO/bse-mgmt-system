@@ -644,7 +644,7 @@ export const GetSalesInventoryProducts = ({
           "expiry_date",
           [
             sequelize.literal(
-              `(SELECT SUM(packing_quantity) FROM packing pk JOIN peeled_dispatches pd ON pd.id = pk.peeled_dispatch_id and pd.is_active = true JOIN peeling_products pp ON pp.id = pd.peeled_product_id and pp.product_master_id = '${product_master_id}' and pp.is_active = true WHERE pk.is_active = true)`
+              `(SELECT SUM(packing_quantity) FROM packing pk JOIN peeled_dispatches pd ON pd.id = pk.peeled_dispatched_product_id and pd.is_active = true JOIN peeling_products pp ON pp.id = pd.peeled_product_id and pp.product_master_id = '${product_master_id}' and pp.is_active = true WHERE pk.is_active = true)`
             ),
             "total_quantity",
           ],
