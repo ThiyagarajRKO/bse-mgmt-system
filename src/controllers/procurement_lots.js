@@ -1174,7 +1174,7 @@ export const GetPackingStats = ({
                 FROM 
                   packing pk
                 JOIN 
-                  peeled_dispatches pd on pk.peeled_dispatch_id = pd.id and pd.is_active = true
+                  peeled_dispatches pd on pk.peeled_dispatched_product_id = pd.id and pd.is_active = true
                 JOIN
                   peeling_products pp ON pp.id = pd.peeled_product_id and pp.is_active = true
 	              JOIN 
