@@ -226,7 +226,7 @@ export const CountStats = ({ procurement_lot_id }) => {
             sequelize.literal(
               `(SELECT SUM(pkg.packing_quantity)
                 FROM packing pkg
-	              JOIN peeled_dispatches pd on pd.id = pkg.peeled_dispatch_id and pd.is_active = true
+	              JOIN peeled_dispatches pd on pd.id = pkg.peeled_dispatched_product_id and pd.is_active = true
                 JOIN peeling_products pp on pp.id = pd.peeled_product_id and pp.is_active = true
 	              JOIN peeling p on p.id = pp.peeling_id and p.is_active = true
 	              JOIN dispatches d on d.id = p.dispatch_id and d.is_active = true
