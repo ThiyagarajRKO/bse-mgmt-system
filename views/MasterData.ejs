@@ -545,7 +545,7 @@
             <div class="form-group my-3">
               <label for="company-name">Company Name</label>
               <input
-                id="company-name"
+                id="company_name"
                 class="form-control"
                 placeholder="eg. Aaron John's"
                 type="text"
@@ -556,7 +556,7 @@
             <div class="form-group my-3">
               <label for="company-short-name">Short Name</label>
               <input
-                id="company-short-name"
+                id="company_short_name"
                 class="form-control"
                 placeholder="eg. AJs"
                 type="text"
@@ -567,7 +567,7 @@
             <div class="form-group my-3">
               <label for="company-gstin">GSTIN</label>
               <input
-                id="company-gstin"
+                id="company_gstin"
                 class="form-control"
                 placeholder="eg. AJs"
                 type="text"
@@ -576,20 +576,20 @@
             </div>
 
             <div class="form-group my-3">
-              <label for="company-cin">CIN</label>
+              <label for="company-pan">PAN</label>
               <input
-                id="company-cin"
+                id="company_pan"
                 class="form-control"
                 placeholder="eg. AJs"
                 type="text"
-                name="company-cin"
+                name="company-pan"
               />
             </div>
 
             <div class="form-group my-3">
               <label for="company-address">Address</label>
               <input
-                id="company-address"
+                id="company_address"
                 class="form-control"
                 placeholder="eg. xyz Street"
                 type="text area"
@@ -600,7 +600,7 @@
             <div class="form-group my-3">
               <label for="company-city">City</label>
               <input
-                id="company-city"
+                id="company_city"
                 class="form-control"
                 placeholder="eg. Mumbai"
                 type="text"
@@ -609,7 +609,7 @@
             </div>
 
             <div class="form-group my-3">
-              <label for="company-state">State</label>
+              <label for="company_state">State</label>
               <input
                 id="company-state"
                 class="form-control"
@@ -622,7 +622,7 @@
             <div class="form-group my-3">
               <label for="company-country">Country</label>
               <input
-                id="company-country"
+                id="company_country"
                 class="form-control"
                 placeholder="eg. India"
                 type="text"
@@ -633,7 +633,7 @@
             <div class="form-group my-3">
               <label for="company-bank-ac">Bank Account</label>
               <input
-                id="company-bank-ac"
+                id="company_bank_ac"
                 class="form-control"
                 placeholder="eg. 00000000"
                 type="text"
@@ -644,7 +644,7 @@
             <div class="form-group my-3">
               <label for="company-ifsc">IFSC</label>
               <input
-                id="company-ifsc"
+                id="company_ifsc"
                 class="form-control"
                 placeholder="eg. HDFC000222"
                 type="text"
@@ -655,7 +655,7 @@
             <div class="form-group my-3">
               <label for="company-currency">Currency</label>
               <input
-                id="company-currency"
+                id="company_currency"
                 class="form-control"
                 placeholder="eg. IMR"
                 type="text"
@@ -666,7 +666,7 @@
             <div class="form-group my-3">
               <label for="company-fin-year-start">Financial Year Start</label>
               <input
-                id="company-fin-year-start"
+                id="company_fin_year_start"
                 class="form-control"
                 placeholder="eg. April"
                 type="text"
@@ -678,7 +678,7 @@
               <label for="company-status">Status</label>
               <select
                 class="form-control input-dropdown w-100"
-                id="company-status"
+                id="company_status"
                 name="company-status"
               ></select>
             </div>
@@ -3059,9 +3059,9 @@
 
       tippy(".OperationsTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topOperationsSubMenu-item suppliersMenu d-flex flex-column text-center mx-2"><i
+        <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-users mb-2"></i>Suppliers</div>
-        <div class="topOperationsSubMenu-item vehiclesMenu d-flex flex-column text-center mx-2"><i
+        <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
         <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
             class="fa-solid fa-id-card mb-2"></i>Driver</div>
@@ -3292,6 +3292,283 @@
         // Destroying select2 all the dropdowns
         // $('select.select2-hidden-accessible').select2('destroy');
       }
+      // ---------------------------------------------------------
+      // ----------------------- Company -----------------------
+      // ---------------------------------------------------------
+
+      // Open panel
+      $("#openCompanyPanelBtn").click(function () {
+        openSlidePanel(
+          "companySlideInPanel",
+          "companyPanelHeading",
+          "Company",
+          "submitCompany",
+          "company_master_id"
+        );
+      });
+
+      // Close panel
+      $("#closeCompanyPanelBtn").click(function () {
+        closeSlidePanel("companySlideInPanel");
+      });
+
+      $(document).on("click", ".companyMenu", function () {
+        $(".menu-container").addClass("d-none");
+        $(".companyContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
+        loadCompanyTableData();
+      });
+
+      $("#submitCompany").click(function () {
+        saveCompany();
+      });
+
+      function loadCompanyTableData() {
+        $("#companyTable").DataTable({
+          // searching: true,
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/v1/master/company",
+            error: function (xhr, error, code) {
+              $("#companyTable").DataTable().destroy();
+              $("#companyTable").DataTable({ scrollX: true, ordering: false });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length;
+              json.iTotalDisplayRecords = json.data?.count;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "company_id" },
+            { data: "company_name" },
+            { data: "company_short_name" },
+            { data: "company_gstin" },
+            { data: "company_cin" },
+            { data: "company_address" },
+            { data: "company_bank_ac" },
+            { data: "company_ifsc" },
+            { data: "company_currency" },
+            { data: "company_fin_year_start" },
+            { data: "company_status" },
+            { data: "created_at" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-pen-to-square edit editCompany" company_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this company"></i>'
+                );
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  '<i class="fa fa-trash del delCompany" company_master_id=' +
+                  row["id"] +
+                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this company"></i>'
+                );
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                const date = new Date(row["created_at"]);
+
+                var months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                var strTime = hours + ":" + minutes + " " + ampm;
+                var month = months[date.getMonth()];
+                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
+                return (
+                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
+                );
+              },
+            },
+          ],
+          // "infoCallback": function (settings, start, end, max, total, pre) {
+          //   return start + " to " + end;
+          // }
+        });
+      }
+
+      $(document).on("click", ".editCompany", (e) => {
+        // Changing panel input fields data
+        $("#company_name").val(
+          $(e.target).closest("tr").children("td").eq(2).text()
+        );
+        $("#description").val(
+          $(e.target).closest("tr").children("td").eq(3).text()
+        );
+
+        // Opening Slied Panel
+        $("#openCompanyPanelBtn").click();
+
+        // Changing panel heading
+        $("#companyPanelHeading").text("Edit Division Data");
+
+        // Changing panel button label
+        $("#submitCompany").text("Update");
+
+        // Changing panel button attribute
+        $("#submitCompany").attr(
+          "company_master_id",
+          $(e.target).attr("company_master_id")
+        );
+      });
+
+      $(document).on("click", ".delCompany", (e) => {
+        let division_master_id = $(e.target).attr("company_master_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Company?",
+          content: "Are you sure, do you want to remove this company?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/v1/master/company?company_master_id=" +
+                    company_master_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    //loading data to table
+                    loadCompanyTableData();
+
+                    toastr.success("Company deleted successfully", "Deleted");
+                  })
+                  .fail(function (err) {
+                    if (err["status"] == 420) {
+                      toastr["warning"](err["responseJSON"]["message"]);
+                    } else {
+                      toastr["error"](err["responseJSON"]["message"]);
+                    }
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Company is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      function saveCompany() {
+        const company_master_id = $("#submitCompany").attr("company_master_id");
+
+        let url = "/api/v1/master/company";
+        let method = "POST";
+        let input_params = {
+          company_name: $("#company_name").val(),
+          company_short_name: $("#company_short_name").val(),
+          company_gstin: $("#company_gstin").val(),
+          company_pan: $("#company_pan").val(),
+          company_address: $("#company_address").val(),
+          company_city: $("#company_city").val(),
+          company_state: $("#company_state").val(),
+          company_country: $("#company_country").val(),
+          company_bank_ac: $("#company_bank_ac").val(),
+          company_ifsc: $("#company_ifsc").val(),
+          company_currency: $("#company_currency").val(),
+          company_fin_year_start: $("#company_fin_year_start").val(),
+          company_status: $("#company_status").val(),
+        };
+
+        if (company_master_id) {
+          url = "/api/v1/master/company";
+          method = "PUT";
+          input_params = {
+            company_master_id,
+            company_master_data: {
+              ...input_params,
+            },
+          };
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(input_params),
+          crossDomain: true,
+          processData: false,
+          success: (data) => {
+            toastr["success"](data?.message);
+
+            $("#closeCompanyPanelBtn").click();
+
+            loadCompanyTableData();
+
+            resetAllInputs();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"]);
+            }
+          },
+        });
+      }
+
+      $("#resetCompanyDataBtn").on("click", resetAllInputs);
 
       // ---------------------------------------------------------
       // ----------------------- Divisions -----------------------
@@ -3313,12 +3590,11 @@
         closeSlidePanel("divisionSlideInPanel");
       });
 
-      $(".divisionMenu").click(function () {
+      $(document).on("click", ".divisionMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".divisionContainer").removeClass("d-none");
-        $(".divisionContainer").addClass("d-block");
-
+        $(".divisionContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
         loadDivisionTableData();
       });
 
@@ -3573,12 +3849,11 @@
         closeSlidePanel("locationSlideInPanel");
       });
 
-      $(".locationMenu").click(function () {
+      $(document).on("click", ".locationMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".locationContainer").removeClass("d-none");
-        $(".locationContainer").addClass("d-block");
-
+        $(".locationContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
         loadLocationTableData();
       });
 
@@ -3838,12 +4113,9 @@
         closeSlidePanel("unitSlideInPanel");
       });
 
-      $(".unitMenu").click(function () {
+      $(document).on("click", ".unitsMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".unitContainer").removeClass("d-none");
-        $(".unitContainer").addClass("d-block");
-
+        $(".unitContainer").removeClass("d-none d-block").addClass("d-block");
         loadUnitDropdowns();
         loadUnitTableData();
       });
@@ -4200,10 +4472,9 @@
 
       $(document).on("click", ".productMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".productContainer").removeClass("d-none");
-        $(".productContainer").addClass("d-block");
-
+        $(".productContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
         loadProductDropdowns();
         loadProductTableData();
       });
@@ -6549,12 +6820,11 @@
         closeSlidePanel("vehicleSlideInPanel");
       });
 
-      $(".vehicleMenu").click(function () {
+      $(document).on("click", ".vehicleMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".vehicleContainer").removeClass("d-none");
-        $(".vehicleContainer").addClass("d-block");
-
+        $(".vehicleContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
         loadVehicleTableData();
       });
 
@@ -6889,12 +7159,9 @@
         closeSlidePanel("driverSlideInPanel");
       });
 
-      $(".driverMenu").click(function () {
+      $(document).on("click", ".driverMenu", function () {
         $(".menu-container").addClass("d-none");
-
-        $(".driverContainer").removeClass("d-none");
-        $(".driverContainer").addClass("d-block");
-
+        $(".driverContainer").removeClass("d-none d-block").addClass("d-block");
         loadDriverTableData();
       });
 
