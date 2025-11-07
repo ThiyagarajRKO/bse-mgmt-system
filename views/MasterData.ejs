@@ -40,7 +40,7 @@
       href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2"
       rel="stylesheet"
     />
-    <script src="/public/plugins/MDB5-7.2.0/js/mdb.es.min.js?v=2"></script>
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.min.js?v=2"></script>
 
     <!-- jQuery -->
     <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
@@ -530,18 +530,6 @@
 
             <hr />
 
-            <div class="form-group mt-4">
-              <label for="company-id">Company ID</label>
-              <input
-                id="company_id"
-                class="form-control"
-                type="text"
-                placeholder="eg. CD0001"
-                name="company-id"
-                required
-              />
-            </div>
-
             <div class="form-group my-3">
               <label for="company-name">Company Name</label>
               <input
@@ -594,28 +582,6 @@
                 placeholder="eg. xyz Street"
                 type="text area"
                 name="company-address"
-              />
-            </div>
-
-            <div class="form-group my-3">
-              <label for="company-city">City</label>
-              <input
-                id="company_city"
-                class="form-control"
-                placeholder="eg. Mumbai"
-                type="text"
-                name="company-city"
-              />
-            </div>
-
-            <div class="form-group my-3">
-              <label for="company_state">State</label>
-              <input
-                id="company-state"
-                class="form-control"
-                placeholder="eg. Maharashtra"
-                type="text"
-                name="company-state"
               />
             </div>
 
@@ -674,15 +640,6 @@
               />
             </div>
 
-            <div class="form-group my-3">
-              <label for="company-status">Status</label>
-              <select
-                class="form-control input-dropdown w-100"
-                id="company_status"
-                name="company-status"
-              ></select>
-            </div>
-
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitCompany" class="col-lg-5 btn btn-danger">Save</div>
               <div
@@ -716,20 +673,16 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Company ID</span></th>
                 <th class="fw-bold"><span>Company Name</span></th>
                 <th class="fw-bold"><span>Short Name</span></th>
                 <th class="fw-bold"><span>GSTIN</span></th>
-                <th class="fw-bold"><span>CIN</span></th>
+                <th class="fw-bold"><span>PAN</span></th>
                 <th class="fw-bold"><span>Address</span></th>
-                <th class="fw-bold"><span>City</span></th>
-                <th class="fw-bold"><span>State</span></th>
                 <th class="fw-bold"><span>Country</span></th>
                 <th class="fw-bold"><span>Bank Account</span></th>
                 <th class="fw-bold"><span>IFSC</span></th>
                 <th class="fw-bold"><span>Currency</span></th>
                 <th class="fw-bold"><span>Financial Year Start</span></th>
-                <th class="fw-bold"><span>Status</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
@@ -737,7 +690,7 @@
         </div>
       </div>
     </div>
-    <!-- Division Container Ends -->
+    <!-- Company Container Ends -->
 
     <!-- ------------------------------------------------------------------------------------------------------------- -->
     <!-- ------------------------------------- Division Container ---------------------------------------------------- -->
@@ -2874,7 +2827,7 @@
       $(".companyContainer").removeClass("d-none");
       $(".companyContainer").addClass("d-block");
 
-      loadDivisionTableData();
+      loadCompanyTableData();
 
       // Menu navigation
       $(".topMenu-item").click(function () {
@@ -3293,7 +3246,7 @@
         // $('select.select2-hidden-accessible').select2('destroy');
       }
       // ---------------------------------------------------------
-      // ----------------------- Company -----------------------
+      // ----------------------- Company -------------------------
       // ---------------------------------------------------------
 
       // Open panel
@@ -3312,96 +3265,98 @@
         closeSlidePanel("companySlideInPanel");
       });
 
+      // Menu click
       $(document).on("click", ".companyMenu", function () {
         $(".menu-container").addClass("d-none");
         $(".companyContainer")
           .removeClass("d-none d-block")
           .addClass("d-block");
+
         loadCompanyTableData();
       });
 
+      // Save button
       $("#submitCompany").click(function () {
         saveCompany();
       });
 
+      // ✅ Load Company DataTable
       function loadCompanyTableData() {
         $("#companyTable").DataTable({
-          // searching: true,
           destroy: true,
-          responsive: false,
           processing: true,
           serverSide: true,
+          responsive: false,
           scrollX: true,
-          scrollCollapse: true,
           scrollY: "40vh",
           ordering: false,
+
           ajax: {
-            type: "GET",
             url: "/api/v1/master/company",
-            error: function (xhr, error, code) {
-              $("#companyTable").DataTable().destroy();
-              $("#companyTable").DataTable({ scrollX: true, ordering: false });
+            type: "GET",
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
             dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+              if (!json.success) {
+                toastr.error(json.message);
+                return [];
+              }
+              json.recordsTotal = json.data.length;
+              json.recordsFiltered = json.data.length;
 
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+              return json.data || [];
+            },
+
+            error: function (xhr) {
+              toastr.error(xhr.responseJSON?.message || "Error loading data");
             },
           },
+
           columns: [
             { data: null },
             { data: null },
-            { data: "company_id" },
             { data: "company_name" },
             { data: "company_short_name" },
             { data: "company_gstin" },
-            { data: "company_cin" },
+            { data: "company_pan" },
             { data: "company_address" },
+            { data: "company_country" },
             { data: "company_bank_ac" },
             { data: "company_ifsc" },
             { data: "company_currency" },
             { data: "company_fin_year_start" },
-            { data: "company_status" },
             { data: "created_at" },
           ],
+
           columnDefs: [
             {
-              targets: [0],
+              targets: 0,
               className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-pen-to-square edit editCompany" company_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this company"></i>'
-                );
-              },
+              render: (data, type, row) => `
+          <i class="fa fa-pen-to-square editCompany"
+             company_master_id="${row.id}"
+             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+             title="Edit company"></i>`,
             },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delCompany" company_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this company"></i>'
-                );
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
 
-                var months = [
+            {
+              targets: 1,
+              className: "text-left",
+              render: (data, type, row) => `
+          <i class="fa fa-trash delCompany"
+             company_master_id="${row.id}"
+             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+             title="Delete company"></i>`,
+            },
+
+            {
+              targets: 12,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+
+                const months = [
                   "Jan",
                   "Feb",
                   "Mar",
@@ -3415,129 +3370,98 @@
                   "Nov",
                   "Dec",
                 ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
+
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+
+                return `${String(date.getDate()).padStart(2, "0")}
+                  -${months[date.getMonth()]}
+                  -${date.getFullYear()} 
+                  ${hrs}:${mins} ${ampm}`;
               },
             },
           ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
         });
       }
 
-      $(document).on("click", ".editCompany", (e) => {
-        // Changing panel input fields data
-        $("#company_name").val(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-        $("#description").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
+      $(document).on("click", ".editCompany", function (e) {
+        const row = $(e.target).closest("tr").children("td");
 
-        // Opening Slied Panel
+        $("#company_name").val(row.eq(3).text());
+        $("#company_short_name").val(row.eq(4).text());
+        $("#company_gstin").val(row.eq(5).text());
+        $("#company_pan").val(row.eq(6).text());
+        $("#company_address").val(row.eq(7).text());
+        $("#company_country").val(row.eq(8).text());
+        $("#company_bank_ac").val(row.eq(9).text());
+        $("#company_ifsc").val(row.eq(10).text());
+        $("#company_currency").val(row.eq(11).text());
+        $("#company_fin_year_start").val(row.eq(12).text());
+
         $("#openCompanyPanelBtn").click();
-
-        // Changing panel heading
-        $("#companyPanelHeading").text("Edit Division Data");
-
-        // Changing panel button label
         $("#submitCompany").text("Update");
-
-        // Changing panel button attribute
+        $("#companyPanelHeading").text("Edit Company");
         $("#submitCompany").attr(
           "company_master_id",
           $(e.target).attr("company_master_id")
         );
       });
 
-      $(document).on("click", ".delCompany", (e) => {
-        let division_master_id = $(e.target).attr("company_master_id");
-        let currentRow = $(e.target).closest("tr");
+      // ✅ Delete company
+      $(document).on("click", ".delCompany", function (e) {
+        const company_master_id = $(this).attr("company_master_id");
+
         $.confirm({
           title: "Delete Company?",
-          content: "Are you sure, do you want to remove this company?",
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
+          content: "This action cannot be undone.",
           type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
           buttons: {
             delete: {
               text: "Delete",
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url:
-                    "/api/v1/master/company?company_master_id=" +
-                    company_master_id,
-                  method: "delete",
+                  url: `/api/v1/master/company?company_master_id=${company_master_id}`,
+                  method: "DELETE",
                 })
-                  .done(function (response) {
-                    //loading data to table
+                  .done(() => {
+                    toastr.success("Company deleted");
                     loadCompanyTableData();
-
-                    toastr.success("Company deleted successfully", "Deleted");
                   })
-                  .fail(function (err) {
-                    if (err["status"] == 420) {
-                      toastr["warning"](err["responseJSON"]["message"]);
-                    } else {
-                      toastr["error"](err["responseJSON"]["message"]);
-                    }
-                  });
+                  .fail((err) => toastr.error(err.responseJSON?.message));
               },
             },
-            no: function () {
-              toastr.info("Company is safe now", "Info");
-            },
+            cancel: function () {},
           },
         });
       });
 
+      // ✅ Save / Update company
       function saveCompany() {
         const company_master_id = $("#submitCompany").attr("company_master_id");
 
         let url = "/api/v1/master/company";
-        let method = "POST";
-        let input_params = {
+        let method = company_master_id ? "PUT" : "POST";
+
+        let body = {
           company_name: $("#company_name").val(),
           company_short_name: $("#company_short_name").val(),
           company_gstin: $("#company_gstin").val(),
           company_pan: $("#company_pan").val(),
           company_address: $("#company_address").val(),
-          company_city: $("#company_city").val(),
-          company_state: $("#company_state").val(),
           company_country: $("#company_country").val(),
           company_bank_ac: $("#company_bank_ac").val(),
           company_ifsc: $("#company_ifsc").val(),
           company_currency: $("#company_currency").val(),
           company_fin_year_start: $("#company_fin_year_start").val(),
-          company_status: $("#company_status").val(),
         };
 
         if (company_master_id) {
-          url = "/api/v1/master/company";
-          method = "PUT";
-          input_params = {
+          body = {
             company_master_id,
-            company_master_data: {
-              ...input_params,
-            },
+            company_master_data: body,
           };
         }
 
@@ -3546,24 +3470,17 @@
           method,
           dataType: "json",
           contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            toastr["success"](data?.message);
+          data: JSON.stringify(body),
 
+          success: (resp) => {
+            toastr.success(resp.message);
             $("#closeCompanyPanelBtn").click();
-
             loadCompanyTableData();
-
             resetAllInputs();
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error");
           },
         });
       }

@@ -10,6 +10,7 @@ import peelingProductRoute from "./peeling_products";
 import peeledDispatchRoute from "./peeled_dispatches";
 import packingRoute from "./packing";
 import roleMasterRoute from "./role_master";
+import companyMasterRoute from "./company_master";
 import divisionMasterRoute from "./division_master";
 import locationMasterRoute from "./location_master";
 import unitMasterRoute from "./unit_master";
@@ -92,6 +93,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   });
 
   fastify.register(profileRoutes, { prefix: "/profile" });
+
+  fastify.register(companyMasterRoute, { prefix: "/master/company" });
 
   fastify.register(divisionMasterRoute, { prefix: "/master/division" });
 
