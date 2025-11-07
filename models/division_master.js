@@ -3,6 +3,12 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class DivisionMaster extends Model {
     static associate(models) {
+      DivisionMaster.belongsTo(models.CompanyMaster, {
+        as: "company",
+        foreignKey: "company_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
       DivisionMaster.belongsTo(models.UserProfiles, {
         as: "creator",
         foreignKey: "created_by",
@@ -35,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.TEXT,
+      },
+      company_id: {
+        type: DataTypes.UUID,
       },
       is_active: {
         type: DataTypes.BOOLEAN,

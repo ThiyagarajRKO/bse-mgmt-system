@@ -6,6 +6,7 @@ export const createSchema = {
       properties: {
         division_name: { type: "string" },
         description: { type: "string" },
+        company_id: { type: "string", format: "uuid" },
       },
     },
   },

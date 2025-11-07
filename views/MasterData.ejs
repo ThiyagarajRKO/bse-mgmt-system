@@ -737,6 +737,13 @@
               />
             </div>
 
+            <div class="form-group mt-4">
+              <label for="company_id">Company</label>
+              <select id="company_id" class="form-control" required>
+                <option value="">Select Company</option>
+              </select>
+            </div>
+
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitDivision" class="col-lg-5 btn btn-danger">
                 Save
@@ -774,6 +781,7 @@
                 <th></th>
                 <th class="fw-bold"><span>Division Name</span></th>
                 <th class="fw-bold"><span>Description</span></th>
+                <th class="fw-bold"><span>Company Name</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
@@ -2986,14 +2994,14 @@
 
       tippy(".companyTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topCompanySubMenu-item companyMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-users mb-2"></i>Company</div>
-        <div class="topCompanySubMenu-item divisionMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-table-cells-large mb-2"></i>Division</div>
-        <div class="topCompanySubMenu-item locationMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-location-dot mb-2"></i>Location</div>
-        <div class="topCompanySubMenu-item unitsMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-warehouse mb-2"></i>Units</div>`,
+            <div class="topCompanySubMenu-item companyMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-users mb-2"></i>Company</div>
+            <div class="topCompanySubMenu-item divisionMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-table-cells-large mb-2"></i>Division</div>
+            <div class="topCompanySubMenu-item locationMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-location-dot mb-2"></i>Location</div>
+            <div class="topCompanySubMenu-item unitsMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-warehouse mb-2"></i>Units</div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3012,13 +3020,13 @@
 
       tippy(".OperationsTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-users mb-2"></i>Suppliers</div>
-        <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
-        <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-id-card mb-2"></i>Driver</div>
-        </div>`,
+            <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-users mb-2"></i>Suppliers</div>
+            <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
+            <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-id-card mb-2"></i>Driver</div>
+            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3039,11 +3047,11 @@
 
       tippy(".procurementTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topProcurementSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-users mb-2"></i>Suppliers</div>
-        <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
-        </div>`,
+            <div class="topProcurementSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-users mb-2"></i>Suppliers</div>
+            <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
+            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3063,29 +3071,29 @@
       });
       tippy(".productTopMenu", {
         content: `
-    <div class="d-flex justify-content-between p-3 fs-6">
-      <div class="topProductSubMenu-item speciesMenu d-flex flex-column text-center" mx-2>
-        <i class="fa-solid fa-fish-fins mb-2"></i>
-        <span>Species</span>
-      </div>
-      <div class="topProductSubMenu-item gradeMenu d-flex flex-column text-center" mx-2>
-        <i class="fa-solid fa-ranking-star mb-2"></i>
-        <span>Grades</span>
-      </div>
-      <div class="topProductSubMenu-item sizeMenu d-flex flex-column text-center" mx-2>
-        <i class="fa-solid fa-ruler-combined mb-2"></i>
-        <span>Sizes</span>
-      </div> </div>
-      <div class="d-flex justify-content-left p-3 fs-6">
-      <div class="topProductSubMenu-item productMenu d-flex flex-column text-center" mx-2>
-        <i class="fa-solid fa-shrimp mb-2"></i>
-        <span>Product</span></div>
-      <div class="topProductSubMenu-item packagingMenu d-flex flex-column text-center" mx-2>
-        <i class="fa-solid fa-boxes-packing mb-2"></i>
-        <span>Packaging</span>
-      </div>
-      </div>
-  `,
+        <div class="d-flex justify-content-between p-3 fs-6">
+          <div class="topProductSubMenu-item speciesMenu d-flex flex-column text-center" mx-2>
+            <i class="fa-solid fa-fish-fins mb-2"></i>
+            <span>Species</span>
+          </div>
+          <div class="topProductSubMenu-item gradeMenu d-flex flex-column text-center" mx-2>
+            <i class="fa-solid fa-ranking-star mb-2"></i>
+            <span>Grades</span>
+          </div>
+          <div class="topProductSubMenu-item sizeMenu d-flex flex-column text-center" mx-2>
+            <i class="fa-solid fa-ruler-combined mb-2"></i>
+            <span>Sizes</span>
+          </div> </div>
+          <div class="d-flex justify-content-left p-3 fs-6">
+          <div class="topProductSubMenu-item productMenu d-flex flex-column text-center" mx-2>
+            <i class="fa-solid fa-shrimp mb-2"></i>
+            <span>Product</span></div>
+          <div class="topProductSubMenu-item packagingMenu d-flex flex-column text-center" mx-2>
+            <i class="fa-solid fa-boxes-packing mb-2"></i>
+            <span>Packaging</span>
+          </div>
+          </div>
+      `,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3103,15 +3111,15 @@
 
       tippy(".salesTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-users mb-2"></i>Customer</div>
-        <div class="topSalesSubMenu-item priceListMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-barcode mb-2"></i>Price list</div>
-        <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-dolly mb-2"></i>Carrier</div>
-        <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
-        </div>`,
+            <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-users mb-2"></i>Customer</div>
+            <div class="topSalesSubMenu-item priceListMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-barcode mb-2"></i>Price list</div>
+            <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-dolly mb-2"></i>Carrier</div>
+            <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
+            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3130,14 +3138,14 @@
 
       tippy(".AccountingTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-        <div class="topAccountingSubMenu-item GSTMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-table-cells-large mb-2"></i>GST</div>
-             <div class="topAccountingSubMenu-item taxCodeMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-location-dot mb-2"></i>Tax Code</div>
-        <div class="topAccountingSubMenu-item accountsMenu d-flex flex-column text-center mx-2"><i
-            class="fa-solid fa-location-dot mb-2"></i>Accounts</div>
-        </div>
-`,
+            <div class="topAccountingSubMenu-item GSTMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-table-cells-large mb-2"></i>GST</div>
+                 <div class="topAccountingSubMenu-item taxCodeMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-location-dot mb-2"></i>Tax Code</div>
+            <div class="topAccountingSubMenu-item accountsMenu d-flex flex-column text-center mx-2"><i
+                class="fa-solid fa-location-dot mb-2"></i>Accounts</div>
+            </div>
+    `,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3332,20 +3340,20 @@
               targets: 0,
               className: "text-left",
               render: (data, type, row) => `
-          <i class="fa fa-pen-to-square editCompany"
-             company_master_id="${row.id}"
-             style="font-size:15px;color:#f07b3f;cursor:pointer;"
-             title="Edit company"></i>`,
+              <i class="fa fa-pen-to-square editCompany"
+                 company_master_id="${row.id}"
+                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                 title="Edit company"></i>`,
             },
 
             {
               targets: 1,
               className: "text-left",
               render: (data, type, row) => `
-          <i class="fa fa-trash delCompany"
-             company_master_id="${row.id}"
-             style="font-size:15px;color:#f07b3f;cursor:pointer;"
-             title="Delete company"></i>`,
+              <i class="fa fa-trash delCompany"
+                 company_master_id="${row.id}"
+                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                 title="Delete company"></i>`,
             },
 
             {
@@ -3377,9 +3385,9 @@
                 const mins = String(date.getMinutes()).padStart(2, "0");
 
                 return `${String(date.getDate()).padStart(2, "0")}
-                  -${months[date.getMonth()]}
-                  -${date.getFullYear()} 
-                  ${hrs}:${mins} ${ampm}`;
+                      -${months[date.getMonth()]}
+                      -${date.getFullYear()}
+                      ${hrs}:${mins} ${ampm}`;
               },
             },
           ],
@@ -3491,8 +3499,37 @@
       // ----------------------- Divisions -----------------------
       // ---------------------------------------------------------
 
-      // Open panel
+      function loadCompanyDropdown(selectedId = "") {
+        $.ajax({
+          url: "/api/v1/master/company",
+          type: "GET",
+          success: function (res) {
+            if (!res.success) return toastr.error("Failed to load companies");
+
+            const list = res.data?.rows || res.data || [];
+            const dropdown = $("#company_id");
+
+            dropdown.empty();
+            dropdown.append('<option value="">-- Select Company --</option>');
+
+            list.forEach((c) => {
+              dropdown.append(
+                `<option value="${c.id}" ${
+                  selectedId === c.id ? "selected" : ""
+                }>
+              ${c.company_name}
+           </option>`
+              );
+            });
+          },
+          error: function () {
+            toastr.error("Failed to load company list");
+          },
+        });
+      }
+
       $("#openDivisionPanelBtn").click(function () {
+        loadCompanyDropdown();
         openSlidePanel(
           "divisionSlideInPanel",
           "divisionPanelHeading",
@@ -3502,7 +3539,6 @@
         );
       });
 
-      // Close panel
       $("#closeDivisionPanelBtn").click(function () {
         closeSlidePanel("divisionSlideInPanel");
       });
@@ -3521,7 +3557,6 @@
 
       function loadDivisionTableData() {
         $("#divisionTable").DataTable({
-          // searching: true,
           destroy: true,
           responsive: false,
           processing: true,
@@ -3530,64 +3565,63 @@
           scrollCollapse: true,
           scrollY: "40vh",
           ordering: false,
+
           ajax: {
             type: "GET",
             url: "/api/v1/master/division",
-            error: function (xhr, error, code) {
+            error: function (xhr) {
               $("#divisionTable").DataTable().destroy();
               $("#divisionTable").DataTable({ scrollX: true, ordering: false });
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
+              if (xhr.status == 420) toastr.warning(xhr.responseJSON.message);
+              else toastr.error(xhr.responseJSON.message);
             },
             dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+              json.iTotalRecords = json.data?.rows?.length || 0;
+              json.iTotalDisplayRecords = json.data?.count || 0;
+              return json.data?.rows || [];
             },
           },
+
           columns: [
-            { data: null },
-            { data: null },
+            { data: null }, // edit
+            { data: null }, // delete
             { data: "division_name" },
             { data: "description" },
+            { data: "company.company_name", defaultContent: "" },
             { data: "created_at" },
           ],
+
           columnDefs: [
             {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-pen-to-square edit editDivision" division_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this division"></i>'
-                );
-              },
+              targets: 0,
+              render: (data, type, row) => `
+          <i class="fa fa-pen-to-square edit editDivision"
+             division_master_id="${row.id}"
+             data-company_id="${row.company_id}"
+             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+             title="Edit Division"></i>
+        `,
             },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delDivision" division_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this division"></i>'
-                );
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
 
-                var months = [
+            {
+              targets: 1,
+              render: (data, type, row) => `
+          <i class="fa fa-trash del delDivision"
+             division_master_id="${row.id}"
+             data-company_id="${row.company_id}"
+             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+             title="Delete Division"></i>
+        `,
+            },
+
+            {
+              targets: 5,
+              render: function (data) {
+                if (!data) return "";
+                const d = new Date(data);
+
+                const months = [
                   "Jan",
                   "Feb",
                   "Mar",
@@ -3601,119 +3635,91 @@
                   "Nov",
                   "Dec",
                 ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
+                const month = months[d.getMonth()];
+                const day = d.getDate().toString().padStart(2, "0");
+
+                let h = d.getHours();
+                const ampm = h >= 12 ? "PM" : "AM";
+                h = h % 12 || 12;
+                const minutes = d.getMinutes().toString().padStart(2, "0");
+
+                return `${day}-${month}-${d.getFullYear()} ${h}:${minutes} ${ampm}`;
               },
             },
           ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
         });
       }
 
-      $(document).on("click", ".editDivision", (e) => {
-        // Changing panel input fields data
-        $("#division_name").val(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-        $("#description").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
-        );
+      $(document).on("click", ".editDivision", function () {
+        const divisionId = $(this).attr("division_master_id");
+        const companyId = $(this).data("company_id");
+        const row = $(this).closest("tr");
 
-        // Opening Slied Panel
+        $("#division_name").val(row.children("td").eq(2).text());
+        $("#description").val(row.children("td").eq(3).text());
+
+        loadCompanyDropdown(companyId);
+
         $("#openDivisionPanelBtn").click();
-
-        // Changing panel heading
         $("#divisionPanelHeading").text("Edit Division Data");
-
-        // Changing panel button label
         $("#submitDivision").text("Update");
-
-        // Changing panel button attribute
-        $("#submitDivision").attr(
-          "division_master_id",
-          $(e.target).attr("division_master_id")
-        );
+        $("#submitDivision").attr("division_master_id", divisionId);
       });
 
-      $(document).on("click", ".delDivision", (e) => {
-        let division_master_id = $(e.target).attr("division_master_id");
-        let currentRow = $(e.target).closest("tr");
+      $(document).on("click", ".delDivision", function () {
+        const divisionId = $(this).attr("division_master_id");
+
         $.confirm({
           title: "Delete Division?",
-          content: "Are you sure, do you want to remove this division?",
+          content: "Are you sure you want to remove this division?",
           backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
           type: "red",
           closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
           buttons: {
             delete: {
               text: "Delete",
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url:
-                    "/api/v1/master/division?division_master_id=" +
-                    division_master_id,
-                  method: "delete",
+                  url: `/api/v1/master/division?division_master_id=${divisionId}`,
+                  method: "DELETE",
                 })
-                  .done(function (response) {
-                    //loading data to table
-                    loadDivisionTableData();
-
+                  .done(() => {
                     toastr.success("Division deleted successfully", "Deleted");
+                    loadDivisionTableData();
                   })
-                  .fail(function (err) {
-                    if (err["status"] == 420) {
-                      toastr["warning"](err["responseJSON"]["message"]);
-                    } else {
-                      toastr["error"](err["responseJSON"]["message"]);
-                    }
+                  .fail((err) => {
+                    if (err.status == 420)
+                      toastr.warning(err.responseJSON.message);
+                    else toastr.error(err.responseJSON.message);
                   });
               },
             },
             no: function () {
-              toastr.info("Division is safe now", "Info");
+              toastr.info("Division is safe now");
             },
           },
         });
       });
 
+      // ✅ Save / Update Division
       function saveDivision() {
-        const division_master_id =
-          $("#submitDivision").attr("division_master_id");
+        const divisionId = $("#submitDivision").attr("division_master_id");
 
         let url = "/api/v1/master/division";
         let method = "POST";
-        let input_params = {
+
+        let body = {
           division_name: $("#division_name").val(),
           description: $("#description").val(),
+          company_id: $("#company_id").val(),
         };
 
-        if (division_master_id) {
-          url = "/api/v1/master/division";
+        if (divisionId) {
           method = "PUT";
-          input_params = {
-            division_master_id,
-            division_master_data: {
-              ...input_params,
-            },
+          body = {
+            division_master_id: divisionId,
+            division_master_data: { ...body },
           };
         }
 
@@ -3722,24 +3728,16 @@
           method,
           dataType: "json",
           contentType: "application/json",
-          data: JSON.stringify(input_params),
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
-            toastr["success"](data?.message);
-
+          data: JSON.stringify(body),
+          success: (res) => {
+            toastr.success(res.message);
             $("#closeDivisionPanelBtn").click();
-
             loadDivisionTableData();
-
             resetAllInputs();
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+          error: (err) => {
+            if (err.status == 420) toastr.warning(err.responseJSON.message);
+            else toastr.error(err.responseJSON.message);
           },
         });
       }
@@ -7855,35 +7853,35 @@
 
         JSON.parse(product_data)?.forEach((row) => {
           html_content += `<tr>
-                            <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_product_master_id='${
-                              row["id"]
-                            }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit price list"></i></td>
-                            <td><i class="fa fa-trash del delPriceList" price_list_product_master_id='${
-                              row["id"]
-                            }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete price list"></i></td>
-                            <td product_master_id='${row?.ProductMaster?.id}'>${
-            row?.ProductMaster?.product_name
-          }</td>
-                            <td>${row?.price_value}</td>
-                            <td>${formatDate(
-                              new Date(row?.created_at),
-                              true
-                            )}</td>
-                          </tr>`;
+                                <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_product_master_id='${
+                                  row["id"]
+                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit price list"></i></td>
+                                <td><i class="fa fa-trash del delPriceList" price_list_product_master_id='${
+                                  row["id"]
+                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete price list"></i></td>
+                                <td product_master_id='${
+                                  row?.ProductMaster?.id
+                                }'>${row?.ProductMaster?.product_name}</td>
+                                <td>${row?.price_value}</td>
+                                <td>${formatDate(
+                                  new Date(row?.created_at),
+                                  true
+                                )}</td>
+                              </tr>`;
         });
 
         return `<table id="childPriceList" class="table border rounded nowrap w-50">
-                        <tbody>
-                          <tr>
-                            <th></th>
-                            <th></th>
-                            <th class="fw-bold">Product Name</th>
-                            <th class="fw-bold">Price</th>
-                            <th class="fw-bold">Created At</th>
-                          </tr>
-                          ${html_content}
-                        </tbody>
-                      </table>`;
+                            <tbody>
+                              <tr>
+                                <th></th>
+                                <th></th>
+                                <th class="fw-bold">Product Name</th>
+                                <th class="fw-bold">Price</th>
+                                <th class="fw-bold">Created At</th>
+                              </tr>
+                              ${html_content}
+                            </tbody>
+                          </table>`;
       }
 
       $(document).on("click", ".editPriceList", (e) => {

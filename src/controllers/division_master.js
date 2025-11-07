@@ -2,193 +2,108 @@ import { Op } from "sequelize";
 import models from "../../models";
 
 export const Insert = async (profile_id, division_data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!division_data) {
-        return reject({
-          statusCode: 420,
-          message: "Division data must not be empty!",
-        });
-      }
+  if (!profile_id)
+    throw { statusCode: 420, message: "User ID must not be empty!" };
 
-      if (!profile_id) {
-        return reject({
-          statusCode: 420,
-          message: "user id must not be empty!",
-        });
-      }
+  if (!division_data)
+    throw { statusCode: 420, message: "Division data must not be empty!" };
 
-      if (!division_data?.division_name) {
-        return reject({
-          statusCode: 420,
-          message: "Division name must not be empty!",
-        });
-      }
+  if (!division_data.division_name)
+    throw { statusCode: 420, message: "Division name must not be empty!" };
 
-      const result = await models.DivisionMaster.create(division_data, {
-        profile_id,
-      });
-      resolve(result);
-    } catch (err) {
-      if (err?.name == "SequelizeUniqueConstraintError") {
-        return reject({ statusCode: 420, message: "Division already exists!" });
-      }
+  if (!division_data.company_id)
+    throw { statusCode: 420, message: "Company ID must not be empty!" };
 
-      reject(err);
+  try {
+    return await models.DivisionMaster.create(division_data, {
+      profile_id,
+    });
+  } catch (err) {
+    if (err?.name === "SequelizeUniqueConstraintError") {
+      throw { statusCode: 420, message: "Division already exists!" };
     }
-  });
+    throw err;
+  }
 };
 
 export const Update = async (profile_id, id, division_data) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Division id must not be empty!",
-        });
-      }
+  if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+  if (!profile_id)
+    throw { statusCode: 420, message: "User ID must not be empty!" };
+  if (!division_data)
+    throw { statusCode: 420, message: "Division data must not be empty!" };
 
-      if (!profile_id) {
-        return reject({
-          statusCode: 420,
-          message: "user id must not be empty!",
-        });
-      }
+  const [updated] = await models.DivisionMaster.update(division_data, {
+    where: { id, is_active: true },
+    individualHooks: true,
+    profile_id,
+  });
 
-      if (!division_data) {
-        return reject({
-          statusCode: 420,
-          message: "Division data must not be empty!",
-        });
-      }
+  return updated;
+};
 
-      const result = await models.DivisionMaster.update(division_data, {
-        where: {
-          id,
-          is_active: true,
-        },
-        individualHooks: true,
-        profile_id,
-      });
-      resolve(result);
-    } catch (err) {
-      reject(err);
-    }
+export const Get = async ({ id }) => {
+  if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+
+  return await models.DivisionMaster.findOne({
+    where: { id, is_active: true },
+    include: [
+      { model: models.CompanyMaster, as: "company" }, // Optional
+    ],
   });
 };
 
-export const Get = ({ id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Division ID field must not be empty!",
-        });
-      }
+export const GetAll = async ({
+  division_name,
+  start = 0,
+  length = 10,
+  search,
+}) => {
+  const where = { is_active: true };
 
-      const division = await models.DivisionMaster.findOne({
-        where: {
-          id,
-          is_active: true,
-        },
-      });
+  if (division_name) {
+    where.division_name = { [Op.iLike]: `%${division_name}%` };
+  }
 
-      resolve(division);
-    } catch (err) {
-      reject(err);
-    }
+  if (search) {
+    where[Op.or] = [
+      { division_name: { [Op.iLike]: `%${search}%` } },
+      { description: { [Op.iLike]: `%${search}%` } },
+    ];
+  }
+
+  return await models.DivisionMaster.findAndCountAll({
+    where,
+    offset: Number(start),
+    limit: Number(length),
+    order: [["created_at", "desc"]],
+    include: [
+      {
+        model: models.CompanyMaster,
+        as: "company",
+        attributes: ["id", "company_name"],
+      },
+    ],
+  });
+};
+export const Count = async ({ id }) => {
+  if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+
+  return await models.DivisionMaster.count({
+    where: { id, is_active: true },
   });
 };
 
-export const GetAll = ({ division_name, start = 0, length = 10, search }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let where = {
-        is_active: true,
-      };
+export const Delete = async ({ profile_id, id }) => {
+  if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+  if (!profile_id)
+    throw { statusCode: 420, message: "User ID must not be empty!" };
 
-      if (division_name) {
-        where.division_name = { [Op.iLike]: `%${division_name}%` };
-      }
-
-      if (search) {
-        where[Op.or] = [
-          { division_name: { [Op.iLike]: `%${search}%` } },
-          { description: { [Op.iLike]: `%${search}%` } },
-        ];
-      }
-
-      const suppliers = await models.DivisionMaster.findAndCountAll({
-        where,
-        offset: start,
-        limit: length,
-        order: [["created_at", "desc"]],
-      });
-
-      resolve(suppliers);
-    } catch (err) {
-      reject(err);
-    }
+  const result = await models.DivisionMaster.destroy({
+    where: { id, is_active: true },
+    individualHooks: true,
+    profile_id,
   });
-};
 
-export const Count = ({ id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Division ID field must not be empty!",
-        });
-      }
-
-      const division = await models.DivisionMaster.count({
-        where: {
-          id,
-          is_active: true,
-        },
-        raw: true,
-      });
-
-      resolve(division);
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-export const Delete = ({ profile_id, id }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!id) {
-        return reject({
-          statusCode: 420,
-          message: "Division ID field must not be empty!",
-        });
-      }
-
-      if (!profile_id) {
-        return reject({
-          statusCode: 420,
-          message: "user id must not be empty!",
-        });
-      }
-
-      const supplier = await models.DivisionMaster.destroy({
-        where: {
-          id,
-          is_active: true,
-          created_by: profile_id,
-        },
-        individualHooks: true,
-        profile_id,
-      });
-
-      resolve(supplier);
-    } catch (err) {
-      reject(err);
-    }
-  });
+  return result;
 };
