@@ -738,10 +738,12 @@
             </div>
 
             <div class="form-group mt-4">
-              <label for="company_id">Company</label>
-              <select id="company_id" class="form-control" required>
-                <option value="">Select Company</option>
-              </select>
+              <label for="company_name">Company</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="company_id"
+                name="company_id"
+              ></select>
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
@@ -3510,7 +3512,7 @@
             const dropdown = $("#company_id");
 
             dropdown.empty();
-            dropdown.append('<option value="">-- Select Company --</option>');
+            dropdown.append('<option value="">-- Choose Company --</option>');
 
             list.forEach((c) => {
               dropdown.append(

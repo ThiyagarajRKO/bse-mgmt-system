@@ -1,6 +1,9 @@
 import { Op } from "sequelize";
 import models from "../../models";
 
+/* -----------------------------------------------------------
+   CREATE
+----------------------------------------------------------- */
 export const Insert = async (profile_id, division_data) => {
   if (!profile_id)
     throw { statusCode: 420, message: "User ID must not be empty!" };
@@ -15,9 +18,13 @@ export const Insert = async (profile_id, division_data) => {
     throw { statusCode: 420, message: "Company ID must not be empty!" };
 
   try {
-    return await models.DivisionMaster.create(division_data, {
-      profile_id,
-    });
+    return await models.DivisionMaster.create(
+      {
+        ...division_data,
+        created_by: profile_id,
+      },
+      { profile_id }
+    );
   } catch (err) {
     if (err?.name === "SequelizeUniqueConstraintError") {
       throw { statusCode: 420, message: "Division already exists!" };
@@ -26,49 +33,75 @@ export const Insert = async (profile_id, division_data) => {
   }
 };
 
+/* -----------------------------------------------------------
+   UPDATE
+----------------------------------------------------------- */
 export const Update = async (profile_id, id, division_data) => {
   if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+
   if (!profile_id)
     throw { statusCode: 420, message: "User ID must not be empty!" };
+
   if (!division_data)
     throw { statusCode: 420, message: "Division data must not be empty!" };
 
-  const [updated] = await models.DivisionMaster.update(division_data, {
-    where: { id, is_active: true },
-    individualHooks: true,
-    profile_id,
-  });
+  const [updated] = await models.DivisionMaster.update(
+    {
+      ...division_data,
+      updated_by: profile_id,
+    },
+    {
+      where: { id, is_active: true },
+      individualHooks: true,
+      profile_id,
+    }
+  );
 
   return updated;
 };
 
+/* -----------------------------------------------------------
+   GET ONE
+----------------------------------------------------------- */
 export const Get = async ({ id }) => {
   if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
 
   return await models.DivisionMaster.findOne({
     where: { id, is_active: true },
     include: [
-      { model: models.CompanyMaster, as: "company" }, // Optional
+      {
+        model: models.CompanyMaster,
+        as: "company",
+        attributes: ["id", "company_name"],
+      },
     ],
   });
 };
 
+/* -----------------------------------------------------------
+   GET ALL (FOR DATATABLES)
+----------------------------------------------------------- */
 export const GetAll = async ({
-  division_name,
   start = 0,
   length = 10,
-  search,
+  division_name = "",
+  company_name = "",
+  "search[value]": searchValue = "",
 }) => {
   const where = { is_active: true };
 
+  // Filter by manual fields
   if (division_name) {
     where.division_name = { [Op.iLike]: `%${division_name}%` };
   }
 
-  if (search) {
+  // Global DataTables Search
+  if (searchValue) {
     where[Op.or] = [
-      { division_name: { [Op.iLike]: `%${search}%` } },
-      { description: { [Op.iLike]: `%${search}%` } },
+      { division_name: { [Op.iLike]: `%${searchValue}%` } },
+      { description: { [Op.iLike]: `%${searchValue}%` } },
+      // Search inside associated company
+      { "$company.company_name$": { [Op.iLike]: `%${searchValue}%` } },
     ];
   }
 
@@ -86,6 +119,10 @@ export const GetAll = async ({
     ],
   });
 };
+
+/* -----------------------------------------------------------
+   COUNT
+----------------------------------------------------------- */
 export const Count = async ({ id }) => {
   if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
 
@@ -94,16 +131,18 @@ export const Count = async ({ id }) => {
   });
 };
 
+/* -----------------------------------------------------------
+   DELETE
+----------------------------------------------------------- */
 export const Delete = async ({ profile_id, id }) => {
   if (!id) throw { statusCode: 420, message: "Division ID must not be empty!" };
+
   if (!profile_id)
     throw { statusCode: 420, message: "User ID must not be empty!" };
 
-  const result = await models.DivisionMaster.destroy({
+  return await models.DivisionMaster.destroy({
     where: { id, is_active: true },
     individualHooks: true,
     profile_id,
   });
-
-  return result;
 };
