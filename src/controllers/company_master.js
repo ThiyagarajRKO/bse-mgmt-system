@@ -71,39 +71,49 @@ export const GetAll = async ({
   start = 0,
   length = 10,
   company_name = "",
-  tableSearch = "",
-  search = "",
+  "search[value]": searchValue = "",
 }) => {
   start = Number(start) || 0;
   length = Number(length) || 10;
 
-  const where = { is_active: true };
+  const where = {
+    is_active: true,
+  };
 
+  // Manual filter
   if (company_name) {
     where.company_name = { [Op.iLike]: `%${company_name}%` };
   }
 
-  const searchTerm = tableSearch || search;
-
-  if (searchTerm) {
-    where[Op.or] = [
-      { company_name: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_address: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_country: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_gstin: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_pan: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_bank_ac: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_ifsc: { [Op.iLike]: `%${searchTerm}%` } },
-      { company_currency: { [Op.iLike]: `%${searchTerm}%` } },
+  // Global search (wrapped inside AND to avoid wiping out base filters)
+  if (searchValue && searchValue.trim() !== "") {
+    where[Op.and] = [
+      {
+        [Op.or]: [
+          { company_name: { [Op.iLike]: `%${searchValue}%` } },
+          { company_address: { [Op.iLike]: `%${searchValue}%` } },
+          { company_country: { [Op.iLike]: `%${searchValue}%` } },
+          { company_gstin: { [Op.iLike]: `%${searchValue}%` } },
+          { company_pan: { [Op.iLike]: `%${searchValue}%` } },
+          { company_bank_ac: { [Op.iLike]: `%${searchValue}%` } },
+          { company_ifsc: { [Op.iLike]: `%${searchValue}%` } },
+          { company_currency: { [Op.iLike]: `%${searchValue}%` } },
+        ],
+      },
     ];
   }
 
-  return await models.CompanyMaster.findAndCountAll({
+  const result = await models.CompanyMaster.findAndCountAll({
     where,
     offset: start,
     limit: length,
     order: [["created_at", "desc"]],
   });
+
+  return {
+    rows: result.rows,
+    count: result.count,
+  };
 };
 
 /**

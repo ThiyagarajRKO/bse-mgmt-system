@@ -23,15 +23,6 @@ module.exports = (sequelize, DataTypes) => {
         });
       }
 
-      // ===== Location (direct) =====
-      if (models.LocationMaster) {
-        CompanyMaster.hasMany(models.LocationMaster, {
-          foreignKey: "company_id",
-          onUpdate: "CASCADE",
-          onDelete: "RESTRICT",
-        });
-      }
-
       // ===== Units (direct) =====
       if (models.UnitMaster) {
         CompanyMaster.hasMany(models.UnitMaster, {
