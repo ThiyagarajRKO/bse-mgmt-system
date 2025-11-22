@@ -49,6 +49,14 @@ export const PublicRouters = (fastify, opts, done) => {
 
   fastify.register(roleMasterRoute, { prefix: "/roles" });
 
+  // Temporary debug route (unprotected) for testing unit payloads
+  try {
+    const debugUnitRoute = require("./debug_unit").default;
+    fastify.register(debugUnitRoute, { prefix: "/debug" });
+  } catch (err) {
+    // ignore if not present
+  }
+
   done();
 };
 

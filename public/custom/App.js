@@ -97,6 +97,8 @@ App = (() => {
         method: "GET",
         dataType: "json",
         contentType: "application/json",
+        // Include credentials so the session cookie is sent for the ping
+        xhrFields: { withCredentials: true },
         crossDomain: true,
         processData: false,
         error: function () {
@@ -104,12 +106,69 @@ App = (() => {
         },
       });
     },
+    // Returns a Promise that resolves if session is valid, rejects otherwise
+    ensureAuth: () => {
+      return new Promise((resolve, reject) => {
+        $.ajax({
+          url: "/api/v1/auth/ping",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          // Make sure the session cookie is sent with this request
+          xhrFields: { withCredentials: true },
+          crossDomain: true,
+          processData: false,
+          success: function (res) {
+            resolve(res);
+          },
+          error: function () {
+            reject(new Error("Unauthorized"));
+          },
+        });
+      });
+    },
+
+    // Initialize a company select (Select2) safely with data list and optional selectedId
+    initCompanySelect: (selector, list, selectedId) => {
+      const dropdown = $(selector);
+      if (!dropdown || dropdown.length === 0) return;
+
+      // preserve previous value
+      const prevVal = dropdown.val();
+
+      try {
+        if (
+          dropdown.hasClass("select2-hidden-accessible") &&
+          typeof dropdown.select2 === "function"
+        ) {
+          dropdown.select2("destroy");
+        }
+      } catch (e) {
+        console.warn("Error destroying select2 for", selector, e);
+      }
+
+      // ensure default empty option for placeholder
+      dropdown.empty().append('<option value="">Choose a company</option>');
+
+      dropdown.select2({
+        placeholder: "Choose a company",
+        allowClear: true,
+        data: $.map(list || [], function (item) {
+          return { id: item.id, text: item.company_name };
+        }),
+      });
+
+      if (selectedId) dropdown.val(selectedId).trigger("change");
+      else if (prevVal) dropdown.val(prevVal).trigger("change");
+      else dropdown.val("").trigger("change");
+    },
     logout: () => {
       $.ajax({
         url: "/api/v1/auth/signout",
         method: "GET",
         dataType: "json",
         contentType: "application/json",
+        xhrFields: { withCredentials: true },
         crossDomain: true,
         processData: false,
         success: function () {

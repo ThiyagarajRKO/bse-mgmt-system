@@ -17,14 +17,20 @@ let sequelize = new Sequelize(
   config.password,
   config
 );
-sequelize
-  .authenticate()
-  .then(() => {
+
+// Do not automatically authenticate when this module is required.
+// Some environments import models without needing an immediate DB connection
+// (tests, quick controller imports, scripts). Expose an authenticate helper
+// that the application can call at startup when it wants to verify the DB.
+db.authenticate = async () => {
+  try {
+    await sequelize.authenticate();
     console.log("Connection has been established successfully!");
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error("Unable to connect to the database:", err);
-  });
+    throw err;
+  }
+};
 
 fs.readdirSync(__dirname)
   .filter((file) => {

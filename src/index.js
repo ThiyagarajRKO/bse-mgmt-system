@@ -6,6 +6,7 @@ import path from "path";
 import Boom from "boom";
 import Fastify from "fastify";
 import dotenv from "dotenv";
+const models = require("../models");
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ const fastify = Fastify({
   logger: true,
 });
 
+// Decorate fastify with models
+fastify.decorate("models", models);
+
 // This loads all plugins defined in plugins those should be support plugins that are reused through your application
 fastify.register(AutoLoad, {
   dir: path.join(process.cwd(), "/src/plugins"),
@@ -26,17 +30,24 @@ fastify.register(AutoLoad, {
 fastify.register(PublicRouters, { prefix: "/api/v1" });
 fastify.register(PrivateRouters, { prefix: "/api/v1" });
 
-// Run the server!
-fastify.listen(
-  { port: process.env.PORT, host: "0.0.0.0" },
-  function (err, address) {
-    if (err) {
-      fastify.log.error(err);
-      throw Boom.boomify(err);
+// Run the server after verifying DB connectivity
+const start = async () => {
+  try {
+    // attempt DB connection (models.authenticate is a helper exposed by models/index.js)
+    if (models && typeof models.authenticate === "function") {
+      await models.authenticate();
+      fastify.log.info("Database connection verified");
     }
-    fastify.log.info(`Server listening on ${address}`);
+
+    await fastify.listen({ port: process.env.PORT, host: "127.0.0.1" });
+  } catch (err) {
+    fastify.log.error(err);
+    // ensure we surface the error and exit so systemd / process managers can restart if needed
+    process.exit(1);
   }
-);
+};
+
+start();
 
 // Hooks
 fastify.addHook("onError", async (request, reply, error) => {
@@ -46,9 +57,31 @@ fastify.addHook("onError", async (request, reply, error) => {
 
 fastify.addHook("onSend", function (request, reply, payload, done) {
   try {
+    // Small safeguard and debug logging to diagnose response-wrapping issues.
+    // Ensure we always call `done()` (Fastify expects the hook to invoke the callback).
+    try {
+      const info = {
+        url: request.raw?.url,
+        method: request.raw?.method,
+        statusCode: reply.statusCode,
+        payloadType: typeof payload,
+        payloadKeys:
+          payload && typeof payload === "object"
+            ? Object.keys(payload).slice(0, 10)
+            : undefined,
+      };
+      fastify.log.debug({ onSend: info });
+    } catch (e) {
+      /* ignore logging errors */
+    }
+
     if (!reply.sent && payload) {
       done(null, payload);
+      return;
     }
+
+    // Still call done even when there's no payload to avoid leaving the hook unresolved.
+    done();
   } catch (err) {
     // console.error(new Date().toISOString() + " : " + err?.message || err);
   }
@@ -60,6 +93,10 @@ fastify.get("/", (req, res) => {
 });
 
 fastify.get("/AdminMain", function (req, res) {
+  console.log("AdminMain session:", req.session);
+  if (!req?.session?.pid) {
+    return res.redirect("/");
+  }
   res.view("AdminMain.ejs", {
     full_name: req?.session?.full_name,
     role_name: req?.session?.role_name,
@@ -71,6 +108,9 @@ fastify.get("/Procurement", function (req, res) {
 });
 
 fastify.get("/MasterData", function (req, res) {
+  if (!req?.session?.pid) {
+    return res.redirect("/");
+  }
   res.view("MasterData.ejs");
 });
 
