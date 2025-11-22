@@ -5,8 +5,11 @@ export const ValidateUser = async (req, reply) => {
     const user_id = req?.session?.pid;
     const role_id = req?.session?.role_id;
 
+    console.log("ValidateUser session:", req.session);
+
     if (!user_id) {
-      return reply.code(403).send({ message: "Unauthorized User!" });
+      req.authError = { statusCode: 403, message: "Unauthorized User!" };
+      return;
     }
 
     // let user_data = new Promise(async (resolve, reject) => {
@@ -16,15 +19,16 @@ export const ValidateUser = async (req, reply) => {
     });
 
     if (!user_data) {
-      return reply
-        .code(403)
-        .send({ success: false, message: "Profile doesn't exist!" });
+      req.authError = { statusCode: 403, message: "Profile doesn't exist!" };
+      return;
     }
 
     if (user_data?.creator?.user_status != 1) {
-      return reply
-        .code(403)
-        .send({ success: false, message: "User isn't in the Active state" });
+      req.authError = {
+        statusCode: 403,
+        message: "User isn't in the Active state",
+      };
+      return;
     }
 
     req.token_profile_id = req?.session?.pid;
@@ -33,9 +37,13 @@ export const ValidateUser = async (req, reply) => {
     // done();
   } catch (err) {
     console.error(new Date().toISOString() + " : " + err?.message || err);
-    reply.code(403).send({
-      success: false,
-      message: err?.message || err,
-    });
+    req.authError = { statusCode: 403, message: err?.message || err };
+  }
+
+  if (req.authError) {
+    reply
+      .code(req.authError.statusCode)
+      .send({ success: false, message: req.authError.message });
+    return;
   }
 };

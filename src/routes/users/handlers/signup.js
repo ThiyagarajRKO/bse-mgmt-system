@@ -44,7 +44,7 @@ export const SignUp = ({
           password,
           is_email_verified: false,
           is_mobile_verified: false,
-          user_status: "0",
+          user_status: "1",
           username,
           email,
           phone,
