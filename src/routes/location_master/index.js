@@ -2,7 +2,9 @@ import { Create } from "./handlers/create";
 import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
+import { List } from "./handlers/list";
 import { Delete } from "./handlers/delete";
+import { ValidateUser } from "../../middlewares/authentication";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -69,22 +71,52 @@ export const locationMasterRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/", getAllSchema, async (req, reply) => {
+  fastify.get(
+    "/",
+    {
+      preHandler: [ValidateUser],
+      ...getAllSchema,
+    },
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetAll(params, req?.session, fastify);
+
+        // The GetAll handler returns { data: { rows, count } } — send it directly as `data`
+        // Ensure the result is serializable (callers observed missing payload when model instances were returned)
+        let serializableData = result.data;
+        try {
+          serializableData = JSON.parse(JSON.stringify(result.data));
+        } catch (e) {
+          // fallback to original result
+          serializableData = result.data;
+        }
+
+        return reply.code(200).send({
+          draw: Number(req.query.draw || 1),
+          recordsTotal: serializableData.count || 0,
+          recordsFiltered: serializableData.count || 0,
+          data: serializableData.rows || [],
+        });
+      } catch (err) {
+        reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  // simple list for dropdowns
+  fastify.get("/list", async (req, reply) => {
     try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
-
-      const result = await GetAll(params, req?.session, fastify);
-
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
+      const result = await List(req?.query, req?.session, fastify);
+      return reply.code(200).send(result);
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
+      return reply
+        .code(err?.statusCode || 500)
+        .send({ success: false, message: err?.message || err });
     }
   });
 

@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
-import models from "../../models";
+const models = require("../../models");
+const { LocationMaster } = models;
 
 export const Insert = async (profile_id, location_data) => {
   return new Promise(async (resolve, reject) => {
@@ -25,7 +26,7 @@ export const Insert = async (profile_id, location_data) => {
         });
       }
 
-      const result = await models.LocationMaster.create(location_data, {
+      const result = await LocationMaster.create(location_data, {
         profile_id,
       });
       resolve(result);
@@ -63,7 +64,7 @@ export const Update = async (profile_id, id, location_data) => {
         });
       }
 
-      const result = await models.LocationMaster.update(location_data, {
+      const result = await LocationMaster.update(location_data, {
         where: {
           id,
           is_active: true,
@@ -88,7 +89,7 @@ export const Get = ({ id }) => {
         });
       }
 
-      const location = await models.LocationMaster.findOne({
+      const location = await LocationMaster.findOne({
         where: {
           id,
           is_active: true,
@@ -120,7 +121,7 @@ export const GetAll = ({ location_name, start = 0, length = 10, search }) => {
         ];
       }
 
-      const suppliers = await models.LocationMaster.findAndCountAll({
+      const suppliers = await LocationMaster.findAndCountAll({
         where,
         offset: start,
         limit: length,
@@ -144,7 +145,7 @@ export const Count = ({ id }) => {
         });
       }
 
-      const location = await models.LocationMaster.count({
+      const location = await LocationMaster.count({
         where: {
           id,
           is_active: true,
@@ -176,7 +177,7 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const supplier = await models.LocationMaster.destroy({
+      const supplier = await LocationMaster.destroy({
         where: {
           id,
           is_active: true,
