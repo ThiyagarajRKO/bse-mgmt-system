@@ -75,11 +75,7 @@ export const divisionMasterRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
+      reply.code(200).send(result);
     } catch (err) {
       reply.code(err?.statusCode || 400).send({
         success: false,

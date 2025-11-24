@@ -105,7 +105,7 @@ export const GetAll = async ({
     ];
   }
 
-  return await models.DivisionMaster.findAndCountAll({
+  const result = await models.DivisionMaster.findAndCountAll({
     where,
     offset: Number(start),
     limit: Number(length),
@@ -118,6 +118,17 @@ export const GetAll = async ({
       },
     ],
   });
+
+  // Get total count without filters for datatables
+  const totalCount = await models.DivisionMaster.count({
+    where: { is_active: true },
+  });
+
+  return {
+    rows: result.rows.map((row) => row.toJSON()),
+    recordsTotal: totalCount,
+    recordsFiltered: result.count,
+  };
 };
 
 /* -----------------------------------------------------------

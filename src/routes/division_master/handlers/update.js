@@ -13,7 +13,7 @@ export const Update = (
         division_master_data
       );
 
-      if (updated_data?.[0] > 0) {
+      if (updated_data > 0) {
         return resolve({
           message: "Division master has been updated successfully",
         });
