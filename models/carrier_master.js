@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
-      CarrierMaster.belongsTo(models.UserProfiles, {
-        as: "deleter",
-        foreignKey: "deleted_by",
-        onUpdate: "CASCADE",
+      CarrierMaster.belongsTo(models.CompanyMaster, {
+        as: "company",
+        foreignKey: "company_id",
         onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
       });
     }
   }
@@ -52,6 +52,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       carrier_credit: {
         type: DataTypes.STRING,
+      },
+      company_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "company_master",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
       },
       is_active: {
         type: DataTypes.BOOLEAN,

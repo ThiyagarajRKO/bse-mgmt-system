@@ -25,6 +25,13 @@ export const Insert = async (profile_id, carrier_master_data) => {
         });
       }
 
+      if (!carrier_master_data?.company_id) {
+        return reject({
+          statusCode: 420,
+          message: "Company must not be empty!",
+        });
+      }
+
       const result = await models.CarrierMaster.create(carrier_master_data, {
         profile_id,
       });
@@ -104,43 +111,74 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length, carrier_name, search }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let where = {
-        is_active: true,
-      };
+export const GetAll = async ({
+  start = 0,
+  length = 10,
+  carrier_name = "",
+  carrier_country = "",
+  "search[value]": searchValue = "",
+}) => {
+  start = Number(start) || 0;
+  length = Number(length) || 10;
 
-      if (carrier_name) {
-        where.carrier_name = { [Op.iLike]: `%${carrier_name}%` };
-      }
+  const where = {
+    is_active: true,
+  };
 
-      if (search) {
-        where[Op.or] = [
-          { carrier_name: { [Op.iLike]: `%${search}%` } },
-          { carrier_address: { [Op.iLike]: `%${search}%` } },
-          { carrier_country: { [Op.iLike]: `%${search}%` } },
-          { carrier_phone: { [Op.iLike]: `%${search}%` } },
-          { carrier_email: { [Op.iLike]: `%${search}%` } },
-          { carrier_paymentterms: { [Op.iLike]: `%${search}%` } },
-          { carrier_credit: { [Op.iLike]: `%${search}%` } },
-        ];
-      }
+  // Manual filter
+  if (carrier_name) {
+    where.carrier_name = { [Op.iLike]: `%${carrier_name}%` };
+  }
 
-      const carriers = await models.CarrierMaster.findAndCountAll({
-        where,
-        offset: start,
-        limit: length,
-        order: [["created_at", "desc"]],
-      });
+  if (carrier_country) {
+    where.carrier_country = { [Op.iLike]: `%${carrier_country}%` };
+  }
 
-      resolve(carriers);
-    } catch (err) {
-      reject(err);
-    }
+  // Global search (wrapped inside AND to avoid wiping out base filters)
+  if (searchValue && searchValue.trim() !== "") {
+    where[Op.and] = [
+      {
+        [Op.or]: [
+          { carrier_name: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_address: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_country: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_phone: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_email: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_paymentterms: { [Op.iLike]: `%${searchValue}%` } },
+          { carrier_credit: { [Op.iLike]: `%${searchValue}%` } },
+        ],
+      },
+    ];
+  }
+
+  const result = await models.CarrierMaster.findAndCountAll({
+    include: [
+      {
+        model: models.CompanyMaster,
+        as: "company",
+        attributes: ["id", "company_name"],
+        required: false,
+      },
+    ],
+    where,
+    offset: start,
+    limit: length,
+    order: [["created_at", "desc"]],
   });
-};
 
+  // Get total count without filters for datatables
+  const totalCount = await models.CarrierMaster.count({
+    where: { is_active: true },
+  });
+
+  console.log("CarrierMaster.GetAll result:", result);
+
+  return {
+    rows: result.rows.map((row) => row.toJSON()),
+    recordsTotal: totalCount,
+    recordsFiltered: result.count,
+  };
+};
 export const Count = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {

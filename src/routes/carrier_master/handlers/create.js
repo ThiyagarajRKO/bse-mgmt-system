@@ -10,6 +10,7 @@ export const Create = (
     carrier_email,
     carrier_paymentterms,
     carrier_credit,
+    company_id,
   },
   session,
   fastify
@@ -24,6 +25,7 @@ export const Create = (
         carrier_email,
         carrier_paymentterms,
         carrier_credit,
+        company_id,
         is_active: true,
       });
 

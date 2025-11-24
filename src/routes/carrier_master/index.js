@@ -76,13 +76,11 @@ export const carrierMasterRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
+      // If handler returned datatables format (draw/recordsTotal/recordsFiltered/data),
+      // return it directly so DataTables can consume it. This mirrors company route.
+      return reply.code(200).send(result);
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });

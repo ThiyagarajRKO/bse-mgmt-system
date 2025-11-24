@@ -9,6 +9,7 @@ export const createSchema = {
         "carrier_phone",
         "carrier_email",
         "carrier_credit",
+        "company_id",
       ],
       properties: {
         carrier_name: { type: "string" },
@@ -17,6 +18,7 @@ export const createSchema = {
         carrier_phone: { type: "string" },
         carrier_email: { type: "string" },
         carrier_credit: { type: "string" },
+        company_id: { type: "string" },
       },
     },
   },

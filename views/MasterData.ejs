@@ -2564,6 +2564,7 @@
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -8543,6 +8544,7 @@
       function loadCarrierDropdowns() {
         // Pre loading dropdown data
         loadCarrierCountry();
+        loadCompanyDropdown();
       }
 
       function loadCarrierTableData() {
@@ -8569,18 +8571,13 @@
                 toastr["error"](xhr["responseJSON"]["message"]);
               }
             },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
+            dataSrc: "data",
           },
           columns: [
             { data: null },
             { data: null },
             { data: "carrier_name" },
+            { data: "company.company_name", defaultContent: "" },
             { data: "carrier_address" },
             { data: "carrier_country" },
             { data: "carrier_phone" },
@@ -8613,7 +8610,19 @@
               },
             },
             {
-              targets: [9],
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                const companyId = row["company"] ? row["company"].id : "";
+                const displayText =
+                  data === null || data === undefined || data === "null"
+                    ? ""
+                    : data;
+                return `<span company_id='${companyId}'>${displayText}</span>`;
+              },
+            },
+            {
+              targets: [10],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -8659,27 +8668,37 @@
         view_carrier_phone = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(5)
+          .eq(6)
           .text();
 
         $("#carrier_name").val(
           $(e.target).closest("tr").children("td").eq(2).text()
         );
+        $("#carrierCompany_id")
+          .val(
+            $(e.target)
+              .closest("tr")
+              .children("td")
+              .eq(3)
+              .find("span")
+              .attr("company_id")
+          )
+          .trigger("change");
         $("#carrier_address").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(4).text()
         );
         $("#carrier_country")
-          .val($(e.target).closest("tr").children("td").eq(4).text())
+          .val($(e.target).closest("tr").children("td").eq(5).text())
           .trigger("change");
 
         $("#carrier_email").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-        $("#carrier_paymentterms").val(
           $(e.target).closest("tr").children("td").eq(7).text()
         );
-        $("#carrier_credit").val(
+        $("#carrier_paymentterms").val(
           $(e.target).closest("tr").children("td").eq(8).text()
+        );
+        $("#carrier_credit").val(
+          $(e.target).closest("tr").children("td").eq(9).text()
         );
 
         // Opening slide panel
@@ -8812,6 +8831,7 @@
           carrier_email: $("#carrier_email").val(),
           carrier_paymentterms: $("#carrier_paymentterms").val(),
           carrier_credit: $("#carrier_credit").val(),
+          company_id: $("#carrierCompany_id").val(),
         };
 
         if (carrier_master_id) {
