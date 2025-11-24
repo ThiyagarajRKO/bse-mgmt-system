@@ -12,9 +12,18 @@ export const roleMasterRoute = (fastify, opts, done) => {
         fastify
       );
 
+      // Normalize the response so callers (frontend) get a simple array when
+      // appropriate. GetAll currently returns { data: { rows, count } } so
+      // we prefer to expose the rows array directly under `data` for ease of use
+      // in select/dropdown consumers.
+      const payloadData =
+        result?.data?.rows ?? // prefer rows array
+        result?.data ?? // fallback to whatever GetAll returned
+        result;
+
       reply.code(result.statusCode || 200).send({
         success: true,
-        data: result,
+        data: payloadData,
       });
     } catch (err) {
       reply.code(err?.statusCode || 400).send({

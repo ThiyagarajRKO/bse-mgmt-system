@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         });
       }
 
-      // ===== Division (direct) =====
       if (models.DivisionMaster) {
         CompanyMaster.hasMany(models.DivisionMaster, {
           foreignKey: "company_id",
@@ -23,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
         });
       }
 
-      // ===== Units (direct) =====
       if (models.UnitMaster) {
         CompanyMaster.hasMany(models.UnitMaster, {
           foreignKey: "company_id",

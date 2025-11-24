@@ -1,43 +1,51 @@
-import { UnitMaster } from "../../../controllers";
+import { Op } from "sequelize";
+import * as UnitMaster from "../../../controllers/unit_master";
 
-export const GetAll = (
-  {
-    start,
-    length,
-    unit_code,
-    unit_type,
-    unit_name,
-    location_master_name,
-    "search[value]": search,
-  },
-  session,
-  fastify
-) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let unit_master = await UnitMaster.GetAll({
-        start,
-        length,
-        unit_code,
-        unit_name,
-        unit_type,
-        location_master_name,
-        search,
-      });
+// Return data in DataTables-friendly format so the route wrapper can pick result.data
+export const GetAll = async (params = {}, session, fastify) => {
+  try {
+    const start = Number(params.start || params["start"] || 0) || 0;
+    const length = Number(params.length || params["length"] || 10) || 10;
+    const search = params.search || params["search[value]"] || "";
 
-      if (!unit_master) {
-        return reject({
-          statusCode: 420,
-          message: "No data found!",
-        });
-      }
+    const result = await UnitMaster.GetAll({
+      start,
+      length,
+      unit_code: params.unit_code,
+      unit_name: params.unit_name,
+      unit_type: params.unit_type,
+      company_id: params.company_id,
+      search,
+    });
 
-      resolve({
-        data: unit_master,
-      });
-    } catch (err) {
-      fastify.log.error(err);
-      reject(err);
+    if (!result || typeof result.count !== "number") {
+      throw new Error("Failed to fetch units from database");
     }
-  });
+
+    // Normalize rows to plain objects to avoid serialization issues
+    const rows = (result.rows || []).map((r) => {
+      try {
+        if (r && typeof r.toJSON === "function") return r.toJSON();
+        return r;
+      } catch (e) {
+        return r;
+      }
+    });
+
+    return {
+      rows,
+      count: result.count || 0,
+    };
+  } catch (err) {
+    fastify &&
+      fastify.log &&
+      fastify.log &&
+      fastify.log.error &&
+      fastify.log.error(err);
+    return {
+      rows: [],
+      count: 0,
+      error: err.message,
+    };
+  }
 };

@@ -7,19 +7,35 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
+
+      // ADDING COMPANY ID (FIXED)
+      company_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: { tableName: "company_master" },
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+
       unit_name: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+
       unit_type: {
         type: Sequelize.ENUM(
           "Collection Center",
           "Peeling Center",
           "Cooking Center",
-          "Distribution Center"
+          "Distribution Center",
+          "Cold Storage"
         ),
         allowNull: false,
       },
+
       location_master_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -30,25 +46,31 @@ module.exports = {
           key: "id",
         },
       },
+
       unit_code: {
         type: Sequelize.TEXT,
         allowNull: false,
         unique: true,
       },
+
       is_active: {
-        defaultValue: false,
+        defaultValue: true,
         type: Sequelize.BOOLEAN,
       },
+
       created_at: {
         defaultValue: Sequelize.fn("now"),
         type: Sequelize.DATE,
       },
+
       updated_at: {
         type: Sequelize.DATE,
       },
+
       deleted_at: {
         type: Sequelize.DATE,
       },
+
       created_by: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -59,6 +81,7 @@ module.exports = {
           key: "id",
         },
       },
+
       updated_by: {
         type: Sequelize.UUID,
         onDelete: "RESTRICT",
@@ -68,6 +91,7 @@ module.exports = {
           key: "id",
         },
       },
+
       deleted_by: {
         type: Sequelize.UUID,
         onDelete: "RESTRICT",
@@ -79,6 +103,7 @@ module.exports = {
       },
     });
   },
+
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("unit_master");
   },
