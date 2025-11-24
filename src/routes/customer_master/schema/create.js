@@ -10,6 +10,7 @@ export const createSchema = {
         "customer_email",
         "customer_credit",
         "customer_type",
+        "company_id",
       ],
       properties: {
         customer_name: { type: "string" },
@@ -19,6 +20,7 @@ export const createSchema = {
         customer_email: { type: "string" },
         customer_credit: { type: "string" },
         customer_type: { type: "string" },
+        company_id: { type: "string" },
       },
     },
   },

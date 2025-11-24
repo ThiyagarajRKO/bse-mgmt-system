@@ -25,6 +25,13 @@ export const Insert = async (profile_id, customer_master_data) => {
         });
       }
 
+      if (!customer_master_data?.company_id) {
+        return reject({
+          statusCode: 420,
+          message: "Company must not be empty!",
+        });
+      }
+
       const result = await models.CustomerMaster.create(customer_master_data, {
         profile_id,
       });
@@ -62,6 +69,13 @@ export const Update = async (profile_id, id, customer_master_data) => {
         return reject({
           statusCode: 420,
           message: "Customer data must not be empty!",
+        });
+      }
+
+      if (!customer_master_data?.company_id) {
+        return reject({
+          statusCode: 420,
+          message: "Company must not be empty!",
         });
       }
 
@@ -144,6 +158,14 @@ export const GetAll = ({
       }
 
       const customers = await models.CustomerMaster.findAndCountAll({
+        include: [
+          {
+            model: models.CompanyMaster,
+            as: "company",
+            attributes: ["id", "company_name"],
+            required: false,
+          },
+        ],
         where,
         offset: start,
         limit: length,

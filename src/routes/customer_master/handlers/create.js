@@ -11,6 +11,7 @@ export const Create = (
     customer_paymentterms,
     customer_credit,
     customer_type,
+    company_id,
   },
   session,
   fastify
@@ -26,6 +27,7 @@ export const Create = (
         customer_paymentterms,
         customer_credit,
         customer_type,
+        company_id,
         is_active: true,
       });
 

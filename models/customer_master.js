@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      CustomerMaster.belongsTo(models.CompanyMaster, {
+        as: "company",
+        foreignKey: "company_id",
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+      });
+
       // Has Many Association
       CustomerMaster.hasMany(models.Orders, {
         foreignKey: "customer_master_id",
@@ -62,6 +69,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       customer_type: {
         type: DataTypes.STRING(100),
+      },
+      company_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "company_master",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
       },
       is_active: {
         type: DataTypes.BOOLEAN,
