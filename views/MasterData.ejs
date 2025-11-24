@@ -3072,8 +3072,6 @@
 
       tippy(".OperationsTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-                            <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
-                                class="fa-solid fa-users mb-2"></i>Suppliers</div>
                             <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
                                 class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
                             <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
@@ -3552,7 +3550,7 @@
         $("#locationTable").DataTable({
           destroy: true,
           processing: true,
-          serverSide: false, // Changed to client-side like division table
+          serverSide: false,
           responsive: false,
           scrollX: true,
           scrollY: "40vh",
@@ -3654,7 +3652,6 @@
         );
       });
 
-      // ✅ Delete location
       $(document).on("click", ".delLocation", function (e) {
         const location_master_id = $(this).attr("location_master_id");
 
@@ -3683,7 +3680,6 @@
         });
       });
 
-      // ✅ Save / Update location
       function saveLocation() {
         const location_master_id =
           $("#submitLocation").attr("location_master_id");
@@ -4377,7 +4373,6 @@
               },
             },
 
-            /* ✅ FIXED company column */
             {
               targets: [4],
               className: "text-left",
@@ -5074,6 +5069,8 @@
           "submitSupplier",
           "supplier_master_id"
         );
+        loadSupplierLocations();
+        loadCompanyDropdown();
       });
 
       // Close panel
@@ -5097,6 +5094,7 @@
 
       function loadSupplierDropdowns() {
         loadSupplierLocations();
+        loadCompanyDropdown();
       }
 
       function loadSuppliersTableData() {
@@ -5117,10 +5115,18 @@
               $("#supplierTable").DataTable().destroy();
               $("#supplierTable").DataTable({ scrollX: true, ordering: false });
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
+              let errorMessage =
+                "Failed to load supplier data. Please try again.";
+
+              if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+                if (xhr.status == 420) {
+                  toastr["warning"](errorMessage);
+                } else {
+                  toastr["error"](errorMessage);
+                }
               } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
+                toastr["error"](errorMessage);
               }
             },
             dataSrc: function (json) {
@@ -5135,6 +5141,7 @@
             { data: null },
             { data: null },
             { data: "supplier_name" },
+            { data: "company.company_name", defaultContent: "" },
             { data: "LocationMaster.location_name" },
             { data: "representative" },
             { data: "phone" },
@@ -5169,11 +5176,23 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
+                const companyId = row["company"] ? row["company"].id : "";
+                const displayText =
+                  data === null || data === undefined || data === "null"
+                    ? ""
+                    : data;
+                return `<span company_id='${companyId}'>${displayText}</span>`;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
                 return `<span location_master_id='${row["LocationMaster"].id}'>${data}</span>`;
               },
             },
             {
-              targets: [8],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -5214,47 +5233,60 @@
       }
 
       $(document).on("click", ".editSupplier", (e) => {
-        // Changing panel input fields data
-        $("#supplier_name").val(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-        $("#supplierLocations")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(3)
-              .find("span")
-              .attr("location_master_id")
-          )
-          .trigger("change");
-        $("#representative").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-        $("#supplier_phone").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
-        );
-        $("#supplier_email").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-        $("#supplier_address").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
-
-        // Opening slide panel
+        // Opening slide panel first to load dropdowns
         $("#openSupplierPanelBtn").click();
 
-        // Changing panel heading
-        $("#supplierPanelHeading").text("Edit Supplier Data");
+        // Small delay to allow dropdowns to load, then set form values
+        setTimeout(() => {
+          // Changing panel input fields data
+          $("#supplier_name").val(
+            $(e.target).closest("tr").children("td").eq(2).text()
+          );
+          $("#supplierCompany_id")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(3)
+                .find("span")
+                .attr("company_id")
+            )
+            .trigger("change");
+          $("#supplierLocations")
+            .val(
+              $(e.target)
+                .closest("tr")
+                .children("td")
+                .eq(4)
+                .find("span")
+                .attr("location_master_id")
+            )
+            .trigger("change");
+          $("#representative").val(
+            $(e.target).closest("tr").children("td").eq(5).text()
+          );
+          $("#supplier_phone").val(
+            $(e.target).closest("tr").children("td").eq(6).text()
+          );
+          $("#supplier_email").val(
+            $(e.target).closest("tr").children("td").eq(7).text()
+          );
+          $("#supplier_address").val(
+            $(e.target).closest("tr").children("td").eq(8).text()
+          );
 
-        // Changing panel button label
-        $("#submitSupplier").text("Update");
+          // Changing panel heading
+          $("#supplierPanelHeading").text("Edit Supplier Data");
 
-        // Changing panel button attribute
-        $("#submitSupplier").attr(
-          "supplier_master_id",
-          $(e.target).attr("supplier_master_id")
-        );
+          // Changing panel button label
+          $("#submitSupplier").text("Update");
+
+          // Changing panel button attribute
+          $("#submitSupplier").attr(
+            "supplier_master_id",
+            $(e.target).attr("supplier_master_id")
+          );
+        }, 100);
       });
 
       $(document).on("click", ".delSupplier", (e) => {
@@ -5353,6 +5385,7 @@
           phone: $("#supplier_phone").val(),
           email: $("#supplier_email").val(),
           location_master_id: $("#supplierLocations").val(),
+          company_id: $("#supplierCompany_id").val(),
         };
 
         if (supplier_master_id) {

@@ -1,4 +1,4 @@
-import { LocationMaster, SupplierMaster } from "../../../controllers";
+import { LocationMaster, SupplierMaster, CompanyMaster } from "../../../controllers";
 
 export const Update = (
   { profile_id, supplier_master_id, supplier_master_data },
@@ -16,6 +16,19 @@ export const Update = (
           return reject({
             statusCode: 420,
             message: "Invalid location master id!",
+          });
+        }
+      }
+
+      if (supplier_master_data?.company_id) {
+        const company = await CompanyMaster.Get({
+          id: supplier_master_data?.company_id,
+        });
+
+        if (!company) {
+          return reject({
+            statusCode: 420,
+            message: "Invalid company id!",
           });
         }
       }

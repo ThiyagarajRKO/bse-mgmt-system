@@ -36,6 +36,16 @@ module.exports = {
           key: "id",
         },
       },
+      company_id: {
+        type: Sequelize.UUID,
+        allowNull: true, // Allow null initially for existing data
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "company_master" },
+          key: "id",
+        },
+      },
       is_active: {
         defaultValue: false,
         type: Sequelize.BOOLEAN,

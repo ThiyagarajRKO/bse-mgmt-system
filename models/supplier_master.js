@@ -30,6 +30,13 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      SupplierMaster.belongsTo(models.CompanyMaster, {
+        as: "company",
+        foreignKey: "company_id",
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+      });
+
       // Has Many
       SupplierMaster.hasMany(models.ProcurementProducts, {
         foreignKey: "supplier_master_id",
@@ -62,6 +69,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING(100),
+      },
+      company_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // Allow null temporarily for existing data
       },
       is_active: {
         type: DataTypes.BOOLEAN,

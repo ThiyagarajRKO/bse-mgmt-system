@@ -25,6 +25,13 @@ export const Insert = async (profile_id, supplier_master_data) => {
         });
       }
 
+      if (!supplier_master_data?.company_id) {
+        return reject({
+          statusCode: 420,
+          message: "Company must not be empty!",
+        });
+      }
+
       const result = await models.SupplierMaster.create(supplier_master_data, {
         profile_id,
       });
@@ -62,6 +69,13 @@ export const Update = async (profile_id, id, supplier_master_data) => {
         return reject({
           statusCode: 420,
           message: "Supplier data must not be empty!",
+        });
+      }
+
+      if (!supplier_master_data?.company_id) {
+        return reject({
+          statusCode: 420,
+          message: "Company must not be empty!",
         });
       }
 
@@ -147,6 +161,13 @@ export const GetAll = ({
           {
             model: models.LocationMaster,
             where: locationWhere,
+            required: false,
+          },
+          {
+            model: models.CompanyMaster,
+            as: "company",
+            attributes: ["id", "company_name"],
+            required: false,
           },
         ],
         where,

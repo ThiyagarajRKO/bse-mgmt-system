@@ -1,4 +1,4 @@
-import { LocationMaster, SupplierMaster } from "../../../controllers";
+import { LocationMaster, SupplierMaster, CompanyMaster } from "../../../controllers";
 
 export const Create = (
   {
@@ -10,6 +10,7 @@ export const Create = (
     phone,
     email,
     location_master_id,
+    company_id,
   },
   session,
   fastify
@@ -27,6 +28,17 @@ export const Create = (
         });
       }
 
+      const company = await CompanyMaster.Get({
+        id: company_id,
+      });
+
+      if (!company) {
+        return reject({
+          statusCode: 420,
+          message: "Invalid company id!",
+        });
+      }
+
       const supplier_master = await SupplierMaster.Insert(profile_id, {
         supplier_name,
         supplier_profile_url,
@@ -35,6 +47,7 @@ export const Create = (
         phone,
         email,
         location_master_id,
+        company_id,
         is_active: true,
       });
 
