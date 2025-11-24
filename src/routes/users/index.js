@@ -11,13 +11,14 @@ export const usersRoutes = (fastify, opts, done) => {
   fastify.post("/signin", signInSchema, async (req, reply) => {
     try {
       let result = await SignIn(req.body, req.session, fastify);
-      reply.code(result.statusCode || 200).send({
+      console.log("req.session after SignIn:", req.session);
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message || "Signed in successfully",
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
         data: err?.data,
@@ -28,13 +29,13 @@ export const usersRoutes = (fastify, opts, done) => {
   fastify.post("/signup", signUpSchema, async (req, reply) => {
     try {
       let result = await SignUp(req.body, fastify);
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message || "Account has been created successfully!",
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.response?.data?.Details || err?.message || err,
       });
@@ -57,12 +58,12 @@ export const usersRoutes = (fastify, opts, done) => {
         req.session.destroy();
         reply.clearCookie("sessionId");
 
-        reply.code(result.statusCode || 200).send({
+        return reply.code(result.statusCode || 200).send({
           success: true,
           message: result?.messsage || "User has been signed out successfully!",
         });
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+        return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
         });
@@ -77,12 +78,15 @@ export const usersRoutes = (fastify, opts, done) => {
     },
     async (req, reply) => {
       try {
-        reply.code(200).send({
+        return reply.code(200).send({
           success: true,
-          message: "pong",
+          message: "Authenticated",
+          data: {
+            authenticated: true,
+          },
         });
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+        return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
         });

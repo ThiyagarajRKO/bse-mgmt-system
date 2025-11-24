@@ -115,22 +115,44 @@
       contentType: "application/json",
       crossDomain: true,
       processData: false,
-      success: ({ data }) => {
-        // Loading data
-        $("#roles")
-          .select2({
-            placeholder: "Choose a role",
-            allowClear: true,
-            data: $.map(data.data, function (item) {
-              return {
-                id: item.id,
-                text: item.role_name // Adjust 'name' to match the property name in your data
-              };
-            }),
-          })
+      success: (resp) => {
+        // Support multiple response shapes: { success:true, data: [..] } or
+        // { success:true, data: { rows: [...] } } or legacy nested shapes.
+        const list =
+          (resp && resp.data && Array.isArray(resp.data)
+            ? resp.data
+            : resp && resp.data && resp.data.rows
+            ? resp.data.rows
+            : []);
+
+        const select = $("#roles");
+
+        // Populate native <option> elements as a fallback so Select2 has
+        // visible options even if initialization timing or data binding
+        // behaves unexpectedly in some browsers.
+        select.empty();
+        select.append('<option></option>');
+        list.forEach((item) => {
+          select.append(
+            `<option value="${item.id}">${item.role_name}</option>`
+          );
+        });
+
+        // Initialize Select2 using the DOM options (robust) and also set data
+        // for search/autocomplete functionality.
+        select.select2({
+          placeholder: "Choose a role",
+          allowClear: true,
+          data: $.map(list, function (item) {
+            return {
+              id: item.id,
+              text: item.role_name,
+            };
+          }),
+        });
 
         // Clearing selected value
-        $('#roles').val(null).trigger('change');
+        select.val(null).trigger("change");
       },
       error: (jqXhr, textStatus, errorThrown) => {
         if (jqXhr["status"] == 420) {
@@ -167,6 +189,9 @@
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify(input_params),
+        // Ensure the browser accepts and stores the session cookie set by the server
+        // and sends it on subsequent requests.
+        xhrFields: { withCredentials: true },
         crossDomain: true,
         processData: false,
         success: function (data) {
