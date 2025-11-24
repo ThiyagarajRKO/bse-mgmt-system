@@ -18,6 +18,7 @@ export * as VehicleMaster from "./vehicle_master";
 export * as DriverMaster from "./driver_master";
 export * as CustomerMaster from "./customer_master";
 export * as CarrierMaster from "./carrier_master";
+export * as CompanyMaster from "./company_master";
 export * as PriceListMaster from "./price_list_master";
 export * as PriceListProductMaster from "./price_list_product_master";
 export * as ShippingMaster from "./shipping_master";

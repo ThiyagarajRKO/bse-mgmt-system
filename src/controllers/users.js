@@ -67,13 +67,6 @@ export const Get = ({ id, username, email, phone, role_id }) => {
         });
       }
 
-      if (!role_id) {
-        return reject({
-          statusCode: 420,
-          message: "role master id must not be empty!",
-        });
-      }
-
       let where = {
         is_active: true,
       };
@@ -86,6 +79,15 @@ export const Get = ({ id, username, email, phone, role_id }) => {
         where["username"] = username?.trim();
       } else if (id) {
         where["id"] = id;
+      }
+
+      let profileWhere = {
+        is_active: true,
+        is_banned: false,
+      };
+
+      if (role_id) {
+        profileWhere.role_id = role_id;
       }
 
       const user = await models.Users.findOne({
@@ -103,11 +105,7 @@ export const Get = ({ id, username, email, phone, role_id }) => {
                 },
               },
             ],
-            where: {
-              is_active: true,
-              role_id,
-              is_banned: false,
-            },
+            where: profileWhere,
           },
         ],
         where,
@@ -145,6 +143,55 @@ export const GetAll = ({ role_id }) => {
           },
         ],
         where: { is_active: true, user_status: "1" },
+      });
+      resolve(user);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetUserAndProfileByIdentifier = ({ email, phone }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!email && !phone) {
+        return reject({
+          statusCode: 420,
+          message: "Email or phone must be provided!",
+        });
+      }
+
+      let where = {
+        is_active: true,
+      };
+
+      if (email) {
+        where["email"] = email?.trim()?.toLowerCase();
+      }
+      if (phone) {
+        where["phone"] = phone;
+      }
+
+      const user = await models.Users.findOne({
+        include: [
+          {
+            as: "creator",
+            model: models.UserProfiles,
+            include: [
+              {
+                model: models.RoleMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: {
+              is_active: true,
+              is_banned: false,
+            },
+          },
+        ],
+        where,
       });
       resolve(user);
     } catch (err) {

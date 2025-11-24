@@ -2,6 +2,7 @@ import { Create } from "./handlers/create";
 import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
+import { List } from "./handlers/list";
 import { Delete } from "./handlers/delete";
 
 // Schema
@@ -18,14 +19,14 @@ export const companyMasterRoute = (fastify, opts, done) => {
 
       const result = await Create(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         statusCode: result?.statusCode,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -38,13 +39,13 @@ export const companyMasterRoute = (fastify, opts, done) => {
 
       const result = await Update(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -57,13 +58,13 @@ export const companyMasterRoute = (fastify, opts, done) => {
 
       const result = await Get(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -76,16 +77,24 @@ export const companyMasterRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
+      return reply.code(200).send(result);
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
+    }
+  });
+
+  // simple list for dropdowns
+  fastify.get("/list", async (req, reply) => {
+    try {
+      const result = await List(req?.query, req?.session, fastify);
+      return reply.code(200).send(result);
+    } catch (err) {
+      return reply
+        .code(err?.statusCode || 500)
+        .send({ success: false, message: err?.message || err });
     }
   });
 
@@ -95,13 +104,13 @@ export const companyMasterRoute = (fastify, opts, done) => {
 
       const result = await Delete(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });

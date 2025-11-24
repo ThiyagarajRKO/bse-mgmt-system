@@ -40,7 +40,7 @@
       href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=2"
       rel="stylesheet"
     />
-    <script src="/public/plugins/MDB5-7.2.0/js/mdb.min.js?v=2"></script>
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js?v=2"></script>
 
     <!-- jQuery -->
     <script src="/public/plugins/jquery/jquery.min.js?v=2"></script>
@@ -787,6 +787,7 @@
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -878,6 +879,7 @@
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -916,6 +918,15 @@
                 name="unit-name"
                 required
               />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="company_name">Company</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="UnitCompany_id"
+                name="UnitCompany_id"
+              ></select>
             </div>
 
             <div class="form-group my-3">
@@ -971,6 +982,7 @@
                 <th></th>
                 <th class="fw-bold"><span>Unit Code</span></th>
                 <th class="fw-bold"><span>Unit Name</span></th>
+                <th class="fw-bold"><span>Company</span></th>
                 <th class="fw-bold"><span>Unit Type</span></th>
                 <th class="fw-bold"><span>Location Name</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
@@ -1014,6 +1026,15 @@
                 name="supplier-name"
                 required
               />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="company_name">Company</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="supplierCompany_id"
+                name="supplierCompany_id"
+              ></select>
             </div>
 
             <div class="form-group my-3">
@@ -1110,6 +1131,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Supplier Name</span></th>
+                <th class="fw-bold"><span>Company</span></th>
                 <th class="fw-bold"><span>Location</span></th>
                 <th class="fw-bold"><span>Representative</span></th>
                 <th class="fw-bold"><span>Phone</span></th>
@@ -2140,6 +2162,15 @@
             </div>
 
             <div class="form-group my-3">
+              <label for="company_name">Company</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="customerCompany_id"
+                name="customerCompany_id"
+              ></select>
+            </div>
+
+            <div class="form-group my-3">
               <label for="customer-address">Address</label>
               <textarea
                 id="customer_address"
@@ -2252,6 +2283,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Company</span></th>
                 <th class="fw-bold"><span>Address</span></th>
                 <th class="fw-bold"><span>Country</span></th>
                 <th class="fw-bold"><span>Phone</span></th>
@@ -2410,6 +2442,14 @@
                 required
               />
             </div>
+            <div class="form-group my-3">
+              <label for="company_name">Company</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="carrierCompany_id"
+                name="carrierCompany_id"
+              ></select>
+            </div>
 
             <div class="form-group my-3">
               <label for="carrier_address">Address</label>
@@ -2513,6 +2553,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Name</span></th>
+                <th class="fw-bold"><span>Company</span></th>
                 <th class="fw-bold"><span>Address</span></th>
                 <th class="fw-bold"><span>Country</span></th>
                 <th class="fw-bold"><span>Phone</span></th>
@@ -2807,8 +2848,6 @@
     jQuery(document).ready(function ($) {
       // Declarations
 
-      App.checkAccess();
-
       new PerfectScrollbar(".slideInPanel", {
         suppressScrollX: true,
       }).update();
@@ -2830,6 +2869,17 @@
         showMethod: "fadeIn",
         hideMethod: "fadeOut",
       };
+
+      // Ensure jQuery sends the session cookie with all AJAX requests so the
+      // authenticated session is used until the user signs out.
+      // This keeps the browser's session token (cookie) attached to requests.
+      try {
+        if (typeof $.ajaxSetup === "function") {
+          $.ajaxSetup({ xhrFields: { withCredentials: true } });
+        }
+      } catch (e) {
+        console.warn("Could not set ajaxSetup withCredentials", e);
+      }
 
       // Open Location on load (default)
       $(".menu-container").addClass("d-none");
@@ -2996,14 +3046,14 @@
 
       tippy(".companyTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-            <div class="topCompanySubMenu-item companyMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-users mb-2"></i>Company</div>
-            <div class="topCompanySubMenu-item divisionMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-table-cells-large mb-2"></i>Division</div>
-            <div class="topCompanySubMenu-item locationMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-location-dot mb-2"></i>Location</div>
-            <div class="topCompanySubMenu-item unitsMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-warehouse mb-2"></i>Units</div>`,
+                            <div class="topCompanySubMenu-item companyMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-users mb-2"></i>Company</div>
+                            <div class="topCompanySubMenu-item divisionMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-table-cells-large mb-2"></i>Division</div>
+                            <div class="topCompanySubMenu-item locationMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-location-dot mb-2"></i>Location</div>
+                            <div class="topCompanySubMenu-item unitsMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-warehouse mb-2"></i>Units</div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3022,13 +3072,13 @@
 
       tippy(".OperationsTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-            <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-users mb-2"></i>Suppliers</div>
-            <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
-            <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-id-card mb-2"></i>Driver</div>
-            </div>`,
+                            <div class="topOperationsSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-users mb-2"></i>Suppliers</div>
+                            <div class="topOperationsSubMenu-item vehicleMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-table-cells-large mb-2"></i>Vehicles</div>
+                            <div class="topOperationsSubMenu-item driverMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-id-card mb-2"></i>Driver</div>
+                            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3049,11 +3099,11 @@
 
       tippy(".procurementTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-            <div class="topProcurementSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-users mb-2"></i>Suppliers</div>
-            <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
-            </div>`,
+                            <div class="topProcurementSubMenu-item supplierMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-users mb-2"></i>Suppliers</div>
+                            <div class="topProcurementSubMenu-item inventoryMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-layer-group mb-2"></i>Inventory</div>
+                            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3073,29 +3123,29 @@
       });
       tippy(".productTopMenu", {
         content: `
-        <div class="d-flex justify-content-between p-3 fs-6">
-          <div class="topProductSubMenu-item speciesMenu d-flex flex-column text-center" mx-2>
-            <i class="fa-solid fa-fish-fins mb-2"></i>
-            <span>Species</span>
-          </div>
-          <div class="topProductSubMenu-item gradeMenu d-flex flex-column text-center" mx-2>
-            <i class="fa-solid fa-ranking-star mb-2"></i>
-            <span>Grades</span>
-          </div>
-          <div class="topProductSubMenu-item sizeMenu d-flex flex-column text-center" mx-2>
-            <i class="fa-solid fa-ruler-combined mb-2"></i>
-            <span>Sizes</span>
-          </div> </div>
-          <div class="d-flex justify-content-left p-3 fs-6">
-          <div class="topProductSubMenu-item productMenu d-flex flex-column text-center" mx-2>
-            <i class="fa-solid fa-shrimp mb-2"></i>
-            <span>Product</span></div>
-          <div class="topProductSubMenu-item packagingMenu d-flex flex-column text-center" mx-2>
-            <i class="fa-solid fa-boxes-packing mb-2"></i>
-            <span>Packaging</span>
-          </div>
-          </div>
-      `,
+                        <div class="d-flex justify-content-between p-3 fs-6">
+                          <div class="topProductSubMenu-item speciesMenu d-flex flex-column text-center" mx-2>
+                            <i class="fa-solid fa-fish-fins mb-2"></i>
+                            <span>Species</span>
+                          </div>
+                          <div class="topProductSubMenu-item gradeMenu d-flex flex-column text-center" mx-2>
+                            <i class="fa-solid fa-ranking-star mb-2"></i>
+                            <span>Grades</span>
+                          </div>
+                          <div class="topProductSubMenu-item sizeMenu d-flex flex-column text-center" mx-2>
+                            <i class="fa-solid fa-ruler-combined mb-2"></i>
+                            <span>Sizes</span>
+                          </div> </div>
+                          <div class="d-flex justify-content-left p-3 fs-6">
+                          <div class="topProductSubMenu-item productMenu d-flex flex-column text-center" mx-2>
+                            <i class="fa-solid fa-shrimp mb-2"></i>
+                            <span>Product</span></div>
+                          <div class="topProductSubMenu-item packagingMenu d-flex flex-column text-center" mx-2>
+                            <i class="fa-solid fa-boxes-packing mb-2"></i>
+                            <span>Packaging</span>
+                          </div>
+                          </div>
+                      `,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3113,15 +3163,15 @@
 
       tippy(".salesTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-            <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-users mb-2"></i>Customer</div>
-            <div class="topSalesSubMenu-item priceListMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-barcode mb-2"></i>Price list</div>
-            <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-dolly mb-2"></i>Carrier</div>
-            <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
-            </div>`,
+                            <div class="topSalesSubMenu-item customerMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-users mb-2"></i>Customer</div>
+                            <div class="topSalesSubMenu-item priceListMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-barcode mb-2"></i>Price list</div>
+                            <div class="topSalesSubMenu-item carrierMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-dolly mb-2"></i>Carrier</div>
+                            <div class="topSalesSubMenu-item shippingMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-truck-arrow-right mb-2"></i>Shipping</div>
+                            </div>`,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3140,14 +3190,14 @@
 
       tippy(".AccountingTopMenu", {
         content: `<div class="d-flex justify-content-between p-3 fs-6">
-            <div class="topAccountingSubMenu-item GSTMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-table-cells-large mb-2"></i>GST</div>
-                 <div class="topAccountingSubMenu-item taxCodeMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-location-dot mb-2"></i>Tax Code</div>
-            <div class="topAccountingSubMenu-item accountsMenu d-flex flex-column text-center mx-2"><i
-                class="fa-solid fa-location-dot mb-2"></i>Accounts</div>
-            </div>
-    `,
+                            <div class="topAccountingSubMenu-item GSTMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-table-cells-large mb-2"></i>GST</div>
+                                 <div class="topAccountingSubMenu-item taxCodeMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-location-dot mb-2"></i>Tax Code</div>
+                            <div class="topAccountingSubMenu-item accountsMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-location-dot mb-2"></i>Accounts</div>
+                            </div>
+                    `,
         placement: "bottom",
         arrow: true,
         trigger: "click",
@@ -3304,17 +3354,8 @@
           ajax: {
             url: "/api/v1/master/company",
             type: "GET",
-
-            dataSrc: function (json) {
-              if (!json.success) {
-                toastr.error(json.message);
-                return [];
-              }
-              json.recordsTotal = json.data.length;
-              json.recordsFiltered = json.data.length;
-
-              return json.data || [];
-            },
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
 
             error: function (xhr) {
               toastr.error(xhr.responseJSON?.message || "Error loading data");
@@ -3342,20 +3383,20 @@
               targets: 0,
               className: "text-left",
               render: (data, type, row) => `
-              <i class="fa fa-pen-to-square editCompany"
-                 company_master_id="${row.id}"
-                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
-                 title="Edit company"></i>`,
+                              <i class="fa fa-pen-to-square editCompany"
+                                 company_master_id="${row.id}"
+                                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                                 title="Edit company"></i>`,
             },
 
             {
               targets: 1,
               className: "text-left",
               render: (data, type, row) => `
-              <i class="fa fa-trash delCompany"
-                 company_master_id="${row.id}"
-                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
-                 title="Delete company"></i>`,
+                              <i class="fa fa-trash delCompany"
+                                 company_master_id="${row.id}"
+                                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                                 title="Delete company"></i>`,
             },
 
             {
@@ -3387,9 +3428,9 @@
                 const mins = String(date.getMinutes()).padStart(2, "0");
 
                 return `${String(date.getDate()).padStart(2, "0")}
-                      -${months[date.getMonth()]}
-                      -${date.getFullYear()}
-                      ${hrs}:${mins} ${ampm}`;
+                                      -${months[date.getMonth()]}
+                                      -${date.getFullYear()}
+                                      ${hrs}:${mins} ${ampm}`;
               },
             },
           ],
@@ -3475,6 +3516,12 @@
           };
         }
 
+        // Minimal client-side validation
+        if (!body.company_name) {
+          toastr.error("Company name is required");
+          return;
+        }
+
         $.ajax({
           url,
           method,
@@ -3498,36 +3545,233 @@
       $("#resetCompanyDataBtn").on("click", resetAllInputs);
 
       // ---------------------------------------------------------
+      // ----------------------- Locations -----------------------
+      // ---------------------------------------------------------
+
+      function loadLocationTableData() {
+        $("#locationTable").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: false, // Changed to client-side like division table
+          responsive: false,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+
+          ajax: {
+            url: "/api/v1/master/location",
+            type: "GET",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
+            error: function (xhr) {
+              const errorMessage =
+                xhr.responseJSON?.message ||
+                xhr.responseText ||
+                "Error loading location data";
+              if (xhr.status == 420) toastr.warning(errorMessage);
+              else toastr.error(errorMessage);
+            },
+          },
+
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "location_name" },
+            { data: "description" },
+            { data: "created_at" },
+          ],
+
+          columnDefs: [
+            {
+              targets: 0,
+              className: "text-left",
+              render: (data, type, row) => `
+                              <i class="fa fa-pen-to-square editLocation"
+                                 location_master_id="${row.id}"
+                                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                                 title="Edit location"></i>`,
+            },
+
+            {
+              targets: 1,
+              render: (data, type, row) => `
+                              <i class="fa fa-trash delLocation"
+                                 location_master_id="${row.id}"
+                                 style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                                 title="Delete location"></i>`,
+            },
+
+            {
+              targets: 4,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+
+                const months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+
+                return `${String(date.getDate()).padStart(2, "0")}
+                                      -${months[date.getMonth()]}
+                                      -${date.getFullYear()}
+                                      ${hrs}:${mins} ${ampm}`;
+              },
+            },
+          ],
+        });
+      }
+
+      $(document).on("click", ".editLocation", function (e) {
+        const row = $(e.target).closest("tr").children("td");
+
+        $("#location_name").val(row.eq(2).text());
+
+        $("#openLocationPanelBtn").click();
+        $("#submitLocation").text("Update");
+        $("#locationPanelHeading").text("Edit Location");
+        $("#submitLocation").attr(
+          "location_master_id",
+          $(e.target).attr("location_master_id")
+        );
+      });
+
+      // ✅ Delete location
+      $(document).on("click", ".delLocation", function (e) {
+        const location_master_id = $(this).attr("location_master_id");
+
+        $.confirm({
+          title: "Delete Location?",
+          content: "This action cannot be undone.",
+          type: "red",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: `/api/v1/master/location?location_master_id=${location_master_id}`,
+                  method: "DELETE",
+                })
+                  .done(() => {
+                    toastr.success("Location deleted");
+                    loadLocationTableData();
+                  })
+                  .fail((err) => toastr.error(err.responseJSON?.message));
+              },
+            },
+            cancel: function () {},
+          },
+        });
+      });
+
+      // ✅ Save / Update location
+      function saveLocation() {
+        const location_master_id =
+          $("#submitLocation").attr("location_master_id");
+
+        let url = "/api/v1/master/location";
+        let method = location_master_id ? "PUT" : "POST";
+
+        let body = {
+          location_name: $("#location_name").val(),
+        };
+
+        if (location_master_id) {
+          body = {
+            location_master_id,
+            location_master_data: body,
+          };
+        }
+
+        // Minimal client-side validation
+        if (!body.location_name) {
+          toastr.error("Location name is required");
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(body),
+
+          success: (resp) => {
+            toastr.success(resp.message);
+            $("#closeLocationPanelBtn").click();
+            loadLocationTableData();
+            resetAllInputs();
+          },
+
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error");
+          },
+        });
+      }
+
+      // ---------------------------------------------------------
       // ----------------------- Divisions -----------------------
       // ---------------------------------------------------------
 
       function loadCompanyDropdown(selectedId = "") {
-        $.ajax({
-          url: "/api/v1/master/company",
-          type: "GET",
-          success: function (res) {
+        // Ensure user session is valid before fetching companies.
+        App.ensureAuth()
+          .then(() => {
+            return $.ajax({ url: "/api/v1/master/company/list", type: "GET" });
+          })
+          .then((res) => {
             if (!res.success) return toastr.error("Failed to load companies");
-
             const list = res.data?.rows || res.data || [];
-            const dropdown = $("#company_id");
 
-            dropdown.empty();
-            dropdown.append('<option value="">-- Choose Company --</option>');
+            const selectors = [
+              "#company_id",
+              "#UnitCompany_id",
+              "#supplierCompany_id",
+              "#customerCompany_id",
+              "#carrierCompany_id",
+            ];
 
-            list.forEach((c) => {
-              dropdown.append(
-                `<option value="${c.id}" ${
-                  selectedId === c.id ? "selected" : ""
-                }>
-              ${c.company_name}
-           </option>`
-              );
+            selectors.forEach((sel) => {
+              App.initCompanySelect(sel, list, selectedId);
             });
-          },
-          error: function () {
-            toastr.error("Failed to load company list");
-          },
-        });
+          })
+          .catch((err) => {
+            // show sign-in banner if unauthorized
+            const bannerId = "company-auth-banner";
+            if ($(`#${bannerId}`).length === 0) {
+              const banner = $(
+                `<div id="${bannerId}" style="position:fixed;top:70px;left:0;right:0;z-index:20000;padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;text-align:center;">
+                    Please sign in to load companies.
+                    <a href="/" class="btn btn-sm btn-primary ms-2">Sign in</a>
+                    <button id="${bannerId}-retry" class="btn btn-sm btn-outline-secondary ms-2">Retry</button>
+                  </div>`
+              );
+              $("body").prepend(banner);
+              $(`#${bannerId}-retry`).on("click", function () {
+                $("#" + bannerId).remove();
+                loadCompanyDropdown(selectedId);
+              });
+            }
+          });
       }
 
       $("#openDivisionPanelBtn").click(function () {
@@ -3550,7 +3794,10 @@
         $(".divisionContainer")
           .removeClass("d-none d-block")
           .addClass("d-block");
-        loadDivisionTableData();
+        // Delay DataTable initialization to ensure DOM is ready
+        setTimeout(() => {
+          loadDivisionTableData();
+        }, 100);
       });
 
       $("#submitDivision").click(function () {
@@ -3562,7 +3809,7 @@
           destroy: true,
           responsive: false,
           processing: true,
-          serverSide: true,
+          serverSide: false, // Try client-side first
           scrollX: true,
           scrollCollapse: true,
           scrollY: "40vh",
@@ -3571,18 +3818,16 @@
           ajax: {
             type: "GET",
             url: "/api/v1/master/division",
+            xhrFields: { withCredentials: true },
             error: function (xhr) {
-              $("#divisionTable").DataTable().destroy();
-              $("#divisionTable").DataTable({ scrollX: true, ordering: false });
-
-              if (xhr.status == 420) toastr.warning(xhr.responseJSON.message);
-              else toastr.error(xhr.responseJSON.message);
+              const errorMessage =
+                xhr.responseJSON?.message ||
+                xhr.responseText ||
+                "Error loading division data";
+              if (xhr.status == 420) toastr.warning(errorMessage);
+              else toastr.error(errorMessage);
             },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length || 0;
-              json.iTotalDisplayRecords = json.data?.count || 0;
-              return json.data?.rows || [];
-            },
+            dataSrc: "data",
           },
 
           columns: [
@@ -3598,23 +3843,23 @@
             {
               targets: 0,
               render: (data, type, row) => `
-          <i class="fa fa-pen-to-square edit editDivision"
-             division_master_id="${row.id}"
-             data-company_id="${row.company_id}"
-             style="font-size:15px;color:#f07b3f;cursor:pointer;"
-             title="Edit Division"></i>
-        `,
+                          <i class="fa fa-pen-to-square edit editDivision"
+                             division_master_id="${row.id}"
+                             data-company_id="${row.company_id}"
+                             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                             title="Edit Division"></i>
+                        `,
             },
 
             {
               targets: 1,
               render: (data, type, row) => `
-          <i class="fa fa-trash del delDivision"
-             division_master_id="${row.id}"
-             data-company_id="${row.company_id}"
-             style="font-size:15px;color:#f07b3f;cursor:pointer;"
-             title="Delete Division"></i>
-        `,
+                          <i class="fa fa-trash del delDivision"
+                             division_master_id="${row.id}"
+                             data-company_id="${row.company_id}"
+                             style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                             title="Delete Division"></i>
+                        `,
             },
 
             {
@@ -3771,114 +4016,54 @@
         $(".locationContainer")
           .removeClass("d-none d-block")
           .addClass("d-block");
-        loadLocationTableData();
+        // Delay DataTable initialization to ensure DOM is ready
+        setTimeout(() => {
+          loadLocationTableData();
+        }, 100);
       });
 
       $("#submitLocation").click(function () {
         saveLocation();
       });
 
-      function loadLocationTableData() {
-        $("#locationTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: "/api/v1/master/location",
-            error: function (xhr, error, code) {
-              $("#locationTable").DataTable().destroy();
-              $("#locationTable").DataTable({ scrollX: true, ordering: false });
+      function loadCompanyDropdown(selectedId = "") {
+        App.ensureAuth()
+          .then(() => {
+            return $.ajax({ url: "/api/v1/master/company/list", type: "GET" });
+          })
+          .then((res) => {
+            if (!res.success) return toastr.error("Failed to load companies");
+            const list = res.data?.rows || res.data || [];
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
-              }
-            },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+            const selectors = [
+              "#company_id",
+              "#UnitCompany_id",
+              "#supplierCompany_id",
+              "#customerCompany_id",
+              "#carrierCompany_id",
+            ];
 
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
-          },
-          columns: [
-            { data: null },
-            { data: null },
-            { data: "location_name" },
-            { data: "description" },
-            { data: "created_at" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-pen-to-square edit editLocation" location_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this location"></i>'
-                );
-              },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return (
-                  '<i class="fa fa-trash del delLocation" location_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this location"></i>'
-                );
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
-
-                var months = [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
-              },
-            },
-          ],
-          // "infoCallback": function (settings, start, end, max, total, pre) {
-          //   return start + " to " + end;
-          // }
-        });
+            selectors.forEach((sel) => {
+              App.initCompanySelect(sel, list, selectedId);
+            });
+          })
+          .catch(() => {
+            const bannerId = "company-auth-banner";
+            if ($(`#${bannerId}`).length === 0) {
+              const banner = $(
+                `<div id="${bannerId}" style="position:fixed;top:70px;left:0;right:0;z-index:20000;padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;text-align:center;">
+                    Please sign in to load companies.
+                    <a href="/" class="btn btn-sm btn-primary ms-2">Sign in</a>
+                    <button id="${bannerId}-retry" class="btn btn-sm btn-outline-secondary ms-2">Retry</button>
+                  </div>`
+              );
+              $("body").prepend(banner);
+              $(`#${bannerId}-retry`).on("click", function () {
+                $("#" + bannerId).remove();
+                loadCompanyDropdown(selectedId);
+              });
+            }
+          });
       }
 
       $(document).on("click", ".editLocation", (e) => {
@@ -4010,6 +4195,46 @@
       // -------------------------- Units ------------------------
       // ---------------------------------------------------------
 
+      function loadCompanyDropdown(selectedId = "") {
+        App.ensureAuth()
+          .then(() => {
+            return $.ajax({ url: "/api/v1/master/company/list", type: "GET" });
+          })
+          .then((res) => {
+            if (!res.success) return toastr.error("Failed to load companies");
+            const list = res.data?.rows || res.data || [];
+
+            const selectors = [
+              "#company_id",
+              "#UnitCompany_id",
+              "#supplierCompany_id",
+              "#customerCompany_id",
+              "#carrierCompany_id",
+            ];
+
+            selectors.forEach((sel) => {
+              App.initCompanySelect(sel, list, selectedId);
+            });
+          })
+          .catch(() => {
+            const bannerId = "company-auth-banner";
+            if ($(`#${bannerId}`).length === 0) {
+              const banner = $(
+                `<div id="${bannerId}" style="position:fixed;top:70px;left:0;right:0;z-index:20000;padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;text-align:center;">
+                    Please sign in to load companies.
+                    <a href="/" class="btn btn-sm btn-primary ms-2">Sign in</a>
+                    <button id="${bannerId}-retry" class="btn btn-sm btn-outline-secondary ms-2">Retry</button>
+                  </div>`
+              );
+              $("body").prepend(banner);
+              $(`#${bannerId}-retry`).on("click", function () {
+                $("#" + bannerId).remove();
+                loadCompanyDropdown(selectedId);
+              });
+            }
+          });
+      }
+
       // Open panel
       $("#openUnitPanelBtn").click(function () {
         openSlidePanel(
@@ -4021,8 +4246,8 @@
         );
 
         // loadUnitLocations()
-
-        // loadUnitType()
+        loadUnitLocations();
+        loadCompanyDropdown();
       });
 
       // Close panel
@@ -4043,6 +4268,7 @@
 
       function loadUnitDropdowns() {
         // Pre loading dropdown data
+        loadCompanyDropdown();
         loadUnitLocations();
         loadUnitType();
       }
@@ -4061,7 +4287,35 @@
           ajax: {
             type: "GET",
             url: "/api/v1/master/unit",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
             error: function (xhr, error, code) {
+              // If unauthorized, keep the endpoint protected but show a clear
+              // sign-in prompt and a retry button.
+              if (xhr && xhr.status === 403) {
+                const bannerId = "unit-auth-banner";
+                if ($(`#${bannerId}`).length === 0) {
+                  const banner = $(
+                    `<div id="${bannerId}" style="position:fixed;top:70px;left:0;right:0;z-index:20000;padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;text-align:center;">
+                        Please sign in to view units.
+                        <a href="/" class="btn btn-sm btn-primary ms-2">Sign in</a>
+                        <button id="${bannerId}-retry" class="btn btn-sm btn-outline-secondary ms-2">Retry</button>
+                      </div>`
+                  );
+
+                  $("body").prepend(banner);
+
+                  $(`#${bannerId}-retry`).on("click", function () {
+                    $("#" + bannerId).remove();
+                    // re-initialize the unit table
+                    loadUnitTableData();
+                  });
+                }
+
+                return;
+              }
+
               $("#unitTable").DataTable().destroy();
               $("#unitTable").DataTable({
                 scrollX: true,
@@ -4074,19 +4328,14 @@
                 toastr["error"](xhr["responseJSON"]["message"]);
               }
             },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
+            dataSrc: "data",
           },
           columns: [
             { data: null },
             { data: null },
             { data: "unit_code" },
             { data: "unit_name" },
+            { data: "company.company_name" },
             { data: "unit_type" },
             { data: "LocationMaster.location_name" },
             { data: "created_at" },
@@ -4097,37 +4346,67 @@
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-pen-to-square edit editUnit" unit_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this unit"></i>'
+                  '<i class="fa fa-pen-to-square edit editUnit" ' +
+                  'unit_master_id="' +
+                  row.id +
+                  '" ' +
+                  'data-company_id="' +
+                  row.company_id +
+                  '" ' +
+                  'style="font-size:15px;color:#f07b3f;cursor:pointer;" ' +
+                  'title="Click this button to edit this unit"></i>'
                 );
               },
             },
+
             {
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
                 return (
-                  '<i class="fa fa-trash del delUnit" unit_master_id=' +
-                  row["id"] +
-                  ' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this unit"></i>'
+                  '<i class="fa fa-trash del delUnit" ' +
+                  'unit_master_id="' +
+                  row.id +
+                  '" ' +
+                  'data-company_id="' +
+                  row.company_id +
+                  '" ' +
+                  'style="font-size:15px;color:#f07b3f;cursor:pointer;" ' +
+                  'title="Click this button to delete this unit"></i>'
                 );
               },
             },
+
+            /* ✅ FIXED company column */
             {
-              targets: [5],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span location_master_id='${row["LocationMaster"].id}'>${data}</span>`;
+                const company = row.company || {};
+                return `<span company_master_id="${company.id || ""}">
+                ${company.company_name || ""}
+              </span>`;
               },
-            },
+            }, // ← ✔ COMMA ADDED
+
+            /* Location column */
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                const date = new Date(row["created_at"]);
+                const loc = row.LocationMaster || {};
+                return `<span location_master_id="${loc.id || ""}">
+                ${loc.location_name || ""}
+              </span>`;
+              },
+            }, // ← ✔ COMMA ADDED
 
-                var months = [
+            {
+              targets: [7],
+              className: "text-left",
+              render: function (data) {
+                const date = new Date(data);
+                const months = [
                   "Jan",
                   "Feb",
                   "Mar",
@@ -4141,21 +4420,17 @@
                   "Nov",
                   "Dec",
                 ];
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                var strTime = hours + ":" + minutes + " " + ampm;
-                var month = months[date.getMonth()];
-                var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return (
-                  day + "-" + month + "-" + date.getFullYear() + " " + strTime
-                );
+                let h = date.getHours();
+                const ampm = h >= 12 ? "PM" : "AM";
+                h = h % 12 || 12;
+                const minutes = date.getMinutes().toString().padStart(2, "0");
+                return `${date.getDate().toString().padStart(2, "0")}-${
+                  months[date.getMonth()]
+                }-${date.getFullYear()} ${h}:${minutes} ${ampm}`;
               },
             },
           ],
+
           // "infoCallback": function (settings, start, end, max, total, pre) {
           //   return start + " to " + end;
           // }
@@ -4276,20 +4551,24 @@
       }
 
       function loadUnitLocations() {
-        // Load Roles
-        $.ajax({
-          url: "/api/v1/master/location",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (data) => {
+        // Ensure user session is valid before fetching locations.
+        App.ensureAuth()
+          .then(() => {
+            return $.ajax({
+              url: "/api/v1/master/location/list",
+              method: "GET",
+              dataType: "json",
+              contentType: "application/json",
+              crossDomain: true,
+              processData: false,
+            });
+          })
+          .then((data) => {
             // Loading data
             $("#unitLocations").select2({
               placeholder: "Choose a location",
               allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
+              data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
                   text: item.location_name,
@@ -4301,15 +4580,25 @@
             $("#unitLocations").val(null).trigger("change");
             // // Clearing selected value
             // $('#unitType').val(null).trigger('change');
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+          })
+          .catch((err) => {
+            // show sign-in banner if unauthorized
+            const bannerId = "location-auth-banner";
+            if ($(`#${bannerId}`).length === 0) {
+              const banner = $(
+                `<div id="${bannerId}" style="position:fixed;top:70px;left:0;right:0;z-index:20000;padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;text-align:center;">
+                    Please sign in to load locations.
+                    <a href="/" class="btn btn-sm btn-primary ms-2">Sign in</a>
+                    <button id="${bannerId}-retry" class="btn btn-sm btn-outline-secondary ms-2">Retry</button>
+                  </div>`
+              );
+              $("body").prepend(banner);
+              $(`#${bannerId}-retry`).on("click", function () {
+                $("#" + bannerId).remove();
+                loadUnitLocations();
+              });
             }
-          },
-        });
+          });
       }
 
       function saveUnit() {
@@ -4321,6 +4610,7 @@
           unit_name: $("#unit_name").val(),
           unit_type: $("#unitType").val(),
           location_master_id: $("#unitLocations").val(),
+          company_id: $("#UnitCompany_id").val(),
         };
 
         if (unit_master_id) {
@@ -4330,6 +4620,7 @@
             unit_master_id,
             unit_master_data: {
               ...input_params,
+              company_id: $("#UnitCompany_id").val(),
             },
           };
         }
@@ -5017,7 +5308,7 @@
       function loadSupplierLocations() {
         // Load Roles
         $.ajax({
-          url: "/api/v1/master/location",
+          url: "/api/v1/master/location/list",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -5028,7 +5319,7 @@
             $("#supplierLocations").select2({
               placeholder: "Choose a location",
               allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
+              data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
                   text: item.location_name,
@@ -7855,35 +8146,37 @@
 
         JSON.parse(product_data)?.forEach((row) => {
           html_content += `<tr>
-                                <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_product_master_id='${
-                                  row["id"]
-                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit price list"></i></td>
-                                <td><i class="fa fa-trash del delPriceList" price_list_product_master_id='${
-                                  row["id"]
-                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete price list"></i></td>
-                                <td product_master_id='${
-                                  row?.ProductMaster?.id
-                                }'>${row?.ProductMaster?.product_name}</td>
-                                <td>${row?.price_value}</td>
-                                <td>${formatDate(
-                                  new Date(row?.created_at),
-                                  true
-                                )}</td>
-                              </tr>`;
+                                                <td><i class="fa-solid fa-pen-to-square edit editPriceList" price_list_product_master_id='${
+                                                  row["id"]
+                                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit price list"></i></td>
+                                                <td><i class="fa fa-trash del delPriceList" price_list_product_master_id='${
+                                                  row["id"]
+                                                }' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete price list"></i></td>
+                                                <td product_master_id='${
+                                                  row?.ProductMaster?.id
+                                                }'>${
+            row?.ProductMaster?.product_name
+          }</td>
+                                                <td>${row?.price_value}</td>
+                                                <td>${formatDate(
+                                                  new Date(row?.created_at),
+                                                  true
+                                                )}</td>
+                                              </tr>`;
         });
 
         return `<table id="childPriceList" class="table border rounded nowrap w-50">
-                            <tbody>
-                              <tr>
-                                <th></th>
-                                <th></th>
-                                <th class="fw-bold">Product Name</th>
-                                <th class="fw-bold">Price</th>
-                                <th class="fw-bold">Created At</th>
-                              </tr>
-                              ${html_content}
-                            </tbody>
-                          </table>`;
+                                            <tbody>
+                                              <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th class="fw-bold">Product Name</th>
+                                                <th class="fw-bold">Price</th>
+                                                <th class="fw-bold">Created At</th>
+                                              </tr>
+                                              ${html_content}
+                                            </tbody>
+                                          </table>`;
       }
 
       $(document).on("click", ".editPriceList", (e) => {

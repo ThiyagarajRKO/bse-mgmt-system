@@ -16,12 +16,16 @@ export const GetAll = async (params, session, fastify) => {
       search,
     });
 
-    return {
+    const response = {
       draw: Number(params.draw || 1),
       recordsTotal: result.count || 0,
       recordsFiltered: result.count || 0,
       data: result.rows || [],
     };
+
+    console.log("GetAll response:", response);
+
+    return response;
   } catch (err) {
     fastify.log.error(err);
     return {

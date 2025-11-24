@@ -110,10 +110,27 @@ export const GetAll = async ({
     order: [["created_at", "desc"]],
   });
 
+  // Get total count without filters for datatables
+  const totalCount = await models.CompanyMaster.count({
+    where: { is_active: true },
+  });
+
+  console.log("CompanyMaster.GetAll result:", result);
+
   return {
-    rows: result.rows,
-    count: result.count,
+    rows: result.rows.map((row) => row.toJSON()),
+    recordsTotal: totalCount,
+    recordsFiltered: result.count,
   };
+};
+
+/**
+ * COUNT COMPANIES
+ */
+export const Count = async () => {
+  return await models.CompanyMaster.count({
+    where: { is_active: true },
+  });
 };
 
 /**
