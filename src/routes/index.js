@@ -37,6 +37,13 @@ import salesPaymentRoute from "./sales_payments";
 import purchaseInventoryRoute from "./purchase_inventory";
 import salesInventoryRoute from "./sales_inventory";
 
+// Master Data Routes
+import { chartOfAccountsRoute } from "./master/chart_of_accounts";
+import consolidatedGstMasterRoute from "./consolidated_gst_master";
+import { ledgerMasterRoute } from "./master/ledger_master";
+import { taxCodeMasterRoute } from "./master/tax_code_master";
+import { productGstMappingRoute } from "./master/product_gst_mapping";
+
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
 
@@ -62,6 +69,8 @@ export const PublicRouters = (fastify, opts, done) => {
 
 //Protected Routes
 export const PrivateRouters = (fastify, opts, done) => {
+  console.log("Registering private routes...");
+
   // Validating session
   fastify.addHook("onRequest", ValidateUser);
 
@@ -176,6 +185,20 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(purchaseInventoryRoute, { prefix: "/inventory/purchase" });
 
   fastify.register(salesInventoryRoute, { prefix: "/inventory/sales" });
+
+  // Accounting Master Data Routes
+  console.log("Registering accounting routes...");
+  fastify.register(chartOfAccountsRoute, {
+    prefix: "/master/chart-of-accounts",
+  });
+  fastify.register(consolidatedGstMasterRoute, {
+    prefix: "/master/consolidated-gst-master",
+  });
+  fastify.register(ledgerMasterRoute, { prefix: "/master/ledger-master" });
+  fastify.register(taxCodeMasterRoute, { prefix: "/master/tax-code-master" });
+  fastify.register(productGstMappingRoute, {
+    prefix: "/master/product-gst-mapping",
+  });
 
   done();
 };

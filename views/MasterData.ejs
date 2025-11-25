@@ -2844,6 +2844,442 @@
       </div>
     </div>
     <!-- Tax Code Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Chart of Accounts Container ------------------------------------------ -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container chartOfAccountsContainer d-none">
+      <!-- Slide-in Panel -->
+      <div
+        id="chartOfAccountsSlideInPanel"
+        class="slideInPanel px-4 overflow-auto"
+      >
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="chartOfAccountsPanelHeading" class="fw-bold fs-5"
+                >Add Chart of Accounts</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeChartOfAccountsPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group my-3">
+              <label for="coa_account_code">Account Code</label>
+              <input
+                id="coa_account_code"
+                class="form-control"
+                placeholder="eg. 1001"
+                type="text"
+                name="coa_account_code"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="coa_account_name">Account Name</label>
+              <input
+                id="coa_account_name"
+                class="form-control"
+                placeholder="eg. Cash Account"
+                type="text"
+                name="coa_account_name"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="coa_account_type">Account Type</label>
+              <select class="form-control input-dropdown" id="coa_account_type">
+                <option value="">Select Account Type</option>
+                <option value="Asset">Asset</option>
+                <option value="Liability">Liability</option>
+                <option value="Equity">Equity</option>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="coa_parent_id">Parent Account</label>
+              <select class="form-control input-dropdown" id="coa_parent_id">
+                <option value="">Select Parent (Optional)</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="coa_is_posting">Is Posting Account</label>
+              <select class="form-control input-dropdown" id="coa_is_posting">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="coa_description">Description</label>
+              <textarea
+                id="coa_description"
+                class="form-control"
+                placeholder="eg. Description"
+                name="coa_description"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-group mt-4">
+              <div class="row d-flex justify-content-center">
+                <div id="submitChartOfAccounts" class="col-lg-5 btn btn-danger">
+                  Save
+                </div>
+                <div
+                  id="resetChartOfAccountsDataBtn"
+                  class="col-lg-5 btn btn-outline-danger"
+                >
+                  Clear
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openChartOfAccountsPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table
+            id="chartOfAccountsTable"
+            class="table table-hover nowrap w-100"
+          >
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Account Code</span></th>
+                <th class="fw-bold"><span>Account Name</span></th>
+                <th class="fw-bold"><span>Account Type</span></th>
+                <th class="fw-bold"><span>Parent Account</span></th>
+                <th class="fw-bold"><span>Level</span></th>
+                <th class="fw-bold"><span>Posting</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Chart of Accounts Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- GST Master Container -------------------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container gstMasterContainer d-none">
+      <!-- Slide-in Panel -->
+      <div id="gstMasterSlideInPanel" class="slideInPanel px-4 overflow-auto">
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="gstMasterPanelHeading" class="fw-bold fs-5"
+                >Add GST Master</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeGstMasterPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group my-3">
+              <label for="gst_hsn_code">HSN Code</label>
+              <input
+                id="gst_hsn_code"
+                class="form-control"
+                placeholder="eg. 1001"
+                type="text"
+                name="gst_hsn_code"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="gst_name">GST Name</label>
+              <input
+                id="gst_name"
+                class="form-control"
+                placeholder="eg. GST 18%"
+                type="text"
+                name="gst_name"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="cgst_rate">CGST Rate (%)</label>
+              <input
+                id="cgst_rate"
+                class="form-control"
+                placeholder="eg. 9.00"
+                type="number"
+                step="0.01"
+                name="cgst_rate"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="sgst_rate">SGST Rate (%)</label>
+              <input
+                id="sgst_rate"
+                class="form-control"
+                placeholder="eg. 9.00"
+                type="number"
+                step="0.01"
+                name="sgst_rate"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="igst_rate">IGST Rate (%)</label>
+              <input
+                id="igst_rate"
+                class="form-control"
+                placeholder="eg. 18.00"
+                type="number"
+                step="0.01"
+                name="igst_rate"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="effective_from">Effective From</label>
+              <input
+                id="effective_from"
+                class="form-control"
+                type="date"
+                name="effective_from"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="effective_to">Effective To</label>
+              <input
+                id="effective_to"
+                class="form-control"
+                type="date"
+                name="effective_to"
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <div class="row d-flex justify-content-center">
+                <div id="submitGstMaster" class="col-lg-5 btn btn-danger">
+                  Save
+                </div>
+                <div
+                  id="resetGstMasterDataBtn"
+                  class="col-lg-5 btn btn-outline-danger"
+                >
+                  Clear
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openGstMasterPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table id="gstMasterTable" class="table table-hover nowrap w-100">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>HSN Code</span></th>
+                <th class="fw-bold"><span>GST Name</span></th>
+                <th class="fw-bold"><span>CGST Rate (%)</span></th>
+                <th class="fw-bold"><span>SGST Rate (%)</span></th>
+                <th class="fw-bold"><span>IGST Rate (%)</span></th>
+                <th class="fw-bold"><span>Effective From</span></th>
+                <th class="fw-bold"><span>Effective To</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- GST Master Container Ends -->
+
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <!-- ------------------------------------- Product GST Mapping Container ---------------------------------------- -->
+    <!-- ------------------------------------------------------------------------------------------------------------- -->
+    <div class="menu-container productGstMappingContainer d-none">
+      <!-- Slide-in Panel -->
+      <div
+        id="productGstMappingSlideInPanel"
+        class="slideInPanel px-4 overflow-auto"
+      >
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="productGstMappingPanelHeading" class="fw-bold fs-5"
+                >Add Product GST Mapping</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closeProductGstMappingPanelBtn"
+                ></i>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group my-3">
+              <label for="pgm_product_id">Product</label>
+              <select class="form-control input-dropdown" id="pgm_product_id">
+                <option value="">Select Product</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="pgm_gst_master_id">GST Master</label>
+              <select
+                class="form-control input-dropdown"
+                id="pgm_gst_master_id"
+              >
+                <option value="">Select GST Master</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="pgm_override_gst_rate">Override GST Rate (%)</label>
+              <input
+                id="pgm_override_gst_rate"
+                class="form-control"
+                placeholder="eg. 18.00 (leave empty for default)"
+                type="number"
+                step="0.01"
+                name="pgm_override_gst_rate"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="pgm_effective_from">Effective From</label>
+              <input
+                id="pgm_effective_from"
+                class="form-control"
+                type="date"
+                name="pgm_effective_from"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="pgm_effective_to">Effective To</label>
+              <input
+                id="pgm_effective_to"
+                class="form-control"
+                type="date"
+                name="pgm_effective_to"
+              />
+            </div>
+
+            <div class="form-group my-3">
+              <label for="pgm_note">Note</label>
+              <textarea
+                id="pgm_note"
+                class="form-control"
+                placeholder="eg. Note"
+                name="pgm_note"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-group mt-4">
+              <div class="row d-flex justify-content-center">
+                <div
+                  id="submitProductGstMapping"
+                  class="col-lg-5 btn btn-danger"
+                >
+                  Save
+                </div>
+                <div
+                  id="resetProductGstMappingDataBtn"
+                  class="col-lg-5 btn btn-outline-danger"
+                >
+                  Clear
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+        <div class="border p-4 w-100">
+          <!-- Add Button -->
+          <div class="d-flex rounded-2 justify-content-end pb-4">
+            <div
+              id="openProductGstMappingPanelBtn"
+              class="btn btn-outline-danger d-flex justify-content-around"
+              style="width: 100px"
+            >
+              <i class="fa-solid fa-circle-plus my-auto"></i>
+              <span style="margin-top: 4px" class="fw-bold my-auto">Add</span>
+            </div>
+          </div>
+
+          <table
+            id="productGstMappingTable"
+            class="table table-hover nowrap w-100"
+          >
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="fw-bold"><span>Product</span></th>
+                <th class="fw-bold"><span>GST Master</span></th>
+                <th class="fw-bold"><span>Override Rate</span></th>
+                <th class="fw-bold"><span>Effective From</span></th>
+                <th class="fw-bold"><span>Effective To</span></th>
+                <th class="fw-bold"><span>Note</span></th>
+                <th class="fw-bold"><span>Created At</span></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Product GST Mapping Container Ends -->
   </body>
 
   <script type="text/javascript">
@@ -3196,6 +3632,8 @@
                                 class="fa-solid fa-location-dot mb-2"></i>Tax Code</div>
                             <div class="topAccountingSubMenu-item accountsMenu d-flex flex-column text-center mx-2"><i
                                 class="fa-solid fa-location-dot mb-2"></i>Accounts</div>
+                            <div class="topAccountingSubMenu-item productGstMappingMenu d-flex flex-column text-center mx-2"><i
+                                class="fa-solid fa-link mb-2"></i>Product GST</div>
                             </div>
                     `,
         placement: "bottom",
@@ -3543,6 +3981,793 @@
       }
 
       $("#resetCompanyDataBtn").on("click", resetAllInputs);
+
+      // ---------------------------------------------------------
+      // ----------------------- Accounting ----------------------
+      // ---------------------------------------------------------
+
+      // Menu clicks
+      $(document).on("click", ".GSTMenu", function () {
+        $(".menu-container").addClass("d-none");
+        $(".gstMasterContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
+
+        loadGstMasterTableData();
+      });
+
+      $(document).on("click", ".taxCodeMenu", function () {
+        $(".menu-container").addClass("d-none");
+        $(".taxCodeContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
+
+        loadTaxCodeTableData();
+      });
+
+      $(document).on("click", ".accountsMenu", function () {
+        $(".menu-container").addClass("d-none");
+        $(".chartOfAccountsContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
+
+        loadChartOfAccountsTableData();
+      });
+
+      // Add Product GST Mapping menu click
+      $(document).on("click", ".productGstMappingMenu", function () {
+        $(".menu-container").addClass("d-none");
+        $(".productGstMappingContainer")
+          .removeClass("d-none d-block")
+          .addClass("d-block");
+
+        loadProductGstMappingTableData();
+      });
+
+      // GST Master functions
+      $("#openGstMasterPanelBtn").click(function () {
+        openSlidePanel(
+          "gstMasterSlideInPanel",
+          "gstMasterPanelHeading",
+          "GST Master",
+          "submitGstMaster",
+          "consolidated_gst_master_id"
+        );
+      });
+
+      $("#closeGstMasterPanelBtn").click(function () {
+        closeSlidePanel("gstMasterSlideInPanel");
+      });
+
+      $("#submitGstMaster").click(function () {
+        saveGstMaster();
+      });
+
+      $("#resetGstMasterDataBtn").on("click", resetAllInputs);
+
+      function loadGstMasterTableData() {
+        $("#gstMasterTable").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          responsive: false,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+
+          ajax: {
+            url: "/api/v1/master/consolidated-gst-master",
+            type: "GET",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
+            error: function (xhr) {
+              toastr.error(xhr.responseJSON?.message || "Error loading data");
+            },
+          },
+
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "hsn_code" },
+            { data: "gst_name" },
+            { data: "cgst_rate" },
+            { data: "sgst_rate" },
+            { data: "igst_rate" },
+            { data: "effective_from" },
+            { data: "effective_to" },
+            { data: "created_at" },
+          ],
+
+          columnDefs: [
+            {
+              targets: 0,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-pen-to-square editGstMaster"
+                   consolidated_gst_master_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Edit GST Master"></i>`,
+            },
+            {
+              targets: 1,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-trash delGstMaster"
+                   consolidated_gst_master_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Delete GST Master"></i>`,
+            },
+            {
+              targets: 4,
+              render: (data, type, row) => `${data}%`,
+            },
+            {
+              targets: 5,
+              render: (data, type, row) => `${data}%`,
+            },
+            {
+              targets: 6,
+              render: (data, type, row) => `${data}%`,
+            },
+            {
+              targets: 7,
+              render: (data, type, row) => {
+                if (!row.effective_from) return "";
+                const date = new Date(row.effective_from);
+                if (isNaN(date)) return "";
+                return date.toLocaleDateString();
+              },
+            },
+            {
+              targets: 8,
+              render: (data, type, row) => {
+                if (!row.effective_to) return "";
+                const date = new Date(row.effective_to);
+                if (isNaN(date)) return "";
+                return date.toLocaleDateString();
+              },
+            },
+            {
+              targets: 9,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+                const months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+                return `${String(date.getDate()).padStart(2, "0")}-${
+                  months[date.getMonth()]
+                }-${date.getFullYear()} ${hrs}:${mins} ${ampm}`;
+              },
+            },
+          ],
+        });
+      }
+
+      $(document).on("click", ".editGstMaster", function (e) {
+        try {
+          const table = $("#gstMasterTable").DataTable();
+          const rowData = table.row($(e.target).closest("tr")).data();
+
+          if (!rowData) {
+            console.error("No row data found for GST master edit");
+            toastr.error("Error loading GST master data for editing");
+            return;
+          }
+
+          $("#gst_hsn_code").val(rowData.hsn_code || "");
+          $("#gst_name").val(rowData.gst_name || "");
+          $("#cgst_rate").val(
+            rowData.cgst_rate ? parseFloat(rowData.cgst_rate) : ""
+          );
+          $("#sgst_rate").val(
+            rowData.sgst_rate ? parseFloat(rowData.sgst_rate) : ""
+          );
+          $("#igst_rate").val(
+            rowData.igst_rate ? parseFloat(rowData.igst_rate) : ""
+          );
+
+          // Format dates for input fields
+          if (rowData.effective_from) {
+            const effectiveFromDate = new Date(rowData.effective_from);
+            const year = effectiveFromDate.getFullYear();
+            const month = String(effectiveFromDate.getMonth() + 1).padStart(
+              2,
+              "0"
+            );
+            const day = String(effectiveFromDate.getDate()).padStart(2, "0");
+            $("#effective_from").val(`${year}-${month}-${day}`);
+          } else {
+            $("#effective_from").val("");
+          }
+
+          if (rowData.effective_to) {
+            const effectiveToDate = new Date(rowData.effective_to);
+            const year = effectiveToDate.getFullYear();
+            const month = String(effectiveToDate.getMonth() + 1).padStart(
+              2,
+              "0"
+            );
+            const day = String(effectiveToDate.getDate()).padStart(2, "0");
+            $("#effective_to").val(`${year}-${month}-${day}`);
+          } else {
+            $("#effective_to").val("");
+          }
+
+          $("#openGstMasterPanelBtn").click();
+          $("#submitGstMaster").text("Update");
+          $("#gstMasterPanelHeading").text("Edit GST Master");
+          $("#submitGstMaster").attr(
+            "consolidated_gst_master_id",
+            $(e.target).attr("consolidated_gst_master_id")
+          );
+        } catch (error) {
+          console.error("Error in GST master edit:", error);
+          toastr.error("Error loading GST master data for editing");
+        }
+      });
+
+      $(document).on("click", ".delGstMaster", function (e) {
+        const id = $(this).attr("consolidated_gst_master_id");
+        $.confirm({
+          title: "Delete GST Master?",
+          content: "This action cannot be undone.",
+          type: "red",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: `/api/v1/master/consolidated-gst-master?id=${id}`,
+                  method: "DELETE",
+                })
+                  .done(() => {
+                    toastr.success("GST Master deleted");
+                    loadGstMasterTableData();
+                  })
+                  .fail((err) => toastr.error(err.responseJSON?.message));
+              },
+            },
+            cancel: function () {},
+          },
+        });
+      });
+
+      function saveGstMaster() {
+        const id = $("#submitGstMaster").attr("consolidated_gst_master_id");
+        let url = "/api/v1/master/consolidated-gst-master";
+        let method = id ? "PUT" : "POST";
+
+        let body = {
+          hsn_code: $("#gst_hsn_code").val(),
+          gst_name: $("#gst_name").val(),
+          cgst_rate: parseFloat($("#cgst_rate").val()) || 0,
+          sgst_rate: parseFloat($("#sgst_rate").val()) || 0,
+          igst_rate: parseFloat($("#igst_rate").val()) || 0,
+          effective_from: $("#effective_from").val(),
+          effective_to: $("#effective_to").val(),
+        };
+
+        if (id) {
+          body = { id, consolidated_gst_master_data: body };
+        }
+
+        if (!id && !body.hsn_code) {
+          toastr.error("HSN Code is required");
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(body),
+          success: (resp) => {
+            toastr.success(resp.message);
+            $("#closeGstMasterPanelBtn").click();
+            loadGstMasterTableData();
+            resetAllInputs();
+          },
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error");
+          },
+        });
+      }
+
+      // Chart of Accounts functions
+      $("#openChartOfAccountsPanelBtn").click(function () {
+        openSlidePanel(
+          "chartOfAccountsSlideInPanel",
+          "chartOfAccountsPanelHeading",
+          "Chart of Accounts",
+          "submitChartOfAccounts",
+          "chart_of_accounts_id"
+        );
+        loadParentAccounts();
+      });
+
+      $("#closeChartOfAccountsPanelBtn").click(function () {
+        closeSlidePanel("chartOfAccountsSlideInPanel");
+      });
+
+      $("#submitChartOfAccounts").click(function () {
+        saveChartOfAccounts();
+      });
+
+      $("#resetChartOfAccountsDataBtn").on("click", resetAllInputs);
+
+      function loadParentAccounts() {
+        $.ajax({
+          url: "/api/v1/master/chart-of-accounts/list",
+          method: "GET",
+          success: (data) => {
+            $("#coa_parent_id").select2({
+              placeholder: "Select Parent Account",
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
+                return {
+                  id: item.id,
+                  text: `${item.account_code} - ${item.account_name}`,
+                };
+              }),
+            });
+          },
+          error: (err) => {
+            toastr.error("Error loading parent accounts");
+          },
+        });
+      }
+
+      function loadChartOfAccountsTableData() {
+        $("#chartOfAccountsTable").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          responsive: false,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+
+          ajax: {
+            url: "/api/v1/master/chart-of-accounts",
+            type: "GET",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
+            error: function (xhr) {
+              toastr.error(xhr.responseJSON?.message || "Error loading data");
+            },
+          },
+
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "account_code" },
+            { data: "account_name" },
+            { data: "account_type" },
+            { data: "parent_account_name" },
+            { data: "level" },
+            { data: "is_posting" },
+            { data: "created_at" },
+          ],
+
+          columnDefs: [
+            {
+              targets: 0,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-pen-to-square editChartOfAccounts"
+                   chart_of_accounts_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Edit Chart of Accounts"></i>`,
+            },
+            {
+              targets: 1,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-trash delChartOfAccounts"
+                   chart_of_accounts_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Delete Chart of Accounts"></i>`,
+            },
+            {
+              targets: 7,
+              render: (data, type, row) => (data ? "Yes" : "No"),
+            },
+            {
+              targets: 8,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+                const months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+                return `${String(date.getDate()).padStart(2, "0")}-${
+                  months[date.getMonth()]
+                }-${date.getFullYear()} ${hrs}:${mins} ${ampm}`;
+              },
+            },
+          ],
+        });
+      }
+
+      $(document).on("click", ".editChartOfAccounts", function (e) {
+        const row = $(e.target).closest("tr").children("td");
+        $("#coa_account_code").val(row.eq(2).text());
+        $("#coa_account_name").val(row.eq(3).text());
+        $("#coa_account_type").val(row.eq(4).text());
+        $("#coa_parent_id").val(row.eq(5).attr("parent_id")).trigger("change");
+        $("#coa_is_posting").val(row.eq(7).text() === "Yes" ? "true" : "false");
+        $("#coa_description").val(row.eq(6).text()); // Assuming description is in level column for now
+
+        $("#openChartOfAccountsPanelBtn").click();
+        $("#submitChartOfAccounts").text("Update");
+        $("#chartOfAccountsPanelHeading").text("Edit Chart of Accounts");
+        $("#submitChartOfAccounts").attr(
+          "chart_of_accounts_id",
+          $(e.target).attr("chart_of_accounts_id")
+        );
+      });
+
+      $(document).on("click", ".delChartOfAccounts", function (e) {
+        const id = $(this).attr("chart_of_accounts_id");
+        $.confirm({
+          title: "Delete Chart of Accounts?",
+          content: "This action cannot be undone.",
+          type: "red",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: `/api/v1/master/chart-of-accounts?id=${id}`,
+                  method: "DELETE",
+                })
+                  .done(() => {
+                    toastr.success("Chart of Accounts deleted");
+                    loadChartOfAccountsTableData();
+                  })
+                  .fail((err) => toastr.error(err.responseJSON?.message));
+              },
+            },
+            cancel: function () {},
+          },
+        });
+      });
+
+      function saveChartOfAccounts() {
+        const id = $("#submitChartOfAccounts").attr("chart_of_accounts_id");
+        let url = "/api/v1/master/chart-of-accounts";
+        let method = id ? "PUT" : "POST";
+
+        let body = {
+          account_code: $("#coa_account_code").val(),
+          account_name: $("#coa_account_name").val(),
+          account_type: $("#coa_account_type").val(),
+          parent_id: $("#coa_parent_id").val() || null,
+          is_posting: $("#coa_is_posting").val() === "true",
+          description: $("#coa_description").val(),
+        };
+
+        if (id) {
+          body = { id, chart_of_accounts_data: body };
+        }
+
+        if (!body.account_code || !body.account_name) {
+          toastr.error("Account Code and Name are required");
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(body),
+          success: (resp) => {
+            toastr.success(resp.message);
+            $("#closeChartOfAccountsPanelBtn").click();
+            loadChartOfAccountsTableData();
+            resetAllInputs();
+          },
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error");
+          },
+        });
+      }
+
+      // Product GST Mapping functions
+      $("#openProductGstMappingPanelBtn").click(function () {
+        openSlidePanel(
+          "productGstMappingSlideInPanel",
+          "productGstMappingPanelHeading",
+          "Product GST Mapping",
+          "submitProductGstMapping",
+          "product_gst_mapping_id"
+        );
+        loadProductsForMapping();
+        loadGstMastersForMapping();
+      });
+
+      $("#closeProductGstMappingPanelBtn").click(function () {
+        closeSlidePanel("productGstMappingSlideInPanel");
+      });
+
+      $("#submitProductGstMapping").click(function () {
+        saveProductGstMapping();
+      });
+
+      $("#resetProductGstMappingDataBtn").on("click", resetAllInputs);
+
+      function loadProductsForMapping() {
+        $.ajax({
+          url: "/api/v1/master/product/list",
+          method: "GET",
+          success: (data) => {
+            $("#pgm_product_id").select2({
+              placeholder: "Select Product",
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
+                return { id: item.id, text: item.product_name };
+              }),
+            });
+          },
+          error: (err) => {
+            toastr.error("Error loading products");
+          },
+        });
+      }
+
+      function loadGstMastersForMapping() {
+        $.ajax({
+          url: "/api/v1/master/consolidated-gst-master/list",
+          method: "GET",
+          success: (data) => {
+            $("#pgm_gst_master_id").select2({
+              placeholder: "Select GST Master",
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
+                return {
+                  id: item.id,
+                  text: `${item.hsn_code} - ${item.description}`,
+                };
+              }),
+            });
+          },
+          error: (err) => {
+            toastr.error("Error loading GST masters");
+          },
+        });
+      }
+
+      function loadProductGstMappingTableData() {
+        $("#productGstMappingTable").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          responsive: false,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+
+          ajax: {
+            url: "/api/v1/master/product-gst-mapping",
+            type: "GET",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
+            error: function (xhr) {
+              toastr.error(xhr.responseJSON?.message || "Error loading data");
+            },
+          },
+
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "product_name" },
+            { data: "gst_hsn_code" },
+            { data: "override_gst_rate" },
+            { data: "effective_from" },
+            { data: "effective_to" },
+            { data: "note" },
+            { data: "created_at" },
+          ],
+
+          columnDefs: [
+            {
+              targets: 0,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-pen-to-square editProductGstMapping"
+                   product_gst_mapping_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Edit Product GST Mapping"></i>`,
+            },
+            {
+              targets: 1,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-trash delProductGstMapping"
+                   product_gst_mapping_id="${row.id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Delete Product GST Mapping"></i>`,
+            },
+            {
+              targets: 4,
+              render: (data, type, row) => (data ? `${data}%` : "Default"),
+            },
+            {
+              targets: 5,
+              render: (data, type, row) =>
+                data ? formatDate(new Date(data)) : "",
+            },
+            {
+              targets: 6,
+              render: (data, type, row) =>
+                data ? formatDate(new Date(data)) : "",
+            },
+            {
+              targets: 8,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+                const months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+                return `${String(date.getDate()).padStart(2, "0")}-${
+                  months[date.getMonth()]
+                }-${date.getFullYear()} ${hrs}:${mins} ${ampm}`;
+              },
+            },
+          ],
+        });
+      }
+
+      $(document).on("click", ".editProductGstMapping", function (e) {
+        const row = $(e.target).closest("tr").children("td");
+        $("#pgm_product_id")
+          .val(row.eq(2).attr("product_id"))
+          .trigger("change");
+        $("#pgm_gst_master_id")
+          .val(row.eq(3).attr("gst_master_id"))
+          .trigger("change");
+        $("#pgm_override_gst_rate").val(
+          row.eq(4).text().replace("%", "").replace("Default", "")
+        );
+        $("#pgm_effective_from").val(row.eq(5).text());
+        $("#pgm_effective_to").val(row.eq(6).text());
+        $("#pgm_note").val(row.eq(7).text());
+
+        $("#openProductGstMappingPanelBtn").click();
+        $("#submitProductGstMapping").text("Update");
+        $("#productGstMappingPanelHeading").text("Edit Product GST Mapping");
+        $("#submitProductGstMapping").attr(
+          "product_gst_mapping_id",
+          $(e.target).attr("product_gst_mapping_id")
+        );
+      });
+
+      $(document).on("click", ".delProductGstMapping", function (e) {
+        const id = $(this).attr("product_gst_mapping_id");
+        $.confirm({
+          title: "Delete Product GST Mapping?",
+          content: "This action cannot be undone.",
+          type: "red",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: `/api/v1/master/product-gst-mapping?id=${id}`,
+                  method: "DELETE",
+                })
+                  .done(() => {
+                    toastr.success("Product GST Mapping deleted");
+                    loadProductGstMappingTableData();
+                  })
+                  .fail((err) => toastr.error(err.responseJSON?.message));
+              },
+            },
+            cancel: function () {},
+          },
+        });
+      });
+
+      function saveProductGstMapping() {
+        const id = $("#submitProductGstMapping").attr("product_gst_mapping_id");
+        let url = "/api/v1/master/product-gst-mapping";
+        let method = id ? "PUT" : "POST";
+
+        let body = {
+          product_id: $("#pgm_product_id").val(),
+          gst_master_id: $("#pgm_gst_master_id").val(),
+          override_gst_rate: $("#pgm_override_gst_rate").val()
+            ? parseFloat($("#pgm_override_gst_rate").val())
+            : null,
+          effective_from: $("#pgm_effective_from").val() || null,
+          effective_to: $("#pgm_effective_to").val() || null,
+          note: $("#pgm_note").val(),
+        };
+
+        if (id) {
+          body = { id, product_gst_mapping_data: body };
+        }
+
+        if (!body.product_id || !body.gst_master_id) {
+          toastr.error("Product and GST Master are required");
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(body),
+          success: (resp) => {
+            toastr.success(resp.message);
+            $("#closeProductGstMappingPanelBtn").click();
+            loadProductGstMappingTableData();
+            resetAllInputs();
+          },
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error");
+          },
+        });
+      }
 
       // ---------------------------------------------------------
       // ----------------------- Locations -----------------------
