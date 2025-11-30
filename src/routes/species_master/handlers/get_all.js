@@ -8,6 +8,7 @@ export const GetAll = (
     division_name,
     start,
     length,
+    draw,
     "search[value]": search,
   },
   session,
@@ -22,6 +23,7 @@ export const GetAll = (
         division_name,
         start,
         length,
+        draw,
         search,
       });
 
@@ -32,9 +34,7 @@ export const GetAll = (
         });
       }
 
-      resolve({
-        data: species_master,
-      });
+      resolve(species_master);
     } catch (err) {
       fastify.log.error(err);
       reject(err);

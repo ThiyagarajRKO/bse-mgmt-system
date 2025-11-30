@@ -13,6 +13,7 @@ export const createSchema = {
         species_code: { type: "string" },
         species_name: { type: "string" },
         scientific_name: { type: "string" },
+        hsn_code: { type: "string" },
         description: { type: "string" },
       },
     },

@@ -55,6 +55,11 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         type: DataTypes.TEXT,
       },
+      hsn_code: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "HSN code for GST purposes",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },

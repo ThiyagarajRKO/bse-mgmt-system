@@ -125,6 +125,7 @@ export const GetAll = ({
   start,
   length,
   search,
+  draw,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -181,7 +182,23 @@ export const GetAll = ({
         order: [["created_at", "desc"]],
       });
 
-      resolve(suppliers);
+      // Get total count without filters for DataTables
+      const totalCount = await models.SpeciesMaster.count({
+        where: { is_active: true },
+        include: [
+          {
+            model: models.DivisionMaster,
+            where: { is_active: true },
+          },
+        ],
+      });
+
+      resolve({
+        draw: draw,
+        data: suppliers.rows.map((row) => row.toJSON()),
+        recordsTotal: totalCount,
+        recordsFiltered: suppliers.count,
+      });
     } catch (err) {
       reject(err);
     }

@@ -324,6 +324,13 @@
         border-color: #627293;
       }
 
+      .slideInPanel input:disabled {
+        opacity: 1;
+        background-color: transparent;
+        color: #f7f9fc;
+        border-color: rgba(98, 114, 147, 0.6);
+      }
+
       /* Select */
       .slideInPanel .select2-container {
         background-color: transparent !important;
@@ -1371,6 +1378,17 @@
             </div>
 
             <div class="form-group my-3">
+              <label for="hsn_code">HSN Code</label>
+              <input
+                id="hsn_code"
+                class="form-control"
+                type="text"
+                placeholder="eg. 0302"
+                name="hsn_code"
+              />
+            </div>
+
+            <div class="form-group my-3">
               <label for="species_description">Description</label>
               <input
                 id="species_description"
@@ -1418,6 +1436,7 @@
                 <th class="fw-bold"><span>Division Name</span></th>
                 <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Scientific Name</span></th>
+                <th class="fw-bold"><span>HSN Code</span></th>
                 <th class="fw-bold"><span>Description</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
@@ -2725,75 +2744,117 @@
               <input
                 id="tax_code"
                 class="form-control"
-                placeholder="eg. xyz"
+                placeholder="eg. TC_GST_18"
                 type="text"
                 name="tax_code"
-                rows="4"
+                required
               />
             </div>
 
             <div class="form-group my-3">
-              <label for="tax_notes">Description</label>
+              <label for="tax_code_name">Tax Code Name</label>
               <input
-                id="tax_notes"
+                id="tax_code_name"
                 class="form-control"
+                placeholder="eg. GST@18%"
                 type="text"
-                placeholder="eg. xyz"
-                name="tax_notes"
+                name="tax_code_name"
+                required
               />
             </div>
 
-            <div class="form-group mt-4">
+            <div class="form-group my-3">
+              <label for="description">Description</label>
+              <input
+                id="description"
+                class="form-control"
+                type="text"
+                placeholder="eg. GST at 18% for goods"
+                name="description"
+              />
+            </div>
+
+            <div class="form-group my-3">
               <label for="tax_type">Tax Type</label>
               <select
-                class="form-control input-dropdown"
+                class="form-control input-dropdown w-100"
                 id="tax_type"
                 name="tax_type"
-              ></select>
+                required
+              >
+                <option value="">Select Tax Type</option>
+                <option value="GST">GST</option>
+                <option value="IGST">IGST</option>
+                <option value="NON_GST">Non-GST</option>
+                <option value="ZERO_RATED">Zero Rated</option>
+                <option value="EXEMPT">Exempt</option>
+                <option value="REVERSE_CHARGE">Reverse Charge</option>
+              </select>
             </div>
 
             <div class="form-group my-3">
-              <label for="cgst_rate">CGST Rate</label>
+              <label for="supply_type">Supply Type</label>
+              <select
+                class="form-control input-dropdown w-100"
+                id="supply_type"
+                name="supply_type"
+                required
+              >
+                <option value="">Select Supply Type</option>
+                <option value="INWARD">Inward Supply (Purchase)</option>
+                <option value="OUTWARD">Outward Supply (Sales)</option>
+              </select>
+            </div>
+
+            <div class="form-group my-3">
+              <label for="hsn_code">HSN Code</label>
               <input
-                id="cgst_rate"
+                id="hsn_code"
                 class="form-control"
                 type="text"
-                placeholder="eg. 5%"
-                name="cgst_rate"
+                placeholder="eg. 030617"
+                name="hsn_code"
               />
             </div>
 
             <div class="form-group my-3">
-              <label for="sgst_rate">SGST Rate</label>
+              <label for="effective_from">Effective From</label>
               <input
-                id="sgst_rate"
+                id="effective_from"
                 class="form-control"
-                type="text"
-                placeholder="eg. 5%"
-                name="sgst_rate"
+                type="date"
+                name="effective_from"
+                value="<%= new Date().toISOString().split('T')[0] %>"
+                required
               />
             </div>
 
             <div class="form-group my-3">
-              <label for="igst_rate">IGST Rate</label>
-              <input
-                id="igst_rate"
-                class="form-control"
-                type="text"
-                placeholder="eg. 5%"
-                name="igst_rate"
-              />
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="is_export_applicable"
+                  name="is_export_applicable"
+                />
+                <label class="form-check-label" for="is_export_applicable">
+                  Export Applicable
+                </label>
+              </div>
             </div>
 
             <div class="form-group my-3">
-              <label for="cess_rate">CESS Rate</label>
-              <input
-                id="igst_rate"
-                class="form-control"
-                type="text"
-                placeholder="eg. 5%"
-                name="cess_rate"
-              />
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="is_reverse_charge"
+                  name="is_reverse_charge"
+                />
+                <label class="form-check-label" for="is_reverse_charge">
+                  Reverse Charge Applicable
+                </label>
+              </div>
             </div>
 
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
@@ -2830,12 +2891,13 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Tax Code</span></th>
-                <th class="fw-bold"><span>Tax Description</span></th>
+                <th class="fw-bold"><span>Tax Code Name</span></th>
                 <th class="fw-bold"><span>Tax Type</span></th>
-                <th class="fw-bold"><span>CGST Rate</span></th>
-                <th class="fw-bold"><span>SGST Rate</span></th>
-                <th class="fw-bold"><span>IGST Rate</span></th>
-                <th class="fw-bold"><span>cess Rate</span></th>
+                <th class="fw-bold"><span>Supply Type</span></th>
+                <th class="fw-bold"><span>HSN Code</span></th>
+                <th class="fw-bold"><span>Export</span></th>
+                <th class="fw-bold"><span>Reverse Charge</span></th>
+                <th class="fw-bold"><span>Effective From</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
             </thead>
@@ -3678,6 +3740,7 @@
 
       function resetAllInputs() {
         $("input").val("");
+        $("input").prop("disabled", false);
 
         // Reset all date inputs
         var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -3707,6 +3770,11 @@
         $("#priceList_product").val(null).trigger("change");
         $("#carrier_country").val(null).trigger("change");
         $("#shipping_carrier_name").val(null).trigger("change");
+        $("#tax_type").val(null).trigger("change");
+        $("#supply_type").val(null).trigger("change");
+
+        // Reset checkboxes
+        $("input[type='checkbox']").prop("checked", false);
       }
 
       function openSlidePanel(
@@ -4289,6 +4357,308 @@
           },
           error: (err) => {
             toastr.error(err.responseJSON?.message || "Error");
+          },
+        });
+      }
+
+      // Tax Code Master functions
+      $("#openTaxCodePanelBtn").click(function () {
+        openSlidePanel(
+          "taxCodeSlideInPanel",
+          "taxCodePanelHeading",
+          "Tax Code Master",
+          "submitTaxCode",
+          "tax_code_master_id"
+        );
+        loadGstMasterDropdown();
+      });
+
+      $("#closeTaxCodePanelBtn").click(function () {
+        closeSlidePanel("taxCodeSlideInPanel");
+      });
+
+      $("#submitTaxCode").click(function () {
+        saveTaxCode();
+      });
+
+      $("#resetTaxCodeDataBtn").on("click", resetAllInputs);
+
+      function loadGstMasterDropdown() {
+        $.ajax({
+          url: "/api/v1/master/consolidated-gst-master/list",
+          method: "GET",
+          success: (data) => {
+            $("#gst_rate_id").select2({
+              placeholder: "Select GST Rate",
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
+                const totalRate = (
+                  parseFloat(item.cgst_rate || 0) +
+                  parseFloat(item.sgst_rate || 0) +
+                  parseFloat(item.igst_rate || 0)
+                ).toFixed(2);
+                return {
+                  id: item.gst_rate_id,
+                  text: `${item.hsn_code} - ${item.gst_name} (${totalRate}%)`,
+                };
+              }),
+            });
+          },
+          error: (err) => {
+            toastr.error("Error loading GST rates");
+          },
+        });
+
+        // Initialize tax type dropdown with Select2
+        $("#tax_type").select2({
+          placeholder: "Select Tax Type",
+          allowClear: true,
+        });
+
+        // Initialize supply type dropdown with Select2
+        $("#supply_type").select2({
+          placeholder: "Select Supply Type",
+          allowClear: true,
+        });
+      }
+
+      function loadTaxCodeTableData() {
+        $("#taxCodeTable").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          responsive: false,
+          scrollX: true,
+          scrollY: "40vh",
+          ordering: false,
+
+          ajax: {
+            url: "/api/v1/master/tax-code-master",
+            type: "GET",
+            xhrFields: { withCredentials: true },
+            dataSrc: "data",
+
+            error: function (xhr) {
+              toastr.error(
+                xhr.responseJSON?.message || "Error loading tax code data"
+              );
+            },
+          },
+
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "tax_code" },
+            { data: "tax_code_name" },
+            { data: "tax_type" },
+            { data: "supply_type" },
+            { data: "hsn_code" },
+            { data: "is_export_applicable" },
+            { data: "is_reverse_charge" },
+            { data: "effective_from" },
+            { data: "created_at" },
+          ],
+
+          columnDefs: [
+            {
+              targets: 0,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-pen-to-square editTaxCode"
+                   tax_code_master_id="${row.tax_code_id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Edit Tax Code"></i>`,
+            },
+            {
+              targets: 1,
+              className: "text-left",
+              render: (data, type, row) => `
+                <i class="fa fa-trash delTaxCode"
+                   tax_code_master_id="${row.tax_code_id}"
+                   style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                   title="Delete Tax Code"></i>`,
+            },
+            {
+              targets: 4,
+              render: (data, type, row) => row.tax_type || "",
+            },
+            {
+              targets: 5,
+              render: (data, type, row) => row.supply_type || "",
+            },
+            {
+              targets: 6,
+              render: (data, type, row) => row.hsn_code || "",
+            },
+            {
+              targets: 7,
+              render: (data, type, row) =>
+                row.is_export_applicable ? "Yes" : "No",
+            },
+            {
+              targets: 8,
+              render: (data, type, row) =>
+                row.is_reverse_charge ? "Yes" : "No",
+            },
+            {
+              targets: 9,
+              render: (data, type, row) => {
+                if (!row.effective_from) return "";
+                const date = new Date(row.effective_from);
+                if (isNaN(date)) return "";
+                return date.toLocaleDateString();
+              },
+            },
+            {
+              targets: 10,
+              render: (data, type, row) => {
+                if (!row.created_at) return "";
+                const date = new Date(row.created_at);
+                if (isNaN(date)) return "";
+                const months = [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ];
+                let hrs = date.getHours();
+                const ampm = hrs >= 12 ? "PM" : "AM";
+                hrs = hrs % 12 || 12;
+                const mins = String(date.getMinutes()).padStart(2, "0");
+                return `${String(date.getDate()).padStart(2, "0")}-${
+                  months[date.getMonth()]
+                }-${date.getFullYear()} ${hrs}:${mins} ${ampm}`;
+              },
+            },
+          ],
+        });
+      }
+
+      $(document).on("click", ".editTaxCode", function (e) {
+        try {
+          const table = $("#taxCodeTable").DataTable();
+          const rowData = table.row($(e.target).closest("tr")).data();
+
+          if (!rowData) {
+            console.error("No row data found for tax code edit");
+            toastr.error("Error loading tax code data for editing");
+            return;
+          }
+
+          $("#openTaxCodePanelBtn").click();
+
+          $("#tax_code").val(rowData.tax_code || "");
+          $("#tax_code").prop("disabled", true);
+          $("#tax_code_name").val(rowData.tax_code_name || "");
+          $("#description").val(rowData.description || "");
+          $("#tax_type")
+            .val(rowData.tax_type || "")
+            .trigger("change");
+          $("#supply_type")
+            .val(rowData.supply_type || "")
+            .trigger("change");
+          $("#hsn_code").val(rowData.hsn_code || "");
+          $("#effective_from").val(
+            rowData.effective_from
+              ? new Date(rowData.effective_from).toISOString().split("T")[0]
+              : ""
+          );
+          $("#is_export_applicable").prop(
+            "checked",
+            rowData.is_export_applicable || false
+          );
+          $("#is_reverse_charge").prop(
+            "checked",
+            rowData.is_reverse_charge || false
+          );
+
+          $("#submitTaxCode").text("Update");
+          $("#taxCodePanelHeading").text("Edit Tax Code Master");
+          $("#submitTaxCode").attr("tax_code_master_id", rowData.tax_code_id);
+        } catch (err) {
+          console.error("Error in editTaxCode:", err);
+          toastr.error("Error loading tax code for editing");
+        }
+      });
+
+      $(document).on("click", ".delTaxCode", function (e) {
+        const id = $(this).attr("tax_code_master_id");
+        $.confirm({
+          title: "Delete Tax Code?",
+          content: "This action cannot be undone.",
+          type: "red",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: `/api/v1/master/tax-code-master/update/${id}`,
+                  method: "DELETE",
+                })
+                  .done(() => {
+                    toastr.success("Tax Code deleted");
+                    loadTaxCodeTableData();
+                  })
+                  .fail((err) => toastr.error(err.responseJSON?.message));
+              },
+            },
+            cancel: function () {},
+          },
+        });
+      });
+
+      function saveTaxCode() {
+        const id = $("#submitTaxCode").attr("tax_code_master_id");
+        let url = "/api/v1/master/tax-code-master/create";
+        let method = "POST";
+
+        let body = {
+          tax_code_name: $("#tax_code_name").val(),
+          description: $("#description").val(),
+          tax_type: $("#tax_type").val(),
+          supply_type: $("#supply_type").val(),
+          hsn_code: $("#hsn_code").val(),
+          effective_from: $("#effective_from").val(),
+          is_export_applicable: $("#is_export_applicable").is(":checked"),
+          is_reverse_charge: $("#is_reverse_charge").is(":checked"),
+        };
+
+        if (id) {
+          url = `/api/v1/master/tax-code-master/update/${id}`;
+          method = "PUT";
+        } else {
+          // Only include tax_code for new records
+          body.tax_code = $("#tax_code").val();
+        }
+
+        if (!body.tax_code_name) {
+          toastr.error("Tax Code Name is required");
+          return;
+        }
+
+        $.ajax({
+          url,
+          method,
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify(body),
+          success: (resp) => {
+            toastr.success(resp.message);
+            $("#closeTaxCodePanelBtn").click();
+            loadTaxCodeTableData();
+            resetAllInputs();
+          },
+          error: (err) => {
+            toastr.error(err.responseJSON?.message || "Error saving tax code");
           },
         });
       }
@@ -7469,6 +7839,7 @@
           ajax: {
             type: "GET",
             url: "/api/v1/master/species",
+            xhrFields: { withCredentials: true },
             error: function (xhr, error, code) {
               $("#speciesTable").DataTable().destroy();
               $("#speciesTable").DataTable({ scrollX: true, ordering: false });
@@ -7480,11 +7851,11 @@
               }
             },
             dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+              json.recordsTotal = json.recordsTotal || json.data?.rows?.length;
+              json.recordsFiltered = json.recordsFiltered || json.data?.count;
 
               // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+              return json?.data?.rows || json?.data;
             },
           },
           columns: [
@@ -7494,6 +7865,7 @@
             { data: "DivisionMaster.division_name" },
             { data: "species_name" },
             { data: "scientific_name" },
+            { data: "hsn_code" },
             { data: "description" },
             { data: "created_at" },
           ],
@@ -7589,8 +7961,11 @@
         $("#scientific_name").val(
           $(e.target).closest("tr").children("td").eq(5).text()
         );
-        $("#species_description").val(
+        $("#hsn_code").val(
           $(e.target).closest("tr").children("td").eq(6).text()
+        );
+        $("#species_description").val(
+          $(e.target).closest("tr").children("td").eq(7).text()
         );
 
         // Opening Slied Panel
@@ -7666,12 +8041,13 @@
           contentType: "application/json",
           crossDomain: true,
           processData: false,
+          xhrFields: { withCredentials: true },
           success: (data) => {
             // Loading data
             $("#speciesDivision").select2({
               placeholder: "Choose a division",
               allowClear: true,
-              data: $.map(data?.data?.rows, function (item) {
+              data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
                   text: item.division_name,
@@ -7704,6 +8080,7 @@
           species_name: $("#species_name").val(),
           species_code: $("#species_code").val(),
           scientific_name: $("#scientific_name").val(),
+          hsn_code: $("#hsn_code").val(),
           description: $("#species_description").val(),
         };
 
