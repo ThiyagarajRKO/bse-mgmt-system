@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      // Association with GradeSizeMapping
+      SizeMaster.hasMany(models.GradeSizeMapping, {
+        foreignKey: "size_id",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
     }
   }
   SizeMaster.init(
@@ -34,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       size: {
+        type: DataTypes.STRING,
+      },
+      unit_of_measure: {
         type: DataTypes.STRING,
       },
       description: {

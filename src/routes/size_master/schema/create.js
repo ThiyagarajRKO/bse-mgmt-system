@@ -5,6 +5,7 @@ export const createSchema = {
       required: ["size"],
       properties: {
         size: { type: "string" },
+        unit_of_measure: { type: "string" },
         description: { type: "string" },
       },
     },

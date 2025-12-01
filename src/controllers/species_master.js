@@ -122,8 +122,8 @@ export const GetAll = ({
   species_name,
   scientific_name,
   division_name,
-  start,
-  length,
+  start = 0,
+  length = 10,
   search,
   draw,
 }) => {
