@@ -75,8 +75,8 @@ export const speciesMasterRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      // For DataTables, return the result directly
-      return reply.code(result.statusCode || 200).send(result);
+      // Return DataTables format directly (no wrapper)
+      return reply.code(200).send(result);
     } catch (err) {
       reply.code(err?.statusCode || 400).send({
         success: false,
