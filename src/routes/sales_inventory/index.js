@@ -14,18 +14,18 @@ export const salesInventoryRoute = (fastify, opts, done) => {
         fastify
       );
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/:sales_inventory_id", getSchema, async (req, reply) => {
     try {
@@ -35,18 +35,18 @@ export const salesInventoryRoute = (fastify, opts, done) => {
         fastify
       );
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   done();
 };

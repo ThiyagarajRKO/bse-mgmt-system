@@ -2,6 +2,7 @@ import { Create } from "./handlers/create";
 import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
+import { GetByHsnCode } from "./handlers/get_by_hsn_code";
 import { List } from "./handlers/list";
 import { Delete } from "./handlers/delete";
 
@@ -10,6 +11,7 @@ import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
+import { getByHsnCodeSchema } from "./schema/get_by_hsn_code";
 import { deleteSchema } from "./schema/delete";
 
 const consolidatedGstMasterRoute = (fastify, opts, done) => {
@@ -101,6 +103,22 @@ const consolidatedGstMasterRoute = (fastify, opts, done) => {
       return reply
         .code(err?.statusCode || 500)
         .send({ success: false, message: err?.message || err });
+    }
+  });
+
+  // GET GST RATE BY HSN CODE
+  fastify.get("/by-hsn/:hsn_code", getByHsnCodeSchema, async (req, reply) => {
+    try {
+      const params = { ...req.params };
+
+      const result = await GetByHsnCode(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send(result);
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
     }
   });
 

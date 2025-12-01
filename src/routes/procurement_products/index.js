@@ -41,18 +41,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await Create(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.put("/", updateSchema, async (req, reply) => {
     try {
@@ -60,18 +60,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await Update(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/:procurement_product_id", getSchema, async (req, reply) => {
     try {
@@ -79,18 +79,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await Get(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
@@ -98,18 +98,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/names", getNamesSchema, async (req, reply) => {
     try {
@@ -117,18 +117,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await GetNames(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/payment/items", getPaymentItemsSchema, async (req, reply) => {
     try {
@@ -136,18 +136,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await GetPaymentItems(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get(
     "/inventory/purchase/items",
@@ -162,16 +162,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -189,16 +189,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -209,18 +209,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await GetPaidStatus(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -228,18 +228,18 @@ export const procurementProductsRoute = (fastify, opts, done) => {
 
       const result = await Delete(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   // ----------------------------------------------------------------------
   // ------------------------------- Charts -------------------------------
@@ -258,16 +258,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -285,16 +285,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -312,16 +312,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -339,16 +339,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -366,16 +366,16 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );

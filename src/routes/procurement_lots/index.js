@@ -40,18 +40,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await Create(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.put("/", updateSchema, async (req, reply) => {
     try {
@@ -59,18 +59,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await Update(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/:procurement_lot_id", getSchema, async (req, reply) => {
     try {
@@ -78,18 +78,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await Get(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/count/stats", countStatsSchema, async (req, reply) => {
     try {
@@ -97,18 +97,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await CountStats(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -116,18 +116,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await Delete(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
@@ -135,18 +135,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetAll(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   // ----------------------------------------------------------------------
   // ------------------------------ Lots ----------------------------------
@@ -158,18 +158,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetLots(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/lots/dispatch", getDispatchLotsSchema, async (req, reply) => {
     try {
@@ -177,18 +177,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetDispatchLots(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/lots/peeled", getPeeledLotsSchema, async (req, reply) => {
     try {
@@ -196,18 +196,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetPeeledLots(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/lots/packing", getPackingLotsSchema, async (req, reply) => {
     try {
@@ -215,18 +215,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetPackingLots(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/lots/payment", getPaymentLotsSchema, async (req, reply) => {
     try {
@@ -234,18 +234,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetPaymentLots(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   // ----------------------------------------------------------------------
   // ------------------------------- Stats --------------------------------
@@ -257,18 +257,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetStats(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/stats/dispatch", getDispatchStatsSchema, async (req, reply) => {
     try {
@@ -276,18 +276,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetDispatchStats(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get("/stats/peeling", getPeelingStatsSchema, async (req, reply) => {
     try {
@@ -295,18 +295,18 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
       const result = await GetPeelingStats(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
-      });
+      });;
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });
+      });;
     }
-  });
+      });;
 
   fastify.get(
     "/stats/peeled/dispatch",
@@ -321,16 +321,16 @@ export const procurementLotsRoute = (fastify, opts, done) => {
           fastify
         );
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );
@@ -344,16 +344,16 @@ export const procurementLotsRoute = (fastify, opts, done) => {
 
         const result = await GetPackingStats(params, req?.session, fastify);
 
-        reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
           success: true,
           message: result.message,
           data: result?.data,
-        });
+      });;
       } catch (err) {
-        reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,
-        });
+      });;
       }
     }
   );

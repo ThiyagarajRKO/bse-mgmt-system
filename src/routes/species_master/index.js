@@ -18,13 +18,13 @@ export const speciesMasterRoute = (fastify, opts, done) => {
 
       const result = await Create(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -37,13 +37,13 @@ export const speciesMasterRoute = (fastify, opts, done) => {
 
       const result = await Update(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -56,13 +56,13 @@ export const speciesMasterRoute = (fastify, opts, done) => {
 
       const result = await Get(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -78,7 +78,7 @@ export const speciesMasterRoute = (fastify, opts, done) => {
       // Return DataTables format directly (no wrapper)
       return reply.code(200).send(result);
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
@@ -91,13 +91,13 @@ export const speciesMasterRoute = (fastify, opts, done) => {
 
       const result = await Delete(params, req?.session, fastify);
 
-      reply.code(result.statusCode || 200).send({
+      return reply.code(result.statusCode || 200).send({
         success: true,
         message: result.message,
         data: result?.data,
       });
     } catch (err) {
-      reply.code(err?.statusCode || 400).send({
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });
