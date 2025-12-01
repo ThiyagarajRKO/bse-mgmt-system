@@ -142,13 +142,15 @@ export const Delete = async ({ profile_id, id }) => {
   if (!profile_id)
     throw { statusCode: 420, message: "user id must not be empty!" };
 
+  // Soft delete: mark as inactive (removed created_by check to allow any user to delete)
+  // Permission checks should be handled at middleware level
   return await models.CompanyMaster.update(
     {
       is_active: false,
       updated_by: profile_id,
     },
     {
-      where: { id, created_by: profile_id },
+      where: { id },
       individualHooks: true,
     }
   );

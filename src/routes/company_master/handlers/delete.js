@@ -8,7 +8,12 @@ export const Delete = ({ profile_id, company_master_id }, session, fastify) => {
         id: company_master_id,
       });
 
-      if (company_master > 0) {
+      // Sequelize update() returns [affectedCount, affectedRows]
+      const affectedCount = Array.isArray(company_master)
+        ? company_master[0]
+        : company_master;
+
+      if (affectedCount > 0) {
         return resolve({
           message: "company master has been deleted successfully",
         });
