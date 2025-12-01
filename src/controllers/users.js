@@ -92,6 +92,10 @@ export const Get = ({ id, username, email, phone, role_id }) => {
 
       const user = await models.Users.findOne({
         required: true,
+        subQuery: false,
+        order: [
+          [{ as: "creator", model: models.UserProfiles }, "created_at", "ASC"],
+        ], // Always return the earliest created profile for consistency
         include: [
           {
             required: true,

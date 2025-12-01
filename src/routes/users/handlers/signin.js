@@ -12,6 +12,13 @@ export const SignIn = (
         return reject({ message: "identity should not be empty" });
       }
 
+      if (!role_id) {
+        return reject({
+          statusCode: 400,
+          message: "Role must be selected for login",
+        });
+      }
+
       // Creating User
       let user_data = await Users.Get({
         username,
@@ -23,7 +30,7 @@ export const SignIn = (
       if (!user_data) {
         return reject({
           statusCode: 403,
-          message: "User doesn't exists!",
+          message: "User doesn't exists with the selected role!",
         });
       }
 
@@ -48,6 +55,8 @@ export const SignIn = (
           user_id: user_data?.creator?.id,
           full_name: user_data?.creator?.full_name,
           username: user_data?.username,
+          role_id: user_data?.creator?.role_id,
+          role_name: user_data?.creator?.RoleMaster?.role_name,
         },
       });
     } catch (err) {

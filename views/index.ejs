@@ -141,7 +141,7 @@
         // Initialize Select2 using the DOM options (robust) and also set data
         // for search/autocomplete functionality.
         select.select2({
-          placeholder: "Choose a role",
+          placeholder: "Select a role (required)",
           allowClear: true,
           data: $.map(list, function (item) {
             return {
@@ -150,9 +150,6 @@
             };
           }),
         });
-
-        // Clearing selected value
-        select.val(null).trigger("change");
       },
       error: (jqXhr, textStatus, errorThrown) => {
         if (jqXhr["status"] == 420) {
@@ -171,8 +168,13 @@
       const password = $("#password").val()
       const role_id = $("#roles").val()
 
-      if (!username || !password || !role_id) {
-        toastr["warning"]("Fill all the required fields");
+      if (!username || !password) {
+        toastr["warning"]("Username and password are required");
+        return
+      }
+
+      if (!role_id) {
+        toastr["warning"]("Role selection is mandatory");
         return
       }
 
