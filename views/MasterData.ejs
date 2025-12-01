@@ -1581,6 +1581,22 @@
               />
             </div>
 
+            <div class="form-group my-3">
+              <label for="unit_of_measure">Unit of Measure</label>
+              <select
+                id="unit_of_measure"
+                class="form-control input-dropdown"
+                name="unit_of_measure"
+              >
+                <option value="">Select Unit of Measure</option>
+                <option value="cm">cm</option>
+                <option value="g">g</option>
+                <option value="kg">kg</option>
+                <option value="pcs/kg">pcs/kg</option>
+                <option value="pcs/lb">pcs/lb</option>
+              </select>
+            </div>
+
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitSize" class="col-lg-5 btn btn-danger">Save</div>
               <div
@@ -1615,6 +1631,7 @@
                 <th></th>
                 <th></th>
                 <th class="fw-bold"><span>Size</span></th>
+                <th class="fw-bold"><span>Unit of Measure</span></th>
                 <th class="fw-bold"><span>Description</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
@@ -3772,6 +3789,7 @@
         $("#shipping_carrier_name").val(null).trigger("change");
         $("#tax_type").val(null).trigger("change");
         $("#supply_type").val(null).trigger("change");
+        $("#unit_of_measure").val("").trigger("change");
 
         // Reset checkboxes
         $("input[type='checkbox']").prop("checked", false);
@@ -7941,47 +7959,90 @@
       }
 
       $(document).on("click", ".editSpecies", (e) => {
-        // Changing panel input fields data
-        $("#species_code").val(
-          $(e.target).closest("tr").children("td").eq(2).text()
-        );
-        $("#speciesDivision")
-          .val(
-            $(e.target)
-              .closest("tr")
-              .children("td")
-              .eq(3)
-              .find("span")
-              .attr("division_master_id")
-          )
-          .trigger("change");
-        $("#species_name").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
-        );
-        $("#scientific_name").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
-        );
-        $("#hsn_code").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
-        );
-        $("#species_description").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
-        );
+        // Get the division_master_id before the panel opens
+        const division_master_id = $(e.target)
+          .closest("tr")
+          .children("td")
+          .eq(3)
+          .find("span")
+          .attr("division_master_id");
 
-        // Opening Slied Panel
-        $("#openSpeciesPanelBtn").click();
+        // Load division dropdown data first
+        $.ajax({
+          url: "/api/v1/master/division",
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: false,
+          xhrFields: { withCredentials: true },
+          success: (data) => {
+            // Initialize Select2 with division data
+            $("#speciesDivision").select2({
+              placeholder: "Choose a division",
+              allowClear: true,
+              data: $.map(data?.data, function (item) {
+                return {
+                  id: item.id,
+                  text: item.division_name,
+                };
+              }),
+            });
 
-        // Changing panel heading
-        $("#speciesPanelHeading").text("Edit Species Data");
+            // Set the division value after data is loaded
+            $("#speciesDivision").val(division_master_id).trigger("change");
 
-        // Changing panel button label
-        $("#submitSpecies").text("Update");
+            // Changing panel input fields data
+            $("#species_code").val(
+              $(e.target).closest("tr").children("td").eq(2).text()
+            );
+            $("#species_name").val(
+              $(e.target).closest("tr").children("td").eq(4).text()
+            );
+            $("#scientific_name").val(
+              $(e.target).closest("tr").children("td").eq(5).text()
+            );
+            $("#hsn_code").val(
+              $(e.target).closest("tr").children("td").eq(6).text()
+            );
+            $("#species_description").val(
+              $(e.target).closest("tr").children("td").eq(7).text()
+            );
 
-        // Changing panel button attribute
-        $("#submitSpecies").attr(
-          "species_master_id",
-          $(e.target).attr("species_master_id")
-        );
+            // Opening Slide Panel
+            $("#openSpeciesPanelBtn").click();
+
+            // Changing panel heading
+            $("#speciesPanelHeading").text("Edit Species Data");
+
+            // Changing panel button label
+            $("#submitSpecies").text("Update");
+
+            // Changing panel button attribute
+            $("#submitSpecies").attr(
+              "species_master_id",
+              $(e.target).attr("species_master_id")
+            );
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            console.error("Division loading error:", {
+              status: jqXhr?.status,
+              response: jqXhr?.responseJSON,
+              text: jqXhr?.responseText,
+              error: errorThrown,
+            });
+            if (jqXhr?.status == 420) {
+              toastr["warning"](
+                jqXhr?.responseJSON?.message || "Error loading divisions"
+              );
+            } else {
+              toastr["error"](
+                jqXhr?.responseJSON?.message ||
+                  "Error loading divisions: " + errorThrown
+              );
+            }
+          },
+        });
       });
 
       $(document).on("click", ".delSpecies", (e) => {
@@ -8458,6 +8519,7 @@
             { data: null },
             { data: null },
             { data: "size" },
+            { data: "unit_of_measure" },
             { data: "description" },
             { data: "created_at" },
           ],
@@ -8485,7 +8547,7 @@
               },
             },
             {
-              targets: [4],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -8525,11 +8587,21 @@
         });
       }
 
+      // Initialize Select2 for unit_of_measure dropdown
+      $("#unit_of_measure").select2({
+        placeholder: "Select Unit of Measure",
+        allowClear: true,
+        width: "100%",
+      });
+
       $(document).on("click", ".editSize", (e) => {
         // Changing panel input fields data
         $("#size").val($(e.target).closest("tr").children("td").eq(2).text());
-        $("#size_description")
+        $("#unit_of_measure")
           .val($(e.target).closest("tr").children("td").eq(3).text())
+          .trigger("change");
+        $("#size_description")
+          .val($(e.target).closest("tr").children("td").eq(4).text())
           .trigger("change");
 
         // Opening Slied Panel
@@ -8574,7 +8646,12 @@
                 })
                   .done(function (response) {
                     //loading data to table
-                    loadSizeTableData();
+                    if ($.fn.DataTable.isDataTable("#sizeTable")) {
+                      $("#sizeTable").DataTable().destroy();
+                    }
+                    setTimeout(() => {
+                      loadSizeTableData();
+                    }, 1000);
 
                     toastr.success("Size deleted successfully", "Deleted");
                   })
@@ -8601,6 +8678,7 @@
         let method = "POST";
         let input_params = {
           size: $("#size").val(),
+          unit_of_measure: $("#unit_of_measure").val(),
           description: $("#size_description").val(),
         };
 
@@ -8628,7 +8706,13 @@
 
             $("#closeSizePanelBtn").click();
 
-            loadSizeTableData();
+            // Destroy and reload table to show updated data
+            if ($.fn.DataTable.isDataTable("#sizeTable")) {
+              $("#sizeTable").DataTable().destroy();
+            }
+            setTimeout(() => {
+              loadSizeTableData();
+            }, 1000);
 
             resetAllInputs();
           },
@@ -9526,8 +9610,8 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/v1/master/customer?supplier_master_id=" +
-                    supplier_master_id,
+                    "/api/v1/master/customer?customer_master_id=" +
+                    customer_master_id,
                   method: "DELETE",
                 })
                   .done(function (response) {
