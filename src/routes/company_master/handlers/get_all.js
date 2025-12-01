@@ -18,8 +18,8 @@ export const GetAll = async (params, session, fastify) => {
 
     const response = {
       draw: Number(params.draw || 1),
-      recordsTotal: result.count || 0,
-      recordsFiltered: result.count || 0,
+      recordsTotal: result.recordsTotal || 0,
+      recordsFiltered: result.recordsFiltered || 0,
       data: result.rows || [],
     };
 
