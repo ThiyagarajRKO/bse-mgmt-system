@@ -168,13 +168,6 @@ export const GetAll = ({
             model: models.DivisionMaster,
             where: divisionWhere,
           },
-          {
-            required: false,
-            model: models.ProductCategoryMaster,
-            where: {
-              is_active: true,
-            },
-          },
         ],
         where,
         offset: start,

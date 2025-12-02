@@ -60,6 +60,20 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         comment: "HSN code for GST purposes",
       },
+      parent_category_type: {
+        type: DataTypes.ENUM(
+          "Bivalve",
+          "Cephalopod",
+          "Fish",
+          "Crustacean",
+          "Gastropod",
+          "Other"
+        ),
+        allowNull: true,
+        defaultValue: "Other",
+        comment:
+          "Parent category type of the species (e.g., Bivalve, Cephalopod, Fish, etc.)",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },

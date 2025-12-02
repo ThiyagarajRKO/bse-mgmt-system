@@ -14,6 +14,17 @@ export const createSchema = {
         species_name: { type: "string" },
         scientific_name: { type: "string" },
         hsn_code: { type: "string" },
+        parent_category_type: {
+          type: "string",
+          enum: [
+            "Bivalve",
+            "Cephalopod",
+            "Fish",
+            "Crustacean",
+            "Gastropod",
+            "Other",
+          ],
+        },
         description: { type: "string" },
       },
     },
