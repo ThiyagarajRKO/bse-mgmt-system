@@ -52,14 +52,6 @@ module.exports = (sequelize, DataTypes) => {
       scientific_name: {
         type: DataTypes.STRING,
       },
-      description: {
-        type: DataTypes.TEXT,
-      },
-      hsn_code: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        comment: "HSN code for GST purposes",
-      },
       parent_category_type: {
         type: DataTypes.ENUM(
           "Bivalve",
@@ -73,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "Other",
         comment:
           "Parent category type of the species (e.g., Bivalve, Cephalopod, Fish, etc.)",
+      },
+      hsn_code: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "HSN code for GST purposes",
+      },
+      description: {
+        type: DataTypes.TEXT,
       },
       is_active: {
         type: DataTypes.BOOLEAN,

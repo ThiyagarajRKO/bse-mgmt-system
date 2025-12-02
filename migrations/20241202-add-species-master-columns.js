@@ -4,22 +4,15 @@
  * Consolidated Migration: Add new columns to species_master table
  *
  * This migration consolidates the following column additions:
- * 1. hsn_code (STRING) - GST/HSN tax classification code
- * 2. parent_category_type (ENUM) - Species taxonomic classification
+ * 1. parent_category_type (ENUM) - Species taxonomic classification
+ * 2. hsn_code (STRING) - GST/HSN tax classification code
  *
- * These columns enhance the species data model with tax compliance
- * and hierarchical categorization capabilities.
+ * These columns enhance the species data model with hierarchical categorization
+ * and tax compliance capabilities.
  */
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Add HSN Code column for GST tax compliance
-    await queryInterface.addColumn("species_master", "hsn_code", {
-      type: Sequelize.STRING,
-      allowNull: true,
-      after: "scientific_name",
-    });
-
     // Add Parent Category Type column for species taxonomic classification
     await queryInterface.addColumn("species_master", "parent_category_type", {
       type: Sequelize.ENUM(
@@ -32,15 +25,22 @@ module.exports = {
       ),
       allowNull: true,
       defaultValue: "Other",
-      after: "hsn_code",
+      after: "division_master_id",
+    });
+
+    // Add HSN Code column for GST tax compliance
+    await queryInterface.addColumn("species_master", "hsn_code", {
+      type: Sequelize.STRING,
+      allowNull: true,
+      after: "scientific_name",
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Remove parent_category_type column
-    await queryInterface.removeColumn("species_master", "parent_category_type");
-
     // Remove HSN Code column
     await queryInterface.removeColumn("species_master", "hsn_code");
+
+    // Remove parent_category_type column
+    await queryInterface.removeColumn("species_master", "parent_category_type");
   },
 };

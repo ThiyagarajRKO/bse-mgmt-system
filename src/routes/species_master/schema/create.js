@@ -10,10 +10,6 @@ export const createSchema = {
       ],
       properties: {
         division_master_id: { type: "string" },
-        species_code: { type: "string" },
-        species_name: { type: "string" },
-        scientific_name: { type: "string" },
-        hsn_code: { type: "string" },
         parent_category_type: {
           type: "string",
           enum: [
@@ -25,6 +21,10 @@ export const createSchema = {
             "Other",
           ],
         },
+        species_code: { type: "string" },
+        species_name: { type: "string" },
+        scientific_name: { type: "string" },
+        hsn_code: { type: "string" },
         description: { type: "string" },
       },
     },
