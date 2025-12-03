@@ -1,0 +1,71 @@
+[
+  {
+    "species_code": "5005",
+    "species_name": "Loliolus (Small Squid)",
+    "allowed_forms": [
+      "Whole Round",
+      "Whole Cleaned",
+      "Semi Cleaned",
+      "Fillet",
+      "Strips",
+      "Slices",
+      "Rings",
+      "Tentacles",
+      "Tubes (T1/T2/T3/T4)",
+      "Cooked",
+      "Blanched",
+      "Marinated",
+      "Breaded",
+      "Smoked",
+      "Grilled",
+      "Steamed",
+      "Pre-cooked IQF"
+    ]
+  },
+  {
+    "species_code": "C001",
+    "species_name": "Blue Crab",
+    "allowed_forms": [
+      "Whole Crab",
+      "Half Cut Crab",
+      "Claw Meat",
+      "Knuckle Meat",
+      "Leg Meat",
+      "Body Meat",
+      "Claw & Leg Combo",
+      "Jumbo Lump",
+      "Lump",
+      "Special",
+      "Flake",
+      "Soft Shell Whole",
+      "Soft Shell Cut",
+      "Crab Clusters",
+      "Cooked",
+      "Blanched",
+      "Marinated",
+      "Breaded",
+      "Smoked",
+      "Grilled",
+      "Steamed",
+      "Pre-cooked IQF"
+    ]
+  },
+  {
+    "species_code": "4506",
+    "species_name": "Variable Abalone",
+    "allowed_forms": [
+      "Whole Cleaned",
+      "Meat Only",
+      "Cooked Meat",
+      "Sliced Meat",
+      "Cooked",
+      "Blanched",
+      "Marinated",
+      "Breaded",
+      "Smoked",
+      "Grilled",
+      "Steamed",
+      "Pre-cooked IQF"
+    ]
+  }
+]

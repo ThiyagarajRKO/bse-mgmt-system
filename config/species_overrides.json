@@ -1,0 +1,12 @@
+{
+  "_comment": "Per-species overrides for category/size/grade mappings. Only add species here if they need special handling.",
+  "_example": {
+    "S001": {
+      "species_name": "Tiger Shrimp",
+      "allowed_product_categories": ["Shrimp"],
+      "allowed_sizes": ["10/20","16/20","20/30","30/40"],
+      "allowed_grades": ["A", "B"],
+      "note": "Tiger shrimp uses standard shrimp packing only"
+    }
+  }
+}

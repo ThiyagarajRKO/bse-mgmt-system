@@ -1,0 +1,133 @@
+{
+  "_comment": "Species-specific product category mappings. Each species should have only its relevant categories, not generic fish categories.",
+  
+  "_category_types": {
+    "Fish": ["Whole Fish", "Fillets", "Steaks", "Whole Cleaned", "Whole Round", "Half Cut", "Headless"],
+    "Bivalve": ["Whole Shell", "Half Shell", "Meat Only", "IQF Meat", "Roe On", "Roe Off"],
+    "Cephalopod": ["Whole Fish", "Whole Cleaned", "Tentacle", "Rings", "Breaded", "Blanched", "Tube"],
+    "Crustacean": ["Whole Cleaned", "Claw Meat", "Cluster", "Soft Shell Cut", "Claw & Leg Combo", "Headless", "Peeled", "Live"]
+  },
+
+  "_by_parent_category": {
+    "Fish": {
+      "species": ["Halibut", "Turbot", "Sea Bass", "Sea Bream", "Haddock", "Grouper", "Skipjack Tuna", "Kingfish", "Pompano", "Snapper", "Atlantic Salmon", "Sockeye Salmon", "Pacific Cod", "Albacore Tuna", "Black Cod"],
+      "categories": ["Whole Fish", "Fillets", "Steaks", "Whole Cleaned", "Whole Round"]
+    },
+    
+    "Bivalve": {
+      "species": ["Hard Clam", "Manila Clam", "Littleneck Clam", "Pacific Oyster", "Eastern Oyster", "Flat Oyster", "Bay Scallop", "Queen Scallop", "Japanese Scallop", "Blue Mussel", "Green Mussel", "Mediterranean Mussel", "New Zealand Mussel"],
+      "categories": ["Whole Shell", "Half Shell", "Meat Only", "IQF Meat"]
+    },
+
+    "Crustacean": {
+      "_notes": "Crustaceans have species-specific categories based on body part and processing",
+      
+      "Crab": {
+        "species": ["Blue Crab", "Green Mud Crab", "Snow Crab", "Jonah Crab", "Blue Swimming Crab", "Three-Spot Swimming Crab", "Blue King Crab", "Stone Crab", "Red Swimming Crab", "Flower Crab"],
+        "categories": ["Whole Cleaned", "Claw Meat", "Soft Shell Cut", "Claw & Leg Combo"]
+      },
+      
+      "Lobster": {
+        "species": ["American Lobster", "European Lobster", "Spiny Lobster", "Indian Rock Lobster", "Japanese Lobster", "Maine Lobster"],
+        "categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+      },
+
+      "Shrimp": {
+        "species": ["Tiger Shrimp", "Indian White Prawn", "Vannamei", "Black Tiger Shrimp", "Brown Shrimp"],
+        "categories": ["Headless", "Peeled", "Peeled and Deveined", "Live", "Cooked"]
+      }
+    },
+
+    "Cephalopod": {
+      "Squid": {
+        "species": ["Pacific Squid", "Argentine Squid", "European Squid", "Little Squid", "Loliolus (Small Squid)", "Little Indian Squid", "Kobi Squid", "Indian Squid", "Bigfin Squid", "Purpleback Flying Squid", "Bengal Squid", "Diamondback Squid", "Long Barrel Squid"],
+        "categories": ["Whole Fish", "Whole Cleaned", "Tentacle", "Rings", "Breaded", "Blanched"]
+      },
+
+      "Octopus": {
+        "species": ["Big Blue Octopus", "Old Woman Octopus", "Starry Night Octopus", "Coconut Octopus"],
+        "categories": ["Whole Cleaned", "Tentacle", "Blanched", "Cooked"]
+      },
+
+      "Cuttlefish": {
+        "species": ["Needle Cuttlefish", "Oval-Bone Cuttlefish", "Pharaoh Cuttlefish", "Hooded Cuttlefish", "Trident Cuttlefish", "Short Club Cuttlefish", "Arabian Cuttlefish", "Kobi Cuttlefish", "Small Striped Cuttlefish", "Large Striped Cuttlefish", "Oman Cuttlefish", "Spineless Cuttlefish"],
+        "categories": ["Whole Cleaned", "Whole Round", "Tube", "Tentacle"]
+      }
+    },
+
+    "Gastropod": {
+      "species": ["Spiral Babylon", "Indian Babylon", "Bengal Fig Shell", "Diversicolor Abalone", "Variable Abalone", "Radiate Top Shell", "Commercial Top Shell", "Great Green Turban", "Silver-Mouth Turban", "Mud-Flat Snail", "Mud Creeper"],
+      "categories": ["Whole Cleaned", "Whole Round", "Meat Only"]
+    }
+  },
+
+  "_usage_notes": {
+    "1_logic": "When creating product categories for a species, use parent_category_type to determine which categories apply",
+    "2_defaults": "If a species has specific override categories below, use those. Otherwise use the parent_category defaults",
+    "3_fallback": "If parent_category_type is NULL, don't create any categories - require manual mapping",
+    "4_priority": "Explicit species mapping > parent_category_type defaults"
+  },
+
+  "species_overrides": {
+    "American Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "European Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "Spiny Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "Indian Rock Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "Japanese Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "Maine Lobster": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Lobster Tails", "Claw Meat", "Headless"]
+    },
+    "Blue Crab": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Claw Meat", "Soft Shell Cut", "Claw & Leg Combo"]
+    },
+    "Green Mud Crab": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Whole Cleaned", "Claw Meat", "Soft Shell Cut", "Claw & Leg Combo"]
+    },
+    "Tiger Shrimp": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Headless", "Peeled", "Peeled and Deveined", "Live"]
+    },
+    "Indian White Prawn": {
+      "parent_category_type": "Crustacean",
+      "product_categories": ["Headless", "Peeled", "Peeled and Deveined", "Live"]
+    },
+    "Pacific Squid": {
+      "parent_category_type": "Cephalopod",
+      "product_categories": ["Whole Fish", "Whole Cleaned", "Tentacle", "Rings", "Breaded", "Blanched"]
+    },
+    "Argentine Squid": {
+      "parent_category_type": "Cephalopod",
+      "product_categories": ["Whole Fish", "Whole Cleaned", "Tentacle", "Rings", "Breaded", "Blanched"]
+    },
+    "Loliolus (Small Squid)": {
+      "parent_category_type": "Cephalopod",
+      "product_categories": ["Whole Fish", "Whole Cleaned", "Tentacle", "Rings", "Breaded", "Blanched"]
+    },
+    "Hard Clam": {
+      "parent_category_type": "Bivalve",
+      "product_categories": ["Whole Shell", "Half Shell", "Meat Only", "IQF Meat"]
+    },
+    "Pacific Oyster": {
+      "parent_category_type": "Bivalve",
+      "product_categories": ["Whole Shell", "Half Shell", "Meat Only"]
+    }
+  }
+}
