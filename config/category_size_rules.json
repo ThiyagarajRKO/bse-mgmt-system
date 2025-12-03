@@ -1,0 +1,107 @@
+{
+  "_comment": "Global size rules per product category. Used unless overridden per-species in species_overrides.json",
+  "Whole": [
+    "Small",
+    "Medium",
+    "Large",
+    "Extra Large",
+    "Jumbo"
+  ],
+  "Whole Cleaned": [
+    "Small",
+    "Medium",
+    "Large"
+  ],
+  "Tube": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+  ],
+  "Ring": [
+    "T2",
+    "T3",
+    "T4"
+  ],
+  "Tentacle": [
+    "Small",
+    "Medium"
+  ],
+  "Steak": [
+    "Single",
+    "Pack"
+  ],
+  "Fillet": [
+    "Prime (4-5 pcs/kg)",
+    "XL"
+  ],
+  "Live": [
+    "1L",
+    "2L",
+    "3L",
+    "4L",
+    "5L",
+    "6L"
+  ],
+  "Headless": [
+    "10/20",
+    "16/20",
+    "20/30",
+    "30/40"
+  ],
+  "Peeled": [
+    "16/20",
+    "20/30",
+    "30/40",
+    "40/60"
+  ],
+  "Peeled and Deveined": [
+    "16/20",
+    "20/30",
+    "30/40"
+  ],
+  "Half Cut": [
+    "1L",
+    "2L",
+    "3L"
+  ],
+  "Claw Meat": [
+    "Cluster",
+    "Whole"
+  ],
+  "Cluster": [
+    "1L",
+    "2L",
+    "3L",
+    "4L",
+    "5L"
+  ],
+  "Whole Shell": [
+    "Small",
+    "Medium",
+    "Large"
+  ],
+  "Half Shell": [
+    "Small",
+    "Medium",
+    "Large"
+  ],
+  "Meat Only": [
+    "IQF 150g",
+    "IQF 200g"
+  ],
+  "IQF Meat": [
+    "IQF 150g",
+    "IQF 200g"
+  ],
+  "Sliced Meat": [
+    "Small",
+    "Medium"
+  ],
+  "Default": [
+    "Small",
+    "Medium",
+    "Large",
+    "XL"
+  ]
+}
