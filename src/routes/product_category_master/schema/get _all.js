@@ -8,6 +8,7 @@ export const getAllSchema = {
         length: { type: "number" },
         product_category: { type: "string" },
         species_master_name: { type: "string" },
+        parent_category_type: { type: "string" },
         "search[value]": { type: "string" },
       },
     },

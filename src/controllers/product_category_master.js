@@ -113,6 +113,7 @@ export const GetAll = ({
   length,
   product_category,
   species_master_name,
+  parent_category_type,
   search,
 }) => {
   return new Promise(async (resolve, reject) => {
@@ -125,12 +126,21 @@ export const GetAll = ({
         where.product_category = { [Op.iLike]: `%${product_category}%` };
       }
 
+      // Support filtering by parent_category_type from product_category_master directly
+      if (parent_category_type) {
+        where.parent_category_type = parent_category_type;
+      }
+
       let speciesWhere = {
         is_active: true,
       };
       if (species_master_name) {
         speciesWhere.species_name = { [Op.iLike]: `%${species_master_name}%` };
       }
+
+      // Set defaults if not provided
+      const offset = start ? parseInt(start) : 0;
+      const limit = length ? parseInt(length) : 1000; // Large default to get all results
 
       const products = await models.ProductCategoryMaster.findAndCountAll({
         include: [
@@ -140,8 +150,8 @@ export const GetAll = ({
           },
         ],
         where,
-        offset: start,
-        limit: length,
+        offset: offset,
+        limit: limit,
         order: [["created_at", "desc"]],
       });
 

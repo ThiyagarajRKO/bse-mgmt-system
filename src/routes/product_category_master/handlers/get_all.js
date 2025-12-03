@@ -6,6 +6,7 @@ export const GetAll = (
     length,
     product_category,
     species_master_name,
+    parent_category_type,
     "search[value]": search,
   },
   session,
@@ -18,6 +19,7 @@ export const GetAll = (
         length,
         product_category,
         species_master_name,
+        parent_category_type,
         search,
       });
 
@@ -28,8 +30,12 @@ export const GetAll = (
         });
       }
 
+      // product_master is { rows: [...], count: N } from findAndCountAll
       resolve({
-        data: product_master,
+        data: {
+          rows: product_master.rows || [],
+          count: product_master.count || 0,
+        },
       });
     } catch (err) {
       fastify.log.error(err);
