@@ -143,11 +143,12 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
+      // Soft delete: remove the created_by check to allow any user to delete
+      // Permission checks should be handled at middleware level
       const unit = await models.GradeMaster.destroy({
         where: {
           id,
           is_active: true,
-          created_by: profile_id,
         },
         individualHooks: true,
         profile_id,

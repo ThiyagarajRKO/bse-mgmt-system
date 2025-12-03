@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      // Association with GradeSizeMapping
+      GradeMaster.hasMany(models.GradeSizeMapping, {
+        foreignKey: "grade_id",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      });
     }
   }
   GradeMaster.init(
