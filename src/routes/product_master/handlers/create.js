@@ -6,6 +6,8 @@ export const Create = (
     species_master_id,
     product_category_master_id,
     product_category,
+    grade_master_id,
+    size_master_id,
     size_master_ids,
   },
   session,
@@ -36,30 +38,33 @@ export const Create = (
         });
       }
 
-      if (Array.isArray(size_master_ids) && size_master_ids.length > 0) {
-        Promise.all(
-          size_master_ids.forEach((size_master_id) => {
-            ProductMaster.Insert(profile_id, {
+      // Support both singular and plural formats
+      const sizeMasterIds =
+        size_master_ids || (size_master_id ? [size_master_id] : []);
+
+      if (Array.isArray(sizeMasterIds) && sizeMasterIds.length > 0) {
+        await Promise.all(
+          sizeMasterIds.map((sizeId) => {
+            return ProductMaster.Insert(profile_id, {
               product_category_master_id:
                 product_category_master_id || product_category_data?.id,
-              size_master_id: size_master_id,
+              grade_master_id,
+              size_master_id: sizeId,
               is_active: true,
-            }).catch(console.log);
+            });
           })
         );
       } else {
         await ProductMaster.Insert(profile_id, {
           product_category_master_id:
             product_category_master_id || product_category_data?.id,
+          grade_master_id,
           is_active: true,
-        }).catch((err) => {
-          resolve({
-            message: err?.message,
-          });
         });
       }
 
       resolve({
+        statusCode: 200,
         message: "Products have been inserted successfully",
       });
     } catch (err) {

@@ -4,6 +4,7 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetSizesByGrade } from "./handlers/get_sizes_by_grade";
+import { GetSizesBySpecies } from "./handlers/get_sizes_by_species";
 import { GetGradesByCategory } from "./handlers/get_grades_by_category";
 
 // Schema
@@ -13,27 +14,73 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get _all";
 import { deleteSchema } from "./schema/delete";
 
+// Validation Middleware
+import {
+  validateProductInput,
+  getProductRules,
+} from "../../middlewares/productValidation";
+
+// DB Function for category validation
+async function getProductCategoriesBySpecies(species_master_id) {
+  try {
+    const categories = await ProductCategoryMaster.findAll({
+      where: {
+        species_master_id,
+        is_active: true,
+      },
+      attributes: ["id", "product_category", "parent_category_type"],
+      raw: true,
+    });
+    return categories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
+
 export const productMasterRoute = (fastify, opts, done) => {
-  fastify.post("/", createSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
+  // GET product rules (allowed forms and sizes based on species/grade)
+  fastify.get("/rules/get-product-rules", async (req, reply) => {
+    return getProductRules(req, reply);
+  });
 
-      const result = await Create(params, req?.session, fastify);
+  fastify.post(
+    "/",
+    {
+      schema: createSchema.schema,
+      preHandler: validateProductInput,
+    },
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.body };
 
-      return reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });;
-    } catch (err) {
-      return reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });;
+        console.log("📝 Product creation params:", params);
+
+        // Log validated data if present
+        if (req.validatedProduct) {
+          console.log("✅ Product validation passed:", req.validatedProduct);
+        }
+
+        const result = await Create(params, req?.session, fastify);
+
+        console.log("✅ Product creation result:", result);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        console.error("❌ Product creation error:", err?.message || err);
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
     }
-      });;
+  );
 
-  fastify.put("/", updateSchema, async (req, reply) => {
+  fastify.put("/", updateSchema, validateProductInput, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
@@ -43,14 +90,14 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/grades-by-category/:category_id", async (req, reply) => {
     try {
@@ -62,14 +109,14 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/sizes-by-grade/:grade_id", async (req, reply) => {
     try {
@@ -81,14 +128,34 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
+
+  fastify.get("/sizes-by-species/:species_master_id", async (req, reply) => {
+    try {
+      const sequelize = fastify?.models?.sequelize;
+      const params = { ...req.params, sequelize };
+
+      const result = await GetSizesBySpecies(params);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
 
   fastify.get("/:product_master_id", getSchema, async (req, reply) => {
     try {
@@ -100,14 +167,14 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
@@ -119,14 +186,14 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -138,14 +205,14 @@ export const productMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   done();
 };

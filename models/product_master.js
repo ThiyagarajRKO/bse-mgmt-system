@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      ProductMaster.belongsTo(models.GradeMaster, {
+        foreignKey: "grade_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
       // Has One
       ProductMaster.hasOne(models.ProcurementProducts, {
         foreignKey: "product_master_id",
