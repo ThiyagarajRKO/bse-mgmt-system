@@ -12,6 +12,18 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      size_id: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
+        unique: false,
+        comment: "Size identifier code (e.g., SZ001, SZ002, etc.)",
+      },
+      unit_of_measure: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
+        defaultValue: null,
+        comment: "Unit of measurement for size (cm, g, kg, pcs/kg, pcs/lb)",
+      },
       description: {
         type: Sequelize.TEXT,
       },
