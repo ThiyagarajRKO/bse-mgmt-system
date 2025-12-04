@@ -23,8 +23,6 @@ export const GetAll = async (params, session, fastify) => {
       data: result.rows || [],
     };
 
-    console.log("GetAll response:", response);
-
     return response;
   } catch (err) {
     fastify.log.error(err);

@@ -385,10 +385,8 @@ module.exports = {
         ],
         { ignoreDuplicates: true }
       );
-      console.log("✅ Seeded 40 grade records");
 
       // Step 2: Insert size_master records (40 sizes)
-      console.log("Seeding size_master...");
       const users = await queryInterface.sequelize.query(
         "SELECT id FROM user_profiles ORDER BY created_at ASC LIMIT 1",
         { type: Sequelize.QueryTypes.SELECT }
@@ -749,10 +747,8 @@ module.exports = {
         ],
         { ignoreDuplicates: true }
       );
-      console.log("✅ Seeded 40 size records");
 
       // Step 3: Seed grade-size mappings based on rules
-      console.log("Seeding grade_size_mappings...");
       const rows = [];
 
       Object.entries(rules.gradeToSizes).forEach(([gradeId, sizeList]) => {
@@ -771,10 +767,9 @@ module.exports = {
         await queryInterface.bulkInsert("grade_size_mapping", rows, {
           ignoreDuplicates: true,
         });
-        console.log(`✅ Seeded ${rows.length} grade-size mappings`);
       }
     } catch (error) {
-      console.error("Error in seeder:", error.message);
+      console.error(error.message);
       throw error;
     }
   },
@@ -785,7 +780,7 @@ module.exports = {
       await queryInterface.bulkDelete("size_master", null, {});
       await queryInterface.bulkDelete("grade_master", null, {});
     } catch (error) {
-      console.error("Error rolling back seeder:", error.message);
+      console.error(error.message);
       throw error;
     }
   },

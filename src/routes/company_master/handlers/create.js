@@ -2,8 +2,6 @@ import * as CompanyMaster from "../../../controllers/company_master";
 
 export const Create = async (params, session, fastify) => {
   try {
-    console.log("CompanyMaster:", CompanyMaster); // ✅ Debug
-
     const {
       profile_id,
       company_name,

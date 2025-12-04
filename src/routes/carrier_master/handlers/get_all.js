@@ -20,8 +20,6 @@ export const GetAll = async (params, session, fastify) => {
       data: result.rows || [],
     };
 
-    console.log("CarrierMaster.GetAll response:", response);
-
     return response;
   } catch (err) {
     fastify.log.error(err);
