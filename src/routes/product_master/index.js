@@ -54,16 +54,7 @@ export const productMasterRoute = (fastify, opts, done) => {
       try {
         const params = { profile_id: req?.token_profile_id, ...req.body };
 
-        console.log("📝 Product creation params:", params);
-
-        // Log validated data if present
-        if (req.validatedProduct) {
-          console.log("✅ Product validation passed:", req.validatedProduct);
-        }
-
         const result = await Create(params, req?.session, fastify);
-
-        console.log("✅ Product creation result:", result);
 
         return reply.code(result.statusCode || 200).send({
           success: true,
@@ -71,7 +62,6 @@ export const productMasterRoute = (fastify, opts, done) => {
           data: result?.data,
         });
       } catch (err) {
-        console.error("❌ Product creation error:", err?.message || err);
         return reply.code(err?.statusCode || 400).send({
           success: false,
           message: err?.message || err,

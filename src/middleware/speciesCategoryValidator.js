@@ -15,9 +15,7 @@ try {
     )
   );
   categorySizeRules = staticRules;
-  console.log("✅ Loaded static category_size_rules.json");
 } catch (e) {
-  console.warn("⚠️  category_size_rules.json not found, using defaults");
   categorySizeRules = { Default: ["Small", "Medium", "Large", "XL"] };
 }
 
@@ -32,9 +30,7 @@ try {
   Object.keys(speciesOverrides).forEach((key) => {
     if (key.startsWith("_")) delete speciesOverrides[key];
   });
-  console.log("✅ Loaded species_overrides.json");
 } catch (e) {
-  console.warn("⚠️  species_overrides.json not found, no overrides will apply");
   speciesOverrides = {};
 }
 
@@ -57,7 +53,6 @@ module.exports = function createValidator({
   // Store sequelize instance for dynamic rules loading
   if (sequelize) {
     sequelizeInstance = sequelize;
-    console.log("✅ Sequelize instance provided for dynamic rules loading");
   }
 
   return async function speciesCategoryValidator(req, reply) {
@@ -69,14 +64,6 @@ module.exports = function createValidator({
         size_code,
         grade_code,
       } = req.body;
-
-      console.log("📋 Validating product creation:", {
-        species_master_id,
-        product_category_master_id,
-        product_category_id,
-        size_code,
-        grade_code,
-      });
 
       // Use product_category_master_id if available, fallback to product_category_id
       const categoryId = product_category_master_id || product_category_id;
@@ -102,10 +89,6 @@ module.exports = function createValidator({
         });
       }
 
-      console.log(
-        `📊 Found ${allowedCategories.length} allowed categories for species`
-      );
-
       // 3. Check if requested category is allowed
       const categoryMatch = allowedCategories.find((c) => c.id === categoryId);
       if (!categoryMatch) {
@@ -118,8 +101,6 @@ module.exports = function createValidator({
         });
       }
 
-      console.log(`✅ Category ${categoryMatch.product_category} is allowed`);
-
       // 4. Check size against rules
       if (size_code) {
         const categoryName = categoryMatch.product_category;
@@ -130,9 +111,6 @@ module.exports = function createValidator({
 
         if (speciesOverride && speciesOverride.allowed_sizes) {
           allowedSizes = speciesOverride.allowed_sizes;
-          console.log(
-            `🔧 Using per-species size override: ${allowedSizes.join(", ")}`
-          );
         } else {
           // Load dynamic rules if database is available
           if (sequelizeInstance) {
@@ -143,16 +121,7 @@ module.exports = function createValidator({
               );
               allowedSizes =
                 dynamicRules[categoryName] || dynamicRules["Default"];
-              console.log(
-                `📊 Using dynamic category sizes from DB: ${allowedSizes.join(
-                  ", "
-                )}`
-              );
             } catch (err) {
-              console.warn(
-                `⚠️  Failed to load dynamic rules, using static:`,
-                err.message
-              );
               allowedSizes =
                 categorySizeRules[categoryName] || categorySizeRules["Default"];
             }
@@ -160,9 +129,6 @@ module.exports = function createValidator({
             // Use static rules as fallback
             allowedSizes =
               categorySizeRules[categoryName] || categorySizeRules["Default"];
-            console.log(
-              `📏 Using static category sizes: ${allowedSizes.join(", ")}`
-            );
           }
         }
 
@@ -174,8 +140,6 @@ module.exports = function createValidator({
             )}`,
           });
         }
-
-        console.log(`✅ Size '${size_code}' is allowed`);
       }
 
       // 5. Check grade against rules (if applicable)
@@ -190,10 +154,9 @@ module.exports = function createValidator({
             )}`,
           });
         }
-        console.log(`✅ Grade '${grade_code}' is allowed`);
       }
 
-      // ✅ All validations passed
+      // All validations passed
       req.validated = {
         species_master_id,
         categoryId,
@@ -202,11 +165,9 @@ module.exports = function createValidator({
         grade_code,
       };
 
-      console.log("✅ All validations passed, continuing to next handler");
       // For Fastify, just return to continue to next handler
       return;
     } catch (error) {
-      console.error("❌ Validation error:", error);
       return reply.status(500).send({
         success: false,
         error: "Internal server error during validation",

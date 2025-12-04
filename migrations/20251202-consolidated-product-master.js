@@ -20,14 +20,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    console.log("🔄 Running consolidated product master migration...\n");
-
     try {
       // ============================================================================
       // STEP 1: Create product_category_master table
       // ============================================================================
-      console.log("📋 Step 1: Creating product_category_master table...");
-
       await queryInterface.createTable("product_category_master", {
         id: {
           primaryKey: true,
@@ -104,13 +100,9 @@ module.exports = {
         },
       });
 
-      console.log("✅ product_category_master table created\n");
-
       // ============================================================================
       // STEP 2: Create product_master table
       // ============================================================================
-      console.log("📋 Step 2: Creating product_master table...");
-
       await queryInterface.createTable("product_master", {
         id: {
           primaryKey: true,
@@ -185,15 +177,9 @@ module.exports = {
         },
       });
 
-      console.log("✅ product_master table created\n");
-
       // ============================================================================
       // STEP 3: Create product_category_to_grade_master table
       // ============================================================================
-      console.log(
-        "📋 Step 3: Creating product_category_to_grade_master table..."
-      );
-
       await queryInterface.createTable("product_category_to_grade_master", {
         id: {
           allowNull: false,
@@ -240,115 +226,25 @@ module.exports = {
         name: "unique_category_grade_combination",
       });
 
-      console.log("✅ product_category_to_grade_master table created\n");
-
+      // NOTE: Data population moved to seeder
       // ============================================================================
-      // STEP 4: Populate initial product categories
-      // ============================================================================
-      console.log("📋 Step 4: Populating initial product categories...");
-
-      // Default product categories for different species types
-      const defaultCategories = [
-        "Whole Fish",
-        "Fillets",
-        "Steaks",
-        "Whole Cleaned",
-        "Whole Round",
-      ];
-
-      // Get a valid user ID from the database (admin user)
-      const users = await queryInterface.sequelize.query(
-        `SELECT id FROM user_profiles LIMIT 1`,
-        { type: queryInterface.sequelize.QueryTypes.SELECT }
-      );
-
-      if (!users || users.length === 0) {
-        console.warn("⚠️  No users found. Skipping category population.");
-        return;
-      }
-
-      const userId = users[0].id;
-
-      // Get all species that don't have any product categories
-      const speciesWithoutCategories = await queryInterface.sequelize.query(
-        `SELECT s.id, s.species_name FROM species_master s
-         WHERE s.id NOT IN (
-           SELECT DISTINCT species_master_id FROM product_category_master 
-           WHERE deleted_at IS NULL
-         )
-         AND s.deleted_at IS NULL`,
-        { type: queryInterface.sequelize.QueryTypes.SELECT }
-      );
-
-      console.log(
-        `   Found ${speciesWithoutCategories.length} species without product categories`
-      );
-
-      // Insert default categories for each species without categories
-      let categoriesCreated = 0;
-      for (const species of speciesWithoutCategories) {
-        for (const category of defaultCategories) {
-          const { v4: uuidv4 } = require("uuid");
-          const categoryId = uuidv4();
-          const now = new Date();
-
-          await queryInterface.sequelize.query(
-            `INSERT INTO product_category_master 
-             (id, species_master_id, product_category, is_active, created_at, updated_at, created_by, parent_category_type)
-             VALUES (:id, :speciesId, :category, false, :now, :now, :userId, 'Other')`,
-            {
-              replacements: {
-                id: categoryId,
-                speciesId: species.id,
-                category: category,
-                now: now,
-                userId: userId,
-              },
-              type: queryInterface.sequelize.QueryTypes.INSERT,
-            }
-          );
-          categoriesCreated++;
-        }
-      }
-
-      console.log(
-        `✅ Created ${categoriesCreated} initial product categories\n`
-      );
-
-      console.log("=".repeat(70));
-      console.log(
-        "✅ CONSOLIDATION COMPLETE - All product master tables created"
-      );
-      console.log("=".repeat(70));
-      console.log("\nSummary:");
-      console.log("  ✅ product_category_master table");
-      console.log("  ✅ product_master table");
-      console.log("  ✅ product_category_to_grade_master table");
-      console.log("  ✅ parent_category_type column");
-      console.log(`  ✅ ${categoriesCreated} initial categories populated\n`);
+      // Initial product categories are now populated via:
+      // seeders/20251204-populate-product-categories.js
+      // This allows for better control and re-seeding on new environments
     } catch (error) {
-      console.error("❌ Error during migration:", error.message);
+      console.error(error.message);
       throw error;
     }
   },
 
   down: async (queryInterface, Sequelize) => {
-    console.log("⏮️  Rolling back consolidated product master migration...\n");
-
     try {
       // Drop tables in reverse order (respecting foreign keys)
-      console.log("Dropping product_category_to_grade_master...");
       await queryInterface.dropTable("product_category_to_grade_master");
-
-      console.log("Dropping product_master...");
       await queryInterface.dropTable("product_master");
-
-      console.log("Dropping product_category_master...");
       await queryInterface.dropTable("product_category_master");
-
-      console.log("\n✅ Rollback complete\n");
     } catch (error) {
-      console.error("❌ Error during rollback:", error.message);
+      console.error(error.message);
       throw error;
     }
   },

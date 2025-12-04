@@ -11,7 +11,6 @@ export const usersRoutes = (fastify, opts, done) => {
   fastify.post("/signin", signInSchema, async (req, reply) => {
     try {
       let result = await SignIn(req.body, req.session, fastify);
-      console.log("req.session after SignIn:", req.session);
       return reply.code(result.statusCode || 200).send({
         success: true,
         message: result?.message || "Signed in successfully",

@@ -29,8 +29,6 @@ const rules = require("../rules");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    console.log("\n🌱 Running grade-size mapping seeder...\n");
-
     try {
       // Extract grade-to-size mappings from rules configuration
       const gradeIdToSizeMapping = rules.gradeToSizes;
@@ -39,10 +37,6 @@ module.exports = {
         !gradeIdToSizeMapping ||
         Object.keys(gradeIdToSizeMapping).length === 0
       ) {
-        console.warn(
-          "⚠️  No grade-to-size mappings found in rules configuration."
-        );
-        console.warn("   Ensure rules.gradeToSizes is properly configured.\n");
         return;
       }
 
@@ -53,9 +47,6 @@ module.exports = {
 
       Object.entries(gradeIdToSizeMapping).forEach(([gradeId, sizeList]) => {
         if (!Array.isArray(sizeList)) {
-          console.warn(
-            `⚠️  Grade ${gradeId} has invalid size list (not an array)`
-          );
           return;
         }
 
@@ -72,7 +63,6 @@ module.exports = {
       });
 
       if (rows.length === 0) {
-        console.warn("⚠️  No valid grade-size mappings to insert.\n");
         return;
       }
 
@@ -80,28 +70,17 @@ module.exports = {
       await queryInterface.bulkInsert("grade_size_mapping", rows, {
         ignoreDuplicates: true,
       });
-
-      console.log("✅ Grade-Size Mappings Seeded");
-      console.log("─".repeat(60));
-      console.log(`  Grades mapped: ${gradeCount}`);
-      console.log(`  Total mappings: ${totalMappings}`);
-      console.log(
-        `  Avg. sizes per grade: ${(totalMappings / gradeCount).toFixed(1)}\n`
-      );
     } catch (error) {
-      console.error("❌ Error during seeding:", error.message);
+      console.error(error.message);
       throw error;
     }
   },
 
   down: async (queryInterface, Sequelize) => {
-    console.log("⏮️  Rolling back grade-size mappings...\n");
-
     try {
       await queryInterface.bulkDelete("grade_size_mapping", null, {});
-      console.log("✅ Rollback complete\n");
     } catch (error) {
-      console.error("❌ Error during rollback:", error.message);
+      console.error(error.message);
       throw error;
     }
   },
