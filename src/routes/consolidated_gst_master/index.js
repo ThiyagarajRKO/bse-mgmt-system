@@ -15,8 +15,6 @@ import { getByHsnCodeSchema } from "./schema/get_by_hsn_code";
 import { deleteSchema } from "./schema/delete";
 
 const consolidatedGstMasterRoute = (fastify, opts, done) => {
-  console.log("Registering consolidated GST master routes...");
-
   // CREATE CONSOLIDATED GST MASTER
   fastify.post("/", createSchema, async (req, reply) => {
     try {

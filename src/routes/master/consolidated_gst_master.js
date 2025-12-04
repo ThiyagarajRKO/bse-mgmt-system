@@ -7,8 +7,6 @@ import {
 } from "../../controllers/consolidated_gst_master.js";
 
 export const consolidatedGstMasterRoute = (fastify, opts, done) => {
-  console.log("Registering consolidated GST master routes...");
-
   // CREATE CONSOLIDATED GST MASTER
   fastify.post("/create", async (req, reply) => {
     try {
