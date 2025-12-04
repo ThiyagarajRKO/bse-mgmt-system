@@ -192,13 +192,8 @@ async function loadDynamicRulesFromDB(sequelize) {
       }
     });
 
-    console.log("✅ Loaded dynamic category-size rules from database");
     return dynamicRules;
   } catch (error) {
-    console.error(
-      "❌ Error loading dynamic rules from database:",
-      error.message
-    );
     return getStaticRules();
   }
 }
@@ -215,7 +210,6 @@ async function getCategorySizeRules(sequelize, forceRefresh = false) {
 
   // Return cached rules if still valid
   if (!forceRefresh && cachedRules && now - lastLoadTime < CACHE_DURATION) {
-    console.log("📦 Using cached category-size rules");
     return cachedRules;
   }
 
@@ -252,9 +246,6 @@ async function getSizesForSpeciesType(
 ) {
   try {
     if (!sequelize || !parentCategoryType) {
-      console.warn(
-        "⚠️  Invalid arguments for getSizesForSpeciesType, using default sizes"
-      );
       return ["Small", "Medium", "Large", "XL"];
     }
 
@@ -265,14 +256,8 @@ async function getSizesForSpeciesType(
       forceRefresh
     );
 
-    console.log(
-      `✅ Retrieved ${speciesSpecificSizes.length} sizes for species type: ${parentCategoryType}`,
-      speciesSpecificSizes
-    );
-
     return speciesSpecificSizes;
   } catch (error) {
-    console.error("❌ Error in getSizesForSpeciesType:", error.message);
     return ["Small", "Medium", "Large", "XL"];
   }
 }
@@ -302,7 +287,6 @@ async function getSpeciesSizeRecommendations(
 ) {
   try {
     if (!sequelize || !parentCategoryType) {
-      console.warn("⚠️  Invalid arguments for getSpeciesSizeRecommendations");
       return [];
     }
 
@@ -312,13 +296,8 @@ async function getSpeciesSizeRecommendations(
       forceRefresh
     );
 
-    console.log(
-      `✅ Retrieved ${recommendations.length} size recommendations for: ${parentCategoryType}`
-    );
-
     return recommendations;
   } catch (error) {
-    console.error("❌ Error in getSpeciesSizeRecommendations:", error.message);
     return [];
   }
 }
@@ -356,7 +335,6 @@ async function validateSizeForSpecies(
 
     return isValid;
   } catch (error) {
-    console.error("❌ Error in validateSizeForSpecies:", error.message);
     return false;
   }
 }
@@ -368,7 +346,6 @@ function clearCache() {
   cachedRules = null;
   lastLoadTime = 0;
   speciesSizeMapper.clearCache();
-  console.log("🗑️  Category size rules cache cleared");
 }
 
 module.exports = {

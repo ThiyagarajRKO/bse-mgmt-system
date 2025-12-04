@@ -43,21 +43,12 @@ export const GetSizesBySpecies = async ({ species_master_id, sequelize }) => {
         });
       }
 
-      console.log(
-        `[GetSizesBySpecies] Fetching sizes for species: ${species.species_name} (${species.parent_category_type})`
-      );
-
       // Get allowed sizes for this species type from species_size_mapping
       const allowedSizeUnits =
         await categorySizeRulesLoader.getSizesForSpeciesType(
           sequelize,
           species.parent_category_type
         );
-
-      console.log(
-        `[GetSizesBySpecies] Allowed units for ${species.parent_category_type}:`,
-        allowedSizeUnits
-      );
 
       if (!allowedSizeUnits || allowedSizeUnits.length === 0) {
         return reject({
@@ -82,10 +73,6 @@ export const GetSizesBySpecies = async ({ species_master_id, sequelize }) => {
         raw: true,
       });
 
-      console.log(
-        `[GetSizesBySpecies] Retrieved ${sizes.length} sizes for species type: ${species.parent_category_type}`
-      );
-
       // Format response
       const rows = sizes.map((size) => ({
         id: size.id,
@@ -107,7 +94,6 @@ export const GetSizesBySpecies = async ({ species_master_id, sequelize }) => {
         },
       });
     } catch (err) {
-      console.error("[GetSizesBySpecies] Error:", err.message);
       reject(err);
     }
   });
