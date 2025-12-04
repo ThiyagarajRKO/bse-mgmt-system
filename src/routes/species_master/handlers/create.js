@@ -46,7 +46,9 @@ export const Create = (
       await ProductMaster.Insert(profile_id, {
         product_category_master_id: product_category_data?.id,
         is_active: true,
-      }).catch(console.log);
+      }).catch((err) => {
+        fastify.log.error(err);
+      });
 
       resolve({
         message: "Species master has been inserted successfully",
