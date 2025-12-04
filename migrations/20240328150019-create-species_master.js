@@ -33,6 +33,22 @@ module.exports = {
       description: {
         type: Sequelize.TEXT,
       },
+      parent_category_type: {
+        type: Sequelize.ENUM(
+          "Bivalve",
+          "Cephalopod",
+          "Fish",
+          "Crustacean",
+          "Gastropod",
+          "Other"
+        ),
+        allowNull: true,
+        defaultValue: "Other",
+      },
+      hsn_code: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       is_active: {
         defaultValue: false,
         type: Sequelize.BOOLEAN,
