@@ -339,7 +339,6 @@ export const Delete = ({ profile_id, id }) => {
         where: {
           id,
           is_active: true,
-          created_by: profile_id,
         },
         individualHooks: true,
         profile_id,

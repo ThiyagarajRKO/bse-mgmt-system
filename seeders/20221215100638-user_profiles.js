@@ -16,7 +16,7 @@ module.exports = {
           created_by: "0a6495f7-7c0f-442c-aad0-a13d8c2d4ce5",
         },
       ],
-      {}
+      { ignoreDuplicates: true }
     );
   },
 

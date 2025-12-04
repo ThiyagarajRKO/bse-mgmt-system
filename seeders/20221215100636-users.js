@@ -17,7 +17,7 @@ module.exports = {
           user_status: "1",
         },
       ],
-      {}
+      { ignoreDuplicates: true }
     );
   },
 

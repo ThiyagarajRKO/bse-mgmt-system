@@ -60,7 +60,7 @@ module.exports = {
           created_by: "87ffbaff-b7e9-4198-90d2-0fa12d85ef82",
         },
       ],
-      {}
+      { ignoreDuplicates: true }
     );
   },
 
