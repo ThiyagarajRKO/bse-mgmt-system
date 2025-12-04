@@ -146,6 +146,38 @@ export const GetAll = async ({
 };
 
 /**
+ * GET GST RATE BY HSN CODE
+ */
+export const GetByHsnCode = async (hsn_code) => {
+  if (!hsn_code)
+    throw { statusCode: 420, message: "HSN code must not be empty!" };
+
+  const gstRate = await models.ConsolidatedGstMaster.findOne({
+    where: {
+      hsn_code: hsn_code.trim(),
+      is_active: true,
+    },
+    attributes: [
+      "gst_rate_id",
+      "gst_name",
+      "hsn_code",
+      "cgst_rate",
+      "sgst_rate",
+      "igst_rate",
+    ],
+  });
+
+  if (!gstRate) {
+    throw {
+      statusCode: 404,
+      message: "GST rate not found for the given HSN code",
+    };
+  }
+
+  return gstRate.toJSON();
+};
+
+/**
  * DELETE GST MASTER
  */
 export const Delete = async (profile_id, id) => {
