@@ -51,7 +51,7 @@ start();
 
 // Hooks
 fastify.addHook("onError", async (request, reply, error) => {
-  console.log(new Date() + " : " + error?.message || error);
+  fastify.log.error(error);
   reply.code(500).send({ success: false, message: error?.message || error });
 });
 
@@ -93,7 +93,6 @@ fastify.get("/", (req, res) => {
 });
 
 fastify.get("/AdminMain", function (req, res) {
-  console.log("AdminMain session:", req.session);
   if (!req?.session?.pid) {
     return res.redirect("/");
   }

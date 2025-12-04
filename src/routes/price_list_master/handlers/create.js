@@ -26,7 +26,9 @@ export const Create = (
             currency,
             PriceListProductMasters,
           },
-        }).catch(console.log);
+        }).catch((err) => {
+          fastify.log.error(err);
+        });
 
         return resolve({
           message: "Price list master data has been inserted successfully",

@@ -17,7 +17,9 @@ export const Update = (
         await PriceListProductMaster.BulkUpsert(
           profile_id,
           price_list_master_data?.PriceListProductMasters
-        ).catch(console.log);
+        ).catch((err) => {
+          fastify.log.error(err);
+        });
 
         return resolve({
           message: "Price list master has been updated successfully",

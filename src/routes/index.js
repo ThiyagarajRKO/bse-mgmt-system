@@ -69,8 +69,6 @@ export const PublicRouters = (fastify, opts, done) => {
 
 //Protected Routes
 export const PrivateRouters = (fastify, opts, done) => {
-  console.log("Registering private routes...");
-
   // Validating session
   fastify.addHook("onRequest", ValidateUser);
 
@@ -103,9 +101,11 @@ export const PrivateRouters = (fastify, opts, done) => {
         source_ip_address: req.socket.remoteAddress,
         user_agent: req.headers["user-agent"],
         platform: req.headers["sec-ch-ua-platform"]?.replaceAll('"', ""),
-      }).catch(console.log);
+      }).catch((err) => {
+        fastify.log.error(err);
+      });
     } catch (err) {
-      console.log("Error while inserting audit log", err?.message);
+      fastify.log.error(err);
     }
   });
 
@@ -187,7 +187,6 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(salesInventoryRoute, { prefix: "/inventory/sales" });
 
   // Accounting Master Data Routes
-  console.log("Registering accounting routes...");
   fastify.register(chartOfAccountsRoute, {
     prefix: "/master/chart-of-accounts",
   });
