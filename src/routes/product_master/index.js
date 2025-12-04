@@ -80,24 +80,31 @@ export const productMasterRoute = (fastify, opts, done) => {
     }
   );
 
-  fastify.put("/", updateSchema, validateProductInput, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.body };
+  fastify.put(
+    "/",
+    {
+      schema: updateSchema.schema,
+      preHandler: validateProductInput,
+    },
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.body };
 
-      const result = await Update(params, req?.session, fastify);
+        const result = await Update(params, req?.session, fastify);
 
-      return reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      return reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
     }
-  });
+  );
 
   fastify.get("/grades-by-category/:category_id", async (req, reply) => {
     try {

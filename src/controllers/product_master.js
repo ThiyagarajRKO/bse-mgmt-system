@@ -109,6 +109,13 @@ export const Get = ({ id }) => {
           },
           {
             required: true,
+            model: models.GradeMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            required: true,
             model: models.SizeMaster,
             where: {
               is_active: true,
@@ -217,6 +224,13 @@ export const GetAll = ({
               },
             ],
             where: productCategoryWhere,
+          },
+          {
+            required: false,
+            model: models.GradeMaster,
+            where: {
+              is_active: true,
+            },
           },
           {
             required: false,

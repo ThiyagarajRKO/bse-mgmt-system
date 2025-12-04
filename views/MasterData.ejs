@@ -1755,6 +1755,7 @@
                 <th class="fw-bold"><span>Product Name</span></th>
                 <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Product Category</span></th>
+                <th class="fw-bold"><span>Grade</span></th>
                 <th class="fw-bold"><span>Size</span></th>
                 <th class="fw-bold"><span>Created At</span></th>
               </tr>
@@ -6306,6 +6307,9 @@
         // Don't load dropdowns if in edit mode - the editProduct handler will do it with callback
         if (!window.PRODUCT_EDIT_MODE) {
           loadProductDropdowns();
+        } else {
+          // In edit mode, load dropdowns WITH the edit callback
+          loadProductDropdowns(window.PRODUCT_EDIT_CALLBACK);
         }
         $("#productSizes").select2({
           allowClear: true,
@@ -6375,16 +6379,45 @@
             // API returns: { draw, data: [...], recordsTotal, recordsFiltered }
             const gradeData = response?.data || [];
 
-            // Loading data into Select2
+            console.log("📝 Grades loaded:", gradeData);
+
+            // Destroy existing Select2 if initialized
+            if ($("#productGrade").hasClass("select2-hidden-accessible")) {
+              $("#productGrade").select2("destroy");
+            }
+
+            // Populate DOM with option elements
+            $("#productGrade").empty();
+            $.each(gradeData, function (i, item) {
+              const $option = $("<option></option>")
+                .val(item.id)
+                .text(item.grade_name);
+              $("#productGrade").append($option);
+            });
+
+            // Initialize Select2 with DOM options
             $("#productGrade").select2({
               placeholder: "Choose a grade",
               allowClear: true,
-              data: $.map(gradeData, function (item) {
-                return {
-                  id: item.id,
-                  text: item.grade_name,
-                };
-              }),
+              templateSelection: function (data, container) {
+                if (!data.id) {
+                  return data.text || "Choose a grade";
+                }
+                // Get text from the actual DOM option
+                const $option = $("#productGrade").find(
+                  `option[value="${data.id}"]`
+                );
+                if ($option.length > 0) {
+                  return $option.text();
+                }
+                return data.text || "Choose a grade";
+              },
+              templateResult: function (data) {
+                if (!data.id) {
+                  return data.text;
+                }
+                return data.text || "";
+              },
             });
 
             // Only clear selected value if no callback is provided AND not in edit mode
@@ -6452,6 +6485,7 @@
             { data: "product_name" },
             { data: "ProductCategoryMaster.SpeciesMaster.species_name" },
             { data: "ProductCategoryMaster.product_category" },
+            { data: "GradeMaster.grade_name" },
             { data: "SizeMaster.size" },
             { data: "created_at" },
           ],
@@ -6496,13 +6530,24 @@
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
+                // Check if GradeMaster exists and has data
+                if (!row["GradeMaster"] || !row["GradeMaster"].grade_name) {
+                  return "-";
+                }
+                return `<span grade_master_id='${row["GradeMaster"].id}'>${row["GradeMaster"].grade_name}</span>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: function (data, type, row) {
                 return row["SizeMaster"]?.id
                   ? `<span size_master_id='${row["SizeMaster"]?.id}'>${data}</span>`
                   : null;
               },
             },
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -6543,128 +6588,205 @@
       }
 
       $(document).on("click", ".editProduct", (e) => {
-        // Store the values to set after dropdowns are loaded
-        const speciesMasterId = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(3)
-          .find("span")
-          .attr("species_master_id");
-        const productCategoryMasterId = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(4)
-          .find("span")
-          .attr("product_category_master_id");
-        const sizeMasterId = $(e.target)
-          .closest("tr")
-          .children("td")
-          .eq(5)
-          .find("span")
-          .attr("size_master_id");
+        const product_master_id = $(e.target).attr("product_master_id");
 
-        console.log("Extracted values:", {
-          speciesMasterId,
-          productCategoryMasterId,
-          sizeMasterId,
-        });
+        // Fetch product details from API
+        $.ajax({
+          url: `/api/v1/master/product/${product_master_id}`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          success: (response) => {
+            const product = response?.data;
 
-        // Set edit mode flag
-        window.PRODUCT_EDIT_MODE = true;
+            if (!product) {
+              toastr.error("Failed to load product details");
+              return;
+            }
 
-        // Store edit values in window for later use (DON'T convert to strings!)
-        window.PRODUCT_EDIT_VALUES = {
-          speciesMasterId,
-          productCategoryMasterId,
-          sizeMasterId,
-        };
+            // Set edit mode flag FIRST
+            window.PRODUCT_EDIT_MODE = true;
 
-        // Opening Slide Panel (this will load dropdowns)
-        $("#openProductPanelBtn").click();
+            // Store edit values in window
+            window.PRODUCT_EDIT_VALUES = {
+              speciesMasterId: product.ProductCategoryMaster?.SpeciesMaster?.id,
+              productCategoryMasterId: product.ProductCategoryMaster?.id,
+              gradeMasterId: product.GradeMaster?.id,
+              sizeMasterId: product.SizeMaster?.id,
+            };
 
-        // Set form values after dropdowns are loaded
-        loadProductDropdowns(() => {
-          const { speciesMasterId, productCategoryMasterId, sizeMasterId } =
-            window.PRODUCT_EDIT_VALUES;
+            // Define callback to set form values after dropdowns are loaded
+            window.PRODUCT_EDIT_CALLBACK = () => {
+              const {
+                speciesMasterId,
+                productCategoryMasterId,
+                gradeMasterId,
+                sizeMasterId,
+              } = window.PRODUCT_EDIT_VALUES;
 
-          console.log("=== CALLBACK: Setting edit values ===");
-          console.log(
-            "speciesMasterId:",
-            speciesMasterId,
-            "type:",
-            typeof speciesMasterId
-          );
-          console.log("productCategoryMasterId:", productCategoryMasterId);
-          console.log("sizeMasterId:", sizeMasterId);
-          console.log(
-            "Current species dropdown value:",
-            $("#productSpecies").val()
-          );
-          console.log("Species data map:", window.PRODUCT_SPECIES_MAP);
+              // Set species value
+              if (speciesMasterId) {
+                const speciesIdStr = String(speciesMasterId).trim();
+                let speciesData = window.PRODUCT_SPECIES_MAP[speciesIdStr];
 
-          // Set species value without triggering change yet
-          if (speciesMasterId) {
-            console.log("Setting productSpecies to:", speciesMasterId);
-            // Clear first
-            $("#productSpecies").val(null);
-            // Now set the value
-            $("#productSpecies").val(speciesMasterId);
-            // Refresh Select2 to ensure display is updated
-            $("#productSpecies").select2();
-            console.log("Species value after set:", $("#productSpecies").val());
-            console.log("Species text:", $("#productSpecies").select2("data"));
+                // If species data not in map, try to get it from Select2 data
+                if (!speciesData) {
+                  const select2Data = $("#productSpecies").select2("data");
+                  if (Array.isArray(select2Data)) {
+                    const foundData = select2Data.find(
+                      (item) => String(item.id).trim() === speciesIdStr
+                    );
+                    if (foundData) {
+                      speciesData = {
+                        name: foundData.text,
+                        parent_category_type: "unknown",
+                      };
+                    }
+                  }
+                }
 
-            // Manually trigger change to load categories (but after species is set)
-            setTimeout(() => {
-              if (window.PRODUCT_EDIT_MODE) {
-                console.log(
-                  "Triggering species change event (still in edit mode)"
-                );
-                $("#productSpecies").trigger("change");
+                if (speciesData) {
+                  // Update the option text FIRST to ensure it displays
+                  const $option = $("#productSpecies").find(
+                    `option[value="${speciesIdStr}"]`
+                  );
+                  if ($option.length > 0) {
+                    $option.text(speciesData.name);
+                  }
+
+                  // Set the value and trigger change event
+                  $("#productSpecies")
+                    .val(speciesIdStr)
+                    .trigger("change.select2");
+
+                  // Load categories for this species
+                  populateProductCategorySuggestionsBySpeciesName(
+                    speciesData.name,
+                    speciesData.parent_category_type
+                  );
+
+                  // IMPORTANT: Also load sizes for this species in edit mode
+                  // since the species change handler returns early in edit mode
+                  loadProductSizes(null, speciesIdStr);
+                }
               }
-            }, 100);
-          } else {
-            console.log("No speciesMasterId found - clearing species");
-            $("#productSpecies").val(null);
-          }
 
-          // Wait for categories to load from species change, then set category
-          setTimeout(() => {
-            if (productCategoryMasterId) {
-              console.log(
-                "Setting product_category to:",
-                productCategoryMasterId
-              );
-              $("#product_category").val(productCategoryMasterId);
-              console.log("Category value:", $("#product_category").val());
+              // Wait for categories to load, then set other values
+              setTimeout(() => {
+                if (productCategoryMasterId) {
+                  $("#product_category").val(productCategoryMasterId);
+                  $("#product_category").trigger("change.select2");
+                }
+              }, 500);
+
+              // Wait for grades to load, then set grade
+              setTimeout(() => {
+                if (gradeMasterId) {
+                  console.log("🎯 Trying to set grade to:", gradeMasterId);
+                  // Make sure the grade option exists before trying to set it
+                  const $gradeOption = $("#productGrade").find(
+                    `option[value="${gradeMasterId}"]`
+                  );
+                  console.log(
+                    "📌 Grade option found:",
+                    $gradeOption.length > 0
+                  );
+                  if ($gradeOption.length > 0) {
+                    console.log(
+                      "✅ Setting grade to:",
+                      gradeMasterId,
+                      "text:",
+                      $gradeOption.text()
+                    );
+                    $("#productGrade").val(gradeMasterId);
+                    $("#productGrade").trigger("change.select2");
+                  } else {
+                    // If grade not found yet, try again after a longer delay
+                    console.log("⏳ Grade option not found, retrying...");
+                    setTimeout(() => {
+                      const $gradeOptionRetry = $("#productGrade").find(
+                        `option[value="${gradeMasterId}"]`
+                      );
+                      if ($gradeOptionRetry.length > 0) {
+                        console.log(
+                          "✅ (Retry) Setting grade to:",
+                          gradeMasterId
+                        );
+                        $("#productGrade").val(gradeMasterId);
+                        $("#productGrade").trigger("change.select2");
+                      } else {
+                        console.log(
+                          "❌ Grade option still not found after retry"
+                        );
+                      }
+                    }, 500);
+                  }
+                }
+              }, 600);
+
+              // Wait longer for sizes to load (they take time to fetch from API)
+              // Sizes are now explicitly loaded by loadProductSizes(null, speciesIdStr)
+              setTimeout(() => {
+                if (sizeMasterId) {
+                  // Make sure the size option exists before trying to set it
+                  const $sizeOption = $("#productSizes").find(
+                    `option[value="${sizeMasterId}"]`
+                  );
+                  if ($sizeOption.length > 0) {
+                    $("#productSizes").val(sizeMasterId);
+                    $("#productSizes").trigger("change.select2");
+                  } else {
+                    // If size not found yet, try again after a longer delay
+                    setTimeout(() => {
+                      const $sizeOptionRetry = $("#productSizes").find(
+                        `option[value="${sizeMasterId}"]`
+                      );
+                      if ($sizeOptionRetry.length > 0) {
+                        $("#productSizes").val(sizeMasterId);
+                        $("#productSizes").trigger("change.select2");
+                      }
+                    }, 1500);
+                  }
+                }
+              }, 800);
+
+              // Clear edit mode flag after values are set
+              setTimeout(() => {
+                window.PRODUCT_EDIT_MODE = false;
+              }, 3000);
+            };
+
+            // Open the slide panel
+            openSlidePanel(
+              "productSlideInPanel",
+              "productPanelHeading",
+              "Product",
+              "submitProduct",
+              "product_master_id"
+            );
+
+            // Update heading and button AFTER openSlidePanel
+            $("#productPanelHeading").text("Edit Product Data");
+            $("#submitProduct").text("Update");
+            $("#submitProduct").attr("product_master_id", product_master_id);
+
+            // Load dropdowns with the edit callback
+            loadProductDropdowns(window.PRODUCT_EDIT_CALLBACK);
+
+            // Initialize size select2 - but with data that will be populated by loadProductDropdowns
+            // Do NOT re-initialize after loadProductDropdowns as it will clear the data
+            if (!$("#productSizes").hasClass("select2-hidden-accessible")) {
+              $("#productSizes").select2({
+                allowClear: true,
+                placeholder: "Choose a size",
+              });
             }
-
-            // Set size value
-            if (sizeMasterId) {
-              console.log("Setting productSizes to:", sizeMasterId);
-              $("#productSizes").val(sizeMasterId);
-              console.log("Size value:", $("#productSizes").val());
-            }
-          }, 200);
-
-          // Clear edit mode flag
-          setTimeout(() => {
-            window.PRODUCT_EDIT_MODE = false;
-            console.log("=== Edit mode cleared ===");
-          }, 400);
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            toastr.error("Failed to load product details");
+          },
         });
-
-        // Changing panel heading
-        $("#productPanelHeading").text("Edit Product Data");
-
-        // Changing panel button label
-        $("#submitProduct").text("Update");
-
-        // Changing panel button attribute
-        $("#submitProduct").attr(
-          "product_master_id",
-          $(e.target).attr("product_master_id")
-        );
       });
 
       $(document).on("click", ".delProduct", (e) => {
@@ -6725,96 +6847,206 @@
           contentType: "application/json",
           crossDomain: true,
           success: (response) => {
-            console.log("Species API Response:", response);
-
-            // The API returns: { draw, data: [...], recordsTotal, recordsFiltered }
             const speciesData = response?.data || [];
 
-            console.log("Species data array:", speciesData);
-            console.log("Species count:", speciesData.length);
+            // Build species map and transform for Select2
+            window.PRODUCT_SPECIES_MAP = {};
+            const select2Data = [];
 
-            if (!speciesData || speciesData.length === 0) {
-              console.warn("No species data received from API");
-              toastr["warning"]("No species data available");
+            $.each(speciesData, function (i, item) {
+              const idStr = String(item.id);
+              window.PRODUCT_SPECIES_MAP[idStr] = {
+                id: idStr,
+                name: item.species_name,
+                parent_category_type: item.parent_category_type,
+              };
+              select2Data.push({
+                id: idStr,
+                text: item.species_name,
+              });
+            });
+
+            // Destroy existing Select2 if initialized
+            if ($("#productSpecies").hasClass("select2-hidden-accessible")) {
+              $("#productSpecies").select2("destroy");
             }
 
-            // Initialize/update Select2 with species data
+            // CRITICAL: Also populate DOM with option elements so Select2 can display selections
+            // Select2 needs actual DOM <option> elements to properly display selected values
+            $("#productSpecies").empty(); // Clear any existing options
+            $.each(select2Data, function (i, item) {
+              const $option = $("<option></option>")
+                .val(item.id)
+                .text(item.text);
+              // Store text as data attribute for Select2 to use
+              $option.data("text", item.text);
+              $("#productSpecies").append($option);
+            });
+
+            // Initialize Select2 with DOM options (not data array)
+            // This allows Select2 to properly display selected values from the actual DOM
             $("#productSpecies").select2({
               placeholder: "Choose a species",
               allowClear: true,
-              data: $.map(speciesData, function (item) {
-                return {
-                  id: item.id,
-                  text: item.species_name,
-                };
-              }),
+              width: "100%",
+              // Use templateSelection to format the display
+              templateSelection: function (data, container) {
+                // Get the actual text from the DOM option
+                if (!data.id) {
+                  return data.text || "Choose a species";
+                }
+                // Find the option element to get its text
+                const $option = $("#productSpecies").find(
+                  `option[value="${data.id}"]`
+                );
+                if ($option.length > 0) {
+                  return $option.text();
+                }
+                // Fallback to data.text
+                return data.text || "Choose a species";
+              },
+              // Template for dropdown results
+              templateResult: function (data) {
+                if (!data.id) {
+                  return data.text;
+                }
+                return data.text || "";
+              },
+              matcher: function (params, data) {
+                // Allow fuzzy matching
+                if ($.trim(params.term) === "") {
+                  return data;
+                }
+                if (typeof data.text === "undefined") {
+                  return null;
+                }
+                if (
+                  data.text.toUpperCase().indexOf(params.term.toUpperCase()) >
+                  -1
+                ) {
+                  return data;
+                }
+                return null;
+              },
+              language: {
+                noResults: function () {
+                  return "No species found";
+                },
+              },
             });
 
-            // CRITICAL: Always explicitly set value to null after initialization to prevent auto-selection
-            // This prevents Select2 from automatically selecting the first item
-            $("#productSpecies").val(null).trigger("change");
-
-            // Build species id -> name map for later lookups
-            window.PRODUCT_SPECIES_MAP = {};
-            $.each(speciesData || [], function (i, item) {
-              window.PRODUCT_SPECIES_MAP[item.id] = item.species_name;
+            // When a species is selected, force the display to update
+            $("#productSpecies").on("select2:select", function (e) {
+              const data = e.params.data;
+              if (data && data.id) {
+                // Make sure the selected option's text is set correctly in the DOM
+                const $selectedOption = $(this).find(
+                  `option[value="${data.id}"]`
+                );
+                if ($selectedOption.length > 0 && !$selectedOption.text()) {
+                  // If the option text is empty, set it from the data
+                  $selectedOption.text(data.text);
+                }
+              }
             });
 
-            // Bind change event after Select2 is initialized (unbind first to prevent duplicates)
-            $("#productSpecies")
-              .off("change")
-              .on("change", function () {
-                const speciesId = $(this).val();
+            // Make the dropdown clickable by ensuring proper event binding
+            $("#productSpecies").on("select2:opening", function (e) {});
 
-                // Skip cascading if in edit mode (we'll handle category setting separately)
-                if (window.PRODUCT_EDIT_MODE) {
-                  console.log("Skipping cascading in edit mode");
-                  return;
+            // CRITICAL: Clear selection to show placeholder "Choose a species" by default
+            $("#productSpecies").val(null);
+            $("#productSpecies").trigger("change.select2");
+
+            // Bind change event after Select2 is initialized
+            // This handler loads cascading dropdowns and handles edit mode
+            $("#productSpecies").on("change.select2", function (e) {
+              const speciesId = $(this).val();
+              const $selectedOption = $(this).find("option:selected");
+
+              // Get the selected text from the DOM option
+              let selectedText = $selectedOption.text();
+
+              // If no text found in DOM, try to get from Select2 data
+              if (!selectedText) {
+                const currentData = $("#productSpecies").select2("data");
+                if (Array.isArray(currentData) && currentData.length > 0) {
+                  selectedText =
+                    currentData[0].text || currentData[0].name || "";
                 }
+              }
 
-                // Clear and reset product category
-                $("#product_category").val(null).trigger("change");
+              // Skip cascading if in edit mode (we'll handle category setting separately)
+              if (window.PRODUCT_EDIT_MODE) {
+                return;
+              }
 
-                if (!speciesId) {
-                  // no species selected - clear the category dropdown
-                  if (
-                    $("#product_category").hasClass("select2-hidden-accessible")
-                  ) {
-                    $("#product_category").select2("destroy");
-                  }
-                  $("#product_category").select2({
-                    data: [],
-                    placeholder: "Select a species first",
-                    allowClear: true,
-                  });
-                  return;
+              // If no species selected
+              if (!speciesId) {
+                // Clear and reset product category dropdown
+                if (
+                  $("#product_category").hasClass("select2-hidden-accessible")
+                ) {
+                  $("#product_category").select2("destroy");
                 }
+                $("#product_category").select2({
+                  data: [],
+                  placeholder: "Select a species first",
+                  allowClear: true,
+                });
 
-                const speciesName =
-                  (window.PRODUCT_SPECIES_MAP || {})[speciesId] || null;
+                // Load all sizes
+                loadProductSizes();
+                return;
+              }
 
-                if (!speciesName) {
-                  // fallback: try to fetch species details from API
-                  $.ajax({
-                    url: `/api/v1/master/species/${speciesId}`,
-                    method: "GET",
-                    dataType: "json",
-                    success: function (resp) {
-                      const sname =
-                        resp?.data?.species_name ||
-                        resp?.data?.species_master_name;
-                      populateProductCategorySuggestionsBySpeciesName(sname);
-                    },
-                    error: function () {
-                      // silent fallback
-                    },
-                  });
-                  return;
-                }
+              // Clear and reset product category dropdown
+              $("#product_category").val(null).trigger("change");
 
-                // Prefer server-side product category master filtered by species name (keeps DB authoritative)
-                populateProductCategorySuggestionsBySpeciesName(speciesName);
-              });
+              // Look up species data from our map
+              const speciesData = window.PRODUCT_SPECIES_MAP[speciesId];
+
+              const speciesName = speciesData?.name || null;
+              const parentCategoryType =
+                speciesData?.parent_category_type || null;
+
+              if (!speciesName) {
+                console.warn(
+                  "⚠️ Species name not found in map, fetching from API"
+                );
+                // fallback: try to fetch species details from API
+                $.ajax({
+                  url: `/api/v1/master/species/${speciesId}`,
+                  method: "GET",
+                  dataType: "json",
+                  success: function (resp) {
+                    const sname =
+                      resp?.data?.species_name ||
+                      resp?.data?.species_master_name;
+                    const ptype = resp?.data?.parent_category_type;
+                    populateProductCategorySuggestionsBySpeciesName(
+                      sname,
+                      ptype
+                    );
+                  },
+                  error: function (xhr, status, error) {
+                    toastr.error("Failed to load categories for this species");
+                  },
+                });
+
+                // Load sizes for the selected species
+                loadProductSizes(null, speciesId);
+                return;
+              }
+
+              // Load categories for this species
+              populateProductCategorySuggestionsBySpeciesName(
+                speciesName,
+                parentCategoryType
+              );
+
+              // Load sizes for the selected species
+              loadProductSizes(null, speciesId);
+            });
 
             // Call callback if provided
             if (typeof callback === "function") {
@@ -6822,7 +7054,6 @@
             }
           },
           error: function (xhr, status, error) {
-            console.error("Error loading species:", error, xhr.responseText);
             toastr["error"]("Failed to load species data");
             // Call callback even on error to prevent hanging
             if (typeof callback === "function") {
@@ -6832,19 +7063,43 @@
         });
       }
 
-      function populateProductCategorySuggestionsBySpeciesName(speciesName) {
+      function populateProductCategorySuggestionsBySpeciesName(
+        speciesName,
+        parentCategoryType
+      ) {
         if (!speciesName) {
           return;
+        }
+
+        // Build request parameters
+        const params = { species_master_name: speciesName };
+
+        // Add parent_category_type to filter if available
+        if (parentCategoryType) {
+          params.parent_category_type = parentCategoryType;
         }
 
         $.ajax({
           url: "/api/v1/master/product/category",
           method: "GET",
-          data: { species_master_name: speciesName },
+          data: params,
           dataType: "json",
           success: function (response) {
             // Response shape: { success, message, data: { rows: [...], count: N } }
-            const rows = response?.data?.rows || [];
+            // OR: { data: { rows: [...], count: N } }
+            let rows = response?.data?.rows || [];
+
+            // Fallback: check if response itself is an array
+            if (Array.isArray(response)) {
+              rows = response;
+            }
+
+            // Another fallback: check if response.rows exists at top level
+            if (!rows || rows.length === 0) {
+              if (Array.isArray(response?.rows)) {
+                rows = response.rows;
+              }
+            }
 
             if (!rows || !rows.length) {
               // no categories found in DB; try static mapping file
@@ -6859,7 +7114,7 @@
                     setProductCategoryDatalist(match.allowed_forms);
                   }
                 })
-                .catch(() => {});
+                .catch((err) => {});
               return;
             }
 
@@ -6867,7 +7122,6 @@
             setProductCategoryDatalist(rows);
           },
           error: function (xhr, status, error) {
-            console.error("API error:", xhr.status, xhr.responseText);
             // fallback to static JSON
             fetch("/public/data/species_product_forms_clean.json")
               .then((r) => r.json())
@@ -6880,16 +7134,25 @@
                   setProductCategoryDatalist(match.allowed_forms);
                 }
               })
-              .catch((err) => {
-                console.error("Failed to load fallback after error:", err);
-              });
+              .catch((err) => {});
           },
         });
       }
 
       function setProductCategoryDatalist(arr) {
+        if (!arr || arr.length === 0) {
+          $("#categoryListContent").html(
+            "No categories available for this species"
+          );
+          $("#categoryListContainer").show();
+
+          // Clear dropdown
+          $("#product_category").val(null).trigger("change");
+          return;
+        }
+
         // Handle both DB objects and static array of strings
-        const data = (arr || []).map((item) => {
+        const data = (arr || []).map((item, index) => {
           if (typeof item === "string") {
             // Static JSON format - just category name
             return { id: item, text: item };
@@ -6902,36 +7165,143 @@
           }
         });
 
-        // Initialize or update Select2 with the new data
+        // ✅ DISPLAY ARRAY OF CATEGORIES
+        // Update the category list display
+        if (data.length > 0) {
+          const categoryNames = data.map((cat) => cat.text).join(", ");
+          const categoryCount = data.length;
+          $("#categoryListContent").html(
+            `<strong>${categoryCount} categories available:</strong><br/>` +
+              `<code style="display: block; margin-top: 5px; word-break: break-word;">${categoryNames}</code>`
+          );
+          $("#categoryListContainer").show();
+        }
+
+        // CRITICAL: Ensure Select2 element exists
         if ($("#product_category").length === 0) {
           return;
         }
 
-        if ($("#product_category").hasClass("select2-hidden-accessible")) {
-          // Destroy existing Select2 instance
+        // Check if Select2 is already initialized
+        const isInitialized = $("#product_category").hasClass(
+          "select2-hidden-accessible"
+        );
+
+        if (isInitialized) {
+          // Update existing Select2 instance with new data
+          $("#product_category").empty();
+
+          // Destroy and re-create to ensure clean state
           $("#product_category").select2("destroy");
         }
 
-        // Initialize Select2 with new data
-        $("#product_category").select2({
-          placeholder:
-            data.length > 0
-              ? "Choose product category"
-              : "No categories available for this species",
-          allowClear: true,
-          data: data,
+        // Populate DOM with option elements
+        $("#product_category").empty();
+        $.each(data, function (i, item) {
+          const $option = $("<option></option>").val(item.id).text(item.text);
+          $("#product_category").append($option);
         });
 
-        // Optionally select the first option if nothing is selected and data exists
-        if (!$("#product_category").val() && data.length > 0) {
-          $("#product_category").val(data[0].id).trigger("change");
-        } else if (data.length === 0) {
-          $("#product_category").val(null).trigger("change");
-        }
+        // Initialize Select2 with DOM options
+        $("#product_category").select2({
+          placeholder: "Choose product category",
+          allowClear: true,
+          width: "100%",
+          templateSelection: function (data, container) {
+            if (!data.id) {
+              return data.text || "Choose product category";
+            }
+            // Get text from the actual DOM option
+            const $option = $("#product_category").find(
+              `option[value="${data.id}"]`
+            );
+            if ($option.length > 0) {
+              return $option.text();
+            }
+            return data.text || "Choose product category";
+          },
+          templateResult: function (data) {
+            if (!data.id) {
+              return data.text;
+            }
+            return data.text || "";
+          },
+        });
+
+        // ⚠️ Don't auto-select first item - let user choose explicitly
+        // The placeholder "Choose product category" will be displayed by default
       }
 
-      function loadProductSizes(callback) {
-        // Load all sizes (default behavior if grade not selected)
+      function loadProductSizes(callback, speciesId) {
+        // If species ID provided, load sizes for that specific species
+        if (speciesId) {
+          $.ajax({
+            url: `/api/v1/master/product/sizes-by-species/${speciesId}`,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            processData: false,
+            success: (response) => {
+              const sizeData = response?.data?.rows || [];
+
+              // Destroy existing Select2 if initialized
+              if ($("#productSizes").hasClass("select2-hidden-accessible")) {
+                $("#productSizes").select2("destroy");
+              }
+
+              // Populate DOM with option elements
+              $("#productSizes").empty();
+              $.each(sizeData, function (i, item) {
+                const $option = $("<option></option>")
+                  .val(item.id)
+                  .text(`${item.size} (${item.unit_of_measure})`);
+                $("#productSizes").append($option);
+              });
+
+              // Initialize Select2 with DOM options
+              $("#productSizes").select2({
+                placeholder: "Choose a size",
+                allowClear: true,
+                templateSelection: function (data, container) {
+                  if (!data.id) {
+                    return data.text || "Choose a size";
+                  }
+                  // Get text from the actual DOM option
+                  const $option = $("#productSizes").find(
+                    `option[value="${data.id}"]`
+                  );
+                  if ($option.length > 0) {
+                    return $option.text();
+                  }
+                  return data.text || "Choose a size";
+                },
+                templateResult: function (data) {
+                  if (!data.id) {
+                    return data.text;
+                  }
+                  return data.text || "";
+                },
+              });
+
+              // Only clear selected value if no callback is provided AND not in edit mode
+              if (!callback && !window.PRODUCT_EDIT_MODE) {
+                $("#productSizes").val(null).trigger("change");
+              }
+
+              if (typeof callback === "function") {
+                callback();
+              }
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+              // Fallback to loading all sizes
+              loadProductSizes(callback);
+            },
+          });
+          return;
+        }
+
+        // Load all sizes (default behavior if species not selected)
         $.ajax({
           url: "/api/v1/master/size",
           method: "GET",
@@ -6943,16 +7313,43 @@
             // API returns: { draw, data: [...], recordsTotal, recordsFiltered }
             const sizeData = response?.data || [];
 
-            // Loading data into Select2
+            // Destroy existing Select2 if initialized
+            if ($("#productSizes").hasClass("select2-hidden-accessible")) {
+              $("#productSizes").select2("destroy");
+            }
+
+            // Populate DOM with option elements
+            $("#productSizes").empty();
+            $.each(sizeData, function (i, item) {
+              const $option = $("<option></option>")
+                .val(item.id)
+                .text(item.size);
+              $("#productSizes").append($option);
+            });
+
+            // Initialize Select2 with DOM options
             $("#productSizes").select2({
               placeholder: "Choose a size",
               allowClear: true,
-              data: $.map(sizeData, function (item) {
-                return {
-                  id: item.id,
-                  text: item.size,
-                };
-              }),
+              templateSelection: function (data, container) {
+                if (!data.id) {
+                  return data.text || "Choose a size";
+                }
+                // Get text from the actual DOM option
+                const $option = $("#productSizes").find(
+                  `option[value="${data.id}"]`
+                );
+                if ($option.length > 0) {
+                  return $option.text();
+                }
+                return data.text || "Choose a size";
+              },
+              templateResult: function (data) {
+                if (!data.id) {
+                  return data.text;
+                }
+                return data.text || "";
+              },
             });
 
             // Only clear selected value if no callback is provided AND not in edit mode
@@ -6982,6 +7379,11 @@
       // Listen for grade selection change to filter sizes
       $(document).on("change", "#productGrade", function () {
         const gradeId = $(this).val();
+
+        // Skip cascading if in edit mode (we handle it separately)
+        if (window.PRODUCT_EDIT_MODE) {
+          return;
+        }
 
         if (!gradeId) {
           // If no grade selected, load all sizes
@@ -7024,13 +7426,46 @@
 
       function saveProduct() {
         const product_master_id = $("#submitProduct").attr("product_master_id");
+        const speciesId = $("#productSpecies").val();
+        const categoryId = $("#product_category").val();
+        const gradeId = $("#productGrade").val();
+        const sizeId = $("#productSizes").val();
+
+        // Validation
+        // For editing, prioritize checking size since it might not load in time
+        if (product_master_id) {
+          // Editing mode - check for the most critical field that might fail to load
+          if (!sizeId) {
+            toastr.error("Please select a size");
+            return;
+          }
+        } else {
+          // Creating new product - validate all fields
+          if (!speciesId) {
+            toastr.error("Please select a species");
+            return;
+          }
+          if (!categoryId) {
+            toastr.error("Please select a product category");
+            return;
+          }
+          if (!gradeId) {
+            toastr.error("Please select a grade");
+            return;
+          }
+          if (!sizeId) {
+            toastr.error("Please select a size");
+            return;
+          }
+        }
 
         let url = "/api/v1/master/product";
         let method = "POST";
         let input_params = {
-          product_category_master_id: $("#product_category").val(),
-          species_master_id: $("#productSpecies").val(),
-          size_master_id: $("#productSizes").val(),
+          product_category_master_id: categoryId,
+          species_master_id: speciesId,
+          grade_master_id: gradeId,
+          size_master_id: sizeId,
         };
 
         if (product_master_id) {
@@ -7062,10 +7497,14 @@
             resetAllInputs();
           },
           error: (jqXhr, textStatus, errorThrown) => {
+            const errorMsg =
+              jqXhr?.responseJSON?.message ||
+              jqXhr?.responseText ||
+              "Failed to save product";
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](errorMsg);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](errorMsg);
             }
           },
         });
