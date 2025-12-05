@@ -1721,6 +1721,18 @@
               ></select>
             </div>
 
+            <div class="form-group mt-4">
+              <label for="hsn_code">HSN Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="hsn_code"
+                name="hsn_code"
+                maxlength="10"
+                placeholder="Enter HSN Code (4-8 digits)"
+              />
+            </div>
+
             <div class="d-flex justify-content-between mt-4 py-3 pb-4">
               <div id="submitProduct" class="col-lg-5 btn btn-danger">Save</div>
               <div
@@ -1754,6 +1766,7 @@
               <tr>
                 <th></th>
                 <th></th>
+                <th class="fw-bold"><span>HSN Code</span></th>
                 <th class="fw-bold"><span>Product Name</span></th>
                 <th class="fw-bold"><span>Species Name</span></th>
                 <th class="fw-bold"><span>Product Category</span></th>
@@ -3810,6 +3823,7 @@
         $("#productSpecies").val(null).trigger("change");
         $("#productGrade").val(null).trigger("change");
         $("#productSizes").val(null).trigger("change");
+        $("#hsn_code").val("");
         $("#customer_country").val(null).trigger("change");
         $("#customer_type").val(null).trigger("change");
         $("#priceList_currency").val(null).trigger("change");
@@ -6484,6 +6498,7 @@
           columns: [
             { data: null },
             { data: null },
+            { data: "hsn_code" },
             { data: "product_name" },
             { data: "ProductCategoryMaster.SpeciesMaster.species_name" },
             { data: "ProductCategoryMaster.product_category" },
@@ -6515,21 +6530,28 @@
               },
             },
             {
-              targets: [3],
+              targets: [2],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span species_master_id='${row["ProductCategoryMaster"]["SpeciesMaster"].id}'>${data}</span>`;
+                return data || "-";
               },
             },
             {
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span product_category_master_id='${row["ProductCategoryMaster"].id}'>${data}</span>`;
+                return `<span species_master_id='${row["ProductCategoryMaster"]["SpeciesMaster"].id}'>${data}</span>`;
               },
             },
             {
               targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<span product_category_master_id='${row["ProductCategoryMaster"].id}'>${data}</span>`;
+              },
+            },
+            {
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 // Check if GradeMaster exists and has data
@@ -6540,7 +6562,7 @@
               },
             },
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return row["SizeMaster"]?.id
@@ -6549,7 +6571,7 @@
               },
             },
             {
-              targets: [7],
+              targets: [8],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["created_at"]);
@@ -6616,6 +6638,7 @@
               productCategoryMasterId: product.ProductCategoryMaster?.id,
               gradeMasterId: product.GradeMaster?.id,
               sizeMasterId: product.SizeMaster?.id,
+              hsnCode: product.hsn_code,
             };
 
             // Define callback to set form values after dropdowns are loaded
@@ -6625,6 +6648,7 @@
                 productCategoryMasterId,
                 gradeMasterId,
                 sizeMasterId,
+                hsnCode,
               } = window.PRODUCT_EDIT_VALUES;
 
               // Set species value
@@ -6753,6 +6777,11 @@
                 }
               }, 800);
 
+              // Set HSN code
+              if (hsnCode) {
+                $("#hsn_code").val(hsnCode);
+              }
+
               // Clear edit mode flag after values are set
               setTimeout(() => {
                 window.PRODUCT_EDIT_MODE = false;
@@ -6861,6 +6890,7 @@
                 id: idStr,
                 name: item.species_name,
                 parent_category_type: item.parent_category_type,
+                hsn_code: item.hsn_code,
               };
               select2Data.push({
                 id: idStr,
@@ -7010,6 +7040,14 @@
               const speciesName = speciesData?.name || null;
               const parentCategoryType =
                 speciesData?.parent_category_type || null;
+              const speciesHsnCode = speciesData?.hsn_code || null;
+
+              // Populate HSN code field with species HSN code
+              if (speciesHsnCode) {
+                $("#hsn_code").val(speciesHsnCode);
+              } else {
+                $("#hsn_code").val(""); // Clear if no HSN code
+              }
 
               if (!speciesName) {
                 console.warn(
@@ -7025,6 +7063,15 @@
                       resp?.data?.species_name ||
                       resp?.data?.species_master_name;
                     const ptype = resp?.data?.parent_category_type;
+                    const hsnCode = resp?.data?.hsn_code;
+
+                    // Populate HSN code field with species HSN code
+                    if (hsnCode) {
+                      $("#hsn_code").val(hsnCode);
+                    } else {
+                      $("#hsn_code").val(""); // Clear if no HSN code
+                    }
+
                     populateProductCategorySuggestionsBySpeciesName(
                       sname,
                       ptype
@@ -7432,6 +7479,7 @@
         const categoryId = $("#product_category").val();
         const gradeId = $("#productGrade").val();
         const sizeId = $("#productSizes").val();
+        const hsnCode = $("#hsn_code").val();
 
         // Validation
         // For editing, prioritize checking size since it might not load in time
@@ -7468,6 +7516,7 @@
           species_master_id: speciesId,
           grade_master_id: gradeId,
           size_master_id: sizeId,
+          hsn_code: hsnCode,
         };
 
         if (product_master_id) {

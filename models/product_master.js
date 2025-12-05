@@ -61,6 +61,12 @@ module.exports = (sequelize, DataTypes) => {
       product_name: {
         type: DataTypes.TEXT,
       },
+      hsn_code: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+        comment:
+          "HSN (Harmonized System of Nomenclature) code for GST classification",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -145,6 +151,14 @@ module.exports = (sequelize, DataTypes) => {
       }
 
       data.created_by = options.profile_id;
+
+      // Map HSN code from species if not provided
+      if (!data.hsn_code) {
+        const speciesHsnCode = product_category?.SpeciesMaster?.hsn_code;
+        if (speciesHsnCode) {
+          data.hsn_code = speciesHsnCode;
+        }
+      }
     } catch (err) {
       console.log(
         "Error while inserting a product master details",
@@ -241,6 +255,30 @@ module.exports = (sequelize, DataTypes) => {
               }
             }
           }
+        }
+      }
+
+      // Map HSN code from species if category is being updated
+      if (data?.product_category_master_id && !data.hsn_code) {
+        const product_category =
+          await sequelize.models.ProductCategoryMaster.findOne({
+            required: true,
+            attributes: ["product_category"],
+            include: [
+              {
+                required: true,
+                attributes: ["species_name", "hsn_code"],
+                model: sequelize.models.SpeciesMaster,
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+            where: { id: data.product_category_master_id, is_active: true },
+          });
+
+        if (product_category?.SpeciesMaster?.hsn_code) {
+          data.hsn_code = product_category.SpeciesMaster.hsn_code;
         }
       }
 

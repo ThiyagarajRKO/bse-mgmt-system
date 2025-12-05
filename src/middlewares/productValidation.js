@@ -35,6 +35,7 @@ export const validateProductInput = async (req, reply) => {
       product_category, // fallback
       grade_master_id,
       size_master_id,
+      hsn_code, // HSN code for the product
       product_master_id, // For updates (optional) - at top level
       product_master_data, // For updates (optional) - nested structure
     } = req.body;
@@ -53,6 +54,7 @@ export const validateProductInput = async (req, reply) => {
     const actualGradeId =
       grade_master_id || product_master_data?.grade_master_id;
     const actualSizeId = size_master_id || product_master_data?.size_master_id;
+    const actualHsnCode = hsn_code || product_master_data?.hsn_code;
 
     // ───────────────────────────────────────────────────────────
     // 1. Validate species exists (skip for updates)
@@ -263,7 +265,17 @@ export const validateProductInput = async (req, reply) => {
     }
 
     // ───────────────────────────────────────────────────────────
-    // 8. Store validated data in request for controller
+    // 8. Validate HSN code format (if provided)
+    // ───────────────────────────────────────────────────────────
+    if (actualHsnCode && !/^\d{4,8}$/.test(actualHsnCode)) {
+      return reply.code(400).send({
+        success: false,
+        message: "HSN code must be 4-8 digits",
+      });
+    }
+
+    // ───────────────────────────────────────────────────────────
+    // 9. Store validated data in request for controller
     // ───────────────────────────────────────────────────────────
     req.validatedProduct = {
       species,
@@ -271,6 +283,7 @@ export const validateProductInput = async (req, reply) => {
       size,
       sku,
       hsn,
+      hsn_code: actualHsnCode,
     };
   } catch (err) {
     return reply.code(500).send({

@@ -26,6 +26,8 @@
  * - 20251201120002-create-grade-size-mapping.js
  * - 20251202-consolidated-product-master.js
  * - 20251202-create-species-size-mapping.js
+ * - 20251205121026-add-hsn-code-to-product-master.js
+ * - 20251205123232-update-existing-products-hsn-codes.js (seeder)
  * - Plus parent_category_type enhancements
  */
 
@@ -389,6 +391,12 @@ module.exports = {
             allowNull: false,
             unique: true,
           },
+          hsn_code: {
+            type: Sequelize.STRING(10),
+            allowNull: true,
+            comment:
+              "HSN (Harmonized System of Nomenclature) code for GST classification",
+          },
           product_category_master_id: {
             type: Sequelize.UUID,
             allowNull: false,
@@ -452,6 +460,31 @@ module.exports = {
           },
         });
       }
+
+      // ============================================================================
+      // STEP 8: Populate HSN codes for existing products
+      // ============================================================================
+      console.log(
+        "[Migration] 🔄 Populating HSN codes for existing products..."
+      );
+
+      const hsnUpdateQuery = `
+        UPDATE product_master
+        SET hsn_code = species_master.hsn_code
+        FROM product_category_master
+        INNER JOIN species_master ON product_category_master.species_master_id = species_master.id
+        WHERE product_master.product_category_master_id = product_category_master.id
+        AND product_master.hsn_code IS NULL
+        AND species_master.hsn_code IS NOT NULL
+        AND product_master.is_active = true
+        AND product_category_master.is_active = true
+        AND species_master.is_active = true;
+      `;
+
+      const hsnResult = await queryInterface.sequelize.query(hsnUpdateQuery);
+      console.log(
+        `[Migration] ✅ Updated ${hsnResult[1].rowCount} products with HSN codes from species`
+      );
 
       console.log(
         "[Migration] ✅ All consolidated species/product tables created successfully!"
