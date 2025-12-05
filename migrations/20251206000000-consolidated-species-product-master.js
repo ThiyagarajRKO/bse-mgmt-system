@@ -267,6 +267,8 @@ module.exports = {
               "Fish",
               "Crustacean",
               "Gastropod",
+              "Shark",
+              "Ray",
               "Other"
             ),
             allowNull: true,

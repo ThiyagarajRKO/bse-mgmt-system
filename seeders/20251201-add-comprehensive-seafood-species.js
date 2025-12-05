@@ -1109,7 +1109,7 @@ module.exports = {
         scientific_name: "Squalus acanthias",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Mild-flavored edible shark; firm texture; widely used in South Indian curries and drying.",
         is_active: true,
@@ -1121,7 +1121,7 @@ module.exports = {
         scientific_name: "Sphyrna spp.",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Consumed in many coastal Indian regions; commonly sold as 'Sura'; softer meat when young.",
         is_active: true,
@@ -1133,7 +1133,7 @@ module.exports = {
         scientific_name: "Rhizoprionodon acutus",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Very common edible shark; used for curry, fry, pickles; mild taste with tender flesh.",
         is_active: true,
@@ -1145,7 +1145,7 @@ module.exports = {
         scientific_name: "Mustelus antarcticus",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Popular table fish in Australia ('flake'); mild flavor and clean white meat.",
         is_active: true,
@@ -1157,7 +1157,7 @@ module.exports = {
         scientific_name: "Carcharhinus limbatus",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Commonly consumed across Southeast Asia; firm texture and widely used in curry dishes.",
         is_active: true,
@@ -1169,7 +1169,7 @@ module.exports = {
         scientific_name: "Carcharhinus leucas",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Available in Indian coastal markets; strong flavor, preferred for spicy curries.",
         is_active: true,
@@ -1181,7 +1181,7 @@ module.exports = {
         scientific_name: "Carcharhinus plumbeus",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description: "Meaty texture; often used for dried fish products.",
         is_active: true,
       },
@@ -1192,7 +1192,7 @@ module.exports = {
         scientific_name: "Galeocerdo cuvier",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description:
           "Consumed in some regions; typically processed into chunks for curry.",
         is_active: true,
@@ -1204,7 +1204,7 @@ module.exports = {
         scientific_name: "Prionace glauca",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030617",
-        parent_category_type: "Fish",
+        parent_category_type: "Shark",
         description: "Mild flavor; widely consumed in global markets.",
         is_active: true,
       },
@@ -1215,7 +1215,7 @@ module.exports = {
         scientific_name: "Himantura uarnak",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030375",
-        parent_category_type: "Fish",
+        parent_category_type: "Ray",
         description:
           "Popular edible ray in Tamil Nadu and Kerala; used for curries and fry.",
         is_active: true,
@@ -1227,7 +1227,7 @@ module.exports = {
         scientific_name: "Himantura spp.",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030375",
-        parent_category_type: "Fish",
+        parent_category_type: "Ray",
         description:
           "Soft meat; used in spicy South Indian curries and dried fish preparations.",
         is_active: true,
@@ -1239,7 +1239,7 @@ module.exports = {
         scientific_name: "Rhinoptera javanica",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030375",
-        parent_category_type: "Fish",
+        parent_category_type: "Ray",
         description:
           "Edible ray species with mild taste; commonly eaten in Tamil Nadu.",
         is_active: true,
@@ -1251,7 +1251,7 @@ module.exports = {
         scientific_name: "Neotrygon kuhlii",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030375",
-        parent_category_type: "Fish",
+        parent_category_type: "Ray",
         description:
           "Consumed locally; known for softer flesh and mild flavor.",
         is_active: true,
@@ -1263,7 +1263,7 @@ module.exports = {
         scientific_name: "Himantura granulata",
         division_master_id: divisionMap["Frozen"],
         hsn_code: "030375",
-        parent_category_type: "Fish",
+        parent_category_type: "Ray",
         description:
           "Common in coastal fish markets; suitable for curry and gravy-based dishes.",
         is_active: true,
