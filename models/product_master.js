@@ -106,6 +106,7 @@ module.exports = (sequelize, DataTypes) => {
           where: { id: data?.product_category_master_id, is_active: true },
         });
 
+      // Generate product_name: SPECIES_NAME-PRODUCT_CATEGORY-GRADE-SIZE
       data.product_name = `${product_category?.SpeciesMaster?.species_name
         ?.trim()
         ?.replaceAll(" ", "")
