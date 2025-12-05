@@ -8,7 +8,7 @@ import { Delete } from "./handlers/delete";
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 
 export const productCategoryMasterRoute = (fastify, opts, done) => {
@@ -22,14 +22,14 @@ export const productCategoryMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.put("/", updateSchema, async (req, reply) => {
     try {
@@ -41,52 +41,14 @@ export const productCategoryMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
-
-  fastify.get("/:product_category_master_id", getSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.params };
-
-      const result = await Get(params, req?.session, fastify);
-
-      return reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });;
-    } catch (err) {
-      return reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });;
-    }
-      });;
-
-  fastify.get("/", getAllSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.query };
-
-      const result = await GetAll(params, req?.session, fastify);
-
-      return reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });;
-    } catch (err) {
-      return reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });;
-    }
-      });;
+  });
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -98,14 +60,53 @@ export const productCategoryMasterRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
+
+  // GET all MUST come before GET one (/:id) for correct route matching
+  fastify.get("/", getAllSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetAll(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/:product_category_master_id", getSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.params };
+
+      const result = await Get(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
 
   done();
 };
