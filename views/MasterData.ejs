@@ -7168,6 +7168,7 @@
             }
 
             // Use full objects with ID from database
+            console.log("🔍 API returned rows:", rows);
             setProductCategoryDatalist(rows);
           },
           error: function (xhr, status, error) {
@@ -7189,6 +7190,7 @@
       }
 
       function setProductCategoryDatalist(arr) {
+        console.log("🔍 setProductCategoryDatalist called with:", arr);
         if (!arr || arr.length === 0) {
           $("#categoryListContent").html(
             "No categories available for this species"
@@ -7206,15 +7208,19 @@
             // Static JSON format - just category name
             return { id: item, text: item };
           } else {
-            // DB object format - use id and product_category
+            // DB object format - use id and product_category ONLY
+            // Extract only the category name, no species name
+            const categoryText = item.product_category
+              ? item.product_category.trim()
+              : "";
             return {
               id: item.id,
-              text: item.product_category,
+              text: categoryText,
             };
           }
         });
 
-        // ✅ DISPLAY ARRAY OF CATEGORIES
+        console.log("🔍 Final data array for Select2:", data);
         // Update the category list display
         if (data.length > 0) {
           const categoryNames = data.map((cat) => cat.text).join(", ");
@@ -7256,34 +7262,19 @@
           placeholder: "Choose product category",
           allowClear: true,
           width: "100%",
-          templateSelection: function (data, container) {
-            if (!data.id) {
-              return data.text || "Choose product category";
-            }
-            // Get text from the actual DOM option
-            const $option = $("#product_category").find(
-              `option[value="${data.id}"]`
-            );
-            if ($option.length > 0) {
-              return $option.text();
-            }
-            return data.text || "Choose product category";
-          },
-          templateResult: function (data) {
-            if (!data.id) {
-              return data.text;
-            }
-            return data.text || "";
-          },
         });
 
         // ⚠️ Don't auto-select first item - let user choose explicitly
         // The placeholder "Choose product category" will be displayed by default
       }
 
-      function loadProductSizes(callback, speciesId) {
+      function loadProductSizes(callback, speciesId, isRetry = false) {
+        console.log(
+          `🔄 Loading product sizes: speciesId=${speciesId}, isRetry=${isRetry}`
+        );
+
         // If species ID provided, load sizes for that specific species
-        if (speciesId) {
+        if (speciesId && !isRetry) {
           $.ajax({
             url: `/api/v1/master/product/sizes-by-species/${speciesId}`,
             method: "GET",
@@ -7293,6 +7284,9 @@
             processData: false,
             success: (response) => {
               const sizeData = response?.data?.rows || [];
+              console.log(
+                `✅ Loaded ${sizeData.length} species-specific sizes for species ${speciesId}`
+              );
 
               // Destroy existing Select2 if initialized
               if ($("#productSizes").hasClass("select2-hidden-accessible")) {
@@ -7343,8 +7337,13 @@
               }
             },
             error: (jqXhr, textStatus, errorThrown) => {
-              // Fallback to loading all sizes
-              loadProductSizes(callback);
+              console.warn(
+                `⚠️ Failed to load species-specific sizes for species ${speciesId}, falling back to all sizes`,
+                jqXhr?.status,
+                jqXhr?.responseJSON?.message
+              );
+              // Fallback to loading all sizes (with retry flag to prevent infinite recursion)
+              loadProductSizes(callback, null, true);
             },
           });
           return;
@@ -7361,13 +7360,14 @@
           success: (response) => {
             // API returns: { draw, data: [...], recordsTotal, recordsFiltered }
             const sizeData = response?.data || [];
+            console.log(
+              `✅ Loaded ${sizeData.length} fallback sizes (all sizes)`
+            );
 
             // Destroy existing Select2 if initialized
             if ($("#productSizes").hasClass("select2-hidden-accessible")) {
               $("#productSizes").select2("destroy");
-            }
-
-            // Populate DOM with option elements
+            } // Populate DOM with option elements
             $("#productSizes").empty();
             $.each(sizeData, function (i, item) {
               const $option = $("<option></option>")
@@ -7412,12 +7412,20 @@
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            console.error("Error loading sizes:", jqXhr);
+            console.error(
+              "❌ Error loading all sizes fallback:",
+              jqXhr?.status,
+              jqXhr?.responseJSON?.message || textStatus
+            );
+
+            // Only show error toast if not in edit mode or if it's a critical error
             if (jqXhr?.status == 420) {
               toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"]("Failed to load sizes");
+            } else if (jqXhr?.status >= 500) {
+              toastr["error"]("Server error: Unable to load sizes");
             }
+            // For 404 or other errors, just log to console but don't alert the user excessively
+
             if (typeof callback === "function") {
               callback();
             }
@@ -7468,7 +7476,13 @@
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            toastr["error"]("Failed to load sizes for selected grade");
+            console.warn(
+              `⚠️ Failed to load grade-specific sizes for grade ${gradeId}, falling back to all sizes`,
+              jqXhr?.status,
+              jqXhr?.responseJSON?.message
+            );
+            // Fallback to loading all sizes when grade-specific sizes fail
+            loadProductSizes();
           },
         });
       });
