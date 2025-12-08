@@ -21,18 +21,45 @@ const fastify = Fastify({
 // Decorate fastify with models
 fastify.decorate("models", models);
 
-// This loads all plugins defined in plugins those should be support plugins that are reused through your application
-fastify.register(AutoLoad, {
-  dir: path.join(process.cwd(), "/src/plugins"),
-});
-
-//Configuring the routes
-fastify.register(PublicRouters, { prefix: "/api/v1" });
-fastify.register(PrivateRouters, { prefix: "/api/v1" });
-
-// Run the server after verifying DB connectivity
 const start = async () => {
   try {
+    // Register cookie middleware (required for sessions)
+    await fastify.register(import("@fastify/cookie"));
+
+    // Register session middleware
+    await fastify.register(import("@fastify/session"), {
+      secret:
+        process.env.SESSION_SECRET || "your-secret-key-change-me-in-production",
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    });
+
+    // Register static files middleware
+    await fastify.register(import("@fastify/static"), {
+      root: path.join(process.cwd(), "public"),
+      prefix: "/public/",
+    });
+
+    // Register view engine
+    await fastify.register(import("@fastify/view"), {
+      engine: {
+        ejs: require("ejs"),
+      },
+      root: path.join(process.cwd(), "views"),
+    });
+
+    // This loads all plugins defined in plugins those should be support plugins that are reused through your application
+    // fastify.register(AutoLoad, {
+    //   dir: path.join(process.cwd(), "/src/plugins"),
+    // });
+
+    //Configuring the routes
+    fastify.register(PublicRouters, { prefix: "/api" });
+    fastify.register(PrivateRouters, { prefix: "/api" });
+
     // attempt DB connection (models.authenticate is a helper exposed by models/index.js)
     if (models && typeof models.authenticate === "function") {
       await models.authenticate();

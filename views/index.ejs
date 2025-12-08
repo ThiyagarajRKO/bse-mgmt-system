@@ -6,54 +6,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SFE</title>
 
-  <!-- Font Preloading -->
-  <link rel="preload" href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" as="font"
-    type="font/ttf" crossorigin="anonymous" />
-  <link rel="preload" href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf" as="font" type="font/ttf"
-    crossorigin="anonymous" />
-
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css?v=3" />
-
-  <!-- Bootstrap 
-  <link href="/public/plugins/bootstrap/css/bootstrap.min.css?v=3" rel="stylesheet" />
-  <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=3"></script> -->
+  <link rel="stylesheet" href="/public/plugins/font-awesome/css/all.min.css" />
 
   <!-- MDB5  -->
-  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=3" rel="stylesheet" />
-  <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js?v=3"></script>
+  <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
+  <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js"></script>
 
   <!-- jQuery -->
-  <script src="/public/plugins/jquery/jquery.min.js?v=3"></script>
+  <script src="/public/plugins/jquery/jquery.min.js"></script>
 
   <!-- Select2 -->
-  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css?v=3" />
-  <script src="/public/plugins/select2/js/select2.min.js?v=3"></script>
+  <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+  <script src="/public/plugins/select2/js/select2.min.js"></script>
 
-  <!-- Toast -->
-  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=3" />
-  <script src="/public/plugins/Toastr/toastr.min.js?v=3"></script>
+  <!-- Toastr -->
+  <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+  <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
   <style>
-    @font-face {
-      font-family: "CassandraPersonalUse";
-      src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=3") format("truetype");
-      /* Replace with your font file path */
-      /* font-display: swap; */
-    }
-
-    @font-face {
-      font-family: "CerebriSansPro-Regular";
-      src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=3") format("truetype");
-      /* Replace with your font file path */
-      /* font-display: swap; */
-    }
+    /* Custom font faces removed - using system fonts instead */
   </style>
 </head>
 
 <body style="
       background-color: rgb(249, 243, 255);
-      font-family: CerebriSansPro-Regular;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       align-items:center;
       overflow: hidden;
     ">
@@ -109,7 +87,7 @@
 
     // Load Roles
     $.ajax({
-      url: "/api/v1/roles",
+      url: "/api/roles",
       method: "GET",
       dataType: "json",
       contentType: "application/json",
@@ -186,7 +164,7 @@
         role_id,
       };
       $.ajax({
-        url: "/api/v1/auth/signin",
+        url: "/api/auth/signin",
         method: "POST",
         dataType: "json",
         contentType: "application/json",

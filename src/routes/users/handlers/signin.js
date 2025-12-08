@@ -43,6 +43,14 @@ export const SignIn = (
         });
       }
 
+      // Verify user profile exists
+      if (!user_data?.creator) {
+        return reject({
+          statusCode: 403,
+          message: "User profile not found or inactive",
+        });
+      }
+
       // Here is we add token into the Cookie
       session.pid = user_data?.creator?.id;
       session.role_id = user_data?.creator?.role_id;
