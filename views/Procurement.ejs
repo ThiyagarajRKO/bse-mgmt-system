@@ -28,103 +28,93 @@
 
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?v=3"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
 
     <!-- Bootstrap -->
     <link
-      href="/public/plugins/bootstrap/css/bootstrap.min.css?v=3"
+      href="/public/plugins/bootstrap/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <script src="/public/plugins/bootstrap/js/bootstrap.min.js?v=3"></script>
+    <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- MDB5  -->
     <link
-      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css?v=3"
+      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css"
       rel="stylesheet"
     />
-    <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js?v=3"></script>
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js"></script>
 
     <!-- jQuery -->
-    <script src="/public/plugins/jquery/jquery.min.js?v=3"></script>
+    <script src="/public/plugins/jquery/jquery.min.js"></script>
 
     <!-- Select2 -->
     <link
       rel="stylesheet"
-      href="/public/plugins/select2/css/select2.min.css?v=3"
+      href="/public/plugins/select2/css/select2.min.css"
     />
-    <script src="/public/plugins/select2/js/select2.min.js?v=3"></script>
+    <script src="/public/plugins/select2/js/select2.min.js"></script>
 
     <!-- DataTable -->
     <link
       rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.min.css?v=3"
+      href="/public/plugins/dataTables/datatables.min.css"
     />
-    <script src="/public/plugins/dataTables/datatables.min.js?v=3"></script>
-    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js?v=3"></script>
+    <script src="/public/plugins/dataTables/datatables.min.js"></script>
+    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
     <!-- Responsive Datatable -->
     <link
       rel="stylesheet"
-      href="/public/plugins/dataTables/datatables.responsive.min.css?v=3"
+      href="/public/plugins/dataTables/datatables.responsive.min.css"
     />
-    <script src="/public/plugins/dataTables/datatables.responsive.min.js?v=3"></script>
+    <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
 
     <!-- Toast -->
-    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css?v=3" />
-    <script src="/public/plugins/Toastr/toastr.min.js?v=3"></script>
+    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+    <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
     <!-- perfect-scrollbar plugin -->
-    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js?v=3"></script>
+    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
-      href="/public/plugins/font-awesome/css/all.min.css?v=3"
+      href="/public/plugins/font-awesome/css/all.min.css"
     />
 
     <!-- jQuery Confirm -->
     <link
       rel="stylesheet"
-      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css?v=3"
+      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
     />
-    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js?v=3"></script>
+    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
 
     <!-- Slide-in Panel -->
     <link
       rel="stylesheet"
-      href="/public/plugins/slide-in-panel/css/slidePanel.min.css?v=3"
+      href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
     />
-    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js?v=3"></script>
+    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
 
     <!-- Tippy -->
-    <link rel="stylesheet" href="/public/plugins/tippy/scale.css?v=3" />
-    <script src="/public/plugins/tippy/popper.min.js?v=3"></script>
-    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js?v=3"></script>
+    <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
+    <script src="/public/plugins/tippy/popper.min.js"></script>
+    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
 
     <!-- Popper -->
-    <script src="/public/plugins/popper/popper.umd.min.js?v=3"></script>
+    <script src="/public/plugins/popper/popper.umd.min.js"></script>
 
     <!-- Canvas JS -->
-    <script src="/public/plugins/canvasJs/canvasjs.min.js?v=3"></script>
+    <script src="/public/plugins/canvasJs/canvasjs.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/public/css/style.css?v=3" />
+    <link rel="stylesheet" href="/public/css/style.css" />
 
     <!-- Custom Script -->
-    <script src="/public/custom/App.js?v=3"></script>
+    <script src="/public/custom/App.js"></script>
 
     <style type="text/css">
-      @font-face {
-        font-family: "CassandraPersonalUse";
-        src: url("/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf?v=3")
-          format("truetype");
-      }
 
-      @font-face {
-        font-family: "CerebriSansPro-Regular";
-        src: url("/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf?v=3")
-          format("truetype");
-      }
 
       body {
         font-family: "CerebriSansPro-Regular";
@@ -2182,7 +2172,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/supplier?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/procurement/product/chart/spend/by/supplier?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2274,7 +2264,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/product?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/procurement/product/chart/spend/by/product?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2367,7 +2357,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/spend/by/date?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/procurement/product/chart/spend/by/date?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2483,7 +2473,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/age/by/product?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/procurement/product/chart/age/by/product?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2576,7 +2566,7 @@
         }
 
         $.ajax({
-          url: `/api/v1/procurement/product/chart/performance/by/supplier?from_date=${from_date}&to_date=${to_date}`,
+          url: `/api/procurement/product/chart/performance/by/supplier?from_date=${from_date}&to_date=${to_date}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -2743,7 +2733,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/lot/stats",
+            url: "/api/procurement/lot/stats",
             error: function (xhr, error, code) {
               $("#procurementTable").DataTable().destroy();
               $("#procurementTable").DataTable({
@@ -2895,7 +2885,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product?procurement_lot_id=${procurement_lot_id}`,
+            url: `/api/procurement/product?procurement_lot_id=${procurement_lot_id}`,
             error: function (xhr, error, code) {
               $("#procurementProductTable").DataTable().destroy();
               $("#procurementProductTable").DataTable({
@@ -3129,7 +3119,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/v1/procurement/product?procurement_product_id=" +
+                    "/api/procurement/product?procurement_product_id=" +
                     procurement_product_id +
                     "&supplier_master_id=" +
                     supplier_master_id,
@@ -3177,7 +3167,7 @@
           }
           // Load Products
           $.ajax({
-            url: `/api/v1/procurement/product/paid/status?procurement_product_id=${procurement_product_id}&supplier_master_id=${supplier_master_id}`,
+            url: `/api/procurement/product/paid/status?procurement_product_id=${procurement_product_id}&supplier_master_id=${supplier_master_id}`,
             method: "GET",
             dataType: "json",
             contentType: "application/json",
@@ -3253,7 +3243,7 @@
       function loadProcurementProducts() {
         // Load Products
         $.ajax({
-          url: "/api/v1/master/product",
+          url: "/api/master/product",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3288,7 +3278,7 @@
       function loadProcurementUnits() {
         // Load Products
         $.ajax({
-          url: `/api/v1/master/unit?unit_type=Collection Center`,
+          url: `/api/master/unit?unit_type=Collection Center`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3323,7 +3313,7 @@
       function loadProcurementSuppliers() {
         // Load Suppliers
         $.ajax({
-          url: "/api/v1/master/supplier",
+          url: "/api/master/supplier",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -3362,7 +3352,7 @@
           "procurement_product_id"
         );
 
-        let url = "/api/v1/procurement/product";
+        let url = "/api/procurement/product";
         let method = "POST";
         let input_params = {
           procurement_date: $("#procurement_date").val(),
@@ -3381,7 +3371,7 @@
             return;
           }
 
-          url = "/api/v1/procurement/product";
+          url = "/api/procurement/product";
           method = "PUT";
           input_params = {
             procurement_product_id,
@@ -3479,7 +3469,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/master/supplier/orders",
+            url: "/api/master/supplier/orders",
             error: function (xhr, error, code) {
               $("#supplierTable").DataTable().destroy();
               $("#supplierTable").DataTable({
@@ -3626,7 +3616,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product?supplier_master_id=${supplier_master_id}`,
+            url: `/api/procurement/product?supplier_master_id=${supplier_master_id}`,
             error: function (xhr, error, code) {
               $("#supplierProductTable").DataTable().destroy();
               $("#supplierProductTable").DataTable({
@@ -3743,7 +3733,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/procurement/product",
+            url: "/api/procurement/product",
             error: function (xhr, error, code) {
               $("#adjustmentTable").DataTable().destroy();
               $("#adjustmentTable").DataTable({
@@ -3956,7 +3946,7 @@
         };
 
         $.ajax({
-          url: "/api/v1/procurement/product",
+          url: "/api/procurement/product",
           method: "PUT",
           dataType: "json",
           contentType: "application/json",
@@ -4050,7 +4040,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/v1/purchase/payment",
+            url: "/api/purchase/payment",
             error: function (xhr, error, code) {
               $("#paymentTable").DataTable().destroy();
               $("#paymentTable").DataTable({
@@ -4430,7 +4420,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/v1/purchase/payment?purchase_payment_id=" +
+                    "/api/purchase/payment?purchase_payment_id=" +
                     purchase_payment_id,
                   method: "delete",
                 })
@@ -4478,7 +4468,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/v1/procurement/product/payment/items?purchase_payment_id=${purchase_payment_id}&supplier_master_id=${supplier_master_id}`,
+            url: `/api/procurement/product/payment/items?purchase_payment_id=${purchase_payment_id}&supplier_master_id=${supplier_master_id}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({
@@ -4531,7 +4521,7 @@
       function loadPaymentSuppliers() {
         // Load Suppliers
         $.ajax({
-          url: "/api/v1/master/supplier",
+          url: "/api/master/supplier",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4581,7 +4571,7 @@
 
         // Load Suppliers
         $.ajax({
-          url: `/api/v1/procurement/lot/lots/payment?supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
+          url: `/api/procurement/lot/lots/payment?supplier_master_id=${supplier_master_id}&purchase_payment_id=${view_purchase_payment_id}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
@@ -4774,7 +4764,7 @@
           return toastr["warning"]("Net amount should not be empty!");
         }
 
-        let url = "/api/v1/purchase/payment";
+        let url = "/api/purchase/payment";
         let method = "POST";
         let input_params = {
           transaction_id: $("#transaction_id").val(),
@@ -4791,7 +4781,7 @@
         };
 
         if (purchase_payment_id) {
-          url = "/api/v1/purchase/payment";
+          url = "/api/purchase/payment";
           method = "PUT";
           input_params = {
             purchase_payment_id,
