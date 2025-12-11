@@ -217,13 +217,13 @@ export const GetAll = ({
         include: [
           {
             model: models.ProductCategoryMaster,
+            required: false,
             include: [
               {
                 model: models.SpeciesMaster,
-                where: speciesWhere,
+                required: false,
               },
             ],
-            where: productCategoryWhere,
           },
           {
             required: false,
@@ -241,7 +241,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["updated_at", "desc"]],
       });
 
       resolve(products);

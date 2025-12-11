@@ -209,7 +209,10 @@ module.exports = (sequelize, DataTypes) => {
             });
 
           if (product_category) {
-            const baseName = `${product_category.product_category
+            const baseName = `${product_category?.SpeciesMaster?.species_name
+              ?.trim()
+              ?.replaceAll(" ", "")
+              ?.toUpperCase()}-${product_category.product_category
               ?.trim()
               ?.replaceAll(" ", "")
               ?.toUpperCase()}`;
