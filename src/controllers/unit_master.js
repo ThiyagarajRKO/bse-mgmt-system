@@ -104,16 +104,17 @@ export const GetAll = async ({
           model: CompanyMaster,
           as: "company",
           attributes: ["id", "company_name"],
+          required: false,
         },
         {
           model: LocationMaster,
           attributes: ["id", "location_name"],
-          where: locationWhere,
+          required: false,
         },
       ],
       offset: Number(start),
       limit: Number(length),
-      order: [["created_at", "DESC"]],
+      order: [["updated_at", "DESC"]],
     });
 
     return result;

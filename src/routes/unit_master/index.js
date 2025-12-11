@@ -11,7 +11,7 @@ import { ValidateUser } from "../../middlewares/authentication";
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getDispatchesSchema } from "./schema/get_dispatch_destinations";
 import { getPeeledDispatchesSchema } from "./schema/get_peeled_dispatch_destinations";

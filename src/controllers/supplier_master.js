@@ -160,7 +160,6 @@ export const GetAll = ({
         include: [
           {
             model: models.LocationMaster,
-            where: locationWhere,
             required: false,
           },
           {
@@ -173,7 +172,7 @@ export const GetAll = ({
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["updated_at", "desc"]],
       });
 
       resolve(suppliers);

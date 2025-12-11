@@ -1,47 +1,10 @@
 import { ProcurementProducts } from "../../../controllers";
 
-export const GetAll = (
-  {
-    procurement_lot_id,
-    procurement_lot,
-    procurement_product_type,
-    procurement_quantity,
-    procurement_price,
-    procurement_totalamount,
-    procurement_purchaser,
-    product_master_name,
-    species_master_name,
-    supplier_master_name,
-    unit_master_name,
-    supplier_master_id,
-    purchase_payment_id,
-    start,
-    length,
-    "search[value]": search,
-  },
-  session,
-  fastify
-) => {
+export const GetAll = (params, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let procurement = await ProcurementProducts.GetAll({
-        procurement_lot_id,
-        procurement_lot,
-        procurement_product_type,
-        procurement_quantity,
-        procurement_price,
-        procurement_totalamount,
-        procurement_purchaser,
-        product_master_name,
-        species_master_name,
-        supplier_master_name,
-        unit_master_name,
-        supplier_master_id,
-        purchase_payment_id,
-        start,
-        length,
-        search,
-      });
+      console.log("Handler called with params:", params);
+      const procurement = await ProcurementProducts.GetAll(params);
 
       if (!procurement) {
         return reject({
@@ -54,6 +17,7 @@ export const GetAll = (
         data: procurement,
       });
     } catch (err) {
+      console.error("Handler error:", err);
       fastify.log.error(err);
       reject(err);
     }

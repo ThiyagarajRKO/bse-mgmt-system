@@ -9,7 +9,7 @@ import { GetOrders } from "./handlers/get_orders";
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
-import { getAllSchema } from "./schema/get _all";
+import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getOrdersSchema } from "./schema/get _orders";
 
