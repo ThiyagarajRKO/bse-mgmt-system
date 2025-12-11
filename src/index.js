@@ -23,42 +23,28 @@ fastify.decorate("models", models);
 
 const start = async () => {
   try {
-    // Register cookie middleware (required for sessions)
-    await fastify.register(import("@fastify/cookie"));
-
-    // Register session middleware
-    await fastify.register(import("@fastify/session"), {
-      secret:
-        process.env.SESSION_SECRET || "your-secret-key-change-me-in-production",
-      cookie: {
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      },
+    // Register session plugin with database persistence
+    // This plugin uses connect-session-sequelize to store sessions in the database
+    // Located in src/plugins/session.js
+    await fastify.register(AutoLoad, {
+      dir: path.join(process.cwd(), "/src/plugins"),
     });
-
-    // Register static files middleware
-    await fastify.register(import("@fastify/static"), {
-      root: path.join(process.cwd(), "public"),
-      prefix: "/public/",
-    });
-
-    // Register view engine
-    await fastify.register(import("@fastify/view"), {
-      engine: {
-        ejs: require("ejs"),
-      },
-      root: path.join(process.cwd(), "views"),
-    });
-
-    // This loads all plugins defined in plugins those should be support plugins that are reused through your application
-    // fastify.register(AutoLoad, {
-    //   dir: path.join(process.cwd(), "/src/plugins"),
-    // });
 
     //Configuring the routes
     fastify.register(PublicRouters, { prefix: "/api" });
     fastify.register(PrivateRouters, { prefix: "/api" });
+
+    // Add hooks BEFORE start - these handle missing .map files
+    // Suppress 404 errors for missing source map files
+    fastify.addHook("onSend", async (request, reply, payload) => {
+      // Don't log 404 errors for .map (source map) files - they're optional development artifacts
+      if (reply.statusCode === 404 && request.url && request.url.endsWith(".map")) {
+        // Return 204 No Content for missing source maps instead of 404
+        reply.code(204);
+        return null; // Don't send the 404 response
+      }
+      return payload;
+    });
 
     // attempt DB connection (models.authenticate is a helper exposed by models/index.js)
     if (models && typeof models.authenticate === "function") {
@@ -75,44 +61,6 @@ const start = async () => {
 };
 
 start();
-
-// Hooks
-fastify.addHook("onError", async (request, reply, error) => {
-  fastify.log.error(error);
-  reply.code(500).send({ success: false, message: error?.message || error });
-});
-
-fastify.addHook("onSend", function (request, reply, payload, done) {
-  try {
-    // Small safeguard and debug logging to diagnose response-wrapping issues.
-    // Ensure we always call `done()` (Fastify expects the hook to invoke the callback).
-    try {
-      const info = {
-        url: request.raw?.url,
-        method: request.raw?.method,
-        statusCode: reply.statusCode,
-        payloadType: typeof payload,
-        payloadKeys:
-          payload && typeof payload === "object"
-            ? Object.keys(payload).slice(0, 10)
-            : undefined,
-      };
-      fastify.log.debug({ onSend: info });
-    } catch (e) {
-      /* ignore logging errors */
-    }
-
-    if (!reply.sent && payload) {
-      done(null, payload);
-      return;
-    }
-
-    // Still call done even when there's no payload to avoid leaving the hook unresolved.
-    done();
-  } catch (err) {
-    // console.error(new Date().toISOString() + " : " + err?.message || err);
-  }
-});
 
 // View Handlers
 fastify.get("/", (req, res) => {

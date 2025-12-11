@@ -38,11 +38,13 @@ import purchaseInventoryRoute from "./purchase_inventory";
 import salesInventoryRoute from "./sales_inventory";
 
 // Master Data Routes
-import { chartOfAccountsRoute } from "./master/chart_of_accounts";
+import { ChartOfAccountsRoute } from "./chart_of_accounts";
+import { GlAccountMasterRoute } from "./gl_account_master";
 import consolidatedGstMasterRoute from "./consolidated_gst_master";
-import { ledgerMasterRoute } from "./master/ledger_master";
-import { taxCodeMasterRoute } from "./master/tax_code_master";
-import { productGstMappingRoute } from "./master/product_gst_mapping";
+import { LedgerMasterRoute } from "./ledger_master";
+import { TaxCodeMasterRoute } from "./tax_code_master";
+import { ProductGstMappingRoute } from "./product_gst_mapping";
+import { authRoutes } from "./auth";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -53,6 +55,8 @@ import { AuditLogs, ModuleMasters } from "../controllers";
 //Public Routes
 export const PublicRouters = (fastify, opts, done) => {
   fastify.register(usersRoute, { prefix: "/auth" });
+
+  fastify.register(authRoutes, { prefix: "/v1/auth" });
 
   fastify.register(roleMasterRoute, { prefix: "/roles" });
 
@@ -72,6 +76,8 @@ export const PrivateRouters = (fastify, opts, done) => {
   // Validating session
   fastify.addHook("onRequest", ValidateUser);
 
+  // Temporarily disable audit logging to isolate crash
+  /*
   fastify.addHook("onRequest", async (req, res) => {
     try {
       let module_master_ids = {};
@@ -108,6 +114,7 @@ export const PrivateRouters = (fastify, opts, done) => {
       fastify.log.error(err);
     }
   });
+  */
 
   fastify.register(profileRoutes, { prefix: "/profile" });
 
@@ -187,16 +194,28 @@ export const PrivateRouters = (fastify, opts, done) => {
   fastify.register(salesInventoryRoute, { prefix: "/inventory/sales" });
 
   // Accounting Master Data Routes
-  fastify.register(chartOfAccountsRoute, {
+  fastify.register(ChartOfAccountsRoute, {
     prefix: "/master/chart-of-accounts",
+  });
+  fastify.register(GlAccountMasterRoute, {
+    prefix: "/master/gl-account",
   });
   fastify.register(consolidatedGstMasterRoute, {
     prefix: "/master/consolidated-gst-master",
   });
-  fastify.register(ledgerMasterRoute, { prefix: "/master/ledger-master" });
-  fastify.register(taxCodeMasterRoute, { prefix: "/master/tax-code-master" });
-  fastify.register(productGstMappingRoute, {
+  fastify.register(LedgerMasterRoute, { prefix: "/master/ledger-master" });
+  fastify.register(TaxCodeMasterRoute, { prefix: "/master/tax-code-master" });
+  fastify.register(ProductGstMappingRoute, {
     prefix: "/master/product-gst-mapping",
+  });
+
+  // Add a simple test route to check if server can handle routes
+  fastify.get("/test", async (req, reply) => {
+    return reply.code(200).send({
+      success: true,
+      message: "Test route works",
+      data: { procurement_purchaser: "System Admin" },
+    });
   });
 
   done();
