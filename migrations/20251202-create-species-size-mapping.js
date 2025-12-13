@@ -25,99 +25,115 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
       // ============================================================================
-      // STEP 1: Create species_size_mapping table
+      // STEP 1: Create species_size_mapping table if it doesn't exist
       // ============================================================================
-      await queryInterface.createTable("species_size_mapping", {
-        id: {
-          primaryKey: true,
-          type: Sequelize.UUID,
-          defaultValue: Sequelize.UUIDV4,
-        },
-        parent_category_type: {
-          type: Sequelize.ENUM(
-            "Bivalve",
-            "Cephalopod",
-            "Fish",
-            "Crustacean",
-            "Gastropod",
-            "Other"
-          ),
-          allowNull: false,
-          comment: "Species category type from species_master",
-        },
-        unit_of_measure: {
-          type: Sequelize.STRING,
-          allowNull: false,
-          comment:
-            "Unit of measure from size_master (e.g., g, kg, cm, pcs/kg, pcs/lb)",
-        },
-        priority: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          defaultValue: 1,
-          comment:
-            "Priority order for size recommendations (lower = higher priority)",
-        },
-        description: {
-          type: Sequelize.TEXT,
-          allowNull: true,
-          comment:
-            "Explanation of why this size is suitable for this species type",
-        },
-        is_active: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: true,
-        },
-        created_at: {
-          defaultValue: Sequelize.fn("now"),
-          type: Sequelize.DATE,
-        },
-        updated_at: {
-          type: Sequelize.DATE,
-        },
-        deleted_at: {
-          type: Sequelize.DATE,
-        },
-        created_by: {
-          type: Sequelize.UUID,
-          allowNull: false,
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "user_profiles" },
-            key: "id",
-          },
-        },
-        updated_by: {
-          type: Sequelize.UUID,
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "user_profiles" },
-            key: "id",
-          },
-        },
-        deleted_by: {
-          type: Sequelize.UUID,
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "user_profiles" },
-            key: "id",
-          },
-        },
-      });
+      const tableExists = await queryInterface.tableExists(
+        "species_size_mapping"
+      );
 
-      // Create unique constraint to prevent duplicate mappings
-      await queryInterface.addConstraint("species_size_mapping", {
-        fields: ["parent_category_type", "unit_of_measure"],
-        type: "unique",
-        name: "species_size_mapping_type_unit_unique",
-        where: { is_active: true },
-      });
+      if (!tableExists) {
+        await queryInterface.createTable("species_size_mapping", {
+          id: {
+            primaryKey: true,
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+          },
+          parent_category_type: {
+            type: Sequelize.ENUM(
+              "Bivalve",
+              "Cephalopod",
+              "Fish",
+              "Crustacean",
+              "Gastropod",
+              "Other"
+            ),
+            allowNull: false,
+            comment: "Species category type from species_master",
+          },
+          unit_of_measure: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            comment:
+              "Unit of measure from size_master (e.g., g, kg, cm, pcs/kg, pcs/lb)",
+          },
+          priority: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment:
+              "Priority order for size recommendations (lower = higher priority)",
+          },
+          description: {
+            type: Sequelize.TEXT,
+            allowNull: true,
+            comment:
+              "Explanation of why this size is suitable for this species type",
+          },
+          is_active: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+          },
+          created_at: {
+            defaultValue: Sequelize.fn("now"),
+            type: Sequelize.DATE,
+          },
+          updated_at: {
+            type: Sequelize.DATE,
+          },
+          deleted_at: {
+            type: Sequelize.DATE,
+          },
+          created_by: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            onDelete: "RESTRICT",
+            onUpdate: "CASCADE",
+            references: {
+              model: { tableName: "user_profiles" },
+              key: "id",
+            },
+          },
+          updated_by: {
+            type: Sequelize.UUID,
+            onDelete: "RESTRICT",
+            onUpdate: "CASCADE",
+            references: {
+              model: { tableName: "user_profiles" },
+              key: "id",
+            },
+          },
+          deleted_by: {
+            type: Sequelize.UUID,
+            onDelete: "RESTRICT",
+            onUpdate: "CASCADE",
+            references: {
+              model: { tableName: "user_profiles" },
+              key: "id",
+            },
+          },
+        });
 
-      console.log("✅ species_size_mapping table created\n");
+        // Create unique constraint to prevent duplicate mappings
+        try {
+          await queryInterface.addConstraint("species_size_mapping", {
+            fields: ["parent_category_type", "unit_of_measure"],
+            type: "unique",
+            name: "species_size_mapping_type_unit_unique",
+            where: { is_active: true },
+          });
+        } catch (error) {
+          // Constraint may already exist
+        }
+
+        console.log("✅ species_size_mapping table created\n");
+      } else {
+        // Table already exists, skip constraint creation
+        // to avoid errors if columns don't match
+        console.log(
+          "📋 species_size_mapping table already exists, skipping creation\n"
+        );
+      }
 
       // ============================================================================
       // STEP 2: Populate initial species-size mappings
@@ -311,24 +327,39 @@ module.exports = {
         },
       ];
 
-      // Insert mappings
-      await queryInterface.bulkInsert(
-        "species_size_mapping",
-        speciesSizeMappings
-      );
+      // Insert mappings (only if table is newly created)
+      if (!tableExists) {
+        try {
+          await queryInterface.bulkInsert(
+            "species_size_mapping",
+            speciesSizeMappings
+          );
+        } catch (error) {
+          // Data may already exist
+          console.warn("⚠️  Could not insert data: " + error.message);
+        }
+      }
 
       // ============================================================================
       // STEP 3: Add index for performance optimization
       // ============================================================================
-      await queryInterface.addIndex("species_size_mapping", {
-        fields: ["parent_category_type", "is_active"],
-        name: "idx_species_size_mapping_category_active",
-      });
+      try {
+        await queryInterface.addIndex("species_size_mapping", {
+          fields: ["parent_category_type", "is_active"],
+          name: "idx_species_size_mapping_category_active",
+        });
+      } catch (error) {
+        // Index may already exist
+      }
 
-      await queryInterface.addIndex("species_size_mapping", {
-        fields: ["unit_of_measure", "is_active"],
-        name: "idx_species_size_mapping_unit_active",
-      });
+      try {
+        await queryInterface.addIndex("species_size_mapping", {
+          fields: ["unit_of_measure", "is_active"],
+          name: "idx_species_size_mapping_unit_active",
+        });
+      } catch (error) {
+        // Index may already exist
+      }
     } catch (error) {
       console.error(error);
       throw error;

@@ -14,26 +14,34 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Add Parent Category Type column for species taxonomic classification
-    await queryInterface.addColumn("species_master", "parent_category_type", {
-      type: Sequelize.ENUM(
-        "Bivalve",
-        "Cephalopod",
-        "Fish",
-        "Crustacean",
-        "Gastropod",
-        "Other"
-      ),
-      allowNull: true,
-      defaultValue: "Other",
-      after: "division_master_id",
-    });
+    try {
+      await queryInterface.addColumn("species_master", "parent_category_type", {
+        type: Sequelize.ENUM(
+          "Bivalve",
+          "Cephalopod",
+          "Fish",
+          "Crustacean",
+          "Gastropod",
+          "Other"
+        ),
+        allowNull: true,
+        defaultValue: "Other",
+        after: "division_master_id",
+      });
+    } catch (error) {
+      // Column already exists
+    }
 
     // Add HSN Code column for GST tax compliance
-    await queryInterface.addColumn("species_master", "hsn_code", {
-      type: Sequelize.STRING,
-      allowNull: true,
-      after: "scientific_name",
-    });
+    try {
+      await queryInterface.addColumn("species_master", "hsn_code", {
+        type: Sequelize.STRING,
+        allowNull: true,
+        after: "scientific_name",
+      });
+    } catch (error) {
+      // Column already exists
+    }
   },
 
   down: async (queryInterface, Sequelize) => {

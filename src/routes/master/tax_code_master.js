@@ -49,6 +49,16 @@ export const taxCodeMasterRoute = (fastify, opts, done) => {
     }
   });
 
+  // LIST FOR DROPDOWN
+  fastify.get("/list", async (req, reply) => {
+    try {
+      const result = await GetAll({ ...req.query, length: 1000 }); // Large limit for dropdown
+      return reply.code(200).send({ data: result.rows });
+    } catch (err) {
+      return reply.code(err.statusCode || 500).send({ message: err.message });
+    }
+  });
+
   // DELETE TAX CODE MASTER
   fastify.delete("/delete/:id", async (req, reply) => {
     try {
