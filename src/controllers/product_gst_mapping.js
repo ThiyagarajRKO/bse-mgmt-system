@@ -14,20 +14,17 @@ export const Insert = async (profile_id, product_gst_mapping_data) => {
       message: "product gst mapping data must not be empty!",
     };
 
-  if (!product_gst_mapping_data?.product_id)
-    throw { statusCode: 420, message: "product id must not be empty!" };
-
   if (!product_gst_mapping_data?.gst_master_id)
     throw { statusCode: 420, message: "gst master id must not be empty!" };
 
   try {
-    const company_id = product_gst_mapping_data.company_id || null;
+    const tax_code_id = product_gst_mapping_data.tax_code_id || null;
 
-    // Check unique per product/company/gst_master
+    // Check unique per product/tax_code/gst_master
     const existing = await models.ProductGstMapping.findOne({
       where: {
         product_id: product_gst_mapping_data.product_id,
-        company_id,
+        tax_code_id,
         gst_master_id: product_gst_mapping_data.gst_master_id,
         is_active: true,
       },
@@ -35,7 +32,7 @@ export const Insert = async (profile_id, product_gst_mapping_data) => {
     if (existing)
       throw {
         statusCode: 420,
-        message: "mapping already exists for product/company/gst master",
+        message: "mapping already exists for product/tax_code/gst master",
       };
 
     // Validate product exists
@@ -70,7 +67,7 @@ export const Insert = async (profile_id, product_gst_mapping_data) => {
 
     return await models.ProductGstMapping.create({
       ...product_gst_mapping_data,
-      company_id,
+      tax_code_id,
       created_by: profile_id,
     });
   } catch (err) {
@@ -123,7 +120,15 @@ export const Get = async (id) => {
       {
         model: models.ConsolidatedGstMaster,
         as: "gst_master",
-        attributes: ["id", "hsn_code", "gst_rate_percent"],
+        attributes: [
+          "id",
+          "hsn_code",
+          "gst_name",
+          "cgst_rate",
+          "sgst_rate",
+          "igst_rate",
+          "export_gst",
+        ],
       },
       {
         model: models.ProductMaster,
@@ -169,7 +174,15 @@ export const GetAll = async ({
       {
         model: models.ConsolidatedGstMaster,
         as: "gst_master",
-        attributes: ["id", "hsn_code", "gst_rate_percent"],
+        attributes: [
+          "id",
+          "hsn_code",
+          "gst_name",
+          "cgst_rate",
+          "sgst_rate",
+          "igst_rate",
+          "export_gst",
+        ],
       },
       {
         model: models.ProductMaster,
