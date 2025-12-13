@@ -36,20 +36,14 @@
 <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script> -->
 
     <!-- MDB5  -->
-    <link
-      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css"
-      rel="stylesheet"
-    />
+    <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
     <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js"></script>
 
     <!-- jQuery -->
     <script src="/public/plugins/jquery/jquery.min.js"></script>
 
     <!-- Select2 -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/select2/css/select2.min.css"
-    />
+    <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
     <script src="/public/plugins/select2/js/select2.min.js"></script>
 
     <!-- DataTable -->
@@ -112,8 +106,6 @@
     <script src="/public/custom/App.js"></script>
 
     <style type="text/css">
-
-
       body {
         font-family: "CerebriSansPro-Regular";
         background-color: #f7f9fd;
@@ -3453,10 +3445,9 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="fw-bold"><span>Product</span></th>
-                <th class="fw-bold"><span>Tax Code</span></th>
+                <th class="fw-bold"><span>Product Name</span></th>
+                <th class="fw-bold"><span>GST Name</span></th>
                 <th class="fw-bold"><span>HSN Code</span></th>
-                <th class="fw-bold"><span>Supply Type</span></th>
                 <th class="fw-bold"><span>CGST Rate (%)</span></th>
                 <th class="fw-bold"><span>SGST Rate (%)</span></th>
                 <th class="fw-bold"><span>IGST Rate (%)</span></th>
@@ -5148,7 +5139,7 @@
             url: "/api/master/product-gst-mapping",
             type: "GET",
             xhrFields: { withCredentials: true },
-            dataSrc: "rows",
+            dataSrc: "data",
 
             error: function (xhr) {
               toastr.error(xhr.responseJSON?.message || "Error loading data");
@@ -5159,16 +5150,15 @@
             { data: null },
             { data: null },
             { data: "product.product_name" },
-            { data: "taxCode.tax_code" },
-            { data: "gst.hsn_code" },
-            { data: "taxCode.supply_type" },
-            { data: "gst.cgst_rate" },
-            { data: "gst.sgst_rate" },
-            { data: "gst.igst_rate" },
+            { data: "gst_master.gst_name" },
+            { data: "gst_master.hsn_code" },
+            { data: "gst_master.cgst_rate" },
+            { data: "gst_master.sgst_rate" },
+            { data: "gst_master.igst_rate" },
             { data: "effective_from" },
             { data: "effective_to" },
             { data: "note" },
-            { data: "created_at" },
+            { data: "createdAt" },
           ],
 
           columnDefs: [
@@ -5192,11 +5182,7 @@
             },
             {
               targets: 5,
-              render: (data, type, row) => {
-                if (data === "DOMESTIC") return "Domestic";
-                if (data === "EXPORT") return "Export";
-                return data || "";
-              },
+              render: (data, type, row) => (data ? `${data}%` : "0.00%"),
             },
             {
               targets: 6,
@@ -5208,7 +5194,8 @@
             },
             {
               targets: 8,
-              render: (data, type, row) => (data ? `${data}%` : "0.00%"),
+              render: (data, type, row) =>
+                data ? formatDate(new Date(data)) : "",
             },
             {
               targets: 9,
@@ -5216,15 +5203,10 @@
                 data ? formatDate(new Date(data)) : "",
             },
             {
-              targets: 10,
-              render: (data, type, row) =>
-                data ? formatDate(new Date(data)) : "",
-            },
-            {
-              targets: 12,
+              targets: 11,
               render: (data, type, row) => {
-                if (!row.created_at) return "";
-                const date = new Date(row.created_at);
+                if (!row.createdAt) return "";
+                const date = new Date(row.createdAt);
                 if (isNaN(date)) return "";
                 const months = [
                   "Jan",
@@ -8760,8 +8742,7 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url:
-                    "/api/master/inventory?unit_master_id=" + unit_master_id,
+                  url: "/api/master/inventory?unit_master_id=" + unit_master_id,
                   method: "DELETE",
                 })
                   .done(function (response) {
@@ -9351,9 +9332,7 @@
             type: "GET",
             url: "/api/master/grade",
             beforeSend: function () {
-              console.log(
-                "[Grade] Sending AJAX request to /api/master/grade"
-              );
+              console.log("[Grade] Sending AJAX request to /api/master/grade");
             },
             error: function (xhr, error, code) {
               console.error("[Grade DataTable] AJAX Error:", {
@@ -9494,8 +9473,7 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url:
-                    "/api/master/grade?grade_master_id=" + grade_master_id,
+                  url: "/api/master/grade?grade_master_id=" + grade_master_id,
                   method: "DELETE",
                 })
                   .done(function (response) {
@@ -10394,8 +10372,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/master/driver?driver_master_id=" +
-                    driver_master_id,
+                    "/api/master/driver?driver_master_id=" + driver_master_id,
                   method: "DELETE",
                 })
                   .done(function (response) {
