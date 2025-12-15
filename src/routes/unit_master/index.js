@@ -5,6 +5,7 @@ import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetDispatches } from "./handlers/get_dispatch_destinations";
 import { GetPeeledDispatches } from "./handlers/get_peeled_dispatch_destinations";
+import { GetDropdown } from "./handlers/get_dropdown";
 import { ValidateUser } from "../../middlewares/authentication";
 
 // Schema
@@ -15,6 +16,7 @@ import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getDispatchesSchema } from "./schema/get_dispatch_destinations";
 import { getPeeledDispatchesSchema } from "./schema/get_peeled_dispatch_destinations";
+import { getDropdownSchema } from "./schema/get_dropdown";
 
 export const unitMasterRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -55,7 +57,59 @@ export const unitMasterRoute = (fastify, opts, done) => {
     }
   });
 
+  // DROPDOWN ROUTE - MUST come BEFORE /:unit_master_id parametric route
+  // Otherwise "dropdown" will be treated as unit_master_id
+  fastify.get(
+    "/dropdown",
+    {
+      preHandler: async (req, reply) => {
+        console.log(
+          "UNIT DROPDOWN ROUTE MATCHED - skipping unit_master_id validation"
+        );
+      },
+      schema: getDropdownSchema,
+    },
+    async (req, reply) => {
+      console.log("UNIT DROPDOWN HANDLER CALLED with params:", req.query);
+      try {
+        const params = { ...req.query };
+
+        const result = await GetDropdown(params, req?.session, fastify);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          data: result.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
   fastify.get("/:unit_master_id", getSchema, async (req, reply) => {
+    // GUARD: If someone requests /:dropdown, redirect to /dropdown handler
+    if (req.params.unit_master_id === "dropdown") {
+      console.log(
+        "GUARD: Detected /dropdown as parametric route - redirecting to dropdown handler"
+      );
+      try {
+        const params = { ...req.query };
+        const result = await GetDropdown(params, req?.session, fastify);
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          data: result.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+
     try {
       const params = { profile_id: req?.token_profile_id, ...req.params };
 

@@ -16,6 +16,8 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const models = require("../models");
+
     console.log(
       "\n╔═══════════════════════════════════════════════════════════════╗"
     );
@@ -211,12 +213,17 @@ module.exports = {
           const batch = mappings.slice(i, i + BATCH_SIZE);
 
           try {
-            // Check for existing mappings
-            const productIds = batch.map((m) => `'${m.product_id}'`).join(", ");
+            // Check for existing mappings using bulkCreate with ignoreDuplicates
+            const { ProductGstMapping } = models;
+
+            const productIds = batch.map((m) => m.product_id);
             const existing = await sequelize.query(
               `SELECT product_id FROM product_gst_mapping 
-               WHERE product_id IN (${productIds}) AND is_active = true`,
-              { type: Sequelize.QueryTypes.SELECT }
+               WHERE product_id = ANY(:productIds) AND is_active = true`,
+              {
+                replacements: { productIds },
+                type: Sequelize.QueryTypes.SELECT,
+              }
             );
 
             const existingSet = new Set(existing.map((m) => m.product_id));
@@ -225,16 +232,17 @@ module.exports = {
             );
 
             if (toInsert.length > 0) {
-              await sequelize.query(
-                `INSERT INTO product_gst_mapping 
-                 (product_id, gst_master_id, is_active, created_at, updated_at) 
-                 VALUES ${toInsert
-                   .map(
-                     (m) =>
-                       `('${m.product_id}', '${m.gst_master_id}', true, NOW(), NOW())`
-                   )
-                   .join(", ")}`,
-                { raw: true }
+              // Use bulkCreate with ignoreDuplicates for better performance
+              await ProductGstMapping.bulkCreate(
+                toInsert.map((m) => ({
+                  product_id: m.product_id,
+                  gst_master_id: m.gst_master_id,
+                  is_active: true,
+                })),
+                {
+                  ignoreDuplicates: true,
+                  returning: false,
+                }
               );
               successCount += toInsert.length;
               console.log(

@@ -1,6 +1,13 @@
 import { UserProfiles } from "../controllers";
 
 export const ValidateUser = async (req, reply) => {
+  // Skip validation for public dropdown endpoints - check FIRST before any processing
+  const url = req.url || "";
+  if (url.includes("/dropdown")) {
+    console.log("Skipping validation for dropdown route:", url);
+    return; // Exit immediately without validation
+  }
+
   try {
     const user_id = req?.session?.pid;
     const role_id = req?.session?.role_id;

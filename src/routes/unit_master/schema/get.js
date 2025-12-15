@@ -4,7 +4,7 @@ export const getSchema = {
       type: "object",
       required: ["unit_master_id"],
       properties: {
-        unit_master_id: { type: "string" },
+        unit_master_id: { type: "string" }, // Allow any string, including "dropdown"
       },
     },
   },

@@ -83,13 +83,6 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.supplier_master_id) {
-        return reject({
-          statusCode: 420,
-          message: "Supplier master data must not be empty!",
-        });
-      }
-
       if (!procurement_data) {
         return reject({
           statusCode: 420,
@@ -97,12 +90,23 @@ export const Update = async (profile_id, id, procurement_data) => {
         });
       }
 
+      // Get current supplier_master_id if not provided in update data
+      let supplierId = procurement_data?.supplier_master_id;
+      if (!supplierId) {
+        const currentProduct = await models.ProcurementProducts.findOne({
+          where: { id, is_active: true },
+          attributes: ["supplier_master_id"],
+          raw: true,
+        });
+        supplierId = currentProduct?.supplier_master_id;
+      }
+
       const paidStatus = await GetPaidStatus({
-        id,
-        supplier_master_id: procurement_data?.supplier_master_id,
+        procurement_product_id: id,
+        supplier_master_id: supplierId,
       });
 
-      if (paidStatus > 0) {
+      if (paidStatus?.data?.is_paid) {
         return reject({
           statusCode: 420,
           message: "Unable to edit the paid products",
@@ -145,15 +149,11 @@ export const Get = ({ id }) => {
           },
           {
             model: models.SupplierMaster,
-            where: {
-              is_active: true,
-            },
+            required: false,
           },
           {
             model: models.ProductMaster,
-            where: {
-              is_active: true,
-            },
+            required: false,
           },
           {
             required: false,
@@ -161,21 +161,15 @@ export const Get = ({ id }) => {
             include: [
               {
                 model: models.UnitMaster,
-                where: {
-                  is_active: true,
-                },
+                required: false,
               },
               {
                 model: models.VehicleMaster,
-                where: {
-                  is_active: true,
-                },
+                required: false,
               },
               {
                 model: models.DriverMaster,
-                where: {
-                  is_active: true,
-                },
+                required: false,
               },
             ],
             where: {
@@ -242,73 +236,49 @@ export const GetAll = ({
         is_active: true,
       };
 
+      // Build where clause based on filters
+      if (procurement_lot_id) {
+        where.procurement_lot_id = procurement_lot_id;
+      }
+
       if (procurement_product_type) {
         where.procurement_product_type = {
-          [Op.iLike]: procurement_product_type,
+          [Op.iLike]: `%${procurement_product_type}%`,
         };
       }
 
       if (procurement_quantity) {
-        where.procurement_quantity = { [Op.iLike]: procurement_quantity };
+        where.procurement_quantity = procurement_quantity;
       }
 
       if (procurement_price) {
-        where.procurement_price = { [Op.iLike]: procurement_price };
-      }
-
-      if (procurement_totalamount) {
-        where.procurement_totalamount = { [Op.iLike]: procurement_totalamount };
+        where.procurement_price = procurement_price;
       }
 
       if (procurement_purchaser) {
-        where.procurement_purchaser = { [Op.iLike]: procurement_purchaser };
+        where.procurement_purchaser = {
+          [Op.iLike]: `%${procurement_purchaser}%`,
+        };
       }
-
-      let productWhere = {
-        is_active: true,
-      };
-
-      if (product_master_name) {
-        productWhere.product_name = { [Op.iLike]: product_master_name };
-      }
-
-      let procurementLotsWhere = {
-        is_active: true,
-      };
-
-      if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
-      }
-
-      if (procurement_lot) {
-        procurementLotsWhere.procurement_lot = procurement_lot;
-      }
-
-      let supplierWhere = {
-        is_active: true,
-      };
 
       if (supplier_master_id) {
-        supplierWhere.id = supplier_master_id;
-      }
-
-      let paymentWhere = {
-        is_active: true,
-      };
-
-      if (purchase_payment_id) {
-        paymentWhere.id = purchase_payment_id;
+        where.supplier_master_id = supplier_master_id;
       }
 
       if (search) {
         where[Op.or] = [
           sequelize.where(
-            sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
+            sequelize.cast(
+              sequelize.col("SupplierMaster.supplier_name"),
+              "varchar"
+            ),
             {
               [Op.iLike]: `%${search}%`,
             }
           ),
-          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` },
+          },
           sequelize.where(
             sequelize.cast(
               sequelize.col("procurement_product_type"),
@@ -331,90 +301,26 @@ export const GetAll = ({
           "adjusted_quantity",
           "procurement_price",
           "adjusted_price",
-          "adjusted_reason",
-          "adjusted_surveyor",
           "procurement_purchaser",
           "procurement_totalamount",
           "created_at",
-          [
-            sequelize.literal(
-              `(SELECT SUM(pp.total_paid) FROM purchase_payments pp WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
-            ),
-            "total_paid",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementProducts".procurement_lot_id and pp.supplier_master_id = "ProcurementProducts".supplier_master_id and pp.is_active = true)`
-            ),
-            "total_amount",
-          ],
         ],
         include: [
           {
-            as: "pl",
-            attributes: [
-              "id",
-              "procurement_lot",
-              "procurement_date",
-              "created_at",
-            ],
-            model: models.ProcurementLots,
-            include: [
-              {
-                attributes: ["id", "unit_name"],
-                model: models.UnitMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
-            where: procurementLotsWhere,
-          },
-          {
             attributes: ["id", "supplier_name"],
             model: models.SupplierMaster,
-            where: supplierWhere,
+            required: false,
           },
           {
             attributes: ["id", "product_name"],
             model: models.ProductMaster,
-            where: productWhere,
-          },
-          {
             required: false,
-            model: models.Dispatches,
-            include: [
-              {
-                attributes: ["id", "unit_name"],
-                model: models.UnitMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                attributes: ["id", "vehicle_number"],
-                model: models.VehicleMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-              {
-                attributes: ["id", "driver_name"],
-                model: models.DriverMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
-            where: {
-              is_active: true,
-            },
           },
         ],
         where,
-        offset: start,
-        limit: length,
-        order: [[sequelize.col(`"pl".procurement_date`), "desc"]],
+        offset: parseInt(start) || 0,
+        limit: parseInt(length) || 10,
+        order: [["created_at", "desc"]],
       });
 
       resolve(procurements);
@@ -722,7 +628,7 @@ export const GetSalesInventoryProducts = ({
         },
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["updated_at", "desc"]],
       });
 
       resolve(procurements);
@@ -782,22 +688,18 @@ export const GetNames = ({
           {
             attributes: ["id", "product_name"],
             model: models.ProductMaster,
-            where: {
-              is_active: true,
-            },
+            required: false,
           },
           {
             attributes: ["id", "supplier_name"],
             model: models.SupplierMaster,
-            where: {
-              is_active: true,
-            },
+            required: false,
           },
         ],
         where,
         offset: start,
         limit: length,
-        order: [["created_at", "desc"]],
+        order: [["updated_at", "desc"]],
         group: [
           "ProcurementProducts.id",
           "ProductMaster.id",
@@ -909,9 +811,12 @@ export const Delete = ({
         });
       }
 
-      const paidStatus = await GetPaidStatus({ id, supplier_master_id });
+      const paidStatus = await GetPaidStatus({
+        procurement_product_id: id,
+        supplier_master_id,
+      });
 
-      if (paidStatus > 0) {
+      if (paidStatus?.data?.is_paid) {
         return reject({
           statusCode: 420,
           message: "Unable to delete the paid products.",
@@ -944,36 +849,45 @@ export const Delete = ({
   });
 };
 
-export const GetPaidStatus = ({ id, supplier_master_id }) => {
+export const GetPaidStatus = ({
+  procurement_product_id,
+  supplier_master_id,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const lot = await models.ProcurementProducts.count({
-        include: [
-          {
-            as: "pl",
-            model: models.ProcurementLots,
-            include: [
-              {
-                model: models.PurchasePayments,
-                where: {
-                  is_active: true,
-                  supplier_master_id,
-                },
-              },
-            ],
-            where: {
-              is_active: true,
-            },
-          },
-        ],
+      // First get the procurement lot for this product
+      const product = await models.ProcurementProducts.findOne({
         where: {
-          is_active: true,
-          id,
+          id: procurement_product_id,
           supplier_master_id,
+          is_active: true,
+        },
+        attributes: ["procurement_lot_id"],
+        raw: true,
+      });
+
+      if (!product) {
+        return reject({
+          statusCode: 404,
+          message: "Procurement product not found",
+        });
+      }
+
+      // Now check if there are any payments for this lot and supplier
+      const paymentCount = await models.PurchasePayments.count({
+        where: {
+          procurement_lot_id: product.procurement_lot_id,
+          supplier_master_id,
+          is_active: true,
         },
       });
 
-      resolve(lot);
+      resolve({
+        data: {
+          is_paid: paymentCount > 0,
+          payment_count: paymentCount,
+        },
+      });
     } catch (err) {
       reject(err);
     }

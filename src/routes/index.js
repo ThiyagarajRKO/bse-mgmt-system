@@ -68,6 +68,8 @@ export const PublicRouters = (fastify, opts, done) => {
     // ignore if not present
   }
 
+  // DROPDOWN ENDPOINTS MOVED TO src/index.js - registered at top level for proper route matching priority
+
   done();
 };
 

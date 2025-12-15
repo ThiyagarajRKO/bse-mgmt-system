@@ -38,7 +38,11 @@ const start = async () => {
     // Suppress 404 errors for missing source map files
     fastify.addHook("onSend", async (request, reply, payload) => {
       // Don't log 404 errors for .map (source map) files - they're optional development artifacts
-      if (reply.statusCode === 404 && request.url && request.url.endsWith(".map")) {
+      if (
+        reply.statusCode === 404 &&
+        request.url &&
+        request.url.endsWith(".map")
+      ) {
         // Return 204 No Content for missing source maps instead of 404
         reply.code(204);
         return null; // Don't send the 404 response
