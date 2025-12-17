@@ -232,9 +232,7 @@ export const GetAll = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
+      let where = {};
 
       // Build where clause based on filters
       if (procurement_lot_id) {
@@ -296,16 +294,25 @@ export const GetAll = ({
         subQuery: false,
         attributes: [
           "id",
+          "procurement_lot_id",
           "procurement_product_type",
           "procurement_quantity",
           "adjusted_quantity",
           "procurement_price",
           "adjusted_price",
+          "adjusted_reason",
+          "adjusted_surveyor",
           "procurement_purchaser",
           "procurement_totalamount",
           "created_at",
         ],
         include: [
+          {
+            as: "pl",
+            attributes: ["id", "procurement_lot"],
+            model: models.ProcurementLots,
+            required: false,
+          },
           {
             attributes: ["id", "supplier_name"],
             model: models.SupplierMaster,
@@ -638,7 +645,7 @@ export const GetSalesInventoryProducts = ({
   });
 };
 
-// Retrive Procured Products names, along with quantity
+// Retrieve Procured Products names, along with quantity
 export const GetNames = ({
   procurement_lot_id,
   dispatch_id,
@@ -648,13 +655,10 @@ export const GetNames = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
+      // Remove is_active filter — use paranoid mode (soft deletes) instead
+      let where = {};
 
-      let procurementLotsWhere = {
-        is_active: true,
-      };
+      let procurementLotsWhere = {};
 
       if (procurement_lot_id) {
         procurementLotsWhere.id = procurement_lot_id;
@@ -666,6 +670,9 @@ export const GetNames = ({
           "procurement_product_type",
           "procurement_quantity",
           "adjusted_quantity",
+          // Add product_name and supplier_name as direct attributes for easier frontend access
+          [sequelize.col("ProductMaster.product_name"), "product_name"],
+          [sequelize.col("SupplierMaster.supplier_name"), "supplier_name"],
           [
             sequelize.literal(
               `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and ${
@@ -705,10 +712,22 @@ export const GetNames = ({
           "ProductMaster.id",
           "SupplierMaster.id",
         ],
+        raw: true,
+        subQuery: false,
       });
 
-      resolve(procurements);
+      console.log("GetNames - procurement_lot_id:", procurement_lot_id);
+      console.log("GetNames - procurements count:", procurements?.length);
+      if (procurements && procurements.length > 0) {
+        console.log(
+          "GetNames - first item sample:",
+          JSON.stringify(procurements[0], null, 2)
+        );
+      }
+
+      resolve(procurements || []);
     } catch (err) {
+      console.error("GetNames - error:", err);
       reject(err);
     }
   });

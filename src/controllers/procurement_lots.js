@@ -569,9 +569,7 @@ export const GetDispatchStats = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
+      let where = {};
 
       if (procurement_lot_id) {
         where.id = procurement_lot_id;
@@ -589,78 +587,77 @@ export const GetDispatchStats = ({
         ];
       }
 
-      const procurementCount = await models.ProcurementLots.count({
-        where: {
-          is_active: true,
-          [Op.and]: [
-            Sequelize.where(
-              sequelize.literal(
-                `(SELECT COUNT(dispatches.id) as total_dispatched_count FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
-              ),
-              ">",
-              0
-            ),
-          ],
-        },
-        raw: true,
-      });
-
       const procurementRows = await models.ProcurementLots.findAll({
-        subQuery: false,
         attributes: [
           "id",
           "procurement_date",
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`
             ),
             "total_dispatched_count",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`
             ),
             "total_dispatched_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`
             ),
             "total_purchased_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`
             ),
             "total_adjusted_quantity",
           ],
         ],
-        where: {
-          ...where,
-          [Op.and]: [
-            Sequelize.where(
-              sequelize.literal(
-                `(SELECT COUNT(dispatches.id) as total_dispatched_count FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
-              ),
-              ">",
-              0
-            ),
-          ],
-        },
-        offset: start,
-        limit: length,
-        order: [["created_at", "desc"]],
-        group: ["ProcurementLots.id"],
+        where,
+        offset: parseInt(start) || 0,
+        limit: parseInt(length) || 10,
+        order: [["procurement_date", "desc"]],
+        raw: true,
+        subQuery: false,
       });
 
+      console.log(
+        "GetDispatchStats - procurementRows:",
+        procurementRows?.length,
+        "rows fetched"
+      );
+      if (procurementRows && procurementRows.length > 0) {
+        console.log(
+          "GetDispatchStats - First row sample:",
+          JSON.stringify(procurementRows[0], null, 2)
+        );
+      }
+
+      // Filter out rows where there are no dispatches
+      const filteredRows = procurementRows.filter((row) => {
+        const dispatchCount = row.total_dispatched_count || 0;
+        return parseInt(dispatchCount) > 0;
+      });
+
+      console.log(
+        "GetDispatchStats - filteredRows:",
+        filteredRows?.length,
+        "rows with dispatches"
+      );
+
       const output = {
-        count: procurementCount,
-        rows: procurementRows,
+        count: filteredRows.length,
+        rows: filteredRows,
       };
 
+      console.log("GetDispatchStats - output:", output);
       resolve(output);
     } catch (err) {
+      console.error("GetDispatchStats - error:", err);
       reject(err);
     }
   });
