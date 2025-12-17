@@ -1883,6 +1883,12 @@
         $("#prodVehicleNumbers").val(null).trigger("change");
         $("#prodDriverNames").val(null).trigger("change");
 
+        $("#lotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+          closeOnSelect: true,
+        });
+
         $("#productNames").select2({
           placeholder: "Choose a product",
           allowClear: true,
@@ -1894,6 +1900,12 @@
         $("#rawMaterials").val(null).trigger("change");
         $(".peelingProductNames").val(null).trigger("change");
         $("#peelingMethods").val(null).trigger("change");
+
+        $("#peelingLotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+          closeOnSelect: true,
+        });
 
         $("#peelingCenters").select2({
           placeholder: "Choose a peeling center",
@@ -1913,6 +1925,12 @@
         $("#distributionLocation").val(null).trigger("change");
         $(".peeledProductNames").val(null).trigger("change");
 
+        $("#peeledLotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+          closeOnSelect: true,
+        });
+
         //Packing
         $("#packingLotNumbers").val(null).trigger("change");
         $("#packingProductNames").val(null).trigger("change");
@@ -1921,6 +1939,11 @@
         $("#packingSize").val(null).trigger("change");
         $("#packingPackages").val(null).trigger("change");
 
+        $("#packingLotNumbers").select2({
+          placeholder: "Choose a lot",
+          allowClear: true,
+          closeOnSelect: true,
+        });
 
         $("#packingProductNames").select2({
           placeholder: "Choose a product",
@@ -2419,6 +2442,8 @@
       }
 
       let view_procurement_product_id = "";
+      let view_dispatch_id = "";
+
       $(document).on("click", ".editDispatch", (e) => {
         // Changing panel input fields data
 
@@ -2508,7 +2533,8 @@
           success: (data) => {
             $("#lotNumbers").select2({
               placeholder: "Choose a lot",
-              allowClear: "true",
+              allowClear: true,
+              closeOnSelect: true,
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
@@ -2530,25 +2556,36 @@
       }
 
       $(document).on("change", "#lotNumbers", () => {
+        console.log("lotNumbers change event triggered");
         $("#balance_procure_quantity").text("");
 
         let lot_no = $("#lotNumbers").val();
+        console.log("lotNumbers - lot_no value:", lot_no);
 
-        $("#productNames").empty();
+        $("#productNames").val(null).trigger("change");
 
         if (lot_no) {
+          console.log("lotNumbers - calling loadProducts with lot_no:", lot_no);
           loadProducts(lot_no);
         }
       });
 
+      // Close dropdown after selection
+      $(document).on("select2:select", "#lotNumbers", function(e) {
+        setTimeout(function() {
+          $("#lotNumbers").select2("close");
+        }, 100);
+      });
+
       function loadProducts(lot_no) {
-        $("#productNames").empty();
+        console.log("loadProducts function called with lot_no:", lot_no);
 
         if (!lot_no) {
           toastr["warning"]("Invalid lot number!");
           return;
         }
 
+        console.log("loadProducts - starting AJAX call");
         $.ajax({
           url: `/api/procurement/product/names?procurement_lot_id=${lot_no}&dispatch_id=${view_dispatch_id || null
             }`,
@@ -2558,28 +2595,31 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
-            $("#productNames").select2({
-              placeholder: "Choose a product",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  quantity:
-                    (parseFloat(item?.procurement_quantity) || 0) -
-                    (parseFloat(item?.dispatched_quantity) || 0),
-                  text: `${item?.product_name || item?.ProductMaster?.product_name}-${item?.procurement_product_type
-                    }-${(item?.supplier_name || item?.SupplierMaster?.supplier_name)?.replaceAll(" ", "")}`,
-                };
-              }),
+            console.log("loadProducts - received data:", data);
+            console.log("loadProducts - data?.data:", data?.data);
+
+            const productOptions = $.map(data?.data || [], function (item) {
+              console.log("loadProducts - mapping item:", item);
+              return {
+                id: item.id,
+                quantity:
+                  (parseFloat(item?.procurement_quantity) || 0) -
+                  (parseFloat(item?.dispatched_quantity) || 0),
+                text: `${item?.product_name || item?.ProductMaster?.product_name}-${item?.procurement_product_type
+                  }-${(item?.supplier_name || item?.SupplierMaster?.supplier_name)?.replaceAll(" ", "")}`,
+              };
             });
 
-            // if (view_procurement_product_id) {
-            //   $("#productNames")
-            //     .val(view_procurement_product_id)
-            //     .trigger("change");
-            // } else {
+            console.log("loadProducts - productOptions:", productOptions);
+
+            // Update Select2 data without destroying
+            $("#productNames").select2({
+              placeholder: "Choose a product",
+              allowClear: true,
+              data: productOptions,
+            });
+
             $("#productNames").val(null).trigger("change");
-            // }
 
             if (view_procurement_product_id) {
               $("#productNames")
@@ -2588,6 +2628,7 @@
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
+            console.error("loadProducts - error:", jqXhr);
             if (jqXhr["status"] == 420) {
               toastr["warning"](jqXhr["responseJSON"]["message"]);
             } else {
@@ -3445,13 +3486,19 @@
           success: (data) => {
             $("#peelingLotNumbers").select2({
               placeholder: "Choose a lot",
-              allowClear: "true",
+              allowClear: true,
+              closeOnSelect: true,
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
                   text: item.procurement_lot,
                 };
               }),
+            });
+
+            // Close dropdown after selection
+            $("#peelingLotNumbers").on("select2:select", function() {
+              $("#peelingLotNumbers").select2("close");
             });
 
             $("#peelingLotNumbers").val(null).trigger("change");
@@ -3479,6 +3526,11 @@
         if (lot_no) {
           loadPeelingCenters(lot_no);
         }
+      });
+
+      // Close dropdown after selection
+      $(document).on("select2:select", "#peelingLotNumbers", function() {
+        $(this).select2("close");
       });
 
       function loadPeelingCenters(procurement_lot_id) {
@@ -4301,12 +4353,18 @@
             $("#peeledLotNumbers").select2({
               placeholder: "Choose a lot",
               allowClear: true,
+              closeOnSelect: true,
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
                   text: item.procurement_lot,
                 };
               }),
+            });
+
+            // Close dropdown after selection
+            $("#peeledLotNumbers").on("select2:select", function() {
+              $("#peeledLotNumbers").select2("close");
             });
 
             $("#peeledLotNumbers").val(null).trigger("change");
@@ -4340,6 +4398,11 @@
         if (lot_no) {
           loadPeeledProducts(lot_no);
         }
+      });
+
+      // Close dropdown after selection
+      $(document).on("select2:select", "#peeledLotNumbers", function() {
+        $(this).select2("close");
       });
 
       let peeledProductNamesArray = [];
@@ -5107,6 +5170,7 @@
             $("#packingLotNumbers").select2({
               placeholder: "Choose a lot",
               allowClear: true,
+              closeOnSelect: true,
               data: $.map(data?.data, function (item) {
                 return {
                   id: item.id,
@@ -5140,6 +5204,11 @@
         if (packing_lot_no) {
           loadPackingProductNames(packing_lot_no);
         }
+      });
+
+      // Close dropdown after selection
+      $(document).on("select2:select", "#packingLotNumbers", function() {
+        $(this).select2("close");
       });
 
       let packingProductNamesArray = [];
