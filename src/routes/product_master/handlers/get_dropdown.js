@@ -13,67 +13,74 @@ export const GetDropdown = async (params, session, fastify) => {
         search = "",
         species_id = "",
         product_category_master_id = "",
+        start = 0,
+        length = 5000,
       } = params;
 
-      // First, get all distinct product_master_ids from purchase_inventory
-      const purchasedProductIds = await models.PurchaseInventory.findAll({
-        attributes: [
-          [
-            sequelize.fn("DISTINCT", sequelize.col("product_master_id")),
-            "product_master_id",
-          ],
+      // Build the where clause for ProductMaster
+      let where = {
+        is_active: true,
+      };
+
+      if (search) {
+        where[sequelize.Op.or] = [
+          { product_name: { [sequelize.Op.iLike]: `%${search}%` } },
+        ];
+      }
+
+      // Get products with proper filtering
+      const result = await models.ProductMaster.findAndCountAll({
+        attributes: ["id", "product_name"],
+        include: [
+          {
+            model: models.ProductCategoryMaster,
+            required: !!species_id,
+            attributes: [],
+            include: [
+              {
+                model: models.SpeciesMaster,
+                required: !!species_id,
+                attributes: [],
+                where: species_id
+                  ? { id: species_id, is_active: true }
+                  : undefined,
+              },
+            ],
+            where: product_category_master_id
+              ? { id: product_category_master_id, is_active: true }
+              : { is_active: true },
+          },
+          {
+            model: models.PurchaseInventory,
+            required: true,
+            attributes: [],
+            where: {
+              deleted_at: null,
+            },
+          },
         ],
-        where: {
-          deleted_at: null,
-        },
+        where,
+        offset: parseInt(start) || 0,
+        limit: parseInt(length) || 5000,
+        distinct: true,
+        subQuery: false,
         raw: true,
       });
 
-      const purchasedIds = purchasedProductIds.map((p) => p.product_master_id);
+      // Format response for Select2
+      const formattedRows = (result?.rows || []).map((product) => ({
+        id: product.id,
+        text: product.product_name,
+      }));
 
-      if (purchasedIds.length === 0) {
-        return resolve({
-          data: {
-            rows: [],
-            count: 0,
-          },
-        });
-      }
-
-      // Call GetAll with pagination but limit to 5000 for dropdown performance
-      // and filter to only purchased products
-      const result = await ProductMaster.GetAll({
-        start: 0,
-        length: 5000,
-        search: search,
-        species_id: species_id || undefined,
-        product_category_master_id: product_category_master_id || undefined,
-        product_ids: purchasedIds, // Pass the list of purchased product IDs
-      });
-
-      if (!result || !result.rows) {
-        return resolve({
-          data: {
-            rows: [],
-            count: 0,
-          },
-        });
-      }
-
-      // Filter results to only include purchased products
-      const filteredRows = result.rows.filter((product) =>
-        purchasedIds.includes(product.id)
-      );
-
-      // Return in format expected by Select2
       resolve({
         data: {
-          rows: filteredRows || [],
-          count: filteredRows.length || 0,
+          rows: formattedRows,
+          count: result?.count || 0,
         },
       });
     } catch (err) {
-      fastify.log.error(err);
+      fastify.log.error("GetDropdown error:", err);
       reject(err);
     }
   });

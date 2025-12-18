@@ -136,3 +136,47 @@ export const Delete = async ({ profile_id, id }) => {
     profile_id,
   });
 };
+
+/**
+ * GET DISPATCH DESTINATIONS (Peeling Centers for a Procurement Lot)
+ */
+export const GetDispatches = async ({
+  procurement_lot_id,
+  start = 0,
+  length = 100,
+}) => {
+  try {
+    if (!procurement_lot_id) {
+      throw { statusCode: 420, message: "Procurement lot ID required!" };
+    }
+
+    // Get all active peeling centers (unit_type = 'Peeling Center')
+    const result = await UnitMaster.findAndCountAll({
+      where: {
+        is_active: true,
+        unit_type: "Peeling Center",
+      },
+      attributes: ["id", "unit_name", "unit_code", "unit_type"],
+      include: [
+        {
+          model: LocationMaster,
+          attributes: ["id", "location_name"],
+          required: false,
+        },
+        {
+          model: CompanyMaster,
+          as: "company",
+          attributes: ["id", "company_name"],
+          required: false,
+        },
+      ],
+      offset: Number(start),
+      limit: Number(length),
+      order: [["unit_name", "ASC"]],
+    });
+
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -217,13 +217,17 @@ export const GetAll = ({
         include: [
           {
             model: models.ProductCategoryMaster,
-            required: false,
+            required: species_id ? true : false,
             include: [
               {
                 model: models.SpeciesMaster,
-                required: false,
+                required: species_id ? true : false,
+                where: species_id ? speciesWhere : undefined,
               },
             ],
+            where: product_category_master_id
+              ? productCategoryWhere
+              : undefined,
           },
           {
             required: false,

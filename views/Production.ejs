@@ -3549,15 +3549,23 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.log("loadPeelingCenters - received data:", data);
+            console.log("loadPeelingCenters - data?.data:", data?.data);
+
+            const peelingCenterOptions = $.map(data?.data?.rows || [], function (item) {
+              console.log("loadPeelingCenters - mapping item:", item);
+              return {
+                id: item.id,
+                text: item.unit_name || item.unit_code,
+              };
+            });
+
+            console.log("loadPeelingCenters - options:", peelingCenterOptions);
+
             $("#peelingCenters").select2({
               placeholder: "Choose a peeling center",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.unit_code,
-                };
-              }),
+              allowClear: true,
+              data: peelingCenterOptions,
             });
 
             if (view_peeling_center_id) {
@@ -3604,6 +3612,8 @@
           return;
         }
 
+        console.log("loadPeelingRawMaterials called with lot_no:", lot_no, "unit_master_id:", unit_master_id);
+
         $.ajax({
           url: `/api/dispatch/names?procurement_lot_id=${lot_no}&unit_master_id=${unit_master_id}&peeling_id=${$("#submitPeeling").attr("peeling_id") || null}`,
           method: "GET",
@@ -3612,26 +3622,34 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.log("loadPeelingRawMaterials - received data:", data);
+            console.log("loadPeelingRawMaterials - data?.data:", data?.data);
+            
+            const rawMaterialOptions = $.map(data?.data || [], function (item) {
+              console.log("loadPeelingRawMaterials - mapping item:", item);
+              return {
+                id: item?.id,
+                species_id:
+                  item?.pp?.ProductMaster
+                    ?.ProductCategoryMaster?.species_master_id,
+                quantity:
+                  (parseFloat(item?.dispatch_quantity) || 0) -
+                  (parseFloat(item?.peeling_quantity) || 0),
+                text: `${item?.pp?.ProductMaster?.product_name
+                  }-${item?.pp?.procurement_product_type
+                  }-${item?.pp?.SupplierMaster?.supplier_name?.replaceAll(
+                    " ",
+                    ""
+                  )}-${item?.dispatch_quantity || 0}`,
+              };
+            });
+
+            console.log("loadPeelingRawMaterials - options:", rawMaterialOptions);
+
             $("#rawMaterials").select2({
               placeholder: "Choose a raw material",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
-                return {
-                  id: item?.id,
-                  species_id:
-                    item?.pp?.ProductMaster
-                      .ProductCategoryMaster.species_master_id,
-                  quantity:
-                    (parseFloat(item?.dispatch_quantity) || 0) -
-                    (parseFloat(item?.peeling_quantity) || 0),
-                  text: `${item?.pp?.ProductMaster?.product_name
-                    }-${item?.pp?.procurement_product_type
-                    }-${item?.pp?.SupplierMaster?.supplier_name?.replaceAll(
-                      " ",
-                      ""
-                    )}-${item?.dispatch_quantity || 0}`,
-                };
-              }),
+              allowClear: true,
+              data: rawMaterialOptions,
             });
 
             if (view_raw_material_id) {
@@ -3641,6 +3659,7 @@
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
+            console.error("loadPeelingRawMaterials - error:", jqXhr);
             if (jqXhr["status"] == 420) {
               toastr["warning"](jqXhr["responseJSON"]["message"]);
             } else {
