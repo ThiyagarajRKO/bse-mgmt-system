@@ -29,6 +29,7 @@ export * as Peeling from "./peeling";
 export * as PeelingProducts from "./peeling_products";
 export * as PeeledDispatches from "./peeled_dispatches";
 export * as Packing from "./packing";
+export * as PackingRules from "./packing_rules";
 export * as Orders from "./orders";
 export * as OrderProducts from "./order_products";
 export * as PurchasePayments from "./purchase_payments";

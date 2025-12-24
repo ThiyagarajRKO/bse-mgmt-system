@@ -1,4 +1,5 @@
 import models from "../../models";
+import PackingCalculationsService from "../services/packing_calculations.js";
 
 export const Insert = async (profile_id, packing_data) => {
   return new Promise(async (resolve, reject) => {
@@ -414,6 +415,157 @@ export const Delete = ({ profile_id, id }) => {
       });
 
       resolve(peeling);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Calculate complete packing workflow including carton and pallet calculations
+ * @param {Object} params - { product_id, market, quantity }
+ * @returns {Promise} - Complete packing calculation result
+ */
+export const CalculatePacking = ({ product_id, market, quantity }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!product_id) {
+        return reject({
+          statusCode: 420,
+          message: "Product ID must not be empty!",
+        });
+      }
+
+      if (!market) {
+        return reject({
+          statusCode: 420,
+          message: "Market must not be empty!",
+        });
+      }
+
+      if (!quantity || quantity <= 0) {
+        return reject({
+          statusCode: 420,
+          message: "Quantity must be a positive number!",
+        });
+      }
+
+      const result = await PackingCalculationsService.calculateCompletePacking({
+        product_id,
+        market,
+        quantity,
+      });
+
+      resolve(result);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Resolve master carton for given packaging parameters
+ * @param {Object} params - { primary_packaging_type, quantity, market }
+ * @returns {Promise} - Carton resolution result
+ */
+export const ResolveCarton = ({ primary_packaging_type, quantity, market }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!primary_packaging_type) {
+        return reject({
+          statusCode: 420,
+          message: "Primary packaging type must not be empty!",
+        });
+      }
+
+      if (!quantity || quantity <= 0) {
+        return reject({
+          statusCode: 420,
+          message: "Quantity must be a positive number!",
+        });
+      }
+
+      const result = await PackingCalculationsService.resolveMasterCarton({
+        primary_packaging_type,
+        quantity,
+        market,
+      });
+
+      resolve(result);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Calculate packing metrics (cartons, CBM, pallets)
+ * @param {Object} params - { quantity, units_per_carton, carton_details, is_export }
+ * @returns {Promise} - Packing metrics calculation result
+ */
+export const CalculatePackingMetrics = ({
+  quantity,
+  units_per_carton,
+  carton_details,
+  is_export,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!quantity || quantity <= 0) {
+        return reject({
+          statusCode: 420,
+          message: "Quantity must be a positive number!",
+        });
+      }
+
+      if (!units_per_carton || units_per_carton <= 0) {
+        return reject({
+          statusCode: 420,
+          message: "Units per carton must be a positive number!",
+        });
+      }
+
+      if (!carton_details) {
+        return reject({
+          statusCode: 420,
+          message: "Carton details must not be empty!",
+        });
+      }
+
+      const result = PackingCalculationsService.calculatePackingMetrics({
+        quantity,
+        units_per_carton,
+        carton_details,
+        is_export,
+      });
+
+      resolve(result);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Lock packing calculations for documentation
+ * @param {Object} params - { packing_calculation_id }
+ * @returns {Promise} - Lock result
+ */
+export const LockPackingCalculations = ({ packing_calculation_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!packing_calculation_id) {
+        return reject({
+          statusCode: 420,
+          message: "Packing calculation ID must not be empty!",
+        });
+      }
+
+      const result = await PackingCalculationsService.lockPackingCalculations(
+        packing_calculation_id
+      );
+
+      resolve(result);
     } catch (err) {
       reject(err);
     }
