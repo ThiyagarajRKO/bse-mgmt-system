@@ -3624,7 +3624,7 @@
           success: (data) => {
             console.log("loadPeelingRawMaterials - received data:", data);
             console.log("loadPeelingRawMaterials - data?.data:", data?.data);
-            
+
             const rawMaterialOptions = $.map(data?.data || [], function (item) {
               console.log("loadPeelingRawMaterials - mapping item:", item);
               return {
@@ -4416,6 +4416,7 @@
 
         if (lot_no) {
           loadPeeledProducts(lot_no);
+          loadPeeledUnits(lot_no);
         }
       });
 
@@ -4528,22 +4529,28 @@
         }
       });
 
-      function loadPeeledUnits() {
+      function loadPeeledUnits(procurement_lot_id) {
+        if (!procurement_lot_id) {
+          toastr["warning"]("Lot number must not be empty");
+          return;
+        }
+
         $.ajax({
-          url: "/api/master/unit?unit_type=Distribution Center",
+          url: "/api/master/unit/peeled/dispatch/destination?procurement_lot_id=" + procurement_lot_id,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.debug("loadPeeledUnits success - data:", data);
             $("#distributionLocation").select2({
               placeholder: "Choose a destination",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
+              allowClear: true,
+              data: $.map(data?.data?.rows || [], function (item) {
                 return {
                   id: item.id,
-                  text: item.unit_code,
+                  text: item.unit_code || item.unit_name,
                 };
               }),
             });
@@ -4551,10 +4558,15 @@
             $("#distributionLocation").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            console.error("loadPeeledUnits error:", {jqXhr, textStatus, errorThrown});
+            if (jqXhr?.responseJSON?.message) {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"]("Failed to load peeled dispatch destinations: " + textStatus);
             }
           },
         });
@@ -5356,13 +5368,14 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.debug("loadPackingUnits success - data:", data);
             $("#packingDistributionLocation").select2({
               placeholder: "Choose a Production Center",
-              allowClear: "true",
-              data: $.map(data?.data, function (item) {
+              allowClear: true,
+              data: $.map(data?.data?.rows || [], function (item) {
                 return {
                   id: item.id,
-                  text: item.unit_code,
+                  text: item.unit_code || item.unit_name,
                 };
               }),
             });
@@ -5375,10 +5388,15 @@
             }
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            console.error("loadPackingUnits error:", {jqXhr, textStatus, errorThrown});
+            if (jqXhr?.responseJSON?.message) {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"]("Failed to load packing units: " + textStatus);
             }
           },
         });
@@ -5393,10 +5411,11 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.debug("loadPackingGrade success - data:", data);
             $("#packingGrade").select2({
               placeholder: "Choose a Grade",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
                 return {
                   id: item.id,
                   text: item.grade_name,
@@ -5407,10 +5426,15 @@
             $("#packingGrade").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            console.error("loadPackingGrade error:", {jqXhr, textStatus, errorThrown});
+            if (jqXhr?.responseJSON?.message) {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"]("Failed to load grades: " + textStatus);
             }
           },
         });
@@ -5425,10 +5449,11 @@
           crossDomain: true,
           processData: false,
           success: (data) => {
+            console.debug("loadPackingSize success - data:", data);
             $("#packingSize").select2({
               placeholder: "Choose a size",
-              allowClear: "true",
-              data: $.map(data?.data?.rows, function (item) {
+              allowClear: true,
+              data: $.map(data?.data || [], function (item) {
                 return {
                   id: item.id,
                   text: item.size,
@@ -5439,10 +5464,15 @@
             $("#packingSize").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            console.error("loadPackingSize error:", {jqXhr, textStatus, errorThrown});
+            if (jqXhr?.responseJSON?.message) {
+              if (jqXhr["status"] == 420) {
+                toastr["warning"](jqXhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](jqXhr["responseJSON"]["message"]);
+              }
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"]("Failed to load sizes: " + textStatus);
             }
           },
         });

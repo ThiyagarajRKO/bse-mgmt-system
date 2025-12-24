@@ -180,3 +180,56 @@ export const GetDispatches = async ({
     throw err;
   }
 };
+
+/**
+ * GET PEELED DISPATCH DESTINATIONS (Cold Storage/Distribution Centers for Peeled Products)
+ */
+export const GetPeeledDispatches = async ({
+  procurement_lot_id,
+  unit_type,
+  start = 0,
+  length = 100,
+}) => {
+  try {
+    if (!procurement_lot_id) {
+      throw { statusCode: 420, message: "Procurement lot ID required!" };
+    }
+
+    // Get all active cold storage and distribution centers where peeled products are stored
+    // Default to both Cold Storage and Distribution Center if unit_type not specified
+    const where = {
+      is_active: true,
+    };
+
+    if (unit_type) {
+      where.unit_type = unit_type;
+    } else {
+      where.unit_type = { [Op.in]: ["Cold Storage", "Distribution Center"] };
+    }
+
+    const result = await UnitMaster.findAndCountAll({
+      where,
+      attributes: ["id", "unit_name", "unit_code", "unit_type"],
+      include: [
+        {
+          model: LocationMaster,
+          attributes: ["id", "location_name"],
+          required: false,
+        },
+        {
+          model: CompanyMaster,
+          as: "company",
+          attributes: ["id", "company_name"],
+          required: false,
+        },
+      ],
+      offset: Number(start),
+      limit: Number(length),
+      order: [["unit_name", "ASC"]],
+    });
+
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
