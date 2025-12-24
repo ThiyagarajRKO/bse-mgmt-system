@@ -1,4 +1,5 @@
 import { PeeledDispatches, Packing } from "../../../controllers";
+import models from "../../../../models";
 
 export const Update = (
   { profile_id, packing_id, packing_data },
@@ -7,6 +8,46 @@ export const Update = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // If peeled_dispatch_id is being updated, derive grade and size from the new product
+      if (
+        packing_data?.peeled_dispatch_id &&
+        (!packing_data?.grade_master_id || !packing_data?.size_master_id)
+      ) {
+        const peeledDispatch = await models.PeeledDispatches.findOne({
+          where: { id: packing_data.peeled_dispatch_id, is_active: true },
+          include: [
+            {
+              model: models.PeelingProducts,
+              as: "pp",
+              include: [
+                {
+                  model: models.ProductMaster,
+                  include: [
+                    {
+                      model: models.GradeMaster,
+                      attributes: ["id"],
+                    },
+                    {
+                      model: models.SizeMaster,
+                      attributes: ["id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+
+        if (peeledDispatch) {
+          packing_data.grade_master_id =
+            packing_data.grade_master_id ||
+            peeledDispatch.pp.ProductMaster?.GradeMaster?.id;
+          packing_data.size_master_id =
+            packing_data.size_master_id ||
+            peeledDispatch.pp.ProductMaster?.SizeMaster?.id;
+        }
+      }
+
       if (!packing_data?.packing_quantity) {
         if (!packing_data?.peeled_dispatch_id) {
           return reject({

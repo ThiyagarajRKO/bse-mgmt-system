@@ -9,6 +9,7 @@ import peelingRoute from "./peeling";
 import peelingProductRoute from "./peeling_products";
 import peeledDispatchRoute from "./peeled_dispatches";
 import packingRoute from "./packing";
+import packingRulesRoute from "./packing_rules";
 import roleMasterRoute from "./role_master";
 import companyMasterRoute from "./company_master";
 import divisionMasterRoute from "./division_master";
@@ -17,6 +18,7 @@ import unitMasterRoute from "./unit_master";
 import supplierMasterRoute from "./supplier_master";
 import packagingMasterRoute from "./packaging_master";
 import inventoryMasterRoute from "./inventory_master";
+import inventoryRoute from "./inventory";
 import speciesMasterRoute from "./species_master";
 import gradeMasterRoute from "./grade_master";
 import sizeMasterRoute from "./size_master";
@@ -43,8 +45,14 @@ import { GlAccountMasterRoute } from "./gl_account_master";
 import consolidatedGstMasterRoute from "./consolidated_gst_master";
 import { LedgerMasterRoute } from "./ledger_master";
 import { TaxCodeMasterRoute } from "./tax_code_master";
-import { ProductGstMappingRoute } from "./product_gst_mapping";
+// import { ProductGstMappingRoute } from "./product_gst_mapping";
 import { authRoutes } from "./auth";
+import { documentFlowRoutes } from "./document-flow";
+import { yieldTrackingRoutes } from "./yield-tracking";
+import { marginVarianceRoutes } from "./margin-variance";
+import pricingRoutes from "./pricing";
+import profitabilityRoutes from "./profitability";
+import priceRecommendationRoutes from "./price-recommendations";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -78,137 +86,54 @@ export const PrivateRouters = (fastify, opts, done) => {
   // Validating session
   fastify.addHook("onRequest", ValidateUser);
 
-  // Temporarily disable audit logging to isolate crash
-  /*
-  fastify.addHook("onRequest", async (req, res) => {
-    try {
-      let module_master_ids = {};
-      const module_master = await ModuleMasters.GetAll({});
-
-      module_master?.rows?.forEach((module) => {
-        module_master_ids[
-          module?.module_name?.replace(" ", "_")?.toLowerCase()
-        ] = module?.id;
-      });
-
-      const url_path = req.url?.replace("/api/v1/", "");
-      const module_name = url_path.split("/")[0];
-      const module_master_id =
-        module_master_ids[
-          module_name == "master" ? "master_data" : module_name
-        ];
-
-      if (!module_master_id) {
-        return;
-      }
-
-      AuditLogs.Insert(req.token_profile_id, {
-        module_master_id,
-        action_name: req.method,
-        request_params: req?.query || req.body,
-        source_ip_address: req.socket.remoteAddress,
-        user_agent: req.headers["user-agent"],
-        platform: req.headers["sec-ch-ua-platform"]?.replaceAll('"', ""),
-      }).catch((err) => {
-        fastify.log.error(err);
-      });
-    } catch (err) {
-      fastify.log.error(err);
-    }
+  // Price Recommendation Engine Routes
+  fastify.register(priceRecommendationRoutes, {
+    prefix: "/price-recommendations",
   });
-  */
 
-  fastify.register(profileRoutes, { prefix: "/profile" });
-
-  fastify.register(companyMasterRoute, { prefix: "/master/company" });
-
-  fastify.register(divisionMasterRoute, { prefix: "/master/division" });
-
-  fastify.register(procurementLotsRoute, { prefix: "/procurement/lot" });
+  // Procurement Routes
+  fastify.register(procurementLotsRoute, {
+    prefix: "/procurement/lot",
+  });
 
   fastify.register(procurementProductsRoute, {
     prefix: "/procurement/product",
   });
 
-  fastify.register(purchasePaymentRoute, {
-    prefix: "/purchase/payment",
+  // Inventory Routes
+  fastify.register(inventoryRoute, {
+    prefix: "/inventory",
   });
 
-  fastify.register(dispatchRoute, { prefix: "/dispatch" });
-
-  fastify.register(peelingRoute, { prefix: "/peeling" });
-
-  fastify.register(peelingProductRoute, { prefix: "/peeling/product" });
-
-  fastify.register(peeledDispatchRoute, { prefix: "/peeled/dispatch" });
-
-  fastify.register(packingRoute, { prefix: "/packing" });
-
-  fastify.register(ordersRoute, { prefix: "/order" });
-
-  fastify.register(orderProductsRoute, { prefix: "/order/product" });
-
-  fastify.register(salesPaymentRoute, {
-    prefix: "/sales/payment",
+  // Master Data Routes
+  fastify.register(vehicleMasterRoute, {
+    prefix: "/master/vehicle",
   });
 
-  fastify.register(locationMasterRoute, { prefix: "/master/location" });
-
-  fastify.register(unitMasterRoute, { prefix: "/master/unit" });
-
-  fastify.register(supplierMasterRoute, { prefix: "/master/supplier" });
-
-  fastify.register(packagingMasterRoute, { prefix: "/master/packaging" });
-
-  fastify.register(inventoryMasterRoute, { prefix: "/master/inventory" });
-
-  fastify.register(speciesMasterRoute, { prefix: "/master/species" });
-
-  fastify.register(gradeMasterRoute, { prefix: "/master/grade" });
-
-  fastify.register(sizeMasterRoute, { prefix: "/master/size" });
-
-  fastify.register(productCategoryMasterRoute, {
-    prefix: "/master/product/category",
+  fastify.register(driverMasterRoute, {
+    prefix: "/master/driver",
   });
 
-  fastify.register(productMasterRoute, { prefix: "/master/product" });
-
-  fastify.register(vehicleMasterRoute, { prefix: "/master/vehicle" });
-
-  fastify.register(driverMasterRoute, { prefix: "/master/driver" });
-
-  fastify.register(customerMasterRoute, { prefix: "/master/customer" });
-
-  fastify.register(carrierMasterRoute, { prefix: "/master/carrier" });
-
-  fastify.register(priceListMasterRoute, { prefix: "/master/pricelist" });
-
-  fastify.register(priceListProductMasterRoute, {
-    prefix: "/master/pricelist/product",
+  fastify.register(unitMasterRoute, {
+    prefix: "/master/unit",
   });
-  fastify.register(shippingMasterRoute, { prefix: "/master/shipping" });
 
-  fastify.register(auditLogsRoute, { prefix: "/logs" });
-
-  fastify.register(purchaseInventoryRoute, { prefix: "/inventory/purchase" });
-
-  fastify.register(salesInventoryRoute, { prefix: "/inventory/sales" });
-
-  // Accounting Master Data Routes
-  fastify.register(ChartOfAccountsRoute, {
-    prefix: "/master/chart-of-accounts",
+  fastify.register(customerMasterRoute, {
+    prefix: "/master/customer",
   });
-  fastify.register(GlAccountMasterRoute, {
-    prefix: "/master/gl-account",
+
+  fastify.register(shippingMasterRoute, {
+    prefix: "/master/shipping",
   });
-  fastify.register(consolidatedGstMasterRoute, {
-    prefix: "/master/consolidated-gst-master",
+
+  // Orders Routes
+  fastify.register(ordersRoute, {
+    prefix: "/order",
   });
-  fastify.register(LedgerMasterRoute, { prefix: "/master/ledger-master" });
-  fastify.register(TaxCodeMasterRoute, { prefix: "/master/tax-code-master" });
-  fastify.register(ProductGstMappingRoute, {
-    prefix: "/master/product-gst-mapping",
+
+  // Packing Routes
+  fastify.register(packingRoute, {
+    prefix: "/packing",
   });
 
   // Add a simple test route to check if server can handle routes
