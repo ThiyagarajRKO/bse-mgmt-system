@@ -1,6 +1,6 @@
 <!-- @format -->
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -39,20 +39,14 @@
     <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- MDB5  -->
-    <link
-      href="/public/plugins/MDB5-7.2.0/css/mdb.min.css"
-      rel="stylesheet"
-    />
+    <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
     <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js"></script>
 
     <!-- jQuery -->
     <script src="/public/plugins/jquery/jquery.min.js"></script>
 
     <!-- Select2 -->
-    <link
-      rel="stylesheet"
-      href="/public/plugins/select2/css/select2.min.css"
-    />
+    <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
     <script src="/public/plugins/select2/js/select2.min.js"></script>
 
     <!-- DataTable -->
@@ -119,11 +113,7 @@
     <script src="/public/custom/App.js"></script>
 
     <style type="text/css">
-
-
-
       body {
-        font-family: "CerebriSansPro-Regular";
         background-color: #f7f9fd;
       }
 
@@ -409,10 +399,7 @@
         /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
         text-decoration: none;
         color: #333;
-        transition:
-          background-color 0.3s,
-          color 0.3s,
-          box-shadow 0.3s;
+        transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
       }
 
       .icon-button i {
@@ -2151,8 +2138,9 @@
         product_price,
         product_desc
       ) {
-        $("#orderProductContainer")
-          .append(`<div class="vl-top vl-top-${index}"></div><fieldset
+        $(
+          "#orderProductContainer"
+        ).append(`<div class="vl-top vl-top-${index}"></div><fieldset
                                   class="form-group border p-3 mt-3 orderProduct orderProduct_${index}"
                                   style="
                                     border-color: rgba(129, 145, 179, 0.6) !important;
@@ -2475,7 +2463,9 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${row?.order_id}" order_product_id="${
+                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${
+                  row?.order_id
+                }" order_product_id="${
                   row?.id || null
                 }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
@@ -2813,8 +2803,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/order/product?order_product_id=" +
-                    order_product_id,
+                    "/api/order/product?order_product_id=" + order_product_id,
                   method: "delete",
                 })
                   .done(function (response) {
@@ -3461,7 +3450,11 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editPayment" sales_payment_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f;${row["is_last_payment"] ? "" : "display:none"}" data-toggle="tooltip" data-placement="top" title="Click this button to edit this payment"></i>`;
+                return `<i class="fa fa-pen-to-square edit editPayment" sales_payment_id=${
+                  row?.id
+                } aria-hidden="true" style="font-size:15px;color:#f07b3f;${
+                  row["is_last_payment"] ? "" : "display:none"
+                }" data-toggle="tooltip" data-placement="top" title="Click this button to edit this payment"></i>`;
               },
             },
             {
@@ -3494,7 +3487,9 @@
 
                 var month = months[date.getMonth()];
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
-                return `<span payment_date="${row["payment_date"]}">${day + "-" + month + "-" + date.getFullYear()}</span>`;
+                return `<span payment_date="${row["payment_date"]}">${
+                  day + "-" + month + "-" + date.getFullYear()
+                }</span>`;
               },
             },
             {
@@ -3790,8 +3785,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/sales/payment?sales_payment_id=" +
-                    sales_payment_id,
+                    "/api/sales/payment?sales_payment_id=" + sales_payment_id,
                   method: "delete",
                 })
                   .done(function (response) {
