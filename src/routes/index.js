@@ -136,6 +136,11 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/packing",
   });
 
+  // Packing Rules Routes
+  fastify.register(packingRulesRoute, {
+    prefix: "/packing-rules",
+  });
+
   // Add a simple test route to check if server can handle routes
   fastify.get("/test", async (req, reply) => {
     return reply.code(200).send({
