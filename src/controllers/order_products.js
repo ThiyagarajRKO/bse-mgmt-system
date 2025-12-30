@@ -1,5 +1,13 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
+import { validate as validateUuid } from "uuid";
+
+/**
+ * Validate UUID format
+ */
+const isValidUuid = (id) => {
+  return typeof id === "string" && validateUuid(id);
+};
 
 export const BulkUpsert = async (profile_id, order_products_data) => {
   return new Promise(async (resolve, reject) => {
@@ -40,6 +48,13 @@ export const GetAll = ({ order_id, start, length, search }) => {
       };
 
       if (order_id) {
+        // Validate order_id is a valid UUID
+        if (!isValidUuid(order_id)) {
+          return reject({
+            statusCode: 422,
+            message: "Invalid Order ID format. Expected valid UUID.",
+          });
+        }
         where.order_id = order_id;
       }
 
@@ -265,6 +280,14 @@ export const DeleteByOrderId = ({ profile_id, order_id }) => {
         return reject({
           statusCode: 420,
           message: "Order Id field must not be empty!",
+        });
+      }
+
+      // Validate order_id is a valid UUID
+      if (!isValidUuid(order_id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Order ID format. Expected valid UUID.",
         });
       }
 

@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import models from "../../models";
+import { validate as validateUuid } from "uuid";
 
 const {
   ProductPackagingMapping,
@@ -10,6 +11,13 @@ const {
   SizeMaster,
   ProductPackagingRules,
 } = models;
+
+/**
+ * Validate UUID format
+ */
+const isValidUuid = (id) => {
+  return typeof id === "string" && validateUuid(id);
+};
 
 /**
  * Get packaging suggestions based on product attributes
@@ -27,6 +35,14 @@ export const GetPackagingSuggestions = async ({
       throw {
         statusCode: 420,
         message: "Product ID and Market are required!",
+      };
+    }
+
+    // Validate product_id is a valid UUID
+    if (!isValidUuid(product_id)) {
+      throw {
+        statusCode: 422,
+        message: "Invalid Product ID format. Expected valid UUID.",
       };
     }
 
@@ -136,6 +152,22 @@ export const ValidatePackingSelection = async ({
 }) => {
   try {
     const errors = [];
+
+    // Validate product_id is a valid UUID
+    if (!isValidUuid(product_id)) {
+      throw {
+        statusCode: 422,
+        message: "Invalid Product ID format. Expected valid UUID.",
+      };
+    }
+
+    // Validate packaging_id is a valid UUID
+    if (packaging_id && !isValidUuid(packaging_id)) {
+      throw {
+        statusCode: 422,
+        message: "Invalid Packaging ID format. Expected valid UUID.",
+      };
+    }
 
     // Check 1: Mapping exists
     const mapping = await ProductPackagingMapping.findOne({

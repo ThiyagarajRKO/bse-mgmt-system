@@ -1,5 +1,13 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
+import { validate as validateUuid } from "uuid";
+
+/**
+ * Validate UUID format
+ */
+const isValidUuid = (id) => {
+  return typeof id === "string" && validateUuid(id);
+};
 
 export const Insert = async (profile_id, order_data, is_products_included) => {
   return new Promise(async (resolve, reject) => {
@@ -22,6 +30,14 @@ export const Insert = async (profile_id, order_data, is_products_included) => {
         return reject({
           statusCode: 420,
           message: "Customer master id must not be empty!",
+        });
+      }
+
+      // Validate customer_master_id is a valid UUID
+      if (!isValidUuid(order_data.customer_master_id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Customer Master ID format. Expected valid UUID.",
         });
       }
 
@@ -101,6 +117,14 @@ export const Get = ({ id }) => {
         return reject({
           statusCode: 420,
           message: "Orders ID field must not be empty!",
+        });
+      }
+
+      // Validate id is a valid UUID
+      if (!isValidUuid(id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Order ID format. Expected valid UUID.",
         });
       }
 
@@ -277,6 +301,14 @@ export const GetOrderNumbers = ({
     try {
       if (!customer_master_id) {
         return reject({ message: "Customer master data must not be empty" });
+      }
+
+      // Validate customer_master_id is a valid UUID
+      if (!isValidUuid(customer_master_id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Customer Master ID format. Expected valid UUID.",
+        });
       }
 
       let where = {
