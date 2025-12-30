@@ -12,3 +12,7 @@ package-lock.json
 .env
 
 .vscode/settings.json
+
+# macOS system files
+.DS_Store
+*.DS_Store
