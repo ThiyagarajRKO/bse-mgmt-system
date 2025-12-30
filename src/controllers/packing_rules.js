@@ -1,6 +1,5 @@
 import { Op } from "sequelize";
 import models from "../../models";
-import { validate as validateUuid } from "uuid";
 
 const {
   ProductPackagingMapping,
@@ -12,11 +11,14 @@ const {
   ProductPackagingRules,
 } = models;
 
+// UUID regex pattern for validation
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
- * Validate UUID format
+ * Validate UUID format using regex pattern
  */
 const isValidUuid = (id) => {
-  return typeof id === "string" && validateUuid(id);
+  return typeof id === "string" && UUID_PATTERN.test(id);
 };
 
 /**

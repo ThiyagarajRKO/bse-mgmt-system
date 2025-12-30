@@ -1,12 +1,14 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
-import { validate as validateUuid } from "uuid";
+
+// UUID regex pattern for validation
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Validate UUID format
+ * Validate UUID format using regex pattern
  */
 const isValidUuid = (id) => {
-  return typeof id === "string" && validateUuid(id);
+  return typeof id === "string" && UUID_PATTERN.test(id);
 };
 
 export const Insert = async (profile_id, order_data, is_products_included) => {
