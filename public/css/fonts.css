@@ -1,0 +1,109 @@
+/* Custom Font Definitions */
+
+/* Cerebri Sans Pro */
+@font-face {
+  font-family: 'CerebriSansPro-Regular';
+  src: url('/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Lato Fonts */
+@font-face {
+  font-family: 'Lato-Regular';
+  src: url('/public/fonts/Lato/Lato-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-Bold';
+  src: url('/public/fonts/Lato/Lato-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-Black';
+  src: url('/public/fonts/Lato/Lato-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-Light';
+  src: url('/public/fonts/Lato/Lato-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-Thin';
+  src: url('/public/fonts/Lato/Lato-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-Italic';
+  src: url('/public/fonts/Lato/Lato-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-BoldItalic';
+  src: url('/public/fonts/Lato/Lato-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-LightItalic';
+  src: url('/public/fonts/Lato/Lato-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-BlackItalic';
+  src: url('/public/fonts/Lato/Lato-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lato-ThinItalic';
+  src: url('/public/fonts/Lato/Lato-ThinItalic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Cassandra Personal Use */
+@font-face {
+  font-family: 'CassandraPersonalUse-Regular';
+  src: url('/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Reddit Mono */
+@font-face {
+  font-family: 'RedditMono-Regular';
+  src: url('/public/fonts/RedditMono/RedditMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
