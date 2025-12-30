@@ -9,7 +9,7 @@ const fp = require("fastify-plugin");
  */
 module.exports = fp(async function (fastify, opts) {
   // Define the authenticate function as a preHandler hook
-  fastify.decorate("authenticate", async function (request, reply) {
+  const authenticate = async function (request, reply) {
     try {
       // Check if session exists and has a profile ID
       if (!request?.session?.pid) {
@@ -27,5 +27,8 @@ module.exports = fp(async function (fastify, opts) {
         message: "Authentication failed",
       });
     }
-  });
+  };
+
+  // Decorate fastify with the authenticate function
+  fastify.decorate("authenticate", authenticate);
 });
