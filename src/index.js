@@ -104,6 +104,17 @@ fastify.get("/Sales", function (req, res) {
   res.view("Sales.ejs");
 });
 
+fastify.get("/order-workflow", function (req, res) {
+  res.view("OrderWorkflow.ejs", {
+    user: req?.session,
+    pageTitle: "Order Workflow Management",
+    breadcrumb: [
+      { label: "Dashboard", url: "/" },
+      { label: "Order Workflow", url: "/order-workflow", active: true },
+    ],
+  });
+});
+
 fastify.get("/AuditLogs", function (req, res) {
   res.view("AuditLogs.ejs");
 });

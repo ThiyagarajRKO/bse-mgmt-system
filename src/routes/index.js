@@ -54,6 +54,16 @@ import pricingRoutes from "./pricing";
 import profitabilityRoutes from "./profitability";
 import priceRecommendationRoutes from "./price-recommendations";
 
+// Sales Order Workflow Routes (NEW)
+import salesOrderWorkflowRoute from "./sales-order-workflow";
+import orderWorkflowRoute from "./order-workflow";
+import allocationRoute from "./allocation";
+import productionRoute from "./production";
+import qaRoute from "./qa";
+import traceabilityRoute from "./traceability";
+import taxEngineRoute from "./tax-engine";
+import postingRoute from "./posting";
+
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
 
@@ -144,6 +154,39 @@ export const PrivateRouters = (fastify, opts, done) => {
   // Packing Rules Routes
   fastify.register(packingRulesRoute, {
     prefix: "/packing-rules",
+  });
+
+  // Sales Order Workflow Routes (NEW)
+  fastify.register(salesOrderWorkflowRoute, {
+    prefix: "/sales-orders",
+  });
+
+  fastify.register(orderWorkflowRoute, {
+    prefix: "/",
+  });
+
+  fastify.register(allocationRoute, {
+    prefix: "/allocation",
+  });
+
+  fastify.register(productionRoute, {
+    prefix: "/production",
+  });
+
+  fastify.register(qaRoute, {
+    prefix: "/qa",
+  });
+
+  fastify.register(traceabilityRoute, {
+    prefix: "/traceability",
+  });
+
+  fastify.register(taxEngineRoute, {
+    prefix: "/tax-engine",
+  });
+
+  fastify.register(postingRoute, {
+    prefix: "/posting",
   });
 
   // Add a simple test route to check if server can handle routes

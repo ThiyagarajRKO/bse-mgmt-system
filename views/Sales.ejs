@@ -434,6 +434,17 @@
           </div>
 
           <div
+            class="topMenu-item allocateOrdersMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Allocate Orders</span>
+            </div>
+          </div>
+
+          <div
             class="topMenu-item customerMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
@@ -737,7 +748,7 @@
           <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
             <div class="border p-4 w-100">
               <!-- Add Button -->
-              <div class="d-flex rounded-2 justify-content-end pb-4">
+              <div class="d-flex rounded-2 justify-content-end pb-4 gap-2">
                 <div
                   id="openOrdersPanelBtn"
                   class="btn btn-outline-danger d-flex justify-content-around"
@@ -746,6 +757,16 @@
                   <i class="fa-solid fa-circle-plus my-auto"></i>
                   <span style="margin-top: 4px" class="fw-bold my-auto"
                     >New Order</span
+                  >
+                </div>
+                <div
+                  id="allocateOrderBtn"
+                  class="btn btn-danger d-flex justify-content-around"
+                  style="width: 160px"
+                >
+                  <i class="fa-solid fa-box-open my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Allocate Order</span
                   >
                 </div>
               </div>
@@ -772,6 +793,86 @@
                   </tr>
                 </thead>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Side Modal -->
+        <div id="productSlideInPanel" class="slideInPanel px-4 overflow-auto">
+          <div class="row d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-md-12">
+              <div class="text-center mt-4 d-flex justify-content-between">
+                <span id="productPanelHeading" class="fw-bold fs-5"
+                  >Add New Product</span
+                >
+                <div class="col my-auto d-flex justify-content-end">
+                  <i
+                    class="fa-solid fa-circle-xmark my-auto panelClose"
+                    id="closeProductPanelBtn"
+                  ></i>
+                </div>
+              </div>
+
+              <hr />
+
+              <div>
+                <div class="form-group my-2">
+                  <label for="product_name">Product Name</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="modalProductName"
+                    name="modalProductName"
+                  ></select>
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="product_unit">Quantity (in KG)</label>
+                  <input
+                    id="modalProductUnit"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 100"
+                    name="product_unit"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="product_price">Price per KG</label>
+                  <input
+                    id="modalProductPrice"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 50.00"
+                    name="product_price"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="product_description">Description</label>
+                  <textarea
+                    id="modalProductDescription"
+                    class="form-control"
+                    placeholder="Product description..."
+                    name="product_description"
+                    rows="3"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pb-4">
+                  <div id="submitProductBtn" class="col-lg-auto btn btn-danger">
+                    Add Product
+                  </div>
+                  <div id="resetProductDataBtn" class="col-lg-auto btn btn-outline-warning">
+                    Clear
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1065,6 +1166,13 @@
               <div class="modal-footer">
                 <button
                   type="button"
+                  id="confirmOrderModalBtn"
+                  class="btn btn-danger"
+                >
+                  <i class="fa-solid fa-check"></i> Confirm Order
+                </button>
+                <button
+                  type="button"
                   class="close btn btn-danger"
                   data-dismiss="modal"
                 >
@@ -1076,6 +1184,54 @@
         </div>
 
         <!-- Orders Container Ends -->
+
+        <!-- ------------------------------------- Allocate Orders Container ---------------------------------- -->
+        <!-- ----------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container allocateOrdersContainer d-none">
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4 gap-2">
+                <div
+                  id="refreshAllocationBtn"
+                  class="btn btn-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-arrows-rotate my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Refresh</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="allocationTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Order No</span></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold">
+                      <span>Quantity Required</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Available Stock</span>
+                    </th>
+                    <th class="fw-bold">
+                      <span>Status</span>
+                    </th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allocate Orders Container Ends -->
 
         <!-- ----------------------------------------------------------------------------------------------------- -->
         <!-- ------------------------------------- Customer Container -------------------------------------------- -->
@@ -1447,6 +1603,121 @@
                   </tr>
                 </thead>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allocation Side Modal -->
+        <div id="allocationSlideInPanel" class="slideInPanel px-4 overflow-auto">
+          <div class="row d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-md-12">
+              <div class="text-center mt-4 d-flex justify-content-between">
+                <span id="allocationPanelHeading" class="fw-bold fs-5"
+                  >Allocate Product</span
+                >
+                <div class="col my-auto d-flex justify-content-end">
+                  <i
+                    class="fa-solid fa-circle-xmark my-auto panelClose"
+                    id="closeAllocationPanelBtn"
+                  ></i>
+                </div>
+              </div>
+
+              <hr />
+
+              <div>
+                <div class="form-group my-2">
+                  <label for="allocation_order_no">Order No</label>
+                  <input
+                    id="allocation_order_no"
+                    class="form-control"
+                    type="text"
+                    placeholder="Order number"
+                    name="allocation_order_no"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="allocation_product_name">Product Name</label>
+                  <input
+                    id="allocation_product_name"
+                    class="form-control"
+                    type="text"
+                    placeholder="Product name"
+                    name="allocation_product_name"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="allocation_quantity_required">Quantity Required (KG)</label>
+                  <input
+                    id="allocation_quantity_required"
+                    class="form-control"
+                    type="number"
+                    placeholder="Quantity required"
+                    name="allocation_quantity_required"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="allocation_available_stock">Available Stock (KG)</label>
+                  <div class="d-flex gap-2">
+                    <input
+                      id="allocation_available_stock"
+                      class="form-control"
+                      type="number"
+                      placeholder="Available stock"
+                      name="allocation_available_stock"
+                      readonly
+                    />
+                    <span 
+                      id="stock_badge" 
+                      class="badge bg-success d-flex align-items-center px-3"
+                      style="font-size: 14px; min-width: 80px; justify-content: center;"
+                    >
+                      Available
+                    </span>
+                  </div>
+                  <small class="text-muted" id="stock_message"></small>
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="allocation_quantity">Allocate Quantity (KG)</label>
+                  <input
+                    id="allocation_quantity"
+                    class="form-control"
+                    type="number"
+                    placeholder="eg. 100"
+                    name="allocation_quantity"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div class="form-group my-2">
+                  <label for="allocation_remarks">Remarks</label>
+                  <textarea
+                    id="allocation_remarks"
+                    class="form-control"
+                    placeholder="Any remarks about this allocation..."
+                    name="allocation_remarks"
+                    rows="3"
+                  ></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pb-4">
+                  <div id="submitAllocationBtn" class="col-lg-auto btn btn-danger">
+                    Allocate
+                  </div>
+                  <div id="resetAllocationDataBtn" class="col-lg-auto btn btn-outline-warning">
+                    Clear
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1933,6 +2204,13 @@
           allowClear: true,
         });
 
+        $("#modalProductName").val(null).trigger("change");
+        $("#modalProductName").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          data: productNamesArray,
+        });
+
         $(`.orderProduct:not(".orderProduct_1")`).remove();
         $(`.vl-top:not(".vl-top-1")`).remove();
 
@@ -2006,6 +2284,82 @@
         view_raw_material_id = "";
       });
 
+      // Open product panel
+      $(document).on("click", "#appendProducts", function () {
+        const last_fieldset_index = $("#orderProductContainer fieldset").length;
+
+        if (
+          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
+          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
+        ) {
+          toastr["warning"](
+            "Please fill all the required values in the above product to create a new product"
+          );
+          return;
+        }
+
+        // Reset product form inputs
+        $("#modalProductName").val(null).trigger("change");
+        $("#modalProductUnit").val("");
+        $("#modalProductPrice").val("");
+        $("#modalProductDescription").val("");
+
+        // Open the product slide panel
+        openSlidePanel(
+          "productSlideInPanel",
+          "productPanelHeading",
+          "Product",
+          "submitProductBtn",
+          "product_id"
+        );
+      });
+
+      // Close product panel
+      $("#closeProductPanelBtn").click(function () {
+        closeSlidePanel("productSlideInPanel");
+      });
+
+      // Add product from modal
+      $("#submitProductBtn").click(function () {
+        const product_name = $("#modalProductName").val();
+        const product_unit = parseFloat($("#modalProductUnit").val() || 0);
+        const product_price = parseFloat($("#modalProductPrice").val() || 0);
+        const product_description = $("#modalProductDescription").val();
+
+        if (!product_name || product_unit <= 0 || product_price <= 0) {
+          toastr["warning"]("Please fill all required fields with valid values");
+          return;
+        }
+
+        const last_fieldset_index = $("#orderProductContainer fieldset").length;
+        const next_fieldset_index = (last_fieldset_index || 0) + 1;
+
+        // Add the new product fieldset
+        addOutput(next_fieldset_index);
+
+        // Populate the new product fields
+        $(`.orderProductNames_${next_fieldset_index}`).val(product_name).trigger("change");
+        $(`.product_unit_${next_fieldset_index}`).val(product_unit);
+        $(`.product_price_${next_fieldset_index}`).val(product_price);
+        $(`.product_description_${next_fieldset_index}`).val(product_description);
+
+        // Trigger calculation
+        calculatePrice(next_fieldset_index);
+
+        // Close the panel
+        $("#closeProductPanelBtn").click();
+
+        toastr["success"]("Product added successfully");
+      });
+
+      // Reset product form
+      $("#resetProductDataBtn").click(function () {
+        $("#modalProductName").val(null).trigger("change");
+        $("#modalProductUnit").val("");
+        $("#modalProductPrice").val("");
+        $("#modalProductDescription").val("");
+      });
+
       $(".ordersMenu").click(function () {
         $(".menu-container").addClass("d-none");
 
@@ -2016,6 +2370,28 @@
 
         loadOrdersDropdowns();
         loadOrdersTableData();
+      });
+
+      $(".allocateOrdersMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".allocateOrdersContainer").removeClass("d-none");
+        $(".allocateOrdersContainer").addClass("d-block");
+
+        loadAllocationTableData();
+      });
+
+      $("#allocateOrderBtn").click(function () {
+        // Show allocate orders container
+        $(".menu-container").addClass("d-none");
+        $(".allocateOrdersContainer").removeClass("d-none");
+        $(".allocateOrdersContainer").addClass("d-block");
+
+        loadAllocationTableData();
+      });
+
+      $("#refreshAllocationBtn").click(function () {
+        loadAllocationTableData();
       });
 
       $(document).on("click", ".modal-header .close", () => {
@@ -2035,23 +2411,6 @@
           $("#customerOrdersModal").modal("show");
           delete sessionStorage?.customer_id;
         }
-      });
-
-      $(document).on("click", "#appendProducts", (e) => {
-        const last_fieldset_index = $("#orderProductContainer fieldset").length;
-        const next_fieldset_index = (last_fieldset_index || 0) + 1;
-
-        if (
-          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
-          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
-        ) {
-          toastr["warning"](
-            "Please fill all the required values in the above output to create a new output"
-          );
-          return;
-        }
-
-        addOutput(next_fieldset_index);
       });
 
       $(document).on("change", ".orderProductNames", (e) => {
@@ -2410,6 +2769,67 @@
         loadOrdersProductTableData(view_order_id);
       });
 
+      $(document).on("click", "#confirmOrderModalBtn", function () {
+        const order_id = $("#view_order_no").attr("order_id");
+        const order_no = $("#view_order_no").text();
+
+        if (!order_id) {
+          toastr.error("Order ID not found", "Error");
+          return;
+        }
+
+        $.confirm({
+          title: "Confirm Order?",
+          content: `Are you sure you want to confirm order <strong>${order_no}</strong>? This will move the order to the allocation workflow.`,
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            confirm: {
+              text: "Confirm Order",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/order/confirm",
+                  method: "POST",
+                  data: JSON.stringify({
+                    order_id: order_id,
+                  }),
+                  contentType: "application/json",
+                })
+                  .done(function (response) {
+                    // Close the modal
+                    $("#orderModal").modal("hide");
+
+                    // Reload the table data
+                    loadOrdersTableData();
+
+                    toastr.success(
+                      "Order confirmed successfully and moved to allocation workflow",
+                      "Order Confirmed"
+                    );
+                  })
+                  .fail(function (xhr) {
+                    const errorMessage =
+                      xhr?.responseJSON?.message ||
+                      "Order confirmation failed!";
+                    toastr.error(errorMessage, "Error");
+                  });
+              },
+            },
+            cancel: function () {
+              toastr.info("Order confirmation cancelled", "Info");
+            },
+          },
+        });
+      });
+
       function loadOrdersProductTableData(order_id) {
         if (!order_id) {
           toastr["warning"]("Orders data should not be empty!");
@@ -2735,6 +3155,184 @@
         $("#shippingMethods").val(null).trigger("change");
       }
 
+      function loadAllocationTableData() {
+        $("#allocationTable").DataTable({
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/order/allocation",
+            error: function (xhr, error, code) {
+              $("#allocationTable").DataTable().destroy();
+              $("#allocationTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              // Flatten the orders to show each product as a separate row
+              const flatData = [];
+
+              json.data?.rows?.forEach((order) => {
+                if (order.OrderProducts && order.OrderProducts.length > 0) {
+                  // For each product in the order, create a new row
+                  order.OrderProducts.forEach((product) => {
+                    flatData.push({
+                      order_id: order.id,
+                      order_product_id: product.id,
+                      order_no: order.order_no,
+                      product_name:
+                        product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
+                        "Unknown",
+                      quantity_required: product.unit,
+                      allocation_status: order.allocation_status,
+                      product_id: product?.Packing?.pd?.pp?.ProductMaster?.id,
+                      packing_id: product.packing_id,
+                    });
+                  });
+                } else {
+                  // Show order even if it has no products
+                  flatData.push({
+                    order_id: order.id,
+                    order_product_id: null,
+                    order_no: order.order_no,
+                    product_name: "-",
+                    quantity_required: 0,
+                    allocation_status: order.allocation_status,
+                    product_id: null,
+                    packing_id: null,
+                  });
+                }
+              });
+
+              json.iTotalRecords = flatData.length;
+              json.iTotalDisplayRecords = json.data?.count || 0;
+
+              // Return the flattened data to be displayed in the DataTable
+              return flatData;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: "order_no" },
+            { data: "product_name" },
+            { data: "quantity_required" },
+            { data: "product_id" },
+            { data: "allocation_status" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa-solid fa-eye view" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="View order details"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (!row.packing_id || row.packing_id === null) {
+                  return `<span style="color:gray">N/A</span>`;
+                }
+                return `<i class="fa-solid fa-plus-circle allocateProduct" order_id='${row.order_id}' packing_id='${row.packing_id}' order_product_id='${row.order_product_id}' style="font-size:15px;color:#EF7A3F;cursor:pointer" data-toggle="tooltip" data-placement="top" title="Allocate this product"></i>`;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                // Store product_id in data attribute for inventory lookup
+                return `<span class="available-stock" data-product-id="${
+                  data || ""
+                }" style="cursor:pointer">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                </span>`;
+              },
+            },
+            {
+              targets: [6],
+              className: "text-left",
+              render: (data, type, row) => {
+                const statusColor =
+                  data === "Allocated" ? "text-success" : "text-danger";
+                const statusIcon =
+                  data === "Allocated"
+                    ? "fa-circle-check"
+                    : "fa-hourglass-half";
+                return `<span class="${statusColor}">${data} <i class="fa-solid ${statusIcon}"></i></span>`;
+              },
+            },
+          ],
+          drawCallback: () => {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Fetch inventory for each product
+            $(".available-stock").each(function () {
+              const productId = $(this).data("product-id");
+              const $element = $(this);
+
+              if (productId) {
+                $.ajax({
+                  url: `/api/order/check-inventory/${productId}`,
+                  method: "GET",
+                  dataType: "json",
+                  success: function (response) {
+                    const quantity = response?.data?.available_quantity || 0;
+                    const badgeClass =
+                      quantity > 0 ? "bg-success" : "bg-danger";
+                    $element.html(
+                      `<span class="badge ${badgeClass}">${quantity} units</span>`
+                    );
+                  },
+                  error: function () {
+                    $element.html(
+                      `<span class="badge bg-secondary">N/A</span>`
+                    );
+                  },
+                });
+              } else {
+                $element.html(`<span class="badge bg-secondary">-</span>`);
+              }
+            });
+          },
+        });
+      }
+
       $(document).on("click", ".delOrder", (e) => {
         let order_id = $(e.target).attr("order_id");
         let currentRow = $(e.target).closest("tr");
@@ -2775,6 +3373,59 @@
             },
             no: function () {
               toastr.info("Order detail is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      $(document).on("click", ".confirmOrder", (e) => {
+        let order_id = $(e.target).closest("button").attr("order_id");
+        let order_no = $(e.target).closest("button").attr("order_no");
+
+        $.confirm({
+          title: "Confirm Order?",
+          content: `Are you sure you want to confirm order <strong>${order_no}</strong>? This will move the order to the allocation workflow.`,
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            confirm: {
+              text: "Confirm Order",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url: "/api/order/confirm",
+                  method: "POST",
+                  data: JSON.stringify({
+                    order_id: order_id,
+                  }),
+                  contentType: "application/json",
+                })
+                  .done(function (response) {
+                    // Reload the table data
+                    loadOrdersTableData();
+
+                    toastr.success(
+                      "Order confirmed successfully and moved to allocation workflow",
+                      "Order Confirmed"
+                    );
+                  })
+                  .fail(function (xhr) {
+                    const errorMessage =
+                      xhr?.responseJSON?.message ||
+                      "Order confirmation failed!";
+                    toastr.error(errorMessage, "Error");
+                  });
+              },
+            },
+            cancel: function () {
+              toastr.info("Order confirmation cancelled", "Info");
             },
           },
         });
@@ -2829,6 +3480,167 @@
           },
         });
       });
+
+      // Allocate Product Click Handler - Open Side Modal
+      $(document).on("click", ".allocateProduct", (e) => {
+        const order_id = $(e.target).attr("order_id");
+        const packing_id = $(e.target).attr("packing_id");
+        const order_product_id = $(e.target).attr("order_product_id");
+
+        console.log("Allocate button clicked with:", { order_id, packing_id, order_product_id });
+
+        if (!order_id || !packing_id || packing_id === "undefined") {
+          toastr["error"]("Invalid order or packing ID. Please refresh the page and try again.");
+          return;
+        }
+
+        // Get the row data from the table
+        const row = $(e.target).closest("tr");
+        const order_no = row.find("td").eq(2).text(); // Order No
+        const product_name = row.find("td").eq(3).text(); // Product Name
+        const quantity_required = parseFloat(row.find("td").eq(4).text()) || 0; // Quantity Required
+        const available_stock = parseFloat(row.find("td").eq(5).text()) || 0; // Available Stock
+
+        // Store IDs for later use
+        $("#submitAllocationBtn").attr("order_id", order_id);
+        $("#submitAllocationBtn").attr("packing_id", packing_id);
+        $("#submitAllocationBtn").attr("order_product_id", order_product_id);
+
+        // Populate the form fields
+        $("#allocation_order_no").val(order_no);
+        $("#allocation_product_name").val(product_name);
+        $("#allocation_quantity_required").val(quantity_required.toFixed(2));
+        $("#allocation_available_stock").val(available_stock.toFixed(2));
+        $("#allocation_quantity").val("");
+        $("#allocation_remarks").val("");
+
+        // Update stock badge with color coding
+        const $badge = $("#stock_badge");
+        const $message = $("#stock_message");
+        
+        if (available_stock <= 0) {
+          $badge.removeClass("bg-success bg-warning").addClass("bg-danger");
+          $badge.text("Out of Stock");
+          $message.text("⚠️ No stock available for allocation");
+        } else if (available_stock < quantity_required) {
+          $badge.removeClass("bg-success bg-danger").addClass("bg-warning");
+          $badge.text("Low Stock");
+          $message.text(`⚠️ Available: ${available_stock.toFixed(2)} KG | Required: ${quantity_required.toFixed(2)} KG (Shortage: ${(quantity_required - available_stock).toFixed(2)} KG)`);
+        } else {
+          $badge.removeClass("bg-warning bg-danger").addClass("bg-success");
+          $badge.text("Available");
+          $message.text(`✓ Sufficient stock available. Surplus: ${(available_stock - quantity_required).toFixed(2)} KG`);
+        }
+
+        // Open the allocation side panel
+        openSlidePanel(
+          "allocationSlideInPanel",
+          "allocationPanelHeading",
+          "Allocation",
+          "submitAllocationBtn",
+          "allocation_id"
+        );
+      });
+
+      // Close allocation panel
+      $("#closeAllocationPanelBtn").click(function () {
+        closeSlidePanel("allocationSlideInPanel");
+      });
+
+      // Submit allocation form
+      $("#submitAllocationBtn").click(function () {
+        const order_id = $(this).attr("order_id");
+        const packing_id = $(this).attr("packing_id");
+        const order_product_id = $(this).attr("order_product_id");
+        const allocation_quantity = parseFloat($("#allocation_quantity").val() || 0);
+        const allocation_remarks = $("#allocation_remarks").val();
+        const available_stock = parseFloat($("#allocation_available_stock").val() || 0);
+        const quantity_required = parseFloat($("#allocation_quantity_required").val() || 0);
+
+        // Validation
+        if (!order_id || !packing_id) {
+          toastr["warning"]("Missing order or packing ID");
+          return;
+        }
+
+        if (allocation_quantity <= 0) {
+          toastr["warning"]("Allocation quantity must be greater than 0");
+          return;
+        }
+
+        if (allocation_quantity > available_stock) {
+          toastr["warning"]("Allocation quantity cannot exceed available stock");
+          return;
+        }
+
+        // Calculate 25% more raw materials needed for purchase
+        const purchase_quantity = allocation_quantity * 1.25;
+
+        // Call the allocation API
+        $.ajax({
+          url: "/api/order/allocate-product",
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify({
+            order_id: order_id,
+            packing_id: packing_id,
+            order_product_id: order_product_id,
+            allocation_quantity: allocation_quantity,
+            remarks: allocation_remarks,
+          }),
+          success: (data) => {
+            toastr["success"](data?.message || "Product allocated successfully");
+            
+            // Create purchase request for 25% more raw materials
+            createPurchaseRequest(packing_id, purchase_quantity, allocation_quantity);
+            
+            // Close the panel
+            $("#closeAllocationPanelBtn").click();
+            // Refresh the allocation table
+            loadAllocationTableData();
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](jqXhr["responseJSON"]["message"] || "Failed to allocate product");
+            }
+          },
+        });
+      });
+
+      // Reset allocation form
+      $("#resetAllocationDataBtn").click(function () {
+        $("#allocation_quantity").val("");
+        $("#allocation_remarks").val("");
+      });
+
+      // Create purchase request for raw materials (25% more than allocated)
+      function createPurchaseRequest(product_id, purchase_quantity, allocated_quantity) {
+        $.ajax({
+          url: "/api/procurement/lot/purchase-request",
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify({
+            product_id: product_id,
+            quantity: purchase_quantity,
+            allocated_quantity: allocated_quantity,
+            additional_percentage: 25,
+            request_type: "auto-generated",
+            remarks: `Auto-generated purchase request for product allocation. Allocated: ${allocated_quantity.toFixed(2)} KG, Purchasing: ${purchase_quantity.toFixed(2)} KG (25% buffer)`,
+          }),
+          success: (data) => {
+            toastr["success"](data?.message || "Purchase request created successfully for raw materials");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            // Log the error but don't fail the allocation process
+            console.warn("Purchase request creation failed:", jqXhr?.responseJSON?.message || errorThrown);
+            toastr["info"]("Allocation completed. Note: Purchase request creation needs review.");
+          },
+        });
+      }
 
       function saveOrders() {
         const order_id = $("#submitOrders").attr("order_id");
