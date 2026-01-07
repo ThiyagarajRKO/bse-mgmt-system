@@ -4,6 +4,9 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetOrderNumbers } from "./handlers/get_order_no";
+import { Confirm } from "./handlers/confirm";
+import { GetAllocationData } from "./handlers/get_allocation_data";
+import { CheckInventory } from "./handlers/check_inventory";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -25,14 +28,14 @@ export const ordersRoute = (fastify, opts, done) => {
         statusCode: result?.statusCode,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.put("/", updateSchema, async (req, reply) => {
     try {
@@ -44,14 +47,14 @@ export const ordersRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/:order_id", getSchema, async (req, reply) => {
     try {
@@ -63,14 +66,14 @@ export const ordersRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
@@ -82,14 +85,14 @@ export const ordersRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/numbers", getOrderNumbersSchema, async (req, reply) => {
     try {
@@ -101,14 +104,14 @@ export const ordersRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -120,14 +123,73 @@ export const ordersRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
+
+  fastify.post("/confirm", async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.body };
+
+      const result = await Confirm(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/allocation", getAllSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetAllocationData(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get("/check-inventory/:product_master_id", async (req, reply) => {
+    try {
+      const params = {
+        product_master_id: req?.params?.product_master_id,
+      };
+
+      const result = await CheckInventory(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
 
   done();
 };

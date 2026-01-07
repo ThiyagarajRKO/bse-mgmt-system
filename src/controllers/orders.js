@@ -410,3 +410,132 @@ export const Delete = ({ profile_id, id }) => {
     }
   });
 };
+
+export const GetAllocationData = ({ start, length, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get orders with delivery_status = "Initiated" for allocation
+      let where = {
+        is_active: true,
+        delivery_status: "Initiated", // Only get confirmed/initiated orders
+      };
+
+      if (search) {
+        where[Op.or] = [
+          sequelize.where(
+            sequelize.cast(sequelize.col("order_no"), "varchar"),
+            {
+              [Op.iLike]: `%${search}%`,
+            }
+          ),
+          { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$OrderProducts.ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+        ];
+      }
+
+      const orders = await models.Orders.findAndCountAll({
+        subQuery: false,
+        attributes: [
+          "id",
+          "order_no",
+          "created_at",
+          "payment_terms",
+          "payment_type",
+          "shipping_date",
+          "shipping_address",
+          "shipping_method",
+          "expected_delivery_date",
+          "delivery_status",
+          [
+            sequelize.literal(
+              `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+            ),
+            "total_products_price",
+          ],
+        ],
+        include: [
+          {
+            attributes: [
+              "id",
+              "customer_name",
+              "customer_country",
+              "customer_email",
+              "customer_phone",
+            ],
+            model: models.CustomerMaster,
+            where: {
+              is_active: true,
+            },
+          },
+          {
+            attributes: [
+              "id",
+              "unit",
+              "price",
+              "discount",
+              "description",
+              "delivery_status",
+            ],
+            model: models.OrderProducts,
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                attributes: ["id"],
+                model: models.Packing,
+                where: {
+                  is_active: true,
+                },
+                include: [
+                  {
+                    attributes: ["id"],
+                    as: "pd",
+                    model: models.PeeledDispatches,
+                    where: { is_active: true },
+                    include: [
+                      {
+                        attributes: ["id"],
+                        as: "pp",
+                        model: models.PeelingProducts,
+                        where: { is_active: true },
+                        include: [
+                          {
+                            attributes: ["id", "product_name"],
+                            model: models.ProductMaster,
+                            where: { is_active: true },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        where,
+        offset: start,
+        limit: length,
+        order: [["created_at", "desc"]],
+      });
+
+      // Add allocation_status to each order
+      const processedOrders = orders.rows.map((order) => ({
+        ...order.toJSON(),
+        allocation_status: "Pending",
+      }));
+
+      resolve({
+        rows: processedOrders,
+        count: orders.count,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
