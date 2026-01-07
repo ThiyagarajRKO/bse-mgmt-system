@@ -1,0 +1,108 @@
+"use strict";
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    // Create allocation_master table
+    // Links sales orders to inventory allocation (stock reservation)
+    await queryInterface.createTable("allocation_master", {
+      id: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+      },
+      allocation_no: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+      order_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "orders",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+      order_product_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "order_products",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+      packing_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "packing",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+      allocated_quantity: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      allocated_unit: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+      allocation_date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      status: {
+        type: Sequelize.ENUM(
+          "ALLOCATED",
+          "RESERVED",
+          "CONFIRMED",
+          "IN_PRODUCTION",
+          "COMPLETED",
+          "CANCELLED"
+        ),
+        defaultValue: "ALLOCATED",
+      },
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      created_by: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+      updated_by: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+    });
+
+    // Add indexes
+    await queryInterface.addIndex("allocation_master", ["allocation_no"]);
+    await queryInterface.addIndex("allocation_master", ["order_id"]);
+    await queryInterface.addIndex("allocation_master", ["packing_id"]);
+    await queryInterface.addIndex("allocation_master", ["status"]);
+    await queryInterface.addIndex("allocation_master", ["allocation_date"]);
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("allocation_master");
+  },
+};
