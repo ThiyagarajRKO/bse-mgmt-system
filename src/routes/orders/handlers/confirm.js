@@ -32,6 +32,7 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
       await models.Orders.update(
         {
           delivery_status: "Initiated",
+          is_active: true,
           confirmed_at: new Date(),
         },
         {

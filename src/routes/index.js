@@ -136,6 +136,14 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/master/shipping",
   });
 
+  fastify.register(supplierMasterRoute, {
+    prefix: "/master/supplier",
+  });
+
+  fastify.register(productMasterRoute, {
+    prefix: "/master/product",
+  });
+
   // Orders Routes
   fastify.register(ordersRoute, {
     prefix: "/order",

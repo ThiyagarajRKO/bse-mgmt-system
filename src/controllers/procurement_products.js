@@ -240,9 +240,7 @@ export const GetAll = ({
       }
 
       if (procurement_product_type) {
-        where.procurement_product_type = {
-          [Op.iLike]: `%${procurement_product_type}%`,
-        };
+        where.procurement_product_type = procurement_product_type;
       }
 
       if (procurement_quantity) {
@@ -277,15 +275,9 @@ export const GetAll = ({
           {
             "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` },
           },
-          sequelize.where(
-            sequelize.cast(
-              sequelize.col("procurement_product_type"),
-              "varchar"
-            ),
-            {
-              [Op.iLike]: `%${search}%`,
-            }
-          ),
+          {
+            procurement_product_type: search,
+          },
           { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
         ];
       }

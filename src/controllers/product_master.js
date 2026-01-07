@@ -97,6 +97,7 @@ export const Get = ({ id }) => {
             model: models.ProductCategoryMaster,
             include: [
               {
+                attributes: ["id", "species_name", "species_code"],
                 model: models.SpeciesMaster,
                 where: {
                   is_active: true,

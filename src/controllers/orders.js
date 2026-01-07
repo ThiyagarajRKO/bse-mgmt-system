@@ -414,10 +414,10 @@ export const Delete = ({ profile_id, id }) => {
 export const GetAllocationData = ({ start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Get orders with delivery_status = "Initiated" for allocation
+      // Get orders with delivery_status for allocation (In Transit or Initiated)
       let where = {
         is_active: true,
-        delivery_status: "Initiated", // Only get confirmed/initiated orders
+        delivery_status: { [Op.in]: ["Initiated", "In Transit"] }, // Get orders pending allocation
       };
 
       if (search) {
