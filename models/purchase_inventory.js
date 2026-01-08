@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       PurchaseInventory.belongsTo(models.ProductMaster, {
+        as: "ProductMaster",
         foreignKey: "product_master_id",
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
@@ -44,6 +45,14 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      },
+      product_master_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      procurement_product_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
       },
       procurement_product_type: {
         type: DataTypes.STRING,

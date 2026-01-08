@@ -152,6 +152,7 @@ export const Get = ({ id }) => {
             required: false,
           },
           {
+            as: "ProductMaster",
             model: models.ProductMaster,
             required: false,
           },
@@ -218,6 +219,7 @@ export const GetQuantity = ({ id }) => {
 export const GetAll = ({
   procurement_lot_id,
   procurement_lot,
+  product_master_id,
   product_master_name,
   procurement_product_type,
   procurement_quantity,
@@ -226,6 +228,7 @@ export const GetAll = ({
   procurement_purchaser,
   supplier_master_id,
   purchase_payment_id,
+  species_master_id,
   start,
   length,
   search,
@@ -233,10 +236,16 @@ export const GetAll = ({
   return new Promise(async (resolve, reject) => {
     try {
       let where = {};
+      let productMasterWhere = {};
+      let productCategoryWhere = {};
 
       // Build where clause based on filters
       if (procurement_lot_id) {
         where.procurement_lot_id = procurement_lot_id;
+      }
+
+      if (product_master_id) {
+        where.product_master_id = product_master_id;
       }
 
       if (procurement_product_type) {
@@ -261,6 +270,12 @@ export const GetAll = ({
         where.supplier_master_id = supplier_master_id;
       }
 
+      // Filter by species - used to show raw materials for a specific species
+      // This filters through ProductMaster -> ProductCategory -> Species relationship
+      if (species_master_id) {
+        productCategoryWhere.species_master_id = species_master_id;
+      }
+
       if (search) {
         where[Op.or] = [
           sequelize.where(
@@ -282,6 +297,37 @@ export const GetAll = ({
         ];
       }
 
+      const includeConfig = [
+        {
+          as: "pl",
+          attributes: ["id", "procurement_lot"],
+          model: models.ProcurementLots,
+          required: false,
+        },
+        {
+          attributes: ["id", "supplier_name"],
+          model: models.SupplierMaster,
+          required: false,
+        },
+        {
+          as: "ProductMaster",
+          attributes: ["id", "product_name", "product_category_master_id"],
+          model: models.ProductMaster,
+          required: Object.keys(productCategoryWhere).length > 0,
+          include: [
+            {
+              model: models.ProductCategoryMaster,
+              attributes: ["id", "product_category", "species_master_id"],
+              required: Object.keys(productCategoryWhere).length > 0,
+              where:
+                Object.keys(productCategoryWhere).length > 0
+                  ? productCategoryWhere
+                  : undefined,
+            },
+          ],
+        },
+      ];
+
       const procurements = await models.ProcurementProducts.findAndCountAll({
         subQuery: false,
         attributes: [
@@ -298,24 +344,7 @@ export const GetAll = ({
           "procurement_totalamount",
           "created_at",
         ],
-        include: [
-          {
-            as: "pl",
-            attributes: ["id", "procurement_lot"],
-            model: models.ProcurementLots,
-            required: false,
-          },
-          {
-            attributes: ["id", "supplier_name"],
-            model: models.SupplierMaster,
-            required: false,
-          },
-          {
-            attributes: ["id", "product_name"],
-            model: models.ProductMaster,
-            required: false,
-          },
-        ],
+        include: includeConfig,
         where,
         offset: parseInt(start) || 0,
         limit: parseInt(length) || 10,
@@ -401,6 +430,7 @@ export const GetPaymentItems = ({
           },
           {
             attributes: ["id", "product_name"],
+            as: "ProductMaster",
             model: models.ProductMaster,
             where: {
               is_active: true,
@@ -504,6 +534,7 @@ export const GetPurchaseInventoryProducts = ({
           },
           {
             attributes: ["id", "product_name"],
+            as: "ProductMaster",
             model: models.ProductMaster,
             where: {
               is_active: true,
@@ -590,6 +621,7 @@ export const GetSalesInventoryProducts = ({
                 include: [
                   {
                     attributes: ["id", "product_name"],
+                    as: "ProductMaster",
                     model: models.ProductMaster,
                     where: {
                       is_active: true,
@@ -686,6 +718,7 @@ export const GetNames = ({
           },
           {
             attributes: ["id", "product_name"],
+            as: "ProductMaster",
             model: models.ProductMaster,
             required: false,
           },
@@ -984,6 +1017,7 @@ export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
           {
             attributes: ["id", "product_name"],
             model: models.ProductMaster,
+            as: "ProductMaster",
             where: {
               is_active: true,
             },
