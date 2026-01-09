@@ -931,37 +931,76 @@
                 <table
                   id="procurementProductTable"
                   class="rounded table table-hover nowrap w-100"
+                  style="border-collapse: collapse"
                 >
                   <thead>
-                    <tr>
-                      <th style="border-radius: 4px 0 0 0"></th>
-                      <th></th>
-                      <th class="fw-bold"><span>Product Name</span></th>
-                      <th class="fw-bold">
+                    <tr style="background-color: #f8f9fa">
+                      <th
+                        style="
+                          border-radius: 4px 0 0 0;
+                          width: 50px;
+                          text-align: center;
+                        "
+                      ></th>
+                      <th style="width: 50px; text-align: center"></th>
+                      <th
+                        class="fw-bold"
+                        style="width: 250px; text-align: left"
+                      >
+                        <span>Product Name</span>
+                      </th>
+                      <th
+                        class="fw-bold"
+                        style="width: 150px; text-align: left"
+                      >
                         <span>Purchased Type</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 130px; text-align: center"
+                      >
                         <span>Purchase Date</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 100px; text-align: center"
+                      >
                         <span>Lot No</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 120px; text-align: right"
+                      >
                         <span>Purchased Quantity</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 120px; text-align: right"
+                      >
                         <span>Price per KG</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 130px; text-align: right"
+                      >
                         <span>Total Amount</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 180px; text-align: left"
+                      >
                         <span>Supplier Name</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 120px; text-align: left"
+                      >
                         <span>Purchaser</span>
                       </th>
-                      <th class="fw-bold">
+                      <th
+                        class="fw-bold"
+                        style="width: 140px; text-align: center"
+                      >
                         <span>Payment Status</span>
                       </th>
                     </tr>
@@ -2920,7 +2959,8 @@
           columnDefs: [
             {
               targets: [0],
-              className: "text-left",
+              className: "text-center",
+              width: "50px",
               render: function (data, type, row) {
                 return `<i class="fa fa-pen-to-square edit editProcurementProducts" procurement_product_id=${
                   row?.id
@@ -2933,7 +2973,8 @@
             },
             {
               targets: [1],
-              className: "text-left",
+              className: "text-center",
+              width: "50px",
               render: function (data, type, row) {
                 return `<i class="fa fa-trash del delProcurementProduct" procurement_product_id='${
                   row["id"]
@@ -2945,20 +2986,23 @@
             {
               targets: [2],
               className: "text-left",
+              width: "250px",
               render: function (data, type, row) {
-                return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
+                return `<span product_master_id=${row["ProductMaster"]?.id} style="word-wrap: break-word; white-space: normal;">${data}</span>`;
               },
             },
             {
               targets: [3],
               className: "text-left",
+              width: "150px",
               render: function (data, type, row) {
                 return data;
               },
             },
             {
               targets: [4],
-              className: "text-left",
+              className: "text-center",
+              width: "130px",
               render: function (data, type, row) {
                 if (!data) return "";
                 const date = new Date(data);
@@ -2967,9 +3011,11 @@
             },
             {
               targets: [5],
-              className: "text-left",
+              className: "text-center",
+              width: "100px",
               render: function (data, type, row) {
                 return (
+                  row?.pl?.procurement_lot ||
                   row?.ProcurementLots?.procurement_lot ||
                   row?.procurement_lot ||
                   data ||
@@ -2979,7 +3025,8 @@
             },
             {
               targets: [6],
-              className: "text-left",
+              className: "text-right",
+              width: "120px",
               render: function (data, type, row) {
                 return parseFloat(
                   row["adjusted_quantity"] || row["procurement_quantity"] || 0
@@ -2988,7 +3035,8 @@
             },
             {
               targets: [7],
-              className: "text-left",
+              className: "text-right",
+              width: "120px",
               render: function (data, type, row) {
                 return parseFloat(
                   row["adjusted_price"] || row["procurement_price"] || 0
@@ -2997,7 +3045,8 @@
             },
             {
               targets: [8],
-              className: "text-left",
+              className: "text-right",
+              width: "130px",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
               },
@@ -3005,6 +3054,7 @@
             {
               targets: [9],
               className: "text-left",
+              width: "180px",
               render: function (data, type, row) {
                 return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
               },
@@ -3012,13 +3062,15 @@
             {
               targets: [10],
               className: "text-left",
+              width: "120px",
               render: function (data, type, row) {
                 return data || "-";
               },
             },
             {
               targets: [11],
-              className: "text-left",
+              className: "text-center",
+              width: "140px",
               render: function (data, type, row) {
                 if (parseFloat(row["total_paid"] || 0) == 0) {
                   return `<span class="text-secondary">Pending <i class="fa-solid fa-hourglass-half"></i></span>`;
