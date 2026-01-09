@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
+const { v4: uuidv4 } = require("uuid");
+const db = require("../models");
 
 class ProductionDemandService {
   /**
@@ -11,14 +11,14 @@ class ProductionDemandService {
   generateDemandNumber() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
     const randomSuffix = String(Math.floor(Math.random() * 10000)).padStart(
       4,
-      '0'
+      "0"
     );
 
     return `DEM-${year}${month}${day}-${hours}${minutes}${seconds}-${randomSuffix}`;
@@ -46,18 +46,16 @@ class ProductionDemandService {
       !required_date
     ) {
       throw new Error(
-        'Missing required fields: sales_allocation_id, product_master_id, demanded_quantity, required_date'
+        "Missing required fields: sales_allocation_id, product_master_id, demanded_quantity, required_date"
       );
     }
 
     if (demanded_quantity <= 0) {
-      throw new Error('Demanded quantity must be greater than 0');
+      throw new Error("Demanded quantity must be greater than 0");
     }
 
     // Verify sales allocation exists
-    const allocation = await db.SalesAllocation.findByPk(
-      sales_allocation_id
-    );
+    const allocation = await db.SalesAllocation.findByPk(sales_allocation_id);
     if (!allocation) {
       throw new Error(`SalesAllocation not found: ${sales_allocation_id}`);
     }
@@ -84,14 +82,14 @@ class ProductionDemandService {
       product_master_id,
       demanded_quantity,
       fulfilled_quantity: 0,
-      demand_status: 'CREATED',
-      priority: priority || 'MEDIUM',
+      demand_status: "CREATED",
+      priority: priority || "MEDIUM",
       required_date: new Date(required_date),
     });
 
     // Update allocation status to ALLOCATED if it's still PENDING
-    if (allocation.allocation_status === 'PENDING') {
-      allocation.allocation_status = 'ALLOCATED';
+    if (allocation.allocation_status === "PENDING") {
+      allocation.allocation_status = "ALLOCATED";
       await allocation.save();
     }
 
@@ -121,16 +119,12 @@ class ProductionDemandService {
     }
 
     // Verify product matches
-    if (
-      productionOrder.product_master_id !== demand.product_master_id
-    ) {
-      throw new Error(
-        'ProductionOrder product does not match demand product'
-      );
+    if (productionOrder.product_master_id !== demand.product_master_id) {
+      throw new Error("ProductionOrder product does not match demand product");
     }
 
     demand.production_order_id = productionOrderId;
-    demand.demand_status = 'WAITING_FOR_PRODUCTION';
+    demand.demand_status = "WAITING_FOR_PRODUCTION";
     await demand.save();
 
     return demand;
@@ -153,12 +147,12 @@ class ProductionDemandService {
 
     // Validate status transition
     const validStatuses = [
-      'CREATED',
-      'WAITING_FOR_PRODUCTION',
-      'IN_PRODUCTION',
-      'PRODUCTION_COMPLETE',
-      'DISPATCHED',
-      'FULFILLED',
+      "CREATED",
+      "WAITING_FOR_PRODUCTION",
+      "IN_PRODUCTION",
+      "PRODUCTION_COMPLETE",
+      "DISPATCHED",
+      "FULFILLED",
     ];
     if (!validStatuses.includes(newStatus)) {
       throw new Error(`Invalid demand status: ${newStatus}`);
@@ -194,12 +188,10 @@ class ProductionDemandService {
     }
 
     if (!demand.production_order_id) {
-      throw new Error(
-        'Cannot start production: no linked production order'
-      );
+      throw new Error("Cannot start production: no linked production order");
     }
 
-    demand.demand_status = 'IN_PRODUCTION';
+    demand.demand_status = "IN_PRODUCTION";
     await demand.save();
 
     return demand;
@@ -226,7 +218,7 @@ class ProductionDemandService {
     }
 
     demand.fulfilled_quantity = completedQty;
-    demand.demand_status = 'PRODUCTION_COMPLETE';
+    demand.demand_status = "PRODUCTION_COMPLETE";
     await demand.save();
 
     return demand;
@@ -245,15 +237,13 @@ class ProductionDemandService {
       throw new Error(`ProductionDemand not found: ${demandId}`);
     }
 
-    if (
-      demand.fulfilled_quantity !== demand.demanded_quantity
-    ) {
+    if (demand.fulfilled_quantity !== demand.demanded_quantity) {
       throw new Error(
         `Cannot fulfill demand. Fulfilled (${demand.fulfilled_quantity}) does not match demanded (${demand.demanded_quantity})`
       );
     }
 
-    demand.demand_status = 'FULFILLED';
+    demand.demand_status = "FULFILLED";
     await demand.save();
 
     return demand;
@@ -269,30 +259,30 @@ class ProductionDemandService {
       include: [
         {
           model: db.SalesAllocation,
-          as: 'salesAllocation',
-          attributes: ['id', 'allocated_quantity', 'fulfilled_quantity'],
+          as: "salesAllocation",
+          attributes: ["id", "allocated_quantity", "fulfilled_quantity"],
           include: [
             {
               model: db.Order,
-              as: 'order',
-              attributes: ['id', 'order_number', 'order_date'],
+              as: "order",
+              attributes: ["id", "order_number", "order_date"],
             },
           ],
         },
         {
           model: db.ProductionOrder,
-          as: 'productionOrder',
+          as: "productionOrder",
           attributes: [
-            'id',
-            'production_order_number',
-            'order_status',
-            'created_at',
+            "id",
+            "production_order_number",
+            "order_status",
+            "created_at",
           ],
         },
         {
           model: db.ProductMaster,
-          as: 'productMaster',
-          attributes: ['id', 'product_name', 'sku_code'],
+          as: "productMaster",
+          attributes: ["id", "product_name", "sku_code"],
         },
       ],
     });
@@ -326,30 +316,30 @@ class ProductionDemandService {
       include: [
         {
           model: db.SalesAllocation,
-          as: 'salesAllocation',
-          attributes: ['id', 'allocated_quantity'],
+          as: "salesAllocation",
+          attributes: ["id", "allocated_quantity"],
           include: [
             {
               model: db.Order,
-              as: 'order',
-              attributes: ['id', 'order_number'],
+              as: "order",
+              attributes: ["id", "order_number"],
             },
           ],
         },
         {
           model: db.ProductionOrder,
-          as: 'productionOrder',
-          attributes: ['id', 'production_order_number'],
+          as: "productionOrder",
+          attributes: ["id", "production_order_number"],
         },
         {
           model: db.ProductMaster,
-          as: 'productMaster',
-          attributes: ['id', 'product_name'],
+          as: "productMaster",
+          attributes: ["id", "product_name"],
         },
       ],
       limit,
       offset,
-      order: [['required_date', 'ASC']],
+      order: [["required_date", "ASC"]],
     });
 
     return demands;
@@ -364,11 +354,7 @@ class ProductionDemandService {
   async getPendingDemands(limit = 20, offset = 0) {
     return this.listDemands(
       {
-        demand_status: [
-          'CREATED',
-          'WAITING_FOR_PRODUCTION',
-          'IN_PRODUCTION',
-        ],
+        demand_status: ["CREATED", "WAITING_FOR_PRODUCTION", "IN_PRODUCTION"],
       },
       limit,
       offset
@@ -381,17 +367,14 @@ class ProductionDemandService {
    * @returns {Promise<Object>} Fulfillment summary
    */
   async getDemandFulfillmentSummary(salesAllocationId) {
-    const allocation = await db.SalesAllocation.findByPk(
-      salesAllocationId,
-      {
-        include: [
-          {
-            model: db.ProductionDemand,
-            as: 'productionDemands',
-          },
-        ],
-      }
-    );
+    const allocation = await db.SalesAllocation.findByPk(salesAllocationId, {
+      include: [
+        {
+          model: db.ProductionDemand,
+          as: "productionDemands",
+        },
+      ],
+    });
 
     if (!allocation) {
       throw new Error(`SalesAllocation not found: ${salesAllocationId}`);
@@ -415,8 +398,12 @@ class ProductionDemandService {
 
     allocation.productionDemands.forEach((demand) => {
       summary.demands[demand.demand_status]++;
-      summary.total_demanded_quantity += parseFloat(demand.demanded_quantity || 0);
-      summary.total_fulfilled_quantity += parseFloat(demand.fulfilled_quantity || 0);
+      summary.total_demanded_quantity += parseFloat(
+        demand.demanded_quantity || 0
+      );
+      summary.total_fulfilled_quantity += parseFloat(
+        demand.fulfilled_quantity || 0
+      );
     });
 
     if (summary.total_demanded_quantity > 0) {

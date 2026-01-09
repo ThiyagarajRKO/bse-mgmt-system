@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const GLPostingService = require('../../services/GLPostingService');
+const GLPostingService = require("../../services/GLPostingService");
 
 class GLPostingController {
   /**
@@ -10,12 +10,9 @@ class GLPostingController {
   async postProductionOutput(request, reply) {
     try {
       const { id } = request.params;
-      const postedBy = request.user?.username || 'system';
+      const postedBy = request.user?.username || "system";
 
-      const entries = await GLPostingService.postProductionOutput(
-        id,
-        postedBy
-      );
+      const entries = await GLPostingService.postProductionOutput(id, postedBy);
 
       return reply.code(201).send({
         success: true,
@@ -38,7 +35,7 @@ class GLPostingController {
   async postSalesInvoice(request, reply) {
     try {
       const { id } = request.params;
-      const postedBy = request.user?.username || 'system';
+      const postedBy = request.user?.username || "system";
 
       const entries = await GLPostingService.postSalesInvoice(id, postedBy);
 
@@ -63,7 +60,7 @@ class GLPostingController {
   async postPayment(request, reply) {
     try {
       const { id } = request.params;
-      const postedBy = request.user?.username || 'system';
+      const postedBy = request.user?.username || "system";
 
       const entries = await GLPostingService.postPayment(id, postedBy);
 
@@ -182,7 +179,7 @@ class GLPostingController {
     try {
       const { id } = request.params;
       const { reason } = request.body;
-      const reversedBy = request.user?.username || 'system';
+      const reversedBy = request.user?.username || "system";
 
       const reversalEntry = await GLPostingService.reverseEntry(
         id,
@@ -192,7 +189,7 @@ class GLPostingController {
 
       return reply.code(201).send({
         success: true,
-        message: 'GL entry reversed successfully',
+        message: "GL entry reversed successfully",
         data: reversalEntry,
       });
     } catch (error) {

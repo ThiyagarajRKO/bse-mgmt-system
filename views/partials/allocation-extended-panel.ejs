@@ -89,7 +89,9 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="fw-bold">Allocation Status:</label>
-              <span id="alloc-status-badge" class="badge badge-warning">PENDING</span>
+              <span id="alloc-status-badge" class="badge badge-warning"
+                >PENDING</span
+              >
             </div>
           </div>
         </div>
@@ -174,15 +176,12 @@
           >
             <i class="fas fa-file-invoice"></i> Create Invoice
           </button>
-          <button
-            class="btn btn-sm btn-info"
-            onclick="loadInvoiceData()"
-          >
+          <button class="btn btn-sm btn-info" onclick="loadInvoiceData()">
             <i class="fas fa-sync"></i> Refresh
           </button>
         </div>
 
-        <div id="invoiceDetailsPanel" style="display: none;">
+        <div id="invoiceDetailsPanel" style="display: none">
           <div class="alert alert-info">
             <h5 id="invoiceNumber">Invoice #</h5>
             <p class="mb-0">
@@ -224,8 +223,7 @@
                   <th>Amount</th>
                 </tr>
               </thead>
-              <tbody id="invoiceLineItemsBody">
-              </tbody>
+              <tbody id="invoiceLineItemsBody"></tbody>
             </table>
           </div>
 
@@ -255,16 +253,10 @@
       <!-- GL Posting Tab -->
       <div class="tab-pane fade" id="alloc-gl" role="tabpanel">
         <div class="mb-3">
-          <button
-            class="btn btn-sm btn-info"
-            onclick="loadGLEntries()"
-          >
+          <button class="btn btn-sm btn-info" onclick="loadGLEntries()">
             <i class="fas fa-sync"></i> Refresh GL Entries
           </button>
-          <button
-            class="btn btn-sm btn-secondary"
-            onclick="loadTrialBalance()"
-          >
+          <button class="btn btn-sm btn-secondary" onclick="loadTrialBalance()">
             <i class="fas fa-book"></i> Trial Balance
           </button>
         </div>
@@ -294,7 +286,7 @@
         </div>
 
         <!-- Trial Balance Summary -->
-        <div id="trialBalancePanel" class="mt-4" style="display: none;">
+        <div id="trialBalancePanel" class="mt-4" style="display: none">
           <h6>Trial Balance</h6>
           <div class="alert alert-info">
             <div class="row">
@@ -364,21 +356,12 @@
 
           <div class="form-group mb-3">
             <label class="form-label">Required By Date:</label>
-            <input
-              type="date"
-              class="form-control"
-              id="demandDate"
-              required
-            />
+            <input type="date" class="form-control" id="demandDate" required />
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-bs-dismiss="modal"
-        >
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
         <button
@@ -409,19 +392,12 @@
         <form id="createInvoiceForm">
           <div class="form-group mb-3">
             <label class="form-label">Invoice Date:</label>
-            <input
-              type="date"
-              class="form-control"
-              id="invoiceDate"
-              required
-            />
+            <input type="date" class="form-control" id="invoiceDate" required />
           </div>
 
           <h6>Line Items</h6>
           <div id="invoiceLineItemsPanel">
-            <div class="alert alert-info">
-              Loading available products...
-            </div>
+            <div class="alert alert-info">Loading available products...</div>
           </div>
 
           <h6 class="mt-3">Charges</h6>
@@ -456,11 +432,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-bs-dismiss="modal"
-        >
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
         <button
@@ -537,17 +509,19 @@
   function openAllocationPanel(allocationId, orderId) {
     currentAllocationId = allocationId;
     currentOrderId = orderId;
-    document.getElementById('allocationExtendedPanel').classList.add('active');
+    document.getElementById("allocationExtendedPanel").classList.add("active");
     loadAllocationDetails();
   }
 
   function closeAllocationPanel() {
-    document.getElementById('allocationExtendedPanel').classList.remove('active');
+    document
+      .getElementById("allocationExtendedPanel")
+      .classList.remove("active");
   }
 
   document
-    .querySelector('.slide-panel-close-btn')
-    ?.addEventListener('click', closeAllocationPanel);
+    .querySelector(".slide-panel-close-btn")
+    ?.addEventListener("click", closeAllocationPanel);
 
   // Load allocation details
   async function loadAllocationDetails() {
@@ -555,36 +529,39 @@
       const response = await fetch(
         `/api/sales/allocations/${currentAllocationId}`,
         {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
       );
       const data = await response.json();
 
       if (data.success) {
         const alloc = data.data;
-        document.getElementById('alloc-order-no').textContent =
-          alloc.order?.order_no || '-';
-        document.getElementById('alloc-order-date').textContent =
+        document.getElementById("alloc-order-no").textContent =
+          alloc.order?.order_no || "-";
+        document.getElementById("alloc-order-date").textContent =
           SalesOrderGLFlow.formatDate(alloc.order?.order_date);
-        document.getElementById('alloc-customer').textContent =
-          alloc.order?.customer?.customer_name || '-';
+        document.getElementById("alloc-customer").textContent =
+          alloc.order?.customer?.customer_name || "-";
 
         const statusColor = SalesOrderGLFlow.getStatusColor(
           alloc.allocation_status
         );
-        document.getElementById('alloc-status-badge').className =
-          `badge bg-${statusColor}`;
-        document.getElementById('alloc-status-badge').textContent =
+        document.getElementById(
+          "alloc-status-badge"
+        ).className = `badge bg-${statusColor}`;
+        document.getElementById("alloc-status-badge").textContent =
           alloc.allocation_status;
 
         // Populate order products table
-        const tbody = document.getElementById('allocationDetailsBody');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById("allocationDetailsBody");
+        tbody.innerHTML = "";
 
         if (alloc.orderProduct) {
-          const row = document.createElement('tr');
+          const row = document.createElement("tr");
           row.innerHTML = `
-            <td>${alloc.orderProduct.product?.product_name || '-'}</td>
+            <td>${alloc.orderProduct.product?.product_name || "-"}</td>
             <td>${alloc.allocated_quantity || 0}</td>
             <td>${alloc.allocated_quantity || 0}</td>
             <td>${alloc.fulfillment_quantity || 0}</td>
@@ -593,14 +570,14 @@
         }
 
         // Update button visibility
-        document.getElementById('confirmAllocationBtn').disabled =
-          alloc.allocation_status !== 'PENDING';
-        document.getElementById('createDemandsBtn').disabled =
-          alloc.allocation_status !== 'ALLOCATED';
+        document.getElementById("confirmAllocationBtn").disabled =
+          alloc.allocation_status !== "PENDING";
+        document.getElementById("createDemandsBtn").disabled =
+          alloc.allocation_status !== "ALLOCATED";
       }
     } catch (error) {
-      console.error('Error loading allocation details:', error);
-      toastr.error('Error loading allocation details');
+      console.error("Error loading allocation details:", error);
+      toastr.error("Error loading allocation details");
     }
   }
 
@@ -610,36 +587,38 @@
       const response = await fetch(
         `/api/sales/allocations/${currentAllocationId}/confirm`,
         {
-          method: 'PUT',
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
       );
       const data = await response.json();
 
       if (data.success) {
-        toastr.success('Allocation confirmed successfully');
+        toastr.success("Allocation confirmed successfully");
         loadAllocationDetails();
       }
     } catch (error) {
-      console.error('Error confirming allocation:', error);
-      toastr.error('Error confirming allocation');
+      console.error("Error confirming allocation:", error);
+      toastr.error("Error confirming allocation");
     }
   }
 
   // Show create demands modal
   function showCreateDemandsModal() {
-    new bootstrap.Modal(document.getElementById('createDemandsModal')).show();
+    new bootstrap.Modal(document.getElementById("createDemandsModal")).show();
   }
 
   // Submit create demands
   async function submitCreateDemands() {
     const formData = {
-      product_master_id: document.getElementById('demandProduct').value,
+      product_master_id: document.getElementById("demandProduct").value,
       demanded_quantity: parseFloat(
-        document.getElementById('demandQuantity').value
+        document.getElementById("demandQuantity").value
       ),
-      priority: document.getElementById('demandPriority').value,
-      required_date: document.getElementById('demandDate').value,
+      priority: document.getElementById("demandPriority").value,
+      required_date: document.getElementById("demandDate").value,
     };
 
     try {
@@ -649,15 +628,15 @@
       );
 
       if (response.success) {
-        toastr.success('Production demand created successfully');
+        toastr.success("Production demand created successfully");
         bootstrap.Modal.getInstance(
-          document.getElementById('createDemandsModal')
+          document.getElementById("createDemandsModal")
         ).hide();
         loadProductionDemands();
       }
     } catch (error) {
-      console.error('Error creating demand:', error);
-      toastr.error('Error creating production demand');
+      console.error("Error creating demand:", error);
+      toastr.error("Error creating production demand");
     }
   }
 
@@ -668,24 +647,28 @@
         allocation_id: currentAllocationId,
       });
 
-      const tbody = document.getElementById('demandsTableBody');
-      tbody.innerHTML = '';
+      const tbody = document.getElementById("demandsTableBody");
+      tbody.innerHTML = "";
 
       if (demands.success && demands.data.demands.length > 0) {
         demands.data.demands.forEach((demand) => {
-          const row = document.createElement('tr');
+          const row = document.createElement("tr");
           const statusColor = SalesOrderGLFlow.getStatusColor(
             demand.demand_status
           );
           row.innerHTML = `
             <td><small>${demand.demand_number}</small></td>
-            <td>${demand.product?.product_name || '-'}</td>
+            <td>${demand.product?.product_name || "-"}</td>
             <td>${demand.demanded_quantity}</td>
             <td>${demand.fulfilled_quantity || 0}</td>
             <td><span class="badge bg-info">${demand.priority}</span></td>
-            <td><span class="badge bg-${statusColor}">${demand.demand_status}</span></td>
+            <td><span class="badge bg-${statusColor}">${
+            demand.demand_status
+          }</span></td>
             <td>
-              <button class="btn btn-xs btn-info" onclick="viewDemand('${demand.id}')">
+              <button class="btn btn-xs btn-info" onclick="viewDemand('${
+                demand.id
+              }')">
                 <i class="fas fa-eye"></i>
               </button>
             </td>
@@ -697,24 +680,24 @@
           '<tr><td colspan="7" class="text-center text-muted">No demands created yet</td></tr>';
       }
     } catch (error) {
-      console.error('Error loading demands:', error);
+      console.error("Error loading demands:", error);
     }
   }
 
   // Show create invoice modal
   function showCreateInvoiceModal() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('invoiceDate').value = today;
-    new bootstrap.Modal(document.getElementById('createInvoiceModal')).show();
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("invoiceDate").value = today;
+    new bootstrap.Modal(document.getElementById("createInvoiceModal")).show();
   }
 
   // Submit create invoice
   async function submitCreateInvoice() {
     const formData = {
       order_id: currentOrderId,
-      customer_master_id: document.querySelector('[data-customer-id]')?.dataset
-        .customerId,
-      invoice_date: document.getElementById('invoiceDate').value,
+      customer_master_id:
+        document.querySelector("[data-customer-id]")?.dataset.customerId,
+      invoice_date: document.getElementById("invoiceDate").value,
     };
 
     try {
@@ -722,15 +705,15 @@
 
       if (response.success) {
         currentInvoiceId = response.data.id;
-        toastr.success('Invoice created successfully');
+        toastr.success("Invoice created successfully");
         bootstrap.Modal.getInstance(
-          document.getElementById('createInvoiceModal')
+          document.getElementById("createInvoiceModal")
         ).hide();
         loadInvoiceData();
       }
     } catch (error) {
-      console.error('Error creating invoice:', error);
-      toastr.error('Error creating invoice');
+      console.error("Error creating invoice:", error);
+      toastr.error("Error creating invoice");
     }
   }
 
@@ -745,35 +728,40 @@
 
       if (response.success) {
         const invoice = response.data;
-        document.getElementById('invoiceDetailsPanel').style.display = 'block';
-        document.getElementById('noInvoiceMessage').style.display = 'none';
+        document.getElementById("invoiceDetailsPanel").style.display = "block";
+        document.getElementById("noInvoiceMessage").style.display = "none";
 
-        document.getElementById('invoiceNumber').textContent =
-          `Invoice #${invoice.invoice_number}`;
-        document.getElementById('invoiceStatus').textContent =
+        document.getElementById(
+          "invoiceNumber"
+        ).textContent = `Invoice #${invoice.invoice_number}`;
+        document.getElementById("invoiceStatus").textContent =
           invoice.invoice_status;
-        document.getElementById('invoiceStatus').className = `badge bg-${SalesOrderGLFlow.getStatusColor(
+        document.getElementById(
+          "invoiceStatus"
+        ).className = `badge bg-${SalesOrderGLFlow.getStatusColor(
           invoice.invoice_status
         )}`;
 
-        document.getElementById('invoiceNetAmount').textContent =
+        document.getElementById("invoiceNetAmount").textContent =
           SalesOrderGLFlow.formatCurrency(invoice.net_amount || 0);
-        document.getElementById('invoiceTaxAmount').textContent =
+        document.getElementById("invoiceTaxAmount").textContent =
           SalesOrderGLFlow.formatCurrency(invoice.tax_amount || 0);
-        document.getElementById('invoiceTotalAmount').textContent =
+        document.getElementById("invoiceTotalAmount").textContent =
           SalesOrderGLFlow.formatCurrency(invoice.total_amount || 0);
 
         // Populate line items
-        const lineItemsBody = document.getElementById('invoiceLineItemsBody');
-        lineItemsBody.innerHTML = '';
+        const lineItemsBody = document.getElementById("invoiceLineItemsBody");
+        lineItemsBody.innerHTML = "";
 
         if (invoice.invoiceLines && invoice.invoiceLines.length > 0) {
           invoice.invoiceLines.forEach((item) => {
-            const row = document.createElement('tr');
+            const row = document.createElement("tr");
             row.innerHTML = `
-              <td>${item.product?.product_name || '-'}</td>
+              <td>${item.product?.product_name || "-"}</td>
               <td>${item.quantity}</td>
-              <td>${SalesOrderGLFlow.formatCurrency(item.cost_per_unit || 0)}</td>
+              <td>${SalesOrderGLFlow.formatCurrency(
+                item.cost_per_unit || 0
+              )}</td>
               <td>${SalesOrderGLFlow.formatCurrency(item.line_total || 0)}</td>
             `;
             lineItemsBody.appendChild(row);
@@ -781,22 +769,23 @@
         }
 
         // Update button visibility
-        document.getElementById('postInvoiceBtn').disabled =
-          invoice.invoice_status !== 'DRAFT';
-        document.getElementById('cancelInvoiceBtn').disabled =
-          invoice.invoice_status === 'PAID' ||
-          invoice.invoice_status === 'CANCELLED';
+        document.getElementById("postInvoiceBtn").disabled =
+          invoice.invoice_status !== "DRAFT";
+        document.getElementById("cancelInvoiceBtn").disabled =
+          invoice.invoice_status === "PAID" ||
+          invoice.invoice_status === "CANCELLED";
       }
     } catch (error) {
-      console.error('Error loading invoice:', error);
+      console.error("Error loading invoice:", error);
     }
   }
 
   // Post invoice to GL
   async function postInvoiceToGL() {
     $.confirm({
-      title: 'Post Invoice to GL',
-      content: 'Are you sure you want to post this invoice to the General Ledger?',
+      title: "Post Invoice to GL",
+      content:
+        "Are you sure you want to post this invoice to the General Ledger?",
       buttons: {
         confirm: async function () {
           try {
@@ -806,13 +795,13 @@
             );
 
             if (response.success) {
-              toastr.success('Invoice posted to GL successfully');
+              toastr.success("Invoice posted to GL successfully");
               loadInvoiceData();
               loadGLEntries();
             }
           } catch (error) {
-            console.error('Error posting invoice:', error);
-            toastr.error('Error posting invoice to GL');
+            console.error("Error posting invoice:", error);
+            toastr.error("Error posting invoice to GL");
           }
         },
         cancel: function () {},
@@ -827,28 +816,34 @@
         invoice_id: currentInvoiceId,
       });
 
-      const tbody = document.getElementById('glEntriesBody');
-      tbody.innerHTML = '';
+      const tbody = document.getElementById("glEntriesBody");
+      tbody.innerHTML = "";
 
       if (entries.success && entries.data.entries.length > 0) {
         entries.data.entries.forEach((entry) => {
-          const row = document.createElement('tr');
+          const row = document.createElement("tr");
           const statusColor = SalesOrderGLFlow.getStatusColor(
             entry.posting_status
           );
           row.innerHTML = `
             <td><small>${entry.entry_number}</small></td>
             <td>${entry.account_code}</td>
-            <td>${entry.debit ? SalesOrderGLFlow.formatCurrency(entry.debit) : '-'}</td>
-            <td>${entry.credit ? SalesOrderGLFlow.formatCurrency(entry.credit) : '-'}</td>
-            <td><span class="badge bg-${statusColor}">${entry.posting_status}</span></td>
+            <td>${
+              entry.debit ? SalesOrderGLFlow.formatCurrency(entry.debit) : "-"
+            }</td>
+            <td>${
+              entry.credit ? SalesOrderGLFlow.formatCurrency(entry.credit) : "-"
+            }</td>
+            <td><span class="badge bg-${statusColor}">${
+            entry.posting_status
+          }</span></td>
             <td>${SalesOrderGLFlow.formatDate(entry.posting_date)}</td>
           `;
           tbody.appendChild(row);
         });
       }
     } catch (error) {
-      console.error('Error loading GL entries:', error);
+      console.error("Error loading GL entries:", error);
     }
   }
 
@@ -858,21 +853,21 @@
       const balance = await SalesOrderGLFlow.getTrialBalance();
 
       if (balance.success) {
-        document.getElementById('trialBalancePanel').style.display = 'block';
-        document.getElementById('totalDebits').textContent =
+        document.getElementById("trialBalancePanel").style.display = "block";
+        document.getElementById("totalDebits").textContent =
           SalesOrderGLFlow.formatCurrency(balance.data.total_debits || 0);
-        document.getElementById('totalCredits').textContent =
+        document.getElementById("totalCredits").textContent =
           SalesOrderGLFlow.formatCurrency(balance.data.total_credits || 0);
 
         const isBalanced = balance.data.is_balanced;
-        document.getElementById('balanceStatus').innerHTML = `
-          <span class="badge bg-${isBalanced ? 'success' : 'danger'}">
-            ${isBalanced ? 'Balanced' : 'Not Balanced'}
+        document.getElementById("balanceStatus").innerHTML = `
+          <span class="badge bg-${isBalanced ? "success" : "danger"}">
+            ${isBalanced ? "Balanced" : "Not Balanced"}
           </span>
         `;
       }
     } catch (error) {
-      console.error('Error loading trial balance:', error);
+      console.error("Error loading trial balance:", error);
     }
   }
 </script>

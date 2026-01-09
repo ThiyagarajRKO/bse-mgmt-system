@@ -1,5 +1,5 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class GLPosting extends Model {
@@ -7,42 +7,42 @@ module.exports = (sequelize, DataTypes) => {
       // Belongs to ChartOfAccounts, ProductionOutput, SalesInvoice, SalesPayment
       if (models.ChartOfAccounts) {
         this.belongsTo(models.ChartOfAccounts, {
-          foreignKey: 'account_code',
-          targetKey: 'account_code',
-          as: 'account',
+          foreignKey: "account_code",
+          targetKey: "account_code",
+          as: "account",
         });
       }
 
       if (models.ProductionOutput) {
         this.belongsTo(models.ProductionOutput, {
-          foreignKey: 'production_output_id',
-          as: 'productionOutput',
+          foreignKey: "production_output_id",
+          as: "productionOutput",
         });
       }
 
       if (models.SalesInvoice) {
         this.belongsTo(models.SalesInvoice, {
-          foreignKey: 'invoice_id',
-          as: 'invoice',
+          foreignKey: "invoice_id",
+          as: "invoice",
         });
       }
 
       if (models.SalesPayment) {
         this.belongsTo(models.SalesPayment, {
-          foreignKey: 'payment_id',
-          as: 'payment',
+          foreignKey: "payment_id",
+          as: "payment",
         });
       }
 
       // Self-referential association for reversals
       this.belongsTo(models.GLPosting, {
-        foreignKey: 'reversal_entry_id',
-        as: 'reversalEntry',
+        foreignKey: "reversal_entry_id",
+        as: "reversalEntry",
       });
 
       this.hasMany(models.GLPosting, {
-        foreignKey: 'reversal_entry_id',
-        as: 'reversedBy',
+        foreignKey: "reversal_entry_id",
+        as: "reversedBy",
       });
     }
   }
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         unique: true,
         allowNull: false,
-        comment: 'Unique GL entry identifier (GL-YYYYMMDD-HHMMSS-XXXX)',
+        comment: "Unique GL entry identifier (GL-YYYYMMDD-HHMMSS-XXXX)",
       },
       posting_date: {
         type: DataTypes.DATE,
@@ -80,24 +80,24 @@ module.exports = (sequelize, DataTypes) => {
       production_output_id: {
         type: DataTypes.UUID,
         allowNull: true,
-        comment: 'Link to finished goods posting',
+        comment: "Link to finished goods posting",
       },
       invoice_id: {
         type: DataTypes.UUID,
         allowNull: true,
-        comment: 'Link to sales invoice',
+        comment: "Link to sales invoice",
       },
       payment_id: {
         type: DataTypes.UUID,
         allowNull: true,
-        comment: 'Link to payment',
+        comment: "Link to payment",
       },
       description: {
         type: DataTypes.TEXT,
       },
       posting_status: {
-        type: DataTypes.ENUM('DRAFT', 'POSTED', 'REVERSED'),
-        defaultValue: 'DRAFT',
+        type: DataTypes.ENUM("DRAFT", "POSTED", "REVERSED"),
+        defaultValue: "DRAFT",
         allowNull: false,
       },
       reversal_entry_id: {
@@ -118,8 +118,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'GLPosting',
-      tableName: 'gl_postings',
+      modelName: "GLPosting",
+      tableName: "gl_postings",
       timestamps: true,
       underscored: true,
     }

@@ -5,6 +5,7 @@
 This guide explains how to add the new allocation extended panel to your existing Sales.ejs without modifying existing code.
 
 ## Files Created
+
 - `/views/partials/allocation-extended-panel.ejs` - New extended panel component
 - `/src/services/salesOrderGLFlowAPI.js` - API client service
 - `/public/js/salesOrderGLFlow.js` - Frontend service utilities
@@ -23,24 +24,26 @@ Add this line near the end of your Sales.ejs file (around line 6300, after the c
 Find the allocation table row click handler in Sales.ejs (around line 3223). Add this code to open the extended panel when user clicks on an allocation row:
 
 EXISTING CODE (around line 3223):
+
 ```javascript
-$('#allocationTable').on('click', 'tbody tr', function() {
-    // existing code...
+$("#allocationTable").on("click", "tbody tr", function () {
+  // existing code...
 });
 ```
 
 ADD THIS:
+
 ```javascript
-$('#allocationTable').on('click', 'tbody tr', function() {
-    // existing code...
-    
-    // NEW: Open extended panel
-    const row = $(this).closest('tr');
-    const allocationId = row.data('allocation-id');
-    const orderId = row.data('order-id');
-    if (allocationId && orderId) {
-        openAllocationPanel(allocationId, orderId);
-    }
+$("#allocationTable").on("click", "tbody tr", function () {
+  // existing code...
+
+  // NEW: Open extended panel
+  const row = $(this).closest("tr");
+  const allocationId = row.data("allocation-id");
+  const orderId = row.data("order-id");
+  if (allocationId && orderId) {
+    openAllocationPanel(allocationId, orderId);
+  }
 });
 ```
 
@@ -52,7 +55,7 @@ Find your allocation table row generation (around line 3120) and ensure the `<tr
 
 ```html
 <tr data-allocation-id="${allocationId}" data-order-id="${orderId}">
-    <!-- existing columns -->
+  <!-- existing columns -->
 </tr>
 ```
 
@@ -73,10 +76,11 @@ Add these script includes in the correct order in Sales.ejs:
 The `salesOrderGLFlowAPI.js` will auto-detect the JWT token from localStorage. Ensure your auth system stores the token as:
 
 ```javascript
-localStorage.setItem('authToken', jwtToken);
+localStorage.setItem("authToken", jwtToken);
 ```
 
 If you store it differently, update the fetch headers in `allocation-extended-panel.ejs` from:
+
 ```javascript
 'Authorization': `Bearer ${localStorage.getItem('authToken')}`
 ```
@@ -88,8 +92,11 @@ to match your token storage method.
 If you want an explicit "View Workflow" button in the allocation table, add this to the action column:
 
 ```html
-<button class="btn btn-sm btn-info" onclick="openAllocationPanel('${allocationId}', '${orderId}')">
-    <i class="fas fa-sync"></i> View Workflow
+<button
+  class="btn btn-sm btn-info"
+  onclick="openAllocationPanel('${allocationId}', '${orderId}')"
+>
+  <i class="fas fa-sync"></i> View Workflow
 </button>
 ```
 
@@ -108,17 +115,20 @@ If you want an explicit "View Workflow" button in the allocation table, add this
 Once integrated, users will have access to:
 
 1. **Allocation Details Tab**
+
    - View order info, allocation status
    - See allocation line items
    - Confirm allocation
    - Create production demands
 
 2. **Production Demands Tab**
+
    - View all demands linked to allocation
    - See demand status and fulfillment
    - Create new demands with modal
 
 3. **Invoice Tab**
+
    - Create sales invoice from demands
    - View invoice details and line items
    - Display amounts (net, tax, total)
@@ -132,33 +142,39 @@ Once integrated, users will have access to:
 ## Troubleshooting
 
 **Panel doesn't open:**
+
 - Check browser console for errors
 - Verify allocation-extended-panel.ejs is included
 - Verify data-allocation-id attribute on table rows
 
 **API calls fail:**
+
 - Check backend APIs are running
 - Verify JWT token is in localStorage
 - Check network tab for 401/403 errors
 
 **Modal doesn't show:**
+
 - Verify Bootstrap 5 is loaded
 - Check for modal ID conflicts with existing modals
 - Look for JavaScript errors in console
 
 **Styling looks wrong:**
+
 - Clear browser cache
 - Verify Bootstrap 5 CSS is loaded
 - Check for CSS conflicts with existing styles
 
 ## Files NOT Modified
+
 ✅ views/Sales.ejs - No existing code changed
-✅ models/* - No changes
-✅ migrations/* - No changes
+✅ models/_ - No changes
+✅ migrations/_ - No changes
 ✅ package.json - No changes
-✅ config/* - No changes
+✅ config/\* - No changes
 
 Only NEW files created:
+
 - views/partials/allocation-extended-panel.ejs (CREATED)
 - src/services/salesOrderGLFlowAPI.js (CREATED)
 - public/js/salesOrderGLFlow.js (CREATED)

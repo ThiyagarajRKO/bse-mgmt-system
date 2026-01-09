@@ -9,24 +9,29 @@
 ## Database Layer
 
 ### Migrations
+
 - [x] 20260116-create-sales-allocations.js (100 lines)
+
   - Table: `sales_allocations` (10 columns, 4 indexes)
   - FK: orders, order_products (CASCADE)
   - Enum: PENDING, ALLOCATED, PRODUCTION_IN_PROGRESS, COMPLETED
 
 - [x] 20260116-create-production-demands.js (110 lines)
+
   - Table: `production_demands` (11 columns, 6 indexes)
   - FK: sales_allocations, production_orders, product_master
   - Enum: CREATED, WAITING_FOR_PRODUCTION, IN_PRODUCTION, PRODUCTION_COMPLETE, DISPATCHED, FULFILLED
   - Enum: priority (LOW, MEDIUM, HIGH, URGENT)
 
 - [x] 20260116-create-sales-invoices.js (120 lines)
+
   - Table: `sales_invoices` (13 columns, 6 indexes)
   - FK: orders, customer_master
   - Enum: DRAFT, POSTED, PAID, CANCELLED
   - Audit: posted_by, posted_date
 
 - [x] 20260116-create-sales-invoice-lines.js (80 lines)
+
   - Table: `sales_invoice_lines` (11 columns, 3 indexes)
   - FK: sales_invoices, production_outputs, product_master
   - Auto-calc: cost_per_unit, line_total, tax_amount, line_net_total
@@ -38,20 +43,25 @@
   - Self-referential: reversal_entry_id
 
 ### Models
+
 - [x] SalesAllocation.js (70 lines)
+
   - Associations: Order, OrderProduct, ProductionDemand
   - Enum: allocation_status
 
 - [x] ProductionDemand.js (80 lines)
+
   - Associations: SalesAllocation, ProductionOrder, ProductMaster
   - Enum: demand_status, priority
 
 - [x] SalesInvoice.js (90 lines)
+
   - Associations: Order, CustomerMaster, SalesInvoiceLine
   - Enum: invoice_status
   - Auto-calc: subtotal, tax, shipping, discount, net_total
 
 - [x] SalesInvoiceLine.js (90 lines)
+
   - Associations: SalesInvoice, ProductionOutput, ProductMaster
   - Auto-calc: line_total, tax_amount, line_net_total
 
@@ -65,7 +75,9 @@
 ## Service Layer
 
 ### Services
+
 - [x] SalesAllocationService.js (350 lines, 8 methods)
+
   - allocateOrderLine()
   - confirmAllocation()
   - updateFulfillment()
@@ -76,6 +88,7 @@
   - getOrderAllocationSummary()
 
 - [x] ProductionDemandService.js (400 lines, 10 methods)
+
   - generateDemandNumber()
   - createDemandFromAllocation()
   - linkToProductionOrder()
@@ -88,6 +101,7 @@
   - getDemandFulfillmentSummary()
 
 - [x] SalesInvoiceService.js (450 lines, 10 methods)
+
   - generateInvoiceNumber()
   - createInvoice()
   - addLineItems()
@@ -117,7 +131,9 @@
 ## Controller & Routes Layer
 
 ### Controllers
+
 - [x] SalesAllocationController.js (200 lines, 8 endpoints)
+
   - POST /sales/allocations
   - GET /sales/allocations
   - GET /sales/allocations/:id
@@ -129,6 +145,7 @@
   - GET /sales/orders/:orderId/allocation-summary
 
 - [x] SalesInvoiceController.js (200 lines, 8 endpoints)
+
   - POST /sales/invoices
   - POST /sales/invoices/:id/line-items
   - PUT /sales/invoices/:id/charges
@@ -148,6 +165,7 @@
   - PUT /gl/entries/:id/reverse
 
 ### Routes
+
 - [x] src/routes/sales_allocations/index.js (80 lines, 9 routes)
 - [x] src/routes/sales_invoices/index.js (70 lines, 8 routes)
 - [x] src/routes/gl_postings/index.js (60 lines, 7 routes)
@@ -160,6 +178,7 @@
 ## Documentation
 
 - [x] SALES_ORDER_GL_FLOW_DOCUMENTATION.md (1,500+ lines)
+
   - System overview
   - Database architecture (5 tables detailed)
   - Service layer documentation (4 services, 35+ methods)
@@ -172,6 +191,7 @@
   - Troubleshooting guide
 
 - [x] SALES_ORDER_GL_API_REFERENCE.md (800+ lines)
+
   - Complete endpoint reference
   - Request/response examples for all 30+ endpoints
   - Error handling
@@ -189,6 +209,7 @@
 ## File Inventory
 
 ### Migrations (5)
+
 ```
 ✓ migrations/20260116-create-sales-allocations.js
 ✓ migrations/20260116-create-production-demands.js
@@ -198,6 +219,7 @@
 ```
 
 ### Models (5)
+
 ```
 ✓ models/SalesAllocation.js
 ✓ models/ProductionDemand.js
@@ -207,6 +229,7 @@
 ```
 
 ### Services (4)
+
 ```
 ✓ services/SalesAllocationService.js
 ✓ services/ProductionDemandService.js
@@ -215,6 +238,7 @@
 ```
 
 ### Controllers (3)
+
 ```
 ✓ src/controllers/SalesAllocationController.js
 ✓ src/controllers/SalesInvoiceController.js
@@ -222,6 +246,7 @@
 ```
 
 ### Routes (3)
+
 ```
 ✓ src/routes/sales_allocations/index.js
 ✓ src/routes/sales_invoices/index.js
@@ -230,6 +255,7 @@
 ```
 
 ### Documentation (3)
+
 ```
 ✓ SALES_ORDER_GL_FLOW_DOCUMENTATION.md
 ✓ SALES_ORDER_GL_API_REFERENCE.md
@@ -244,20 +270,21 @@
 
 ## Hard Block Rules Implemented
 
-| Rule | Service | Method | Status |
-|------|---------|--------|--------|
-| Cannot invoice without inventory_posted=true | SalesInvoiceService | addLineItems() | ✓ |
-| Cannot post invoice without payment | SalesInvoiceService | postInvoiceToGL() | ✓ |
-| Cannot post duplicate GL entries | GLPostingService | postProductionOutput/postSalesInvoice/postPayment | ✓ |
-| Cannot reverse posted entries multiple times | GLPostingService | reverseEntry() | ✓ |
-| Cannot cancel PAID invoices | SalesInvoiceService | cancelInvoice() | ✓ |
-| Cannot cancel allocation with active demands | SalesAllocationService | cancelAllocation() | ✓ |
+| Rule                                         | Service                | Method                                            | Status |
+| -------------------------------------------- | ---------------------- | ------------------------------------------------- | ------ |
+| Cannot invoice without inventory_posted=true | SalesInvoiceService    | addLineItems()                                    | ✓      |
+| Cannot post invoice without payment          | SalesInvoiceService    | postInvoiceToGL()                                 | ✓      |
+| Cannot post duplicate GL entries             | GLPostingService       | postProductionOutput/postSalesInvoice/postPayment | ✓      |
+| Cannot reverse posted entries multiple times | GLPostingService       | reverseEntry()                                    | ✓      |
+| Cannot cancel PAID invoices                  | SalesInvoiceService    | cancelInvoice()                                   | ✓      |
+| Cannot cancel allocation with active demands | SalesAllocationService | cancelAllocation()                                | ✓      |
 
 ---
 
 ## Data Validation
 
 ### SalesAllocationService
+
 - [x] Order exists
 - [x] OrderProduct exists and belongs to order
 - [x] Allocated quantity > 0
@@ -266,6 +293,7 @@
 - [x] Cannot cancel if active production demands exist
 
 ### ProductionDemandService
+
 - [x] SalesAllocation exists
 - [x] ProductMaster exists
 - [x] Demanded quantity ≤ allocated quantity
@@ -274,6 +302,7 @@
 - [x] Valid status transitions enforced
 
 ### SalesInvoiceService
+
 - [x] Order exists
 - [x] CustomerMaster exists
 - [x] One invoice per order (DRAFT/POSTED)
@@ -285,6 +314,7 @@
 - [x] Cannot cancel PAID invoices
 
 ### GLPostingService
+
 - [x] ChartOfAccounts exist
 - [x] No duplicate entries per source (production output, invoice, payment)
 - [x] Debit/Credit amounts valid (≥ 0)
@@ -297,6 +327,7 @@
 ## Workflow Compliance
 
 ### Sales Order → GL Flow
+
 ```
 ✓ Step 1: Create Order (existing)
 ✓ Step 2: Allocate Order Lines → SalesAllocation
@@ -316,6 +347,7 @@
 ## Testing Status
 
 ### Unit Tests Ready (Not Yet Executed)
+
 - [ ] SalesAllocationService: 8 method tests
 - [ ] ProductionDemandService: 9 method tests
 - [ ] SalesInvoiceService: 10 method tests
@@ -326,6 +358,7 @@
 **Total Test Cases**: 70+
 
 ### Integration Tests Ready (Not Yet Executed)
+
 - [ ] Complete allocation → demand → invoice → GL flow
 - [ ] Order with multiple line items
 - [ ] Partial fulfillment scenarios
@@ -342,6 +375,7 @@
 ## Deployment Readiness
 
 ### Pre-Deployment
+
 - [ ] All migrations created and syntax validated
 - [ ] All models created with correct associations
 - [ ] All services implemented with business logic
@@ -350,6 +384,7 @@
 - [ ] Documentation complete and reviewed
 
 ### Deployment Steps
+
 1. Execute migrations: `npx sequelize-cli db:migrate`
 2. Verify models load in app startup
 3. Test service initialization
@@ -362,6 +397,7 @@
 10. Git commit & tag v2.3.0-alpha
 
 ### Post-Deployment
+
 - [ ] End-to-end workflow testing
 - [ ] Performance testing with 1000+ invoices
 - [ ] Concurrent request handling
@@ -373,17 +409,17 @@
 
 ## Estimated Timeline
 
-| Phase | Duration | Status |
-|-------|----------|--------|
-| Database Design & Migration | 2 hours | ✓ Complete |
-| Model Creation | 1 hour | ✓ Complete |
-| Service Implementation | 3 hours | ✓ Complete |
-| Controller & Routes | 2 hours | ✓ Complete |
-| Documentation | 2 hours | ✓ Complete |
-| Unit Testing | 3 hours | ⏳ Pending |
-| Integration Testing | 2 hours | ⏳ Pending |
-| Deployment & Verification | 1 hour | ⏳ Pending |
-| **Total** | **16 hours** | **12h complete, 4h pending** |
+| Phase                       | Duration     | Status                       |
+| --------------------------- | ------------ | ---------------------------- |
+| Database Design & Migration | 2 hours      | ✓ Complete                   |
+| Model Creation              | 1 hour       | ✓ Complete                   |
+| Service Implementation      | 3 hours      | ✓ Complete                   |
+| Controller & Routes         | 2 hours      | ✓ Complete                   |
+| Documentation               | 2 hours      | ✓ Complete                   |
+| Unit Testing                | 3 hours      | ⏳ Pending                   |
+| Integration Testing         | 2 hours      | ⏳ Pending                   |
+| Deployment & Verification   | 1 hour       | ⏳ Pending                   |
+| **Total**                   | **16 hours** | **12h complete, 4h pending** |
 
 **Completion Percentage**: 75%
 
@@ -392,21 +428,25 @@
 ## Next Steps
 
 1. **Execute Migrations** (15 min)
+
    ```bash
    npx sequelize-cli db:migrate
    ```
 
 2. **Run Unit Tests** (2 hours)
+
    - Test all service methods
    - Verify validation rules
    - Test hard block enforcement
 
 3. **Run Integration Tests** (1.5 hours)
+
    - Complete order-to-cash workflow
    - GL posting verification
    - Trial balance accuracy
 
 4. **Deploy to Development** (30 min)
+
    - Git commit: "feat: Add Sales Order → GL Flow v2.3.0-alpha"
    - Tag: v2.3.0-alpha
    - Push to dev branch
@@ -421,6 +461,7 @@
 ## Artifacts Summary
 
 **Database**:
+
 - 5 new tables
 - 28 total columns
 - 23 indexes
@@ -428,6 +469,7 @@
 - 4 ENUM types
 
 **Code**:
+
 - 5 migrations (440 lines)
 - 5 models (415 lines)
 - 4 services (1,600 lines)
@@ -436,6 +478,7 @@
 - 1 route registration update
 
 **Documentation**:
+
 - 1,500+ line system documentation
 - 800+ line API reference
 - This implementation checklist

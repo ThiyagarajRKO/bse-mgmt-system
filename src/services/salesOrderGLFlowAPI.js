@@ -1,6 +1,6 @@
 /**
  * Sales Order → GL Flow API Service
- * 
+ *
  * Handles all API calls for:
  * - Sales Allocations
  * - Production Demands
@@ -8,20 +8,20 @@
  * - GL Postings
  */
 
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -32,12 +32,10 @@ api.interceptors.request.use((config) => {
 
 export const salesAllocationAPI = {
   // Create allocation
-  createAllocation: (data) =>
-    api.post('/sales/allocations', data),
+  createAllocation: (data) => api.post("/sales/allocations", data),
 
   // List allocations with filters
-  listAllocations: (params = {}) =>
-    api.get('/sales/allocations', { params }),
+  listAllocations: (params = {}) => api.get("/sales/allocations", { params }),
 
   // Get allocation details
   getAllocationDetails: (allocationId) =>
@@ -72,12 +70,10 @@ export const salesAllocationAPI = {
 
 export const productionDemandAPI = {
   // List demands with filters
-  listDemands: (params = {}) =>
-    api.get('/production/demands', { params }),
+  listDemands: (params = {}) => api.get("/production/demands", { params }),
 
   // Get demand details
-  getDemandDetails: (demandId) =>
-    api.get(`/production/demands/${demandId}`),
+  getDemandDetails: (demandId) => api.get(`/production/demands/${demandId}`),
 
   // Link to production order
   linkToProductionOrder: (demandId, data) =>
@@ -96,16 +92,13 @@ export const productionDemandAPI = {
 
 export const salesInvoiceAPI = {
   // Create invoice
-  createInvoice: (data) =>
-    api.post('/sales/invoices', data),
+  createInvoice: (data) => api.post("/sales/invoices", data),
 
   // List invoices with filters
-  listInvoices: (params = {}) =>
-    api.get('/sales/invoices', { params }),
+  listInvoices: (params = {}) => api.get("/sales/invoices", { params }),
 
   // Get invoice details
-  getInvoiceDetails: (invoiceId) =>
-    api.get(`/sales/invoices/${invoiceId}`),
+  getInvoiceDetails: (invoiceId) => api.get(`/sales/invoices/${invoiceId}`),
 
   // Add line items
   addLineItems: (invoiceId, data) =>
@@ -125,7 +118,7 @@ export const salesInvoiceAPI = {
 
   // Get revenue summary
   getRevenueSummary: (params = {}) =>
-    api.get('/sales/invoices/summary/revenue', { params }),
+    api.get("/sales/invoices/summary/revenue", { params }),
 };
 
 // ===== GL POSTINGS API =====
@@ -140,24 +133,20 @@ export const glPostingAPI = {
     api.post(`/gl/post/invoice/${invoiceId}`, {}),
 
   // Post payment
-  postPayment: (paymentId) =>
-    api.post(`/gl/post/payment/${paymentId}`, {}),
+  postPayment: (paymentId) => api.post(`/gl/post/payment/${paymentId}`, {}),
 
   // List GL entries with filters
-  listEntries: (params = {}) =>
-    api.get('/gl/entries', { params }),
+  listEntries: (params = {}) => api.get("/gl/entries", { params }),
 
   // Get account balance
   getAccountBalance: (accountCode) =>
     api.get(`/gl/accounts/${accountCode}/balance`),
 
   // Get trial balance
-  getTrialBalance: () =>
-    api.get('/gl/trial-balance'),
+  getTrialBalance: () => api.get("/gl/trial-balance"),
 
   // Reverse GL entry
-  reverseEntry: (entryId) =>
-    api.put(`/gl/entries/${entryId}/reverse`, {}),
+  reverseEntry: (entryId) => api.put(`/gl/entries/${entryId}/reverse`, {}),
 };
 
 export default api;

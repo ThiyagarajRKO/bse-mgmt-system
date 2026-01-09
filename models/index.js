@@ -50,7 +50,9 @@ Object.keys(db).forEach((modelName) => {
       db[modelName].associate(db);
     } catch (err) {
       // Skip associations for models with missing dependencies
-      console.warn(`⚠️  Skipping associations for ${modelName}: ${err.message}`);
+      console.warn(
+        `⚠️  Skipping associations for ${modelName}: ${err.message}`
+      );
     }
   }
 });

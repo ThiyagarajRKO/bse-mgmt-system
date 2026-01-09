@@ -1,16 +1,16 @@
-'use strict';
+"use strict";
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * RawMaterialIssueService
- * 
+ *
  * Manages raw material issuance to production orders:
  * 1. Validate inventory lots (not expired, passed QC)
  * 2. Capture and lock size/grade (immutable after issuance)
  * 3. Create production_raw_issues record
  * 4. Lock grade + size in grade_size_validation_log
- * 
+ *
  * HARD RULES:
  * - Cannot issue expired lots (is_expired = false)
  * - Cannot issue QC-failed lots (is_qc_failed = false)
@@ -28,7 +28,7 @@ class RawMaterialIssueService {
 
   /**
    * Issue raw material to a production order
-   * 
+   *
    * @param {Object} data - Issue data
    * @param {UUID} data.production_order_id - Production order ID
    * @param {UUID} data.inventory_lot_id - Inventory lot ID
@@ -38,9 +38,9 @@ class RawMaterialIssueService {
    * @param {String} data.initial_grade - Grade at issuance (A/B/C/D)
    * @param {UUID} data.issued_by - User issuing material
    * @param {String} data.remarks - Optional remarks
-   * 
+   *
    * @returns {Promise<Object>} Created production_raw_issues record
-   * 
+   *
    * @throws {Error} If lot invalid, expired, QC-failed, or validation fails
    */
   async issueRawMaterial(data) {
@@ -48,37 +48,50 @@ class RawMaterialIssueService {
 
     try {
       // Validate production order exists and is in PLANNED status
-      const order = await this._validateProductionOrder(data.production_order_id, transaction);
+      const order = await this._validateProductionOrder(
+        data.production_order_id,
+        transaction
+      );
 
       // Check no prior issue exists for this order
       const existingIssue = await this.models.production_raw_issues.findOne({
         where: { production_order_id: data.production_order_id },
-        transaction
+        transaction,
       });
 
       if (existingIssue) {
-        throw new Error('Production order already has a raw material issue. Cannot issue twice.');
+        throw new Error(
+          "Production order already has a raw material issue. Cannot issue twice."
+        );
       }
 
       // Validate inventory lot exists and is available
-      const lot = await this._validateInventoryLot(data.inventory_lot_id, transaction);
+      const lot = await this._validateInventoryLot(
+        data.inventory_lot_id,
+        transaction
+      );
 
       // HARD BLOCK: Expired lots
       if (data.is_expired) {
-        throw new Error('HARD BLOCK: Cannot issue expired raw material lot');
+        throw new Error("HARD BLOCK: Cannot issue expired raw material lot");
       }
 
       // HARD BLOCK: QC-failed lots
       if (data.is_qc_failed) {
-        throw new Error('HARD BLOCK: Cannot issue QC-failed raw material lot');
+        throw new Error("HARD BLOCK: Cannot issue QC-failed raw material lot");
       }
 
       // Validate size code exists in size_master
-      const sizeMapping = await this._validateSizeMapping(data.size_code, transaction);
+      const sizeMapping = await this._validateSizeMapping(
+        data.size_code,
+        transaction
+      );
 
       // Validate grade value
-      if (!['A', 'B', 'C', 'D'].includes(data.initial_grade)) {
-        throw new Error(`Invalid grade: ${data.initial_grade}. Must be A, B, C, or D.`);
+      if (!["A", "B", "C", "D"].includes(data.initial_grade)) {
+        throw new Error(
+          `Invalid grade: ${data.initial_grade}. Must be A, B, C, or D.`
+        );
       }
 
       // Validate issued quantity doesn't exceed available inventory
@@ -98,13 +111,13 @@ class RawMaterialIssueService {
           measured_avg_size_kg: data.measured_avg_size_kg,
           size_code: data.size_code,
           initial_grade: data.initial_grade,
-          grade_locked: true,  // IMMUTABLE
-          size_locked: true,   // IMMUTABLE
+          grade_locked: true, // IMMUTABLE
+          size_locked: true, // IMMUTABLE
           is_expired: data.is_expired || false,
           is_qc_failed: data.is_qc_failed || false,
           issued_by: data.issued_by,
           issued_at: new Date(),
-          remarks: data.remarks || null
+          remarks: data.remarks || null,
         },
         { transaction }
       );
@@ -113,12 +126,12 @@ class RawMaterialIssueService {
       await this._createValidationLog(
         data.production_order_id,
         order.input_species_id,
-        null,  // derivative_id will be null at issue time
+        null, // derivative_id will be null at issue time
         data.measured_avg_size_kg,
         data.size_code,
         data.initial_grade,
-        'VALID',
-        'Raw material issued and locked',
+        "VALID",
+        "Raw material issued and locked",
         data.issued_by,
         transaction
       );
@@ -126,8 +139,8 @@ class RawMaterialIssueService {
       // Update order status to RAW_ISSUED and capture quantity
       await order.update(
         {
-          status: 'RAW_ISSUED',
-          issued_quantity_kg: data.issued_quantity_kg
+          status: "RAW_ISSUED",
+          issued_quantity_kg: data.issued_quantity_kg,
         },
         { transaction }
       );
@@ -135,7 +148,8 @@ class RawMaterialIssueService {
       // Decrease available inventory in inventory_master
       await lot.update(
         {
-          available_quantity_kg: lot.available_quantity_kg - data.issued_quantity_kg
+          available_quantity_kg:
+            lot.available_quantity_kg - data.issued_quantity_kg,
         },
         { transaction }
       );
@@ -152,7 +166,7 @@ class RawMaterialIssueService {
 
   /**
    * Get raw issue by ID with relationships
-   * 
+   *
    * @param {UUID} issueId - Raw issue ID
    * @returns {Promise<Object>} Raw issue with relationships
    */
@@ -160,14 +174,19 @@ class RawMaterialIssueService {
     const issue = await this.models.production_raw_issues.findByPk(issueId, {
       include: [
         {
-          association: 'production_order',
-          attributes: ['id', 'order_number', 'status', 'planned_quantity_kg']
+          association: "production_order",
+          attributes: ["id", "order_number", "status", "planned_quantity_kg"],
         },
         {
-          association: 'inventory_lot',
-          attributes: ['id', 'lot_number', 'species_id', 'available_quantity_kg']
-        }
-      ]
+          association: "inventory_lot",
+          attributes: [
+            "id",
+            "lot_number",
+            "species_id",
+            "available_quantity_kg",
+          ],
+        },
+      ],
     });
 
     if (!issue) {
@@ -179,7 +198,7 @@ class RawMaterialIssueService {
 
   /**
    * Get raw issue by production order ID
-   * 
+   *
    * @param {UUID} orderId - Production order ID
    * @returns {Promise<Object|null>} Raw issue or null
    */
@@ -188,31 +207,33 @@ class RawMaterialIssueService {
       where: { production_order_id: orderId },
       include: [
         {
-          association: 'production_order',
-          attributes: ['id', 'order_number', 'input_species_id']
-        }
-      ]
+          association: "production_order",
+          attributes: ["id", "order_number", "input_species_id"],
+        },
+      ],
     });
   }
 
   /**
    * Validate production order exists and is in correct state
-   * 
+   *
    * @private
    * @param {UUID} orderId - Order ID
    * @param {Object} transaction - Sequelize transaction
    * @returns {Promise<Object>} Order object
-   * 
+   *
    * @throws {Error} If order invalid or not in PLANNED status
    */
   async _validateProductionOrder(orderId, transaction) {
-    const order = await this.models.production_orders.findByPk(orderId, { transaction });
+    const order = await this.models.production_orders.findByPk(orderId, {
+      transaction,
+    });
 
     if (!order) {
       throw new Error(`Production order not found: ${orderId}`);
     }
 
-    if (order.status !== 'PLANNED') {
+    if (order.status !== "PLANNED") {
       throw new Error(
         `Order must be in PLANNED status to issue raw material. Current status: ${order.status}`
       );
@@ -223,16 +244,18 @@ class RawMaterialIssueService {
 
   /**
    * Validate inventory lot exists and is available
-   * 
+   *
    * @private
    * @param {UUID} lotId - Inventory lot ID
    * @param {Object} transaction - Sequelize transaction
    * @returns {Promise<Object>} Lot object
-   * 
+   *
    * @throws {Error} If lot invalid or insufficient quantity
    */
   async _validateInventoryLot(lotId, transaction) {
-    const lot = await this.models.inventory_master.findByPk(lotId, { transaction });
+    const lot = await this.models.inventory_master.findByPk(lotId, {
+      transaction,
+    });
 
     if (!lot) {
       throw new Error(`Inventory lot not found: ${lotId}`);
@@ -247,18 +270,18 @@ class RawMaterialIssueService {
 
   /**
    * Validate size code exists in size_master
-   * 
+   *
    * @private
    * @param {String} sizeCode - Size code
    * @param {Object} transaction - Sequelize transaction
    * @returns {Promise<Object>} Size master record
-   * 
+   *
    * @throws {Error} If size code invalid
    */
   async _validateSizeMapping(sizeCode, transaction) {
     const size = await this.models.size_master.findOne({
       where: { size_code: sizeCode },
-      transaction
+      transaction,
     });
 
     if (!size) {
@@ -270,7 +293,7 @@ class RawMaterialIssueService {
 
   /**
    * Create immutable grade-size validation log entry
-   * 
+   *
    * @private
    * @param {UUID} orderId - Production order ID
    * @param {UUID} speciesId - Species ID
@@ -282,7 +305,7 @@ class RawMaterialIssueService {
    * @param {String} reason - Validation reason
    * @param {UUID} userId - User performing validation
    * @param {Object} transaction - Sequelize transaction
-   * 
+   *
    * @returns {Promise<Object>} Created validation log
    */
   async _createValidationLog(
@@ -310,7 +333,7 @@ class RawMaterialIssueService {
         validation_reason: reason,
         size_locked_at: new Date(),
         grade_locked_at: new Date(),
-        validated_by: userId
+        validated_by: userId,
       },
       { transaction }
     );

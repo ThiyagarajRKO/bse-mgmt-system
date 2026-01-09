@@ -3,6 +3,7 @@
 ## Overview
 
 The Production Order Management System implements a comprehensive 11-step production workflow that ensures:
+
 - **Deterministic SKU generation** (species-derivative-grade-size-pack)
 - **Immutable grade/size tracking** (locked at raw issue)
 - **System-driven yield calculations** (from YieldMaster, not user-editable)
@@ -111,6 +112,7 @@ Production Order Flow (11 Steps):
 ## Database Schema
 
 ### production_orders
+
 Central production order tracking
 
 ```sql
@@ -143,6 +145,7 @@ INDEX: (plant_id)
 ```
 
 ### production_raw_issues
+
 Raw material issuance with immutable size/grade snapshot
 
 ```sql
@@ -171,6 +174,7 @@ INDEX: (inventory_lot_id)
 ```
 
 ### production_derivatives
+
 Derivative split planning per order
 
 ```sql
@@ -192,6 +196,7 @@ INDEX: (derivative_id)
 ```
 
 ### production_outputs
+
 Final outputs with auto-generated SKUs
 
 ```sql
@@ -220,6 +225,7 @@ INDEX: (sku_code)
 ```
 
 ### grade_size_validation_logs
+
 Immutable audit trail of validation decisions
 
 ```sql
@@ -248,6 +254,7 @@ INDEX: (validation_status)
 ## Service Layer
 
 ### ProductionOrderService
+
 Manages order lifecycle
 
 ```javascript
@@ -262,6 +269,7 @@ Manages order lifecycle
 ```
 
 ### RawMaterialIssueService
+
 Issues raw material with immutability
 
 ```javascript
@@ -276,6 +284,7 @@ Issues raw material with immutability
 ```
 
 ### DerivativeAllocationService
+
 Allocates derivatives and calculates yield
 
 ```javascript
@@ -290,6 +299,7 @@ Allocates derivatives and calculates yield
 ```
 
 ### SKUGenerationService
+
 Generates deterministic SKUs
 
 ```javascript
@@ -303,6 +313,7 @@ Generates deterministic SKUs
 ```
 
 ### ProductionExecutionService
+
 Records production and allocates costs
 
 ```javascript
@@ -319,6 +330,7 @@ Records production and allocates costs
 ## API Endpoints
 
 ### Create Production Order
+
 ```
 POST /production/orders
 Content-Type: application/json
@@ -346,6 +358,7 @@ Response 201:
 ```
 
 ### Issue Raw Material
+
 ```
 POST /production/orders/{id}/issue-raw
 
@@ -373,6 +386,7 @@ Response 200:
 ```
 
 ### Allocate Derivatives
+
 ```
 POST /production/orders/{id}/derive
 
@@ -409,6 +423,7 @@ Response 200:
 ```
 
 ### Record Production
+
 ```
 POST /production/orders/{id}/produce
 
@@ -435,6 +450,7 @@ Response 201:
 ```
 
 ### Allocate Costs
+
 ```
 POST /production/orders/{id}/allocate-cost
 
@@ -458,6 +474,7 @@ Response 200:
 ```
 
 ### Post Inventory
+
 ```
 POST /production/orders/{id}/post-inventory
 
@@ -479,6 +496,7 @@ Response 200:
 ```
 
 ### Close Order
+
 ```
 POST /production/orders/{id}/close
 
@@ -503,6 +521,7 @@ Response 200:
 ## Hard Blocks Enforcement
 
 ### 1. Grade Upgrade Prevention
+
 ```javascript
 // HARD BLOCK: Cannot upgrade grade
 // A → B ✓ (downgrade allowed)
@@ -512,6 +531,7 @@ Response 200:
 ```
 
 ### 2. Yield Override Prevention
+
 ```javascript
 // HARD BLOCK: Yield % from YieldMaster cannot be overridden
 // User can only specify quantity (which determines yield %)
@@ -521,6 +541,7 @@ Response 200:
 ```
 
 ### 3. Direct Posting Prevention
+
 ```javascript
 // HARD BLOCK: Cannot post inventory without:
 // - Cost allocation (cost_allocated > 0)
@@ -530,6 +551,7 @@ Response 200:
 ```
 
 ### 4. Size Immutability
+
 ```javascript
 // HARD BLOCK: Size locked at raw issue time
 // size_locked = true (immutable)
@@ -538,6 +560,7 @@ Response 200:
 ```
 
 ### 5. SKU Creation Bypass Prevention
+
 ```javascript
 // HARD BLOCK: No manual SKU creation allowed
 // All SKUs auto-generated deterministically
@@ -548,6 +571,7 @@ Response 200:
 ## Error Handling
 
 ### Hard Block Violations (HTTP 403)
+
 ```json
 {
   "success": false,
@@ -558,6 +582,7 @@ Response 200:
 ```
 
 ### Validation Errors (HTTP 400)
+
 ```json
 {
   "success": false,
@@ -567,6 +592,7 @@ Response 200:
 ```
 
 ### State Errors (HTTP 409)
+
 ```json
 {
   "success": false,
@@ -578,6 +604,7 @@ Response 200:
 ## Example Workflows
 
 ### Workflow 1: Standard Primary Processing
+
 ```
 1. Create order: Pomfret, 100kg, PLANT-001
    → Order created (PLANNED)
@@ -607,6 +634,7 @@ Response 200:
 ```
 
 ### Workflow 2: Grade Downgrade with Exception Handling
+
 ```
 1. Create order: Tuna, 50kg
 2. Issue raw: Grade A, 50kg
@@ -621,6 +649,7 @@ Response 200:
 ```
 
 ### Workflow 3: Hard Block - Grade Upgrade Attempt
+
 ```
 1. Create order, issue raw (Grade B)
 2. Allocate derivatives, record production attempt:
@@ -633,6 +662,7 @@ Response 200:
 ## Testing Strategy
 
 ### Unit Tests
+
 - ProductionOrderService.createOrder() - species validation, order creation
 - RawMaterialIssueService.issueRawMaterial() - lot validation, immutability
 - DerivativeAllocationService.allocateDerivatives() - percentage validation, yield lookup
@@ -640,12 +670,14 @@ Response 200:
 - ProductionExecutionService.recordProduction() - grade downgrade, yield validation
 
 ### Integration Tests
+
 - Full workflow: order → issue → derive → produce → cost → post → close
 - Grade downgrade with exception logging
 - Hard block enforcement on all endpoints
 - Cascade delete on order deletion
 
 ### Edge Cases
+
 - Expired/QC-failed lot issuance (hard block)
 - Grade upgrade attempt (hard block)
 - Yield over tolerance (hard block)

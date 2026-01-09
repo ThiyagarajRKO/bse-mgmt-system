@@ -1,5 +1,5 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class SalesInvoice extends Model {
@@ -7,23 +7,23 @@ module.exports = (sequelize, DataTypes) => {
       // Belongs to Order and CustomerMaster
       if (models.Order) {
         this.belongsTo(models.Order, {
-          foreignKey: 'order_id',
-          as: 'order',
+          foreignKey: "order_id",
+          as: "order",
         });
       }
 
       if (models.CustomerMaster) {
         this.belongsTo(models.CustomerMaster, {
-          foreignKey: 'customer_master_id',
-          as: 'customer',
+          foreignKey: "customer_master_id",
+          as: "customer",
         });
       }
 
       // Has many InvoiceLines
       if (models.SalesInvoiceLine) {
         this.hasMany(models.SalesInvoiceLine, {
-          foreignKey: 'invoice_id',
-          as: 'invoiceLines',
+          foreignKey: "invoice_id",
+          as: "invoiceLines",
         });
       }
     }
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         unique: true,
         allowNull: false,
-        comment: 'Unique invoice identifier (INV-YYYYMMDD-HHMMSS-XXXX)',
+        comment: "Unique invoice identifier (INV-YYYYMMDD-HHMMSS-XXXX)",
       },
       order_id: {
         type: DataTypes.UUID,
@@ -55,19 +55,19 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.NOW,
       },
       invoice_status: {
-        type: DataTypes.ENUM('DRAFT', 'POSTED', 'PAID', 'CANCELLED'),
-        defaultValue: 'DRAFT',
+        type: DataTypes.ENUM("DRAFT", "POSTED", "PAID", "CANCELLED"),
+        defaultValue: "DRAFT",
         allowNull: false,
       },
       subtotal_amount: {
         type: DataTypes.DECIMAL(12, 2),
         defaultValue: 0,
-        comment: 'Sum of all line items (before tax & shipping)',
+        comment: "Sum of all line items (before tax & shipping)",
       },
       tax_amount: {
         type: DataTypes.DECIMAL(12, 2),
         defaultValue: 0,
-        comment: 'Total GST/HSN-based tax',
+        comment: "Total GST/HSN-based tax",
       },
       shipping_amount: {
         type: DataTypes.DECIMAL(12, 2),
@@ -80,17 +80,17 @@ module.exports = (sequelize, DataTypes) => {
       net_total_amount: {
         type: DataTypes.DECIMAL(12, 2),
         defaultValue: 0,
-        comment: 'subtotal + tax + shipping - discount',
+        comment: "subtotal + tax + shipping - discount",
       },
       posted_date: {
         type: DataTypes.DATE,
         allowNull: true,
-        comment: 'When invoice was posted to GL',
+        comment: "When invoice was posted to GL",
       },
       posted_by: {
         type: DataTypes.STRING(100),
         allowNull: true,
-        comment: 'User who posted to GL',
+        comment: "User who posted to GL",
       },
       remarks: {
         type: DataTypes.TEXT,
@@ -98,8 +98,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'SalesInvoice',
-      tableName: 'sales_invoices',
+      modelName: "SalesInvoice",
+      tableName: "sales_invoices",
       timestamps: true,
       underscored: true,
     }

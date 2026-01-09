@@ -7,6 +7,7 @@
 ---
 
 ## Table of Contents
+
 1. [Sales Allocations](#sales-allocations)
 2. [Production Demands](#production-demands)
 3. [Sales Invoices](#sales-invoices)
@@ -17,19 +18,22 @@
 ## Sales Allocations
 
 ### POST /sales/allocations
+
 Create a new sales allocation from order line item.
 
 **Request**
+
 ```json
 {
   "order_id": "550e8400-e29b-41d4-a716-446655440000",
   "order_product_id": "660e8400-e29b-41d4-a716-446655440001",
-  "allocated_quantity": 100.00,
+  "allocated_quantity": 100.0,
   "remarks": "Allocated for production batch PO-001"
 }
 ```
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -39,8 +43,8 @@ Create a new sales allocation from order line item.
     "order_id": "550e8400-e29b-41d4-a716-446655440000",
     "order_product_id": "660e8400-e29b-41d4-a716-446655440001",
     "allocation_status": "PENDING",
-    "allocated_quantity": 100.00,
-    "fulfilled_quantity": 0.00,
+    "allocated_quantity": 100.0,
+    "fulfilled_quantity": 0.0,
     "allocation_date": "2026-01-09T14:30:00Z",
     "allocated_by": "user123",
     "remarks": "Allocated for production batch PO-001",
@@ -51,6 +55,7 @@ Create a new sales allocation from order line item.
 ```
 
 **Error (400)**
+
 ```json
 {
   "success": false,
@@ -61,9 +66,11 @@ Create a new sales allocation from order line item.
 ---
 
 ### GET /sales/allocations
+
 List all allocations with optional filters.
 
 **Query Parameters**
+
 ```
 ?order_id=uuid
 &allocation_status=PENDING|ALLOCATED|PRODUCTION_IN_PROGRESS|COMPLETED
@@ -73,6 +80,7 @@ List all allocations with optional filters.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -88,11 +96,11 @@ List all allocations with optional filters.
       "orderProduct": {
         "id": "660e8400-e29b-41d4-a716-446655440001",
         "product_id": "prod-uuid",
-        "quantity": 100.00
+        "quantity": 100.0
       },
       "allocation_status": "ALLOCATED",
-      "allocated_quantity": 100.00,
-      "fulfilled_quantity": 50.00,
+      "allocated_quantity": 100.0,
+      "fulfilled_quantity": 50.0,
       "allocation_date": "2026-01-09T14:30:00Z",
       "allocated_by": "user123"
     }
@@ -107,17 +115,19 @@ List all allocations with optional filters.
 ---
 
 ### GET /sales/allocations/:id
+
 Get detailed allocation with related orders and production demands.
 
 **Response (200)**
+
 ```json
 {
   "success": true,
   "data": {
     "id": "770e8400-e29b-41d4-a716-446655440002",
     "allocation_status": "PRODUCTION_IN_PROGRESS",
-    "allocated_quantity": 100.00,
-    "fulfilled_quantity": 75.00,
+    "allocated_quantity": 100.0,
+    "fulfilled_quantity": 75.0,
     "order": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "order_number": "ORD-20260109-0001",
@@ -127,15 +137,15 @@ Get detailed allocation with related orders and production demands.
     "orderProduct": {
       "id": "660e8400-e29b-41d4-a716-446655440001",
       "product_id": "prod-uuid",
-      "quantity": 100.00,
-      "unit_price": 50.00
+      "quantity": 100.0,
+      "unit_price": 50.0
     },
     "productionDemands": [
       {
         "id": "880e8400-e29b-41d4-a716-446655440003",
         "demand_number": "DEM-20260109-143000-0001",
-        "demanded_quantity": 100.00,
-        "fulfilled_quantity": 75.00,
+        "demanded_quantity": 100.0,
+        "fulfilled_quantity": 75.0,
         "demand_status": "IN_PRODUCTION"
       }
     ]
@@ -146,9 +156,11 @@ Get detailed allocation with related orders and production demands.
 ---
 
 ### PUT /sales/allocations/:id/confirm
+
 Move allocation from PENDING to ALLOCATED status.
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -156,7 +168,7 @@ Move allocation from PENDING to ALLOCATED status.
   "data": {
     "id": "770e8400-e29b-41d4-a716-446655440002",
     "allocation_status": "ALLOCATED",
-    "allocated_quantity": 100.00
+    "allocated_quantity": 100.0
   }
 }
 ```
@@ -164,16 +176,19 @@ Move allocation from PENDING to ALLOCATED status.
 ---
 
 ### PUT /sales/allocations/:id/fulfill
+
 Update fulfillment progress.
 
 **Request**
+
 ```json
 {
-  "fulfilled_quantity": 75.00
+  "fulfilled_quantity": 75.0
 }
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -181,7 +196,7 @@ Update fulfillment progress.
   "data": {
     "id": "770e8400-e29b-41d4-a716-446655440002",
     "allocation_status": "PRODUCTION_IN_PROGRESS",
-    "fulfilled_quantity": 75.00
+    "fulfilled_quantity": 75.0
   }
 }
 ```
@@ -189,9 +204,11 @@ Update fulfillment progress.
 ---
 
 ### PUT /sales/allocations/:id/complete
+
 Mark allocation as fully completed.
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -199,7 +216,7 @@ Mark allocation as fully completed.
   "data": {
     "id": "770e8400-e29b-41d4-a716-446655440002",
     "allocation_status": "COMPLETED",
-    "fulfilled_quantity": 100.00
+    "fulfilled_quantity": 100.0
   }
 }
 ```
@@ -207,9 +224,11 @@ Mark allocation as fully completed.
 ---
 
 ### PUT /sales/allocations/:id/cancel
+
 Cancel an allocation.
 
 **Request**
+
 ```json
 {
   "reason": "Customer requested cancellation"
@@ -217,6 +236,7 @@ Cancel an allocation.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -234,9 +254,11 @@ Cancel an allocation.
 ## Sales Invoices
 
 ### POST /sales/invoices
+
 Create a new sales invoice (DRAFT status).
 
 **Request**
+
 ```json
 {
   "order_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -246,6 +268,7 @@ Create a new sales invoice (DRAFT status).
 ```
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -257,11 +280,11 @@ Create a new sales invoice (DRAFT status).
     "customer_master_id": "990e8400-e29b-41d4-a716-446655440004",
     "invoice_date": "2026-01-09T00:00:00Z",
     "invoice_status": "DRAFT",
-    "subtotal_amount": 0.00,
-    "tax_amount": 0.00,
-    "shipping_amount": 0.00,
-    "discount_amount": 0.00,
-    "net_total_amount": 0.00,
+    "subtotal_amount": 0.0,
+    "tax_amount": 0.0,
+    "shipping_amount": 0.0,
+    "discount_amount": 0.0,
+    "net_total_amount": 0.0,
     "created_by": "user123",
     "createdAt": "2026-01-09T15:00:00Z"
   }
@@ -271,25 +294,28 @@ Create a new sales invoice (DRAFT status).
 ---
 
 ### POST /sales/invoices/:id/line-items
+
 Add line items from production outputs.
 
 **Request**
+
 ```json
 {
   "line_items": [
     {
       "production_output_id": "bb0e8400-e29b-41d4-a716-446655440006",
-      "quantity": 100.00
+      "quantity": 100.0
     },
     {
       "production_output_id": "cc0e8400-e29b-41d4-a716-446655440007",
-      "quantity": 50.00
+      "quantity": 50.0
     }
   ]
 }
 ```
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -300,30 +326,31 @@ Add line items from production outputs.
       "invoice_id": "aa0e8400-e29b-41d4-a716-446655440005",
       "production_output_id": "bb0e8400-e29b-41d4-a716-446655440006",
       "sku_code": "SKU-20260109-001",
-      "quantity": 100.00,
-      "cost_per_unit": 45.00,
-      "line_total": 4500.00,
-      "tax_rate": 18.00,
-      "tax_amount": 810.00,
-      "line_net_total": 5310.00
+      "quantity": 100.0,
+      "cost_per_unit": 45.0,
+      "line_total": 4500.0,
+      "tax_rate": 18.0,
+      "tax_amount": 810.0,
+      "line_net_total": 5310.0
     },
     {
       "id": "ee0e8400-e29b-41d4-a716-446655440009",
       "invoice_id": "aa0e8400-e29b-41d4-a716-446655440005",
       "production_output_id": "cc0e8400-e29b-41d4-a716-446655440007",
       "sku_code": "SKU-20260109-002",
-      "quantity": 50.00,
-      "cost_per_unit": 60.00,
-      "line_total": 3000.00,
-      "tax_rate": 18.00,
-      "tax_amount": 540.00,
-      "line_net_total": 3540.00
+      "quantity": 50.0,
+      "cost_per_unit": 60.0,
+      "line_total": 3000.0,
+      "tax_rate": 18.0,
+      "tax_amount": 540.0,
+      "line_net_total": 3540.0
     }
   ]
 }
 ```
 
 **Hard Block Error (403)**
+
 ```json
 {
   "success": false,
@@ -334,28 +361,31 @@ Add line items from production outputs.
 ---
 
 ### PUT /sales/invoices/:id/charges
+
 Update shipping and discount amounts.
 
 **Request**
+
 ```json
 {
-  "shipping_amount": 500.00,
-  "discount_amount": 100.00
+  "shipping_amount": 500.0,
+  "discount_amount": 100.0
 }
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
   "message": "Invoice charges updated",
   "data": {
     "id": "aa0e8400-e29b-41d4-a716-446655440005",
-    "subtotal_amount": 7500.00,
-    "tax_amount": 1350.00,
-    "shipping_amount": 500.00,
-    "discount_amount": 100.00,
-    "net_total_amount": 9250.00
+    "subtotal_amount": 7500.0,
+    "tax_amount": 1350.0,
+    "shipping_amount": 500.0,
+    "discount_amount": 100.0,
+    "net_total_amount": 9250.0
   }
 }
 ```
@@ -363,9 +393,11 @@ Update shipping and discount amounts.
 ---
 
 ### GET /sales/invoices/:id
+
 Get invoice with all line items and customer details.
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -374,11 +406,11 @@ Get invoice with all line items and customer details.
     "invoice_number": "INV-20260109-150000-0001",
     "invoice_date": "2026-01-09T00:00:00Z",
     "invoice_status": "DRAFT",
-    "subtotal_amount": 7500.00,
-    "tax_amount": 1350.00,
-    "shipping_amount": 500.00,
-    "discount_amount": 100.00,
-    "net_total_amount": 9250.00,
+    "subtotal_amount": 7500.0,
+    "tax_amount": 1350.0,
+    "shipping_amount": 500.0,
+    "discount_amount": 100.0,
+    "net_total_amount": 9250.0,
     "order": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "order_number": "ORD-20260109-0001",
@@ -394,11 +426,11 @@ Get invoice with all line items and customer details.
       {
         "id": "dd0e8400-e29b-41d4-a716-446655440008",
         "sku_code": "SKU-20260109-001",
-        "quantity": 100.00,
-        "cost_per_unit": 45.00,
-        "line_total": 4500.00,
-        "tax_rate": 18.00,
-        "line_net_total": 5310.00,
+        "quantity": 100.0,
+        "cost_per_unit": 45.0,
+        "line_total": 4500.0,
+        "tax_rate": 18.0,
+        "line_net_total": 5310.0,
         "productMaster": {
           "product_name": "Shrimp - Grade A",
           "sku_code": "SKU-20260109-001"
@@ -412,9 +444,11 @@ Get invoice with all line items and customer details.
 ---
 
 ### GET /sales/invoices
+
 List invoices with filters.
 
 **Query Parameters**
+
 ```
 ?order_id=uuid
 &customer_master_id=uuid
@@ -426,6 +460,7 @@ List invoices with filters.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -434,7 +469,7 @@ List invoices with filters.
       "id": "aa0e8400-e29b-41d4-a716-446655440005",
       "invoice_number": "INV-20260109-150000-0001",
       "invoice_status": "POSTED",
-      "net_total_amount": 9250.00,
+      "net_total_amount": 9250.0,
       "invoice_date": "2026-01-09T00:00:00Z",
       "posted_date": "2026-01-09T16:00:00Z",
       "order": {
@@ -455,9 +490,11 @@ List invoices with filters.
 ---
 
 ### PUT /sales/invoices/:id/post
+
 Post invoice to GL and mark as POSTED.
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -473,6 +510,7 @@ Post invoice to GL and mark as POSTED.
 ```
 
 **Hard Block Error (403)**
+
 ```json
 {
   "success": false,
@@ -483,9 +521,11 @@ Post invoice to GL and mark as POSTED.
 ---
 
 ### PUT /sales/invoices/:id/cancel
+
 Cancel invoice.
 
 **Request**
+
 ```json
 {
   "reason": "Duplicate invoice created"
@@ -493,6 +533,7 @@ Cancel invoice.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -508,9 +549,11 @@ Cancel invoice.
 ---
 
 ### GET /sales/invoices/summary/revenue
+
 Get revenue summary with optional filters.
 
 **Query Parameters**
+
 ```
 ?from_date=2026-01-01
 &to_date=2026-01-31
@@ -518,28 +561,29 @@ Get revenue summary with optional filters.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
   "data": {
     "total_invoices": 5,
-    "total_revenue": 45000.00,
-    "total_tax": 8100.00,
-    "total_shipping": 2500.00,
-    "total_discount": 500.00,
-    "net_revenue": 55100.00,
+    "total_revenue": 45000.0,
+    "total_tax": 8100.0,
+    "total_shipping": 2500.0,
+    "total_discount": 500.0,
+    "net_revenue": 55100.0,
     "by_status": {
       "DRAFT": {
         "count": 1,
-        "amount": 5000.00
+        "amount": 5000.0
       },
       "POSTED": {
         "count": 2,
-        "amount": 25000.00
+        "amount": 25000.0
       },
       "PAID": {
         "count": 2,
-        "amount": 25100.00
+        "amount": 25100.0
       }
     }
   }
@@ -551,9 +595,11 @@ Get revenue summary with optional filters.
 ## GL Postings
 
 ### POST /gl/post/production-output/:id
+
 Auto-post GL entries for production output (Dr FG, Cr RM).
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -564,8 +610,8 @@ Auto-post GL entries for production output (Dr FG, Cr RM).
       "entry_number": "GL-20260109-160000-0001",
       "posting_date": "2026-01-09T16:00:00Z",
       "account_code": "1100",
-      "debit": 4500.00,
-      "credit": 0.00,
+      "debit": 4500.0,
+      "credit": 0.0,
       "description": "Finished goods receipt - SKU: SKU-20260109-001",
       "posting_status": "POSTED",
       "posted_by": "system"
@@ -575,8 +621,8 @@ Auto-post GL entries for production output (Dr FG, Cr RM).
       "entry_number": "GL-20260109-160001-0002",
       "posting_date": "2026-01-09T16:00:00Z",
       "account_code": "1050",
-      "debit": 0.00,
-      "credit": 4500.00,
+      "debit": 0.0,
+      "credit": 4500.0,
       "description": "Raw materials consumed - SKU: SKU-20260109-001",
       "posting_status": "POSTED"
     }
@@ -587,9 +633,11 @@ Auto-post GL entries for production output (Dr FG, Cr RM).
 ---
 
 ### POST /gl/post/invoice/:id
+
 Auto-post GL entries for sales invoice (Dr AR, Cr Sales).
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -600,8 +648,8 @@ Auto-post GL entries for sales invoice (Dr AR, Cr Sales).
       "entry_number": "GL-20260109-161000-0001",
       "posting_date": "2026-01-09T16:10:00Z",
       "account_code": "1200",
-      "debit": 9250.00,
-      "credit": 0.00,
+      "debit": 9250.0,
+      "credit": 0.0,
       "description": "Sales invoice - INV: INV-20260109-150000-0001",
       "posting_status": "POSTED"
     },
@@ -610,8 +658,8 @@ Auto-post GL entries for sales invoice (Dr AR, Cr Sales).
       "entry_number": "GL-20260109-161001-0002",
       "posting_date": "2026-01-09T16:10:00Z",
       "account_code": "4000",
-      "debit": 0.00,
-      "credit": 9250.00,
+      "debit": 0.0,
+      "credit": 9250.0,
       "description": "Sales revenue - INV: INV-20260109-150000-0001",
       "posting_status": "POSTED"
     }
@@ -622,9 +670,11 @@ Auto-post GL entries for sales invoice (Dr AR, Cr Sales).
 ---
 
 ### GET /gl/entries
+
 List GL entries with filters.
 
 **Query Parameters**
+
 ```
 ?account_code=1100
 &posting_status=POSTED|DRAFT|REVERSED
@@ -635,6 +685,7 @@ List GL entries with filters.
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -648,8 +699,8 @@ List GL entries with filters.
         "account_code": "1100",
         "account_name": "Finished Goods Inventory"
       },
-      "debit": 4500.00,
-      "credit": 0.00,
+      "debit": 4500.0,
+      "credit": 0.0,
       "description": "Finished goods receipt",
       "posting_status": "POSTED"
     }
@@ -664,23 +715,26 @@ List GL entries with filters.
 ---
 
 ### GET /gl/accounts/:code/balance
+
 Get account balance as of a date.
 
 **Query Parameters**
+
 ```
 ?as_of_date=2026-01-31
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
   "data": {
     "account_code": "1100",
     "as_of_date": "2026-01-31T00:00:00Z",
-    "total_debit": 25000.00,
-    "total_credit": 0.00,
-    "balance": 25000.00,
+    "total_debit": 25000.0,
+    "total_credit": 0.0,
+    "balance": 25000.0,
     "entry_count": 10
   }
 }
@@ -689,14 +743,17 @@ Get account balance as of a date.
 ---
 
 ### GET /gl/trial-balance
+
 Get trial balance as of a date.
 
 **Query Parameters**
+
 ```
 ?as_of_date=2026-01-31
 ```
 
 **Response (200)**
+
 ```json
 {
   "success": true,
@@ -707,33 +764,33 @@ Get trial balance as of a date.
         "account_code": "1010",
         "account_name": "Cash at Bank",
         "account_type": "ASSET",
-        "debit": 45000.00,
-        "credit": 0.00
+        "debit": 45000.0,
+        "credit": 0.0
       },
       {
         "account_code": "1100",
         "account_name": "Finished Goods",
         "account_type": "ASSET",
-        "debit": 25000.00,
-        "credit": 0.00
+        "debit": 25000.0,
+        "credit": 0.0
       },
       {
         "account_code": "1200",
         "account_name": "Accounts Receivable",
         "account_type": "ASSET",
-        "debit": 20000.00,
-        "credit": 0.00
+        "debit": 20000.0,
+        "credit": 0.0
       },
       {
         "account_code": "4000",
         "account_name": "Sales Revenue",
         "account_type": "REVENUE",
-        "debit": 0.00,
-        "credit": 45000.00
+        "debit": 0.0,
+        "credit": 45000.0
       }
     ],
-    "total_debit": 90000.00,
-    "total_credit": 90000.00,
+    "total_debit": 90000.0,
+    "total_credit": 90000.0,
     "is_balanced": true
   }
 }
@@ -742,9 +799,11 @@ Get trial balance as of a date.
 ---
 
 ### PUT /gl/entries/:id/reverse
+
 Reverse a GL entry (create reversal entry).
 
 **Request**
+
 ```json
 {
   "reason": "Incorrect cost allocation"
@@ -752,6 +811,7 @@ Reverse a GL entry (create reversal entry).
 ```
 
 **Response (201)**
+
 ```json
 {
   "success": true,
@@ -761,8 +821,8 @@ Reverse a GL entry (create reversal entry).
     "entry_number": "GL-20260109-170000-0001",
     "posting_date": "2026-01-09T17:00:00Z",
     "account_code": "1100",
-    "debit": 0.00,
-    "credit": 4500.00,
+    "debit": 0.0,
+    "credit": 4500.0,
     "description": "REVERSAL of GL-20260109-160000-0001: Incorrect cost allocation",
     "posting_status": "POSTED",
     "posted_by": "user123"
@@ -775,6 +835,7 @@ Reverse a GL entry (create reversal entry).
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "success": false,
@@ -783,6 +844,7 @@ Reverse a GL entry (create reversal entry).
 ```
 
 ### 403 Forbidden (Hard Block)
+
 ```json
 {
   "success": false,
@@ -791,6 +853,7 @@ Reverse a GL entry (create reversal entry).
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "success": false,
@@ -799,6 +862,7 @@ Reverse a GL entry (create reversal entry).
 ```
 
 ### 409 Conflict
+
 ```json
 {
   "success": false,

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
+const { v4: uuidv4 } = require("uuid");
+const db = require("../models");
 
 class SalesAllocationService {
   /**
@@ -21,12 +21,12 @@ class SalesAllocationService {
       !allocated_by
     ) {
       throw new Error(
-        'Missing required fields: order_id, order_product_id, allocated_quantity, allocated_by'
+        "Missing required fields: order_id, order_product_id, allocated_quantity, allocated_by"
       );
     }
 
     if (allocated_quantity <= 0) {
-      throw new Error('Allocated quantity must be greater than 0');
+      throw new Error("Allocated quantity must be greater than 0");
     }
 
     // Verify order and order_product exist
@@ -41,9 +41,7 @@ class SalesAllocationService {
     }
 
     if (orderProduct.order_id !== order_id) {
-      throw new Error(
-        'OrderProduct does not belong to the specified Order'
-      );
+      throw new Error("OrderProduct does not belong to the specified Order");
     }
 
     // Validate allocated quantity doesn't exceed order line quantity
@@ -58,7 +56,7 @@ class SalesAllocationService {
       where: {
         order_id,
         order_product_id,
-        allocation_status: ['PENDING', 'ALLOCATED', 'PRODUCTION_IN_PROGRESS'],
+        allocation_status: ["PENDING", "ALLOCATED", "PRODUCTION_IN_PROGRESS"],
       },
     });
 
@@ -75,7 +73,7 @@ class SalesAllocationService {
       order_product_id,
       allocated_quantity,
       fulfilled_quantity: 0,
-      allocation_status: 'PENDING',
+      allocation_status: "PENDING",
       allocation_date: new Date(),
       allocated_by,
     });
@@ -96,13 +94,13 @@ class SalesAllocationService {
       throw new Error(`Allocation not found: ${allocationId}`);
     }
 
-    if (allocation.allocation_status !== 'PENDING') {
+    if (allocation.allocation_status !== "PENDING") {
       throw new Error(
         `Cannot confirm allocation in ${allocation.allocation_status} status`
       );
     }
 
-    allocation.allocation_status = 'ALLOCATED';
+    allocation.allocation_status = "ALLOCATED";
     allocation.allocated_by = allocated_by;
     await allocation.save();
 
@@ -133,11 +131,11 @@ class SalesAllocationService {
 
     // Auto-update status based on fulfillment
     if (fulfilledQty === 0) {
-      allocation.allocation_status = 'ALLOCATED';
+      allocation.allocation_status = "ALLOCATED";
     } else if (fulfilledQty < allocation.allocated_quantity) {
-      allocation.allocation_status = 'PRODUCTION_IN_PROGRESS';
+      allocation.allocation_status = "PRODUCTION_IN_PROGRESS";
     } else if (fulfilledQty === allocation.allocated_quantity) {
-      allocation.allocation_status = 'COMPLETED';
+      allocation.allocation_status = "COMPLETED";
     }
 
     await allocation.save();
@@ -163,7 +161,7 @@ class SalesAllocationService {
       );
     }
 
-    allocation.allocation_status = 'COMPLETED';
+    allocation.allocation_status = "COMPLETED";
     await allocation.save();
 
     return allocation;
@@ -179,23 +177,23 @@ class SalesAllocationService {
       include: [
         {
           model: db.Order,
-          as: 'order',
-          attributes: ['id', 'order_number', 'order_date', 'order_status'],
+          as: "order",
+          attributes: ["id", "order_number", "order_date", "order_status"],
         },
         {
           model: db.OrderProduct,
-          as: 'orderProduct',
-          attributes: ['id', 'product_id', 'quantity', 'unit_price'],
+          as: "orderProduct",
+          attributes: ["id", "product_id", "quantity", "unit_price"],
         },
         {
           model: db.ProductionDemand,
-          as: 'productionDemands',
+          as: "productionDemands",
           attributes: [
-            'id',
-            'demand_number',
-            'demanded_quantity',
-            'fulfilled_quantity',
-            'demand_status',
+            "id",
+            "demand_number",
+            "demanded_quantity",
+            "fulfilled_quantity",
+            "demand_status",
           ],
         },
       ],
@@ -228,18 +226,18 @@ class SalesAllocationService {
       include: [
         {
           model: db.Order,
-          as: 'order',
-          attributes: ['id', 'order_number', 'order_status'],
+          as: "order",
+          attributes: ["id", "order_number", "order_status"],
         },
         {
           model: db.OrderProduct,
-          as: 'orderProduct',
-          attributes: ['id', 'product_id', 'quantity'],
+          as: "orderProduct",
+          attributes: ["id", "product_id", "quantity"],
         },
       ],
       limit,
       offset,
-      order: [['allocation_date', 'DESC']],
+      order: [["allocation_date", "DESC"]],
     });
 
     return allocations;
@@ -255,7 +253,7 @@ class SalesAllocationService {
       include: [
         {
           model: db.OrderProduct,
-          as: 'orderProducts',
+          as: "orderProducts",
         },
       ],
     });
@@ -290,8 +288,12 @@ class SalesAllocationService {
 
     allocations.forEach((alloc) => {
       summary.allocations[alloc.allocation_status]++;
-      summary.total_allocated_quantity += parseFloat(alloc.allocated_quantity || 0);
-      summary.total_fulfilled_quantity += parseFloat(alloc.fulfilled_quantity || 0);
+      summary.total_allocated_quantity += parseFloat(
+        alloc.allocated_quantity || 0
+      );
+      summary.total_fulfilled_quantity += parseFloat(
+        alloc.fulfilled_quantity || 0
+      );
     });
 
     summary.allocation_percentage = (
@@ -324,7 +326,7 @@ class SalesAllocationService {
     const relatedDemands = await db.ProductionDemand.findAll({
       where: {
         sales_allocation_id: allocationId,
-        demand_status: ['CREATED', 'WAITING_FOR_PRODUCTION', 'IN_PRODUCTION'],
+        demand_status: ["CREATED", "WAITING_FOR_PRODUCTION", "IN_PRODUCTION"],
       },
     });
 
@@ -334,7 +336,7 @@ class SalesAllocationService {
       );
     }
 
-    allocation.allocation_status = 'CANCELLED';
+    allocation.allocation_status = "CANCELLED";
     allocation.remarks = `Cancelled by ${cancelled_by}. Reason: ${reason}`;
     await allocation.save();
 

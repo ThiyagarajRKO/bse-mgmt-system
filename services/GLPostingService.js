@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
+const { v4: uuidv4 } = require("uuid");
+const db = require("../models");
 
 class GLPostingService {
   /**
@@ -11,14 +11,14 @@ class GLPostingService {
   generateEntryNumber() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
     const randomSuffix = String(Math.floor(Math.random() * 10000)).padStart(
       4,
-      '0'
+      "0"
     );
 
     return `GL-${year}${month}${day}-${hours}${minutes}${seconds}-${randomSuffix}`;
@@ -30,7 +30,7 @@ class GLPostingService {
    */
   async getAccountCodes() {
     const accounts = await db.ChartOfAccounts.findAll({
-      attributes: ['account_code', 'account_name', 'account_type'],
+      attributes: ["account_code", "account_name", "account_type"],
       raw: true,
     });
 
@@ -49,39 +49,39 @@ class GLPostingService {
       const name = acc.account_name.toLowerCase();
 
       if (
-        name.includes('finished') ||
-        code.includes('fini') ||
-        code.startsWith('1100')
+        name.includes("finished") ||
+        code.includes("fini") ||
+        code.startsWith("1100")
       ) {
         accountMap.finished_goods = acc.account_code;
       }
       if (
-        name.includes('raw') ||
-        name.includes('materials') ||
-        code.includes('raw') ||
-        code.startsWith('1050')
+        name.includes("raw") ||
+        name.includes("materials") ||
+        code.includes("raw") ||
+        code.startsWith("1050")
       ) {
         accountMap.raw_materials = acc.account_code;
       }
       if (
-        name.includes('accounts receivable') ||
-        code.includes('ar') ||
-        code.startsWith('1200')
+        name.includes("accounts receivable") ||
+        code.includes("ar") ||
+        code.startsWith("1200")
       ) {
         accountMap.accounts_receivable = acc.account_code;
       }
       if (
-        name.includes('sales') ||
-        code.includes('sales') ||
-        code.startsWith('4000')
+        name.includes("sales") ||
+        code.includes("sales") ||
+        code.startsWith("4000")
       ) {
         accountMap.sales_revenue = acc.account_code;
       }
       if (
-        name.includes('cash') ||
-        name.includes('bank') ||
-        code.includes('cash') ||
-        code.startsWith('1010')
+        name.includes("cash") ||
+        name.includes("bank") ||
+        code.includes("cash") ||
+        code.startsWith("1010")
       ) {
         accountMap.cash = acc.account_code;
       }
@@ -106,34 +106,32 @@ class GLPostingService {
     }
 
     if (!productionOutput.inventory_posted) {
-      throw new Error('Production output has not been posted to inventory');
+      throw new Error("Production output has not been posted to inventory");
     }
 
     // Check if entries already exist for this output
     const existingEntries = await db.GLPosting.findAll({
       where: {
         production_output_id: productionOutputId,
-        posting_status: 'POSTED',
+        posting_status: "POSTED",
       },
     });
 
     if (existingEntries.length > 0) {
-      throw new Error(
-        'GL entries already posted for this production output'
-      );
+      throw new Error("GL entries already posted for this production output");
     }
 
     const { accountMap } = await this.getAccountCodes();
 
     if (!accountMap.finished_goods || !accountMap.raw_materials) {
       throw new Error(
-        'Required GL accounts (Finished Goods or Raw Materials) not found in chart of accounts'
+        "Required GL accounts (Finished Goods or Raw Materials) not found in chart of accounts"
       );
     }
 
     const costAmount = parseFloat(productionOutput.cost_allocated || 0);
     if (costAmount <= 0) {
-      throw new Error('Cost allocated must be greater than 0');
+      throw new Error("Cost allocated must be greater than 0");
     }
 
     const entries = [];
@@ -148,7 +146,7 @@ class GLPostingService {
       credit: 0,
       production_output_id: productionOutputId,
       description: `Finished goods receipt - SKU: ${productionOutput.sku_code}, Qty: ${productionOutput.final_output_quantity}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -165,7 +163,7 @@ class GLPostingService {
       credit: costAmount,
       production_output_id: productionOutputId,
       description: `Raw materials consumed - SKU: ${productionOutput.sku_code}, Qty: ${productionOutput.final_output_quantity}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -188,36 +186,31 @@ class GLPostingService {
       throw new Error(`SalesInvoice not found: ${invoiceId}`);
     }
 
-    if (invoice.invoice_status !== 'POSTED') {
-      throw new Error('Invoice must be posted before GL posting');
+    if (invoice.invoice_status !== "POSTED") {
+      throw new Error("Invoice must be posted before GL posting");
     }
 
     // Check if entries already exist for this invoice
     const existingEntries = await db.GLPosting.findAll({
       where: {
         invoice_id: invoiceId,
-        posting_status: 'POSTED',
+        posting_status: "POSTED",
       },
     });
 
     if (existingEntries.length > 0) {
-      throw new Error('GL entries already posted for this invoice');
+      throw new Error("GL entries already posted for this invoice");
     }
 
     const { accountMap } = await this.getAccountCodes();
 
-    if (
-      !accountMap.accounts_receivable ||
-      !accountMap.sales_revenue
-    ) {
-      throw new Error(
-        'Required GL accounts (AR or Sales Revenue) not found'
-      );
+    if (!accountMap.accounts_receivable || !accountMap.sales_revenue) {
+      throw new Error("Required GL accounts (AR or Sales Revenue) not found");
     }
 
     const netAmount = parseFloat(invoice.net_total_amount || 0);
     if (netAmount <= 0) {
-      throw new Error('Invoice net total must be greater than 0');
+      throw new Error("Invoice net total must be greater than 0");
     }
 
     const entries = [];
@@ -232,7 +225,7 @@ class GLPostingService {
       credit: 0,
       invoice_id: invoiceId,
       description: `Sales invoice - INV: ${invoice.invoice_number}, Net: ${netAmount}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -249,7 +242,7 @@ class GLPostingService {
       credit: netAmount,
       invoice_id: invoiceId,
       description: `Sales revenue - INV: ${invoice.invoice_number}, Amount: ${netAmount}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -272,31 +265,31 @@ class GLPostingService {
       throw new Error(`SalesPayment not found: ${paymentId}`);
     }
 
-    if (payment.payment_status !== 'PAID') {
-      throw new Error('Payment must be in PAID status');
+    if (payment.payment_status !== "PAID") {
+      throw new Error("Payment must be in PAID status");
     }
 
     // Check if entries already exist for this payment
     const existingEntries = await db.GLPosting.findAll({
       where: {
         payment_id: paymentId,
-        posting_status: 'POSTED',
+        posting_status: "POSTED",
       },
     });
 
     if (existingEntries.length > 0) {
-      throw new Error('GL entries already posted for this payment');
+      throw new Error("GL entries already posted for this payment");
     }
 
     const { accountMap } = await this.getAccountCodes();
 
     if (!accountMap.cash || !accountMap.accounts_receivable) {
-      throw new Error('Required GL accounts (Cash or AR) not found');
+      throw new Error("Required GL accounts (Cash or AR) not found");
     }
 
     const paidAmount = parseFloat(payment.paid_amount || 0);
     if (paidAmount <= 0) {
-      throw new Error('Paid amount must be greater than 0');
+      throw new Error("Paid amount must be greater than 0");
     }
 
     const entries = [];
@@ -311,7 +304,7 @@ class GLPostingService {
       credit: 0,
       payment_id: paymentId,
       description: `Cash receipt - Order: ${payment.order_id}, Amount: ${paidAmount}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -328,7 +321,7 @@ class GLPostingService {
       credit: paidAmount,
       payment_id: paymentId,
       description: `AR clearance - Order: ${payment.order_id}, Amount: ${paidAmount}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: createdBy,
       posted_at: new Date(),
     });
@@ -366,13 +359,13 @@ class GLPostingService {
       include: [
         {
           model: db.ChartOfAccounts,
-          as: 'account',
-          attributes: ['account_code', 'account_name'],
+          as: "account",
+          attributes: ["account_code", "account_name"],
         },
       ],
       limit,
       offset,
-      order: [['posting_date', 'DESC']],
+      order: [["posting_date", "DESC"]],
     });
 
     return entries;
@@ -388,7 +381,7 @@ class GLPostingService {
     const entries = await db.GLPosting.findAll({
       where: {
         account_code: accountCode,
-        posting_status: 'POSTED',
+        posting_status: "POSTED",
         posting_date: {
           [db.Sequelize.Op.lte]: asOfDate || new Date(),
         },
@@ -424,7 +417,7 @@ class GLPostingService {
   async getTrialBalance(asOfDate) {
     const entries = await db.GLPosting.findAll({
       where: {
-        posting_status: 'POSTED',
+        posting_status: "POSTED",
         posting_date: {
           [db.Sequelize.Op.lte]: asOfDate || new Date(),
         },
@@ -432,8 +425,8 @@ class GLPostingService {
       include: [
         {
           model: db.ChartOfAccounts,
-          as: 'account',
-          attributes: ['account_code', 'account_name', 'account_type'],
+          as: "account",
+          attributes: ["account_code", "account_name", "account_type"],
         },
       ],
       raw: true,
@@ -449,8 +442,8 @@ class GLPostingService {
       if (!accountBalances[code]) {
         accountBalances[code] = {
           account_code: code,
-          account_name: entry['account.account_name'],
-          account_type: entry['account.account_type'],
+          account_name: entry["account.account_name"],
+          account_type: entry["account.account_type"],
           debit: 0,
           credit: 0,
         };
@@ -485,8 +478,8 @@ class GLPostingService {
       throw new Error(`GL entry not found: ${entryId}`);
     }
 
-    if (originalEntry.posting_status === 'REVERSED') {
-      throw new Error('Entry is already reversed');
+    if (originalEntry.posting_status === "REVERSED") {
+      throw new Error("Entry is already reversed");
     }
 
     // Create reversal entry (opposite of original)
@@ -501,13 +494,13 @@ class GLPostingService {
       invoice_id: originalEntry.invoice_id,
       payment_id: originalEntry.payment_id,
       description: `REVERSAL of ${originalEntry.entry_number}: ${reversalReason}`,
-      posting_status: 'POSTED',
+      posting_status: "POSTED",
       posted_by: reversed_by,
       posted_at: new Date(),
     });
 
     // Mark original entry as reversed
-    originalEntry.posting_status = 'REVERSED';
+    originalEntry.posting_status = "REVERSED";
     originalEntry.reversal_entry_id = reversalEntry.id;
     await originalEntry.save();
 

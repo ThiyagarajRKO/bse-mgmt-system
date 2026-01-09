@@ -1,5 +1,5 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class SalesAllocation extends Model {
@@ -7,23 +7,23 @@ module.exports = (sequelize, DataTypes) => {
       // Belongs to Order and OrderProduct
       if (models.Order) {
         this.belongsTo(models.Order, {
-          foreignKey: 'order_id',
-          as: 'order',
+          foreignKey: "order_id",
+          as: "order",
         });
       }
 
       if (models.OrderProduct) {
         this.belongsTo(models.OrderProduct, {
-          foreignKey: 'order_product_id',
-          as: 'orderProduct',
+          foreignKey: "order_product_id",
+          as: "orderProduct",
         });
       }
 
       // Has many ProductionDemands
       if (models.ProductionDemand) {
         this.hasMany(models.ProductionDemand, {
-          foreignKey: 'sales_allocation_id',
-          as: 'productionDemands',
+          foreignKey: "sales_allocation_id",
+          as: "productionDemands",
         });
       }
     }
@@ -46,12 +46,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       allocation_status: {
         type: DataTypes.ENUM(
-          'PENDING',
-          'ALLOCATED',
-          'PRODUCTION_IN_PROGRESS',
-          'COMPLETED'
+          "PENDING",
+          "ALLOCATED",
+          "PRODUCTION_IN_PROGRESS",
+          "COMPLETED"
         ),
-        defaultValue: 'PENDING',
+        defaultValue: "PENDING",
         allowNull: false,
       },
       allocated_quantity: {
@@ -76,8 +76,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'SalesAllocation',
-      tableName: 'sales_allocations',
+      modelName: "SalesAllocation",
+      tableName: "sales_allocations",
       timestamps: true,
       underscored: true,
     }

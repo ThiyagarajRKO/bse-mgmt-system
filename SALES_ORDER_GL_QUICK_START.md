@@ -43,6 +43,7 @@ npm start
 ### Step 3: Verify Routes
 
 Test a simple endpoint:
+
 ```bash
 curl -X GET http://localhost:3000/sales/invoices \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -112,6 +113,7 @@ POST http://localhost:3000/sales/allocations/alloc-uuid/create-demands
 ### 5. Execute Production (Existing System)
 
 Create and execute production order:
+
 ```bash
 POST http://localhost:3000/production/orders
 {
@@ -154,6 +156,7 @@ POST http://localhost:3000/sales/invoices/inv-uuid/line-items
 ```
 
 **Response**: Line items added, totals auto-calculated
+
 - Cost per unit: $45.00
 - Line total: $4,500.00
 - Tax (18%): $810.00
@@ -190,7 +193,8 @@ POST http://localhost:3000/sales/payments
 PUT http://localhost:3000/sales/invoices/inv-uuid/post
 ```
 
-**Response**: 
+**Response**:
+
 - Invoice status = POSTED
 - GL entries created:
   - Dr 1200-Accounts Receivable: $5,710
@@ -214,31 +218,37 @@ GET http://localhost:3000/gl/trial-balance
 ## Common API Calls
 
 ### List All Allocations
+
 ```bash
 GET http://localhost:3000/sales/allocations?limit=20&offset=0
 ```
 
 ### Get Allocation Details
+
 ```bash
 GET http://localhost:3000/sales/allocations/alloc-uuid
 ```
 
 ### Get Order Allocation Summary
+
 ```bash
 GET http://localhost:3000/sales/orders/ord-uuid/allocation-summary
 ```
 
 ### List All Invoices
+
 ```bash
 GET http://localhost:3000/sales/invoices?invoice_status=DRAFT&limit=20
 ```
 
 ### Get Revenue Summary
+
 ```bash
 GET http://localhost:3000/sales/invoices/summary/revenue?from_date=2026-01-01&to_date=2026-01-31
 ```
 
 ### List GL Entries
+
 ```bash
 GET http://localhost:3000/gl/entries?account_code=1200&posting_status=POSTED
 ```
@@ -339,6 +349,7 @@ npm start
 ### GL Entries Not Created
 
 Check:
+
 1. Invoice status is POSTED
 2. Payment status is PAID
 3. No duplicate entries exist
@@ -363,16 +374,20 @@ If not balanced, check for reversed entries or incomplete postings.
 ## API Response Format
 
 ### Success Response
+
 ```json
 {
   "success": true,
   "message": "Operation completed",
-  "data": { /* object or array */ },
+  "data": {
+    /* object or array */
+  },
   "pagination": { "limit": 20, "offset": 0 }
 }
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -381,6 +396,7 @@ If not balanced, check for reversed entries or incomplete postings.
 ```
 
 ### Hard Block Error (403)
+
 ```json
 {
   "success": false,
@@ -403,6 +419,7 @@ If not balanced, check for reversed entries or incomplete postings.
 ## Support
 
 For detailed information, see:
+
 - **System Documentation**: `SALES_ORDER_GL_FLOW_DOCUMENTATION.md`
 - **API Reference**: `SALES_ORDER_GL_API_REFERENCE.md`
 - **Implementation Guide**: `SALES_ORDER_GL_IMPLEMENTATION_CHECKLIST.md`

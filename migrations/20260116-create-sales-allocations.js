@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('sales_allocations', {
+    await queryInterface.createTable("sales_allocations", {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
@@ -12,48 +12,49 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: { tableName: 'orders' },
-          key: 'id',
+          model: { tableName: "orders" },
+          key: "id",
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       order_product_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: { tableName: 'order_products' },
-          key: 'id',
+          model: { tableName: "order_products" },
+          key: "id",
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       allocation_status: {
         type: Sequelize.ENUM(
-          'PENDING',
-          'PARTIAL',
-          'ALLOCATED',
-          'PRODUCTION_IN_PROGRESS',
-          'COMPLETED',
-          'CANCELLED'
+          "PENDING",
+          "PARTIAL",
+          "ALLOCATED",
+          "PRODUCTION_IN_PROGRESS",
+          "COMPLETED",
+          "CANCELLED"
         ),
-        defaultValue: 'PENDING',
-        comment: 'Allocation lifecycle: PENDING → ALLOCATED → PRODUCTION → COMPLETED',
+        defaultValue: "PENDING",
+        comment:
+          "Allocation lifecycle: PENDING → ALLOCATED → PRODUCTION → COMPLETED",
       },
       allocated_quantity: {
         type: Sequelize.DECIMAL(10, 2),
         defaultValue: 0,
-        comment: 'Quantity allocated to production',
+        comment: "Quantity allocated to production",
       },
       fulfilled_quantity: {
         type: Sequelize.DECIMAL(10, 2),
         defaultValue: 0,
-        comment: 'Quantity fulfilled by production',
+        comment: "Quantity fulfilled by production",
       },
       ordered_quantity: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
-        comment: 'Original order quantity (from order_products)',
+        comment: "Original order quantity (from order_products)",
       },
       allocation_date: {
         type: Sequelize.DATE,
@@ -62,11 +63,11 @@ module.exports = {
       allocated_by: {
         type: Sequelize.UUID,
         references: {
-          model: { tableName: 'user_profiles' },
-          key: 'id',
+          model: { tableName: "user_profiles" },
+          key: "id",
         },
-        onDelete: 'SET NULL',
-        onUpdate: 'CASCADE',
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
       },
       remarks: {
         type: Sequelize.TEXT,
@@ -78,11 +79,11 @@ module.exports = {
       created_by: {
         type: Sequelize.UUID,
         references: {
-          model: { tableName: 'user_profiles' },
-          key: 'id',
+          model: { tableName: "user_profiles" },
+          key: "id",
         },
-        onDelete: 'SET NULL',
-        onUpdate: 'CASCADE',
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
       },
       created_at: {
         type: Sequelize.DATE,
@@ -96,13 +97,13 @@ module.exports = {
     });
 
     // Indexes
-    await queryInterface.addIndex('sales_allocations', ['order_id']);
-    await queryInterface.addIndex('sales_allocations', ['order_product_id']);
-    await queryInterface.addIndex('sales_allocations', ['allocation_status']);
-    await queryInterface.addIndex('sales_allocations', ['allocation_date']);
+    await queryInterface.addIndex("sales_allocations", ["order_id"]);
+    await queryInterface.addIndex("sales_allocations", ["order_product_id"]);
+    await queryInterface.addIndex("sales_allocations", ["allocation_status"]);
+    await queryInterface.addIndex("sales_allocations", ["allocation_date"]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('sales_allocations');
+    await queryInterface.dropTable("sales_allocations");
   },
 };

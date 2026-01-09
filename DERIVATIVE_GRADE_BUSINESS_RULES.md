@@ -22,6 +22,7 @@ Complete implementation of seafood processing business rules across all species 
 ## 🔒 GLOBAL RULES (Apply Everywhere)
 
 ### Rule 1: Grade D Restrictions (CRITICAL)
+
 ```
 IF grade = D
   THEN allowed_derivatives = [MINCE, PASTE, VALUE_ADDED]
@@ -30,6 +31,7 @@ IF grade = D
 ```
 
 **Implementation:**
+
 ```javascript
 IF grade = 'D'
   ALLOWED: MINCE, PASTE, VALUE_ADDED
@@ -44,16 +46,17 @@ IF grade = 'D'
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Grade A | Grade B | Grade C | Grade D | Notes |
-|-----------|---------|---------|---------|---------|-------|
-| WHOLE | ✅ | ✅ | ✅ | ✅ | All grades acceptable |
-| FILLET | ✅ | ✅ | ✅ | ✅ | Weight rule applies |
-| STEAK | ✅ | ✅ | ✅ | ✅ | Cross-section steaks |
-| PORTION | ✅ | ✅ | ✅ | ❌ | < 500g retail portions |
-| MINCE | ❌ | ✅ | ✅ | ✅ | Ground/minced |
-| PASTE | ❌ | ❌ | ✅ | ✅ | Surimi/paste |
+| Derivative | Grade A | Grade B | Grade C | Grade D | Notes                  |
+| ---------- | ------- | ------- | ------- | ------- | ---------------------- |
+| WHOLE      | ✅      | ✅      | ✅      | ✅      | All grades acceptable  |
+| FILLET     | ✅      | ✅      | ✅      | ✅      | Weight rule applies    |
+| STEAK      | ✅      | ✅      | ✅      | ✅      | Cross-section steaks   |
+| PORTION    | ✅      | ✅      | ✅      | ❌      | < 500g retail portions |
+| MINCE      | ❌      | ✅      | ✅      | ✅      | Ground/minced          |
+| PASTE      | ❌      | ❌      | ✅      | ✅      | Surimi/paste           |
 
 ### Rule: Fillet Weight Threshold
+
 ```
 IF derivative = FILLET AND weight > 500g
   THEN must convert to PORTION
@@ -64,6 +67,7 @@ IF derivative = FILLET AND weight > 500g
 ```
 
 **Example:**
+
 - 450g fillet → OK as FILLET
 - 600g fillet → MUST be PORTION derivative
 
@@ -72,6 +76,7 @@ IF derivative = FILLET AND weight > 500g
 ## 🪨 WING FILLET (Premium Center Cuts)
 
 ### Rule: No Grade C Wing Fillets
+
 ```
 IF derivative = WING_FILLET
   THEN allowed_grades = [A, B]
@@ -79,18 +84,19 @@ IF derivative = WING_FILLET
   REASON: Wing fillets degrade faster than center cuts
 ```
 
-| Grade | Allowed | Reason |
-|-------|---------|--------|
-| A | ✅ | Premium |
-| B | ✅ | Standard |
-| C | ❌ | Degrades too fast |
-| D | ❌ | Not suitable |
+| Grade | Allowed | Reason            |
+| ----- | ------- | ----------------- |
+| A     | ✅      | Premium           |
+| B     | ✅      | Standard          |
+| C     | ❌      | Degrades too fast |
+| D     | ❌      | Not suitable      |
 
 ---
 
 ## 🐠 FLAT FISH (Flounder, Sole, Halibut, etc.)
 
 ### Rule: Grade C Only as Trim/Mince
+
 ```
 IF species = FLAT_FISH AND grade = C
   THEN allowed_derivatives = [TRIM, MINCE, PASTE]
@@ -100,19 +106,20 @@ IF species = FLAT_FISH AND grade = C
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Grade A | Grade B | Grade C | Grade D | Notes |
-|-----------|---------|---------|---------|---------|-------|
-| WHOLE | ✅ | ✅ | ❌ | ❌ | Premium only |
-| FILLET | ✅ | ✅ | ❌ | ❌ | Premium center cuts |
-| TRIM | ✅ | ✅ | ✅ | ✅ | Edge/waste pieces |
-| MINCE | ❌ | ✅ | ✅ | ✅ | Grade C/D minced |
-| PASTE | ❌ | ❌ | ✅ | ✅ | Processing only |
+| Derivative | Grade A | Grade B | Grade C | Grade D | Notes               |
+| ---------- | ------- | ------- | ------- | ------- | ------------------- |
+| WHOLE      | ✅      | ✅      | ❌      | ❌      | Premium only        |
+| FILLET     | ✅      | ✅      | ❌      | ❌      | Premium center cuts |
+| TRIM       | ✅      | ✅      | ✅      | ✅      | Edge/waste pieces   |
+| MINCE      | ❌      | ✅      | ✅      | ✅      | Grade C/D minced    |
+| PASTE      | ❌      | ❌      | ✅      | ✅      | Processing only     |
 
 ---
 
 ## 🍣 TUNA (Sashimi-Grade Premium)
 
 ### LOIN Rules
+
 ```
 IF derivative = LOIN
   THEN allowed_grades = [A, B, C]
@@ -120,6 +127,7 @@ IF derivative = LOIN
 ```
 
 ### SAKU Rules (Critical)
+
 ```
 IF derivative = SAKU AND grade = A
   THEN storage_temp MUST be <= -60°C
@@ -128,24 +136,27 @@ IF derivative = SAKU AND grade = A
 ```
 
 **Temperature Requirements:**
+
 - Grade A SAKU: ≤ -60°C (sashimi protocol required)
 - Grade B LOIN: Standard freezing (-18°C)
 
-| Derivative | Grade A | Grade B | Grade C | Notes |
-|-----------|---------|---------|---------|-------|
-| LOIN | ✅ | ✅ | ✅ | Standard tuna |
-| SAKU | ✅* | ❌ | ❌ | *Requires -60°C storage |
-| STEAK | ✅ | ✅ | ✅ | Cross-section |
-| MINCE | ❌ | ✅ | ✅ | Lower grades |
+| Derivative | Grade A | Grade B | Grade C | Notes                    |
+| ---------- | ------- | ------- | ------- | ------------------------ |
+| LOIN       | ✅      | ✅      | ✅      | Standard tuna            |
+| SAKU       | ✅\*    | ❌      | ❌      | \*Requires -60°C storage |
+| STEAK      | ✅      | ✅      | ✅      | Cross-section            |
+| MINCE      | ❌      | ✅      | ✅      | Lower grades             |
 
 ---
 
 ## 🦐 SHRIMP/PRAWN (Count/Kg Sizing)
 
 ### Count Sizes Supported
+
 - 8/12, 13/15, 16/20, 21/25, 26/30, 31/40
 
 ### Rule: A Grade Split (Future Extension)
+
 ```
 Note: A grades can split into:
   A+ = Head-on (premium)
@@ -155,13 +166,13 @@ Note: A grades can split into:
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Grade A | Grade B | Grade C | Grade D | Count Sizes |
-|-----------|---------|---------|---------|---------|------------|
-| WHOLE | ✅ | ✅ | ❌ | ❌ | 8/12, 13/15, 16/20 |
-| HEADLESS | ✅ | ✅ | ❌ | ❌ | 16/20, 21/25, 26/30 |
-| TAIL | ✅ | ✅ | ✅ | ❌ | 16/20, 21/25, 26/30 |
-| MINCE | ❌ | ✅ | ✅ | ✅ | N/A |
-| PASTE | ❌ | ❌ | ✅ | ✅ | N/A |
+| Derivative | Grade A | Grade B | Grade C | Grade D | Count Sizes         |
+| ---------- | ------- | ------- | ------- | ------- | ------------------- |
+| WHOLE      | ✅      | ✅      | ❌      | ❌      | 8/12, 13/15, 16/20  |
+| HEADLESS   | ✅      | ✅      | ❌      | ❌      | 16/20, 21/25, 26/30 |
+| TAIL       | ✅      | ✅      | ✅      | ❌      | 16/20, 21/25, 26/30 |
+| MINCE      | ❌      | ✅      | ✅      | ✅      | N/A                 |
+| PASTE      | ❌      | ❌      | ✅      | ✅      | N/A                 |
 
 ---
 
@@ -169,15 +180,16 @@ Note: A grades can split into:
 
 ### Weight Requirements
 
-| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes |
-|-----------|-----------|---------|---------|---------|-------|
-| WHOLE | 250g | ✅ | ✅ | ❌ | Full crabs |
-| MEAT_PACK | 200g | ✅ | ✅ | ❌ | Picked meat |
-| CLAW_ONLY | N/A | ✅ | ✅ | ❌ | Flexible sizing |
-| LEG_MEAT | N/A | ✅ | ✅ | ❌ | Premium pieces |
-| MINCE | N/A | ❌ | ❌ | ✅ | Processing |
+| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes           |
+| ---------- | ---------- | ------- | ------- | ------- | --------------- |
+| WHOLE      | 250g       | ✅      | ✅      | ❌      | Full crabs      |
+| MEAT_PACK  | 200g       | ✅      | ✅      | ❌      | Picked meat     |
+| CLAW_ONLY  | N/A        | ✅      | ✅      | ❌      | Flexible sizing |
+| LEG_MEAT   | N/A        | ✅      | ✅      | ❌      | Premium pieces  |
+| MINCE      | N/A        | ❌      | ❌      | ✅      | Processing      |
 
 ### Rule: Claw-Only Flexibility
+
 ```
 IF derivative = CLAW_ONLY
   THEN Grade B allowed even < 250g
@@ -190,13 +202,13 @@ IF derivative = CLAW_ONLY
 
 ### Tail Meat Thresholds (Critical for Export)
 
-| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes |
-|-----------|-----------|---------|---------|---------|-------|
-| WHOLE | 400g | ✅ | ✅ | ❌ | Live lobster |
-| TAIL | 120g | ✅ | ✅ | ❌ | Tail meat export |
-| MEAT_PACK | 100g | ✅ | ✅ | ❌ | Picked meat |
-| KNUCKLE | N/A | ❌ | ✅ | ✅ | Secondary cuts |
-| MINCE | N/A | ❌ | ❌ | ✅ | Processing |
+| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes            |
+| ---------- | ---------- | ------- | ------- | ------- | ---------------- |
+| WHOLE      | 400g       | ✅      | ✅      | ❌      | Live lobster     |
+| TAIL       | 120g       | ✅      | ✅      | ❌      | Tail meat export |
+| MEAT_PACK  | 100g       | ✅      | ✅      | ❌      | Picked meat      |
+| KNUCKLE    | N/A        | ❌      | ✅      | ✅      | Secondary cuts   |
+| MINCE      | N/A        | ❌      | ❌      | ✅      | Processing       |
 
 **Important:** Tail meat weight thresholds critical for buyer acceptance in export markets.
 
@@ -205,21 +217,23 @@ IF derivative = CLAW_ONLY
 ## 🦑 SQUID/CUTTLEFISH (Length-Based Grading)
 
 ### Length Ranges
+
 - 10-20cm: Grade C/B
 - 20-30cm: Grade A/B/C
 - 30+cm: Grade A/B (premium only)
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Grade A | Grade B | Grade C | Grade D | Notes |
-|-----------|---------|---------|---------|---------|-------|
-| WHOLE | ✅ | ✅ | ✅ | ❌ | 10-30cm |
-| TUBE | ✅ | ✅ | ✅ | ❌ | Body only |
-| RING | ❌ | ✅ | ✅ | ❌ | Sliced body |
-| TENTACLE | ✅ | ✅ | ✅ | ❌ | Tentacle pieces |
-| MINCE | ❌ | ❌ | ✅ | ✅ | Ground |
+| Derivative | Grade A | Grade B | Grade C | Grade D | Notes           |
+| ---------- | ------- | ------- | ------- | ------- | --------------- |
+| WHOLE      | ✅      | ✅      | ✅      | ❌      | 10-30cm         |
+| TUBE       | ✅      | ✅      | ✅      | ❌      | Body only       |
+| RING       | ❌      | ✅      | ✅      | ❌      | Sliced body     |
+| TENTACLE   | ✅      | ✅      | ✅      | ❌      | Tentacle pieces |
+| MINCE      | ❌      | ❌      | ✅      | ✅      | Ground          |
 
 ### Future Extension
+
 ```
 Tube diameter for premium markets (not required now)
 → Can add later for ultra-premium sashimi squid
@@ -231,14 +245,15 @@ Tube diameter for premium markets (not required now)
 
 ### Rule: Small vs. Large
 
-| Derivative | Weight | Grade A | Grade B | Grade C | Use Case |
-|-----------|--------|---------|---------|---------|----------|
-| WHOLE_SMALL | ≤ 500g | ❌ | ✅ | ✅ | Processing/cooking |
-| WHOLE_LARGE | > 500g | ✅ | ✅ | ❌ | Export/retail/premium |
-| ARM | Any | ✅ | ✅ | ✅ | Arm pieces |
-| MINCE | Any | ❌ | ❌ | ✅ | Ground/processing |
+| Derivative  | Weight | Grade A | Grade B | Grade C | Use Case              |
+| ----------- | ------ | ------- | ------- | ------- | --------------------- |
+| WHOLE_SMALL | ≤ 500g | ❌      | ✅      | ✅      | Processing/cooking    |
+| WHOLE_LARGE | > 500g | ✅      | ✅      | ❌      | Export/retail/premium |
+| ARM         | Any    | ✅      | ✅      | ✅      | Arm pieces            |
+| MINCE       | Any    | ❌      | ❌      | ✅      | Ground/processing     |
 
 **Logic:**
+
 - Small octopus (< 500g) → Grade B/C only (processing use)
 - Large octopus (> 500g) → Grade A/B (premium market)
 
@@ -247,18 +262,20 @@ Tube diameter for premium markets (not required now)
 ## 🦪 BIVALVES (Clams, Mussels, Oysters, Scallops)
 
 ### Count/Kg Grading
+
 - Export-compliant count sizing: 10/kg, 20/kg, 30/kg, 40/kg, 50/kg
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Grade A | Grade B | Grade C | Grade D | Notes |
-|-----------|---------|---------|---------|---------|-------|
-| LIVE | ✅ | ✅ | ❌ | ❌ | Requires cold chain |
-| FROZEN | ✅ | ✅ | ✅ | ❌ | Standard exports |
-| SHUCKED | ✅ | ✅ | ✅ | ❌ | Meat only |
-| MINCE | ❌ | ❌ | ✅ | ✅ | Processing |
+| Derivative | Grade A | Grade B | Grade C | Grade D | Notes               |
+| ---------- | ------- | ------- | ------- | ------- | ------------------- |
+| LIVE       | ✅      | ✅      | ❌      | ❌      | Requires cold chain |
+| FROZEN     | ✅      | ✅      | ✅      | ❌      | Standard exports    |
+| SHUCKED    | ✅      | ✅      | ✅      | ❌      | Meat only           |
+| MINCE      | ❌      | ❌      | ✅      | ✅      | Processing          |
 
 ### Rule: Live vs. Frozen Divergence
+
 ```
 Note: Live and frozen can have different quality specs
   → Future extension for separate grading systems
@@ -270,6 +287,7 @@ Note: Live and frozen can have different quality specs
 ## 🐚 GASTROPOD (Abalone - Conservation)
 
 ### Rule: Minimum Weight Blocking
+
 ```
 IF derivative = WHOLE OR MEAT
   THEN weight MUST be >= 100g (WHOLE) or 80g (MEAT)
@@ -279,17 +297,18 @@ IF derivative = WHOLE OR MEAT
 
 ### Allowed Derivatives by Grade
 
-| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes |
-|-----------|-----------|---------|---------|---------|-------|
-| WHOLE | 100g | ✅ | ✅ | ❌ | Conservation rule |
-| MEAT | 80g | ✅ | ✅ | ✅ | Shucked meat |
-| MINCE | N/A | ❌ | ❌ | ✅ | Processing |
+| Derivative | Min Weight | Grade A | Grade B | Grade C | Notes             |
+| ---------- | ---------- | ------- | ------- | ------- | ----------------- |
+| WHOLE      | 100g       | ✅      | ✅      | ❌      | Conservation rule |
+| MEAT       | 80g        | ✅      | ✅      | ✅      | Shucked meat      |
+| MINCE      | N/A        | ❌      | ❌      | ✅      | Processing        |
 
 ---
 
 ## ⚠️ SPECIAL RULES
 
 ### Rule: Grade C WHOLE (Limited Exception)
+
 ```
 IF grade = C AND derivative = WHOLE
   THEN allowed_for = [ROUND_FISH, FLAT_FISH, SQUID, OCTOPUS_SMALL]
@@ -298,6 +317,7 @@ IF grade = C AND derivative = WHOLE
 ```
 
 ### Rule: Fillet Size Portion Conversion
+
 ```
 IF species = ROUND_FISH
   AND derivative = FILLET
@@ -314,29 +334,32 @@ IF species = ROUND_FISH
 ## 🔧 IMPLEMENTATION
 
 ### Service File
+
 `services/DerivativeGradeBusinessRules.js`
 
 ### Usage Example
+
 ```javascript
-const rules = require('./services/DerivativeGradeBusinessRules');
+const rules = require("./services/DerivativeGradeBusinessRules");
 
 // Validate a product
 const result = rules.validate({
-  speciesType: 'ROUND_FISH',
-  derivative: 'FILLET',
-  grade: 'A',
-  weight: 450
+  speciesType: "ROUND_FISH",
+  derivative: "FILLET",
+  grade: "A",
+  weight: 450,
 });
 
 if (result.valid) {
-  console.log('✅ Valid combination');
+  console.log("✅ Valid combination");
 } else {
-  console.log('❌ Error:', result.error);
-  console.log('Rule:', result.rule);
+  console.log("❌ Error:", result.error);
+  console.log("Rule:", result.rule);
 }
 ```
 
 ### Integration Points
+
 1. **Product Creation API** - Validate before insert
 2. **Order Management** - Check product derivability
 3. **Inventory Processing** - Enforce grade-derivative rules
@@ -346,20 +369,20 @@ if (result.valid) {
 
 ## 📊 Rule Coverage Summary
 
-| Species Type | Rules | Derivatives | Grade Rules | Special |
-|--------------|-------|-------------|------------|---------|
-| Round Fish | ✅ | 7 | Weight threshold | Fillet > 500g |
-| Wing Fillet | ✅ | 1 | No Grade C | Degradation rule |
-| Flat Fish | ✅ | 5 | C only trim | Quality retention |
-| Tuna | ✅ | 4 | Storage temp | -60°C sashimi |
-| Shrimp | ✅ | 5 | Count/kg sizing | A split option |
-| Crab | ✅ | 5 | Weight minimums | Claw flexibility |
-| Lobster | ✅ | 5 | Export thresholds | Tail meat critical |
-| Squid | ✅ | 5 | Length-based | Diameter future |
-| Octopus | ✅ | 4 | Size-based | Small/large split |
-| Bivalve | ✅ | 4 | Export count | Live/frozen diverge |
-| Gastropod | ✅ | 3 | 100g minimum | Conservation |
-| **GLOBAL** | ✅ | - | Grade D blocking | Processing only |
+| Species Type | Rules | Derivatives | Grade Rules       | Special             |
+| ------------ | ----- | ----------- | ----------------- | ------------------- |
+| Round Fish   | ✅    | 7           | Weight threshold  | Fillet > 500g       |
+| Wing Fillet  | ✅    | 1           | No Grade C        | Degradation rule    |
+| Flat Fish    | ✅    | 5           | C only trim       | Quality retention   |
+| Tuna         | ✅    | 4           | Storage temp      | -60°C sashimi       |
+| Shrimp       | ✅    | 5           | Count/kg sizing   | A split option      |
+| Crab         | ✅    | 5           | Weight minimums   | Claw flexibility    |
+| Lobster      | ✅    | 5           | Export thresholds | Tail meat critical  |
+| Squid        | ✅    | 5           | Length-based      | Diameter future     |
+| Octopus      | ✅    | 4           | Size-based        | Small/large split   |
+| Bivalve      | ✅    | 4           | Export count      | Live/frozen diverge |
+| Gastropod    | ✅    | 3           | 100g minimum      | Conservation        |
+| **GLOBAL**   | ✅    | -           | Grade D blocking  | Processing only     |
 
 ---
 
@@ -394,6 +417,6 @@ if (result.valid) {
 
 ---
 
-*Rules based on industry standards and buyer expectations*  
-*Implemented: January 9, 2026*  
-*Version: 1.0 - Complete Implementation*
+_Rules based on industry standards and buyer expectations_  
+_Implemented: January 9, 2026_  
+_Version: 1.0 - Complete Implementation_

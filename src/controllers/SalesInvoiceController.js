@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const SalesInvoiceService = require('../../services/SalesInvoiceService');
+const SalesInvoiceService = require("../../services/SalesInvoiceService");
 
 class SalesInvoiceController {
   /**
@@ -10,7 +10,7 @@ class SalesInvoiceController {
   async createInvoice(request, reply) {
     try {
       const { order_id, customer_master_id, invoice_date } = request.body;
-      const created_by = request.user?.username || 'system';
+      const created_by = request.user?.username || "system";
 
       const invoice = await SalesInvoiceService.createInvoice({
         order_id,
@@ -21,7 +21,7 @@ class SalesInvoiceController {
 
       return reply.code(201).send({
         success: true,
-        message: 'Invoice created successfully',
+        message: "Invoice created successfully",
         data: invoice,
       });
     } catch (error) {
@@ -41,7 +41,7 @@ class SalesInvoiceController {
     try {
       const { id } = request.params;
       const { line_items } = request.body;
-      const added_by = request.user?.username || 'system';
+      const added_by = request.user?.username || "system";
 
       const lines = await SalesInvoiceService.addLineItems(
         id,
@@ -71,7 +71,7 @@ class SalesInvoiceController {
     try {
       const { id } = request.params;
       const { shipping_amount, discount_amount } = request.body;
-      const updated_by = request.user?.username || 'system';
+      const updated_by = request.user?.username || "system";
 
       const invoice = await SalesInvoiceService.updateInvoiceCharges(
         id,
@@ -82,7 +82,7 @@ class SalesInvoiceController {
 
       return reply.send({
         success: true,
-        message: 'Invoice charges updated',
+        message: "Invoice charges updated",
         data: invoice,
       });
     } catch (error) {
@@ -171,21 +171,18 @@ class SalesInvoiceController {
   async postInvoiceToGL(request, reply) {
     try {
       const { id } = request.params;
-      const posted_by = request.user?.username || 'system';
+      const posted_by = request.user?.username || "system";
 
-      const invoice = await SalesInvoiceService.postInvoiceToGL(
-        id,
-        posted_by
-      );
+      const invoice = await SalesInvoiceService.postInvoiceToGL(id, posted_by);
 
       return reply.send({
         success: true,
-        message: 'Invoice posted to GL successfully',
+        message: "Invoice posted to GL successfully",
         data: invoice,
       });
     } catch (error) {
       request.log.error(error);
-      const statusCode = error.message.includes('HARD BLOCK') ? 403 : 400;
+      const statusCode = error.message.includes("HARD BLOCK") ? 403 : 400;
       return reply.code(statusCode).send({
         success: false,
         message: error.message,
@@ -201,7 +198,7 @@ class SalesInvoiceController {
     try {
       const { id } = request.params;
       const { reason } = request.body;
-      const cancelled_by = request.user?.username || 'system';
+      const cancelled_by = request.user?.username || "system";
 
       const invoice = await SalesInvoiceService.cancelInvoice(
         id,
@@ -211,7 +208,7 @@ class SalesInvoiceController {
 
       return reply.send({
         success: true,
-        message: 'Invoice cancelled',
+        message: "Invoice cancelled",
         data: invoice,
       });
     } catch (error) {

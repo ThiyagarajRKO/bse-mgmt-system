@@ -5,6 +5,7 @@
 ### Files Created (7 files, 2500+ lines)
 
 #### 1. Database Migrations (5 files)
+
 - ✅ `20260111-create-production-orders.js` - Main order table (130 lines)
 - ✅ `20260111-create-production-raw-issues.js` - Raw material issuance (120 lines)
 - ✅ `20260111-create-production-derivatives.js` - Derivative allocation (95 lines)
@@ -14,6 +15,7 @@
 **Location**: `/migrations/`
 
 #### 2. Sequelize Models (5 files)
+
 - ✅ `models/production_orders.js` - Production order model with associations (70 lines)
 - ✅ `models/production_raw_issues.js` - Raw issue model (65 lines)
 - ✅ `models/production_derivatives.js` - Derivative allocation model (70 lines)
@@ -23,6 +25,7 @@
 **Location**: `/models/`
 
 #### 3. Service Layer (5 files)
+
 - ✅ `services/ProductionOrderService.js` - Order creation & lifecycle (250 lines)
 - ✅ `services/RawMaterialIssueService.js` - Raw issuance with immutability (280 lines)
 - ✅ `services/DerivativeAllocationService.js` - Derivative splitting & yield (290 lines)
@@ -32,11 +35,13 @@
 **Location**: `/services/`
 
 #### 4. API Controller (1 file)
+
 - ✅ `controllers/ProductionOrderController.js` - 11 endpoints with validation (500+ lines)
 
 **Location**: `/controllers/`
 
 #### 5. Documentation (1 file)
+
 - ✅ `PRODUCTION_ORDER_MANAGEMENT.md` - Comprehensive guide (700+ lines)
 
 **Location**: Root
@@ -52,16 +57,16 @@
 ```javascript
 // In app.js or your service container initialization
 
-const ProductionOrderService = require('./services/ProductionOrderService');
-const RawMaterialIssueService = require('./services/RawMaterialIssueService');
-const DerivativeAllocationService = require('./services/DerivativeAllocationService');
-const SKUGenerationService = require('./services/SKUGenerationService');
-const ProductionExecutionService = require('./services/ProductionExecutionService');
+const ProductionOrderService = require("./services/ProductionOrderService");
+const RawMaterialIssueService = require("./services/RawMaterialIssueService");
+const DerivativeAllocationService = require("./services/DerivativeAllocationService");
+const SKUGenerationService = require("./services/SKUGenerationService");
+const ProductionExecutionService = require("./services/ProductionExecutionService");
 
 // Get existing services
-const GradeDowngradeExceptionService = require('./services/GradeDowngradeExceptionService');
-const GradeYieldValidationService = require('./services/GradeYieldValidationService');
-const ProductionCostingService = require('./services/ProductionCostingService');
+const GradeDowngradeExceptionService = require("./services/GradeDowngradeExceptionService");
+const GradeYieldValidationService = require("./services/GradeYieldValidationService");
+const ProductionCostingService = require("./services/ProductionCostingService");
 
 // Initialize production order services
 container.productionOrderService = new ProductionOrderService(models);
@@ -86,9 +91,9 @@ container.productionExecutionService = new ProductionExecutionService(
 ```javascript
 // In your routes file (e.g., routes/index.js or routes/production.js)
 
-const ProductionOrderController = require('../controllers/ProductionOrderController');
+const ProductionOrderController = require("../controllers/ProductionOrderController");
 
-module.exports = async function(app, options) {
+module.exports = async function (app, options) {
   const controller = new ProductionOrderController(
     app.container.productionOrderService,
     app.container.rawMaterialIssueService,
@@ -98,20 +103,46 @@ module.exports = async function(app, options) {
   );
 
   // Define routes
-  app.post('/production/orders', (req, reply) => controller.createOrder(req, reply));
-  app.post('/production/orders/:id/issue-raw', (req, reply) => controller.issueRawMaterial(req, reply));
-  app.post('/production/orders/:id/derive', (req, reply) => controller.allocateDerivatives(req, reply));
-  app.post('/production/orders/:id/produce', (req, reply) => controller.recordProduction(req, reply));
-  app.post('/production/orders/:id/allocate-cost', (req, reply) => controller.allocateCost(req, reply));
-  app.post('/production/orders/:id/post-inventory', (req, reply) => controller.postInventory(req, reply));
-  app.post('/production/orders/:id/close', (req, reply) => controller.closeOrder(req, reply));
+  app.post("/production/orders", (req, reply) =>
+    controller.createOrder(req, reply)
+  );
+  app.post("/production/orders/:id/issue-raw", (req, reply) =>
+    controller.issueRawMaterial(req, reply)
+  );
+  app.post("/production/orders/:id/derive", (req, reply) =>
+    controller.allocateDerivatives(req, reply)
+  );
+  app.post("/production/orders/:id/produce", (req, reply) =>
+    controller.recordProduction(req, reply)
+  );
+  app.post("/production/orders/:id/allocate-cost", (req, reply) =>
+    controller.allocateCost(req, reply)
+  );
+  app.post("/production/orders/:id/post-inventory", (req, reply) =>
+    controller.postInventory(req, reply)
+  );
+  app.post("/production/orders/:id/close", (req, reply) =>
+    controller.closeOrder(req, reply)
+  );
 
-  app.get('/production/orders', (req, reply) => controller.listOrders(req, reply));
-  app.get('/production/orders/:id', (req, reply) => controller.getOrder(req, reply));
-  app.get('/production/orders/:id/expected-yield', (req, reply) => controller.getExpectedYield(req, reply));
-  app.get('/production/orders/:id/cost-allocation', (req, reply) => controller.getCostAllocation(req, reply));
-  app.get('/production/orders/:id/audit', (req, reply) => controller.getAuditLog(req, reply));
-  app.get('/production/orders/:id/summary', (req, reply) => controller.getProductionSummary(req, reply));
+  app.get("/production/orders", (req, reply) =>
+    controller.listOrders(req, reply)
+  );
+  app.get("/production/orders/:id", (req, reply) =>
+    controller.getOrder(req, reply)
+  );
+  app.get("/production/orders/:id/expected-yield", (req, reply) =>
+    controller.getExpectedYield(req, reply)
+  );
+  app.get("/production/orders/:id/cost-allocation", (req, reply) =>
+    controller.getCostAllocation(req, reply)
+  );
+  app.get("/production/orders/:id/audit", (req, reply) =>
+    controller.getAuditLog(req, reply)
+  );
+  app.get("/production/orders/:id/summary", (req, reply) =>
+    controller.getProductionSummary(req, reply)
+  );
 };
 ```
 
@@ -135,73 +166,73 @@ npx sequelize-cli db:migrate
 Create `tests/production-order.test.js`:
 
 ```javascript
-const { test } = require('tap');
-const ProductionOrderService = require('../services/ProductionOrderService');
-const RawMaterialIssueService = require('../services/RawMaterialIssueService');
+const { test } = require("tap");
+const ProductionOrderService = require("../services/ProductionOrderService");
+const RawMaterialIssueService = require("../services/RawMaterialIssueService");
 
-test('Production Order Workflow', async (t) => {
+test("Production Order Workflow", async (t) => {
   // Setup models and services
-  
-  t.test('Step 1: Create production order', async (t) => {
+
+  t.test("Step 1: Create production order", async (t) => {
     const order = await productionOrderService.createOrder({
-      input_species_id: 'species-uuid',
-      order_type: 'PRIMARY',
+      input_species_id: "species-uuid",
+      order_type: "PRIMARY",
       planned_quantity_kg: 100,
       planned_start_date: new Date(),
-      plant_id: 'PLANT-001',
-      created_by: 'user-uuid'
+      plant_id: "PLANT-001",
+      created_by: "user-uuid",
     });
-    
-    t.ok(order.id, 'Order created');
-    t.equal(order.status, 'PLANNED', 'Order status is PLANNED');
-    t.match(order.order_number, /^ORD-/, 'Order number has correct format');
+
+    t.ok(order.id, "Order created");
+    t.equal(order.status, "PLANNED", "Order status is PLANNED");
+    t.match(order.order_number, /^ORD-/, "Order number has correct format");
   });
 
-  t.test('Step 2: Issue raw material', async (t) => {
+  t.test("Step 2: Issue raw material", async (t) => {
     const rawIssue = await rawMaterialIssueService.issueRawMaterial({
       production_order_id: order.id,
-      inventory_lot_id: 'lot-uuid',
+      inventory_lot_id: "lot-uuid",
       issued_quantity_kg: 95,
-      measured_avg_size_kg: 0.800,
-      size_code: '800GM',
-      initial_grade: 'A',
-      issued_by: 'user-uuid'
+      measured_avg_size_kg: 0.8,
+      size_code: "800GM",
+      initial_grade: "A",
+      issued_by: "user-uuid",
     });
-    
-    t.ok(rawIssue.id, 'Raw issue created');
-    t.equal(rawIssue.grade_locked, true, 'Grade locked');
-    t.equal(rawIssue.size_locked, true, 'Size locked');
+
+    t.ok(rawIssue.id, "Raw issue created");
+    t.equal(rawIssue.grade_locked, true, "Grade locked");
+    t.equal(rawIssue.size_locked, true, "Size locked");
   });
 
   // ... more test cases
 });
 
-test('Hard Blocks Enforcement', async (t) => {
-  t.test('Cannot issue expired lot', async (t) => {
+test("Hard Blocks Enforcement", async (t) => {
+  t.test("Cannot issue expired lot", async (t) => {
     try {
       await rawMaterialIssueService.issueRawMaterial({
         ...validData,
-        is_expired: true
+        is_expired: true,
       });
-      t.fail('Should have thrown error');
+      t.fail("Should have thrown error");
     } catch (err) {
-      t.match(err.message, /HARD BLOCK.*expired/, 'Hard block enforced');
+      t.match(err.message, /HARD BLOCK.*expired/, "Hard block enforced");
     }
   });
 
-  t.test('Cannot upgrade grade', async (t) => {
+  t.test("Cannot upgrade grade", async (t) => {
     try {
       await productionExecutionService.recordProduction({
         production_order_id: orderId,
         production_derivative_id: derivId,
         actual_quantity_kg: 71.5,
-        actual_grade: 'A',  // Trying to upgrade from B to A
-        size_code: '800GM',
-        recorded_by: 'user-uuid'
+        actual_grade: "A", // Trying to upgrade from B to A
+        size_code: "800GM",
+        recorded_by: "user-uuid",
       });
-      t.fail('Should have thrown error');
+      t.fail("Should have thrown error");
     } catch (err) {
-      t.match(err.message, /Cannot upgrade/, 'Grade upgrade blocked');
+      t.match(err.message, /Cannot upgrade/, "Grade upgrade blocked");
     }
   });
 });
@@ -255,6 +286,7 @@ git push origin main v2.2.0-production-order-management
 ## What's Ready
 
 ### ✅ Complete
+
 - Database schema (5 tables, 50 columns, 25 constraints)
 - Sequelize models with associations
 - Business logic services (5 services, 1200+ lines)
@@ -262,10 +294,12 @@ git push origin main v2.2.0-production-order-management
 - Comprehensive documentation
 
 ### 🔄 In Progress
+
 - Middleware for hard block enforcement (task 18)
 - Unit & integration tests (task 19)
 
 ### ⏳ Pending
+
 - Service registration in app.js (task 20)
 - Route registration in Fastify (task 21)
 
@@ -307,7 +341,9 @@ git push origin main v2.2.0-production-order-management
 ## Critical Implementation Notes
 
 ### 1. Model Associations
+
 All models have proper FK relationships:
+
 - `production_orders` → `species_master` (input_species_id)
 - `production_raw_issues` → `production_orders` (one-to-one)
 - `production_derivatives` → `production_orders` (one-to-many)
@@ -315,11 +351,13 @@ All models have proper FK relationships:
 - `grade_size_validation_logs` → `production_orders` (one-to-many)
 
 ### 2. Immutability
+
 - `grade_locked = true` (set at raw issue time, never changes)
 - `size_locked = true` (set at raw issue time, never changes)
 - Validation logs are immutable audit trail (no updates)
 
 ### 3. Hard Blocks (Must Enforce)
+
 - ✅ Cannot issue expired lots (checked in RawMaterialIssueService)
 - ✅ Cannot issue QC-failed lots (checked in RawMaterialIssueService)
 - ✅ Cannot upgrade grade (checked in ProductionExecutionService)
@@ -328,6 +366,7 @@ All models have proper FK relationships:
 - ✅ Cannot post inventory without cost allocation (checked in postInventory)
 
 ### 4. Deterministic SKU Format
+
 ```
 SPECIES-DERIVATIVE-GRADE-SIZE-PACK
 POM-FIL-B-800GM-1KG
@@ -341,12 +380,14 @@ POM-FIL-B-800GM-1KG
 ```
 
 ### 5. Cost Allocation Split
+
 ```
 Total Cost = raw_cost_share + processing_cost_share + packaging_cost_share
 Split per output = Total × (output_qty / order_qty)
 ```
 
 ### 6. Inventory Posting (2-Phase)
+
 ```
 Phase 1: inventory_posted = true
 - Create FG inventory record
@@ -364,24 +405,30 @@ Phase 2: gl_posted = true
 ## Quick Troubleshooting
 
 ### Issue: Models not found
+
 **Solution**: Ensure models are exported in `/models/index.js`:
+
 ```javascript
-module.exports.ProductionOrder = require('./production_orders');
-module.exports.ProductionRawIssue = require('./production_raw_issues');
-module.exports.ProductionDerivative = require('./production_derivatives');
-module.exports.ProductionOutput = require('./production_outputs');
-module.exports.GradeSizeValidationLog = require('./grade_size_validation_logs');
+module.exports.ProductionOrder = require("./production_orders");
+module.exports.ProductionRawIssue = require("./production_raw_issues");
+module.exports.ProductionDerivative = require("./production_derivatives");
+module.exports.ProductionOutput = require("./production_outputs");
+module.exports.GradeSizeValidationLog = require("./grade_size_validation_logs");
 ```
 
 ### Issue: Foreign key constraint errors
+
 **Solution**: Run migrations in order:
+
 ```bash
 npx sequelize-cli db:migrate:status
 npx sequelize-cli db:migrate
 ```
 
 ### Issue: Service dependencies not found
+
 **Solution**: Initialize services with correct order:
+
 1. ProductionOrderService (no dependencies)
 2. RawMaterialIssueService (depends on models)
 3. DerivativeAllocationService (depends on GradeRules, YieldService)

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
+const { v4: uuidv4 } = require("uuid");
+const db = require("../models");
 
 class SalesInvoiceService {
   /**
@@ -11,14 +11,14 @@ class SalesInvoiceService {
   generateInvoiceNumber() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
     const randomSuffix = String(Math.floor(Math.random() * 10000)).padStart(
       4,
-      '0'
+      "0"
     );
 
     return `INV-${year}${month}${day}-${hours}${minutes}${seconds}-${randomSuffix}`;
@@ -36,7 +36,7 @@ class SalesInvoiceService {
     // Validate input
     if (!order_id || !customer_master_id || !created_by) {
       throw new Error(
-        'Missing required fields: order_id, customer_master_id, created_by'
+        "Missing required fields: order_id, customer_master_id, created_by"
       );
     }
 
@@ -56,7 +56,7 @@ class SalesInvoiceService {
     const existingInvoice = await db.SalesInvoice.findOne({
       where: {
         order_id,
-        invoice_status: ['DRAFT', 'POSTED'],
+        invoice_status: ["DRAFT", "POSTED"],
       },
     });
 
@@ -73,7 +73,7 @@ class SalesInvoiceService {
       order_id,
       customer_master_id,
       invoice_date: invoice_date ? new Date(invoice_date) : new Date(),
-      invoice_status: 'DRAFT',
+      invoice_status: "DRAFT",
       subtotal_amount: 0,
       tax_amount: 0,
       shipping_amount: 0,
@@ -99,14 +99,14 @@ class SalesInvoiceService {
       throw new Error(`SalesInvoice not found: ${invoiceId}`);
     }
 
-    if (invoice.invoice_status !== 'DRAFT') {
+    if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
         `Cannot add line items to invoice in ${invoice.invoice_status} status`
       );
     }
 
     if (!Array.isArray(lineItems) || lineItems.length === 0) {
-      throw new Error('Line items must be a non-empty array');
+      throw new Error("Line items must be a non-empty array");
     }
 
     const createdLines = [];
@@ -116,7 +116,7 @@ class SalesInvoiceService {
 
       if (!production_output_id || !quantity || quantity <= 0) {
         throw new Error(
-          'Each line item must have production_output_id and quantity > 0'
+          "Each line item must have production_output_id and quantity > 0"
         );
       }
 
@@ -126,9 +126,7 @@ class SalesInvoiceService {
       );
 
       if (!productionOutput) {
-        throw new Error(
-          `ProductionOutput not found: ${production_output_id}`
-        );
+        throw new Error(`ProductionOutput not found: ${production_output_id}`);
       }
 
       // HARD BLOCK: Cannot invoice without inventory being posted
@@ -201,7 +199,7 @@ class SalesInvoiceService {
       include: [
         {
           model: db.SalesInvoiceLine,
-          as: 'invoiceLines',
+          as: "invoiceLines",
         },
       ],
     });
@@ -222,8 +220,7 @@ class SalesInvoiceService {
 
     const shippingAmount = parseFloat(invoice.shipping_amount || 0);
     const discountAmount = parseFloat(invoice.discount_amount || 0);
-    const netTotal =
-      subtotal + taxTotal + shippingAmount - discountAmount;
+    const netTotal = subtotal + taxTotal + shippingAmount - discountAmount;
 
     invoice.subtotal_amount = subtotal;
     invoice.tax_amount = taxTotal;
@@ -253,7 +250,7 @@ class SalesInvoiceService {
       throw new Error(`SalesInvoice not found: ${invoiceId}`);
     }
 
-    if (invoice.invoice_status !== 'DRAFT') {
+    if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
         `Cannot update charges on invoice in ${invoice.invoice_status} status`
       );
@@ -261,14 +258,14 @@ class SalesInvoiceService {
 
     if (shippingAmount !== undefined && shippingAmount !== null) {
       if (shippingAmount < 0) {
-        throw new Error('Shipping amount cannot be negative');
+        throw new Error("Shipping amount cannot be negative");
       }
       invoice.shipping_amount = shippingAmount;
     }
 
     if (discountAmount !== undefined && discountAmount !== null) {
       if (discountAmount < 0) {
-        throw new Error('Discount amount cannot be negative');
+        throw new Error("Discount amount cannot be negative");
       }
       invoice.discount_amount = discountAmount;
     }
@@ -290,7 +287,7 @@ class SalesInvoiceService {
       include: [
         {
           model: db.SalesInvoiceLine,
-          as: 'invoiceLines',
+          as: "invoiceLines",
         },
       ],
     });
@@ -299,32 +296,32 @@ class SalesInvoiceService {
       throw new Error(`SalesInvoice not found: ${invoiceId}`);
     }
 
-    if (invoice.invoice_status !== 'DRAFT') {
+    if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
         `Cannot post invoice in ${invoice.invoice_status} status`
       );
     }
 
     if (invoice.invoiceLines.length === 0) {
-      throw new Error('Cannot post invoice without line items');
+      throw new Error("Cannot post invoice without line items");
     }
 
     // Hard block: Check payment before posting
     const payment = await db.SalesPayment.findOne({
       where: {
         order_id: invoice.order_id,
-        payment_status: 'PAID',
+        payment_status: "PAID",
       },
     });
 
     if (!payment) {
       throw new Error(
-        'HARD BLOCK: Cannot post invoice without payment received'
+        "HARD BLOCK: Cannot post invoice without payment received"
       );
     }
 
     // Update invoice status
-    invoice.invoice_status = 'POSTED';
+    invoice.invoice_status = "POSTED";
     invoice.posted_date = new Date();
     invoice.posted_by = posted_by;
     await invoice.save();
@@ -349,15 +346,15 @@ class SalesInvoiceService {
       throw new Error(`SalesInvoice not found: ${invoiceId}`);
     }
 
-    if (invoice.invoice_status === 'CANCELLED') {
-      throw new Error('Invoice is already cancelled');
+    if (invoice.invoice_status === "CANCELLED") {
+      throw new Error("Invoice is already cancelled");
     }
 
-    if (invoice.invoice_status === 'PAID') {
-      throw new Error('Cannot cancel a PAID invoice');
+    if (invoice.invoice_status === "PAID") {
+      throw new Error("Cannot cancel a PAID invoice");
     }
 
-    invoice.invoice_status = 'CANCELLED';
+    invoice.invoice_status = "CANCELLED";
     invoice.remarks = `Cancelled by ${cancelled_by}. Reason: ${reason}`;
     await invoice.save();
 
@@ -374,22 +371,22 @@ class SalesInvoiceService {
       include: [
         {
           model: db.Order,
-          as: 'order',
-          attributes: ['id', 'order_number', 'order_date', 'order_status'],
+          as: "order",
+          attributes: ["id", "order_number", "order_date", "order_status"],
         },
         {
           model: db.CustomerMaster,
-          as: 'customer',
-          attributes: ['id', 'customer_name', 'customer_gst_in'],
+          as: "customer",
+          attributes: ["id", "customer_name", "customer_gst_in"],
         },
         {
           model: db.SalesInvoiceLine,
-          as: 'invoiceLines',
+          as: "invoiceLines",
           include: [
             {
               model: db.ProductMaster,
-              as: 'productMaster',
-              attributes: ['id', 'product_name', 'sku_code'],
+              as: "productMaster",
+              attributes: ["id", "product_name", "sku_code"],
             },
           ],
         },
@@ -419,7 +416,11 @@ class SalesInvoiceService {
     if (filters.invoice_status) where.invoice_status = filters.invoice_status;
 
     // Handle date range filter
-    if (filters.date_range && filters.date_range.from && filters.date_range.to) {
+    if (
+      filters.date_range &&
+      filters.date_range.from &&
+      filters.date_range.to
+    ) {
       where.invoice_date = {
         [db.Sequelize.Op.between]: [
           new Date(filters.date_range.from),
@@ -433,18 +434,18 @@ class SalesInvoiceService {
       include: [
         {
           model: db.Order,
-          as: 'order',
-          attributes: ['id', 'order_number'],
+          as: "order",
+          attributes: ["id", "order_number"],
         },
         {
           model: db.CustomerMaster,
-          as: 'customer',
-          attributes: ['id', 'customer_name'],
+          as: "customer",
+          attributes: ["id", "customer_name"],
         },
       ],
       limit,
       offset,
-      order: [['invoice_date', 'DESC']],
+      order: [["invoice_date", "DESC"]],
     });
 
     return invoices;
@@ -463,9 +464,7 @@ class SalesInvoiceService {
     if (filters.from_date || filters.to_date) {
       where.invoice_date = {};
       if (filters.from_date) {
-        where.invoice_date[db.Sequelize.Op.gte] = new Date(
-          filters.from_date
-        );
+        where.invoice_date[db.Sequelize.Op.gte] = new Date(filters.from_date);
       }
       if (filters.to_date) {
         where.invoice_date[db.Sequelize.Op.lte] = new Date(filters.to_date);
