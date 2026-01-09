@@ -201,6 +201,16 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/order/product",
   });
 
+  // Purchase Payment Routes
+  fastify.register(purchasePaymentRoute, {
+    prefix: "/purchase/payment",
+  });
+
+  // Sales Payment Routes
+  fastify.register(salesPaymentRoute, {
+    prefix: "/sales/payment",
+  });
+
   // Packing Routes
   fastify.register(packingRoute, {
     prefix: "/packing",
