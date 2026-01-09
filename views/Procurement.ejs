@@ -2741,6 +2741,7 @@
           },
           columns: [
             { data: null },
+            { data: null },
             { data: "procurement_date" },
             { data: "procurement_lot" },
             { data: "total_product_count" },
@@ -2757,6 +2758,13 @@
             },
             {
               targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-trash del delProcurementLot" procurement_lot_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Procurement Lot"></i>`;
+              },
+            },
+            {
+              targets: [2],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row["procurement_date"]);
@@ -2782,21 +2790,21 @@
               },
             },
             {
-              targets: [3],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return data || 0;
               },
             },
             {
-              targets: [4],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
               },
             },
             {
-              targets: [5],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
@@ -3532,6 +3540,7 @@
             },
           },
           columns: [
+            { data: null },
             { data: "id" },
             { data: "supplier_name" },
             { data: "email" },
@@ -3546,7 +3555,14 @@
           ],
           columnDefs: [
             {
-              targets: [5],
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-trash del delSupplier" supplier_master_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Supplier"></i>`;
+              },
+            },
+            {
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row?.last_order_on);
@@ -3572,24 +3588,17 @@
               },
             },
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span class="text-success">Delivered <i class="fa-solid fa-circle-check"></i></span>`;
               },
             },
             {
-              targets: [7],
-              className: "text-left",
-              render: function (data, type, row) {
-                return data || 0;
-              },
-            },
-            {
               targets: [8],
               className: "text-left",
               render: function (data, type, row) {
-                return parseFloat(data || 0).toFixed(2);
+                return data || 0;
               },
             },
             {
@@ -3601,6 +3610,13 @@
             },
             {
               targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                return parseFloat(data || 0).toFixed(2);
+              },
+            },
+            {
+              targets: [11],
               className: "text-center",
               render: function (data, type, row) {
                 return `<i class="fa-solid fa-eye view viewSupplierProducts" supplier_master_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this Supplier Orders"></i>`;
@@ -3683,6 +3699,7 @@
             },
           },
           columns: [
+            { data: null },
             { data: "pl.procurement_lot" },
             { data: "created_at" },
             { data: "ProductMaster.product_name" },
@@ -3694,7 +3711,14 @@
           ],
           columnDefs: [
             {
-              targets: [1],
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-trash del delPeelingProduct" peeling_product_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Peeling Product"></i>`;
+              },
+            },
+            {
+              targets: [2],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(data);
@@ -3720,7 +3744,7 @@
               },
             },
             {
-              targets: [4],
+              targets: [5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -3729,7 +3753,7 @@
               },
             },
             {
-              targets: [5],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -3796,6 +3820,7 @@
             },
           },
           columns: [
+            { data: null },
             { data: "pl.procurement_lot" },
             { data: "ProductMaster.product_name" },
             { data: "procurement_quantity" },
@@ -3811,11 +3836,18 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
+                return `<i class="fa fa-trash del delPeeledDispatch" peeled_dispatch_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Peeled Dispatch"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
                 return `<span procurement_product_id=${row["id"]}>${data}</span>`;
               },
             },
             {
-              targets: [3],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 return `<input type="number" class="form-control adjusted_quantity" placeholder="Type the adjustment quantity" value=${
@@ -3824,7 +3856,7 @@
               },
             },
             {
-              targets: [5],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return `<input type="number" class="form-control adjusted_price" placeholder="Type the adjustment price" value=${
@@ -4503,6 +4535,266 @@
         });
       });
 
+      // Delete Procurement Lot handler
+      $(document).on("click", ".delProcurementLot", (e) => {
+        let procurement_lot_id = $(e.target).attr("procurement_lot_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Procurement Lot?",
+          content: "Are you sure, do you want to remove this Procurement Lot?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/procurement/lot?procurement_lot_id=" +
+                    procurement_lot_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    loadProcurementTableData();
+                    toastr.success(
+                      "Procurement lot deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (response) {
+                    toastr.error(
+                      response?.responseJSON?.message ||
+                        "Failed to delete procurement lot",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Procurement lot is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      // Delete Payment Product handler
+      $(document).on("click", ".delPaymentProduct", (e) => {
+        let payment_product_id = $(e.target).attr("payment_product_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Payment Product?",
+          content: "Are you sure, do you want to remove this Payment Product?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/procurement/product/payment/item?payment_product_id=" +
+                    payment_product_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    const purchase_payment_id = $("#paymentProductTable").attr(
+                      "data-payment-id"
+                    );
+                    const supplier_master_id = $("#paymentProductTable").attr(
+                      "data-supplier-id"
+                    );
+                    loadPaymentProductTableData(
+                      purchase_payment_id,
+                      supplier_master_id
+                    );
+                    toastr.success(
+                      "Payment product deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (response) {
+                    toastr.error(
+                      response?.responseJSON?.message ||
+                        "Failed to delete payment product",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Payment product is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      // Delete Supplier handler
+      $(document).on("click", ".delSupplier", (e) => {
+        let supplier_master_id = $(e.target).attr("supplier_master_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Supplier?",
+          content: "Are you sure, do you want to remove this Supplier?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/master/supplier?supplier_master_id=" +
+                    supplier_master_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    loadSupplierTableData();
+                    toastr.success("Supplier deleted successfully", "Deleted");
+                  })
+                  .fail(function (response) {
+                    toastr.error(
+                      response?.responseJSON?.message ||
+                        "Failed to delete supplier",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Supplier is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      // Delete Peeling Product handler
+      $(document).on("click", ".delPeelingProduct", (e) => {
+        let peeling_product_id = $(e.target).attr("peeling_product_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Peeling Product?",
+          content: "Are you sure, do you want to remove this Peeling Product?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/procurement/peeling/product?peeling_product_id=" +
+                    peeling_product_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    const procurement_lot_id =
+                      $("#view_lot_no").attr("procurement_lot_id");
+                    loadPeelingProductTableData(procurement_lot_id);
+                    toastr.success(
+                      "Peeling product deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (response) {
+                    toastr.error(
+                      response?.responseJSON?.message ||
+                        "Failed to delete peeling product",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Peeling product is safe now", "Info");
+            },
+          },
+        });
+      });
+
+      // Delete Peeled Dispatch handler
+      $(document).on("click", ".delPeeledDispatch", (e) => {
+        let peeled_dispatch_id = $(e.target).attr("peeled_dispatch_id");
+        let currentRow = $(e.target).closest("tr");
+        $.confirm({
+          title: "Delete Peeled Dispatch?",
+          content: "Are you sure, do you want to remove this Peeled Dispatch?",
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "red",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            delete: {
+              text: "Delete",
+              btnClass: "btn-red",
+              action: function () {
+                $.ajax({
+                  url:
+                    "/api/procurement/peeled/dispatch?peeled_dispatch_id=" +
+                    peeled_dispatch_id,
+                  method: "delete",
+                })
+                  .done(function (response) {
+                    const procurement_lot_id =
+                      $("#view_lot_no").attr("procurement_lot_id");
+                    loadPeeledDispatchTableData(procurement_lot_id);
+                    toastr.success(
+                      "Peeled dispatch deleted successfully",
+                      "Deleted"
+                    );
+                  })
+                  .fail(function (response) {
+                    toastr.error(
+                      response?.responseJSON?.message ||
+                        "Failed to delete peeled dispatch",
+                      "Error"
+                    );
+                  });
+              },
+            },
+            no: function () {
+              toastr.info("Peeled dispatch is safe now", "Info");
+            },
+          },
+        });
+      });
+
       function loadPaymentProductTableData(
         purchase_payment_id,
         supplier_master_id
@@ -4549,6 +4841,7 @@
             },
           },
           columns: [
+            { data: null },
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
             { data: "procurement_quantity" },
@@ -4561,11 +4854,18 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
+                return `<i class="fa fa-trash del delPaymentProduct" payment_product_id='${row["id"]}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this Payment Product"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
                 return `<span product_master_id=${row["ProductMaster"]?.id}>${data}</span>`;
               },
             },
             {
-              targets: [2, 3, 4],
+              targets: [3, 4, 5],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);

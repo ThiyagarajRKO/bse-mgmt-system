@@ -1,0 +1,878 @@
+<!-- Sales Order → GL Flow Extended Allocation Panel -->
+<!-- Add this to Sales.ejs in the appropriate location -->
+
+<div id="allocationExtendedPanel" class="slide-panel">
+  <div class="slide-panel-header">
+    <h4>Allocation Workflow</h4>
+    <span class="slide-panel-close-btn">&times;</span>
+  </div>
+
+  <div class="slide-panel-body">
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link active"
+          id="alloc-details-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#alloc-details"
+          type="button"
+          role="tab"
+        >
+          <i class="fas fa-info-circle"></i> Allocation Details
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="alloc-demands-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#alloc-demands"
+          type="button"
+          role="tab"
+        >
+          <i class="fas fa-tasks"></i> Production Demands
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="alloc-invoice-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#alloc-invoice"
+          type="button"
+          role="tab"
+        >
+          <i class="fas fa-file-invoice"></i> Invoice
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="alloc-gl-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#alloc-gl"
+          type="button"
+          role="tab"
+        >
+          <i class="fas fa-book"></i> GL Posting
+        </button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Allocation Details Tab -->
+      <div class="tab-pane fade show active" id="alloc-details" role="tabpanel">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="fw-bold">Order Number:</label>
+              <p id="alloc-order-no" class="form-control-static">-</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="fw-bold">Order Date:</label>
+              <p id="alloc-order-date" class="form-control-static">-</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="fw-bold">Customer:</label>
+              <p id="alloc-customer" class="form-control-static">-</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="fw-bold">Allocation Status:</label>
+              <span id="alloc-status-badge" class="badge badge-warning">PENDING</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-hover" id="allocationDetailsTable">
+            <thead class="table-light">
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Allocated</th>
+                <th>Fulfilled</th>
+              </tr>
+            </thead>
+            <tbody id="allocationDetailsBody">
+              <tr>
+                <td colspan="4" class="text-center text-muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-3">
+          <button
+            class="btn btn-sm btn-primary"
+            id="confirmAllocationBtn"
+            onclick="confirmAllocation()"
+          >
+            <i class="fas fa-check"></i> Confirm Allocation
+          </button>
+          <button
+            class="btn btn-sm btn-warning"
+            id="createDemandsBtn"
+            onclick="showCreateDemandsModal()"
+          >
+            <i class="fas fa-plus"></i> Create Demands
+          </button>
+        </div>
+      </div>
+
+      <!-- Production Demands Tab -->
+      <div class="tab-pane fade" id="alloc-demands" role="tabpanel">
+        <div class="mb-3">
+          <button
+            class="btn btn-sm btn-success"
+            onclick="loadProductionDemands()"
+          >
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-hover" id="demandsTable">
+            <thead class="table-light">
+              <tr>
+                <th>Demand #</th>
+                <th>Product</th>
+                <th>Demanded</th>
+                <th>Fulfilled</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="demandsTableBody">
+              <tr>
+                <td colspan="7" class="text-center text-muted">
+                  No demands created yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Invoice Tab -->
+      <div class="tab-pane fade" id="alloc-invoice" role="tabpanel">
+        <div class="mb-3">
+          <button
+            class="btn btn-sm btn-success"
+            onclick="showCreateInvoiceModal()"
+          >
+            <i class="fas fa-file-invoice"></i> Create Invoice
+          </button>
+          <button
+            class="btn btn-sm btn-info"
+            onclick="loadInvoiceData()"
+          >
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+        </div>
+
+        <div id="invoiceDetailsPanel" style="display: none;">
+          <div class="alert alert-info">
+            <h5 id="invoiceNumber">Invoice #</h5>
+            <p class="mb-0">
+              Status: <span id="invoiceStatus" class="badge">DRAFT</span>
+            </p>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Net Amount:</label>
+                <p id="invoiceNetAmount" class="h6">₹0.00</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tax Amount:</label>
+                <p id="invoiceTaxAmount" class="h6">₹0.00</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Total Amount:</label>
+                <p id="invoiceTotalAmount" class="h5 text-primary">₹0.00</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm" id="invoiceLineItems">
+              <thead class="table-light">
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Unit Cost</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceLineItemsBody">
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-3">
+            <button
+              class="btn btn-sm btn-primary"
+              id="postInvoiceBtn"
+              onclick="postInvoiceToGL()"
+            >
+              <i class="fas fa-check"></i> Post to GL
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              id="cancelInvoiceBtn"
+              onclick="cancelInvoice()"
+            >
+              <i class="fas fa-times"></i> Cancel Invoice
+            </button>
+          </div>
+        </div>
+
+        <div id="noInvoiceMessage" class="alert alert-warning">
+          No invoice created yet. Create one from the demands.
+        </div>
+      </div>
+
+      <!-- GL Posting Tab -->
+      <div class="tab-pane fade" id="alloc-gl" role="tabpanel">
+        <div class="mb-3">
+          <button
+            class="btn btn-sm btn-info"
+            onclick="loadGLEntries()"
+          >
+            <i class="fas fa-sync"></i> Refresh GL Entries
+          </button>
+          <button
+            class="btn btn-sm btn-secondary"
+            onclick="loadTrialBalance()"
+          >
+            <i class="fas fa-book"></i> Trial Balance
+          </button>
+        </div>
+
+        <!-- GL Entries Table -->
+        <h6 class="mt-3">GL Entries</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover" id="glEntriesTable">
+            <thead class="table-light">
+              <tr>
+                <th>Entry #</th>
+                <th>Account</th>
+                <th>Debit</th>
+                <th>Credit</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="glEntriesBody">
+              <tr>
+                <td colspan="6" class="text-center text-muted">
+                  No GL entries yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Trial Balance Summary -->
+        <div id="trialBalancePanel" class="mt-4" style="display: none;">
+          <h6>Trial Balance</h6>
+          <div class="alert alert-info">
+            <div class="row">
+              <div class="col-md-4">
+                <label>Total Debits:</label>
+                <p id="totalDebits" class="h6">₹0.00</p>
+              </div>
+              <div class="col-md-4">
+                <label>Total Credits:</label>
+                <p id="totalCredits" class="h6">₹0.00</p>
+              </div>
+              <div class="col-md-4">
+                <label>Status:</label>
+                <p id="balanceStatus" class="h6">
+                  <span class="badge badge-danger">Not Balanced</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Demands Modal -->
+<div class="modal fade" id="createDemandsModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Production Demands</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="createDemandsForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Product:</label>
+            <select class="form-control" id="demandProduct" required>
+              <option value="">Select Product</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Quantity Demanded:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="demandQuantity"
+              min="1"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Priority:</label>
+            <select class="form-control" id="demandPriority" required>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM" selected>Medium</option>
+              <option value="HIGH">High</option>
+              <option value="URGENT">Urgent</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Required By Date:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="demandDate"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="submitCreateDemands()"
+        >
+          Create Demand
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Invoice Modal -->
+<div class="modal fade" id="createInvoiceModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Sales Invoice</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="createInvoiceForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Invoice Date:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="invoiceDate"
+              required
+            />
+          </div>
+
+          <h6>Line Items</h6>
+          <div id="invoiceLineItemsPanel">
+            <div class="alert alert-info">
+              Loading available products...
+            </div>
+          </div>
+
+          <h6 class="mt-3">Charges</h6>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Shipping Amount:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="shippingAmount"
+                  min="0"
+                  step="0.01"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Discount Amount:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="discountAmount"
+                  min="0"
+                  step="0.01"
+                  value="0"
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="submitCreateInvoice()"
+        >
+          Create Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CSS for Extended Panel -->
+<style>
+  .slide-panel {
+    position: fixed;
+    right: -500px;
+    top: 0;
+    width: 500px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 1050;
+    overflow-y: auto;
+  }
+
+  .slide-panel.active {
+    right: 0;
+  }
+
+  .slide-panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .slide-panel-header h4 {
+    margin: 0;
+  }
+
+  .slide-panel-close-btn {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .slide-panel-body {
+    padding: 1.5rem;
+  }
+
+  .form-control-static {
+    padding: 0.375rem 0;
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    .slide-panel {
+      width: 100%;
+      right: -100%;
+    }
+  }
+</style>
+
+<!-- JavaScript Functions for Extended Allocation Panel -->
+<script>
+  let currentAllocationId = null;
+  let currentOrderId = null;
+  let currentInvoiceId = null;
+
+  function openAllocationPanel(allocationId, orderId) {
+    currentAllocationId = allocationId;
+    currentOrderId = orderId;
+    document.getElementById('allocationExtendedPanel').classList.add('active');
+    loadAllocationDetails();
+  }
+
+  function closeAllocationPanel() {
+    document.getElementById('allocationExtendedPanel').classList.remove('active');
+  }
+
+  document
+    .querySelector('.slide-panel-close-btn')
+    ?.addEventListener('click', closeAllocationPanel);
+
+  // Load allocation details
+  async function loadAllocationDetails() {
+    try {
+      const response = await fetch(
+        `/api/sales/allocations/${currentAllocationId}`,
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        const alloc = data.data;
+        document.getElementById('alloc-order-no').textContent =
+          alloc.order?.order_no || '-';
+        document.getElementById('alloc-order-date').textContent =
+          SalesOrderGLFlow.formatDate(alloc.order?.order_date);
+        document.getElementById('alloc-customer').textContent =
+          alloc.order?.customer?.customer_name || '-';
+
+        const statusColor = SalesOrderGLFlow.getStatusColor(
+          alloc.allocation_status
+        );
+        document.getElementById('alloc-status-badge').className =
+          `badge bg-${statusColor}`;
+        document.getElementById('alloc-status-badge').textContent =
+          alloc.allocation_status;
+
+        // Populate order products table
+        const tbody = document.getElementById('allocationDetailsBody');
+        tbody.innerHTML = '';
+
+        if (alloc.orderProduct) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${alloc.orderProduct.product?.product_name || '-'}</td>
+            <td>${alloc.allocated_quantity || 0}</td>
+            <td>${alloc.allocated_quantity || 0}</td>
+            <td>${alloc.fulfillment_quantity || 0}</td>
+          `;
+          tbody.appendChild(row);
+        }
+
+        // Update button visibility
+        document.getElementById('confirmAllocationBtn').disabled =
+          alloc.allocation_status !== 'PENDING';
+        document.getElementById('createDemandsBtn').disabled =
+          alloc.allocation_status !== 'ALLOCATED';
+      }
+    } catch (error) {
+      console.error('Error loading allocation details:', error);
+      toastr.error('Error loading allocation details');
+    }
+  }
+
+  // Confirm allocation
+  async function confirmAllocation() {
+    try {
+      const response = await fetch(
+        `/api/sales/allocations/${currentAllocationId}/confirm`,
+        {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toastr.success('Allocation confirmed successfully');
+        loadAllocationDetails();
+      }
+    } catch (error) {
+      console.error('Error confirming allocation:', error);
+      toastr.error('Error confirming allocation');
+    }
+  }
+
+  // Show create demands modal
+  function showCreateDemandsModal() {
+    new bootstrap.Modal(document.getElementById('createDemandsModal')).show();
+  }
+
+  // Submit create demands
+  async function submitCreateDemands() {
+    const formData = {
+      product_master_id: document.getElementById('demandProduct').value,
+      demanded_quantity: parseFloat(
+        document.getElementById('demandQuantity').value
+      ),
+      priority: document.getElementById('demandPriority').value,
+      required_date: document.getElementById('demandDate').value,
+    };
+
+    try {
+      const response = await SalesOrderGLFlow.createDemandsFromAllocation(
+        currentAllocationId,
+        formData
+      );
+
+      if (response.success) {
+        toastr.success('Production demand created successfully');
+        bootstrap.Modal.getInstance(
+          document.getElementById('createDemandsModal')
+        ).hide();
+        loadProductionDemands();
+      }
+    } catch (error) {
+      console.error('Error creating demand:', error);
+      toastr.error('Error creating production demand');
+    }
+  }
+
+  // Load production demands
+  async function loadProductionDemands() {
+    try {
+      const demands = await SalesOrderGLFlow.getProductionDemands({
+        allocation_id: currentAllocationId,
+      });
+
+      const tbody = document.getElementById('demandsTableBody');
+      tbody.innerHTML = '';
+
+      if (demands.success && demands.data.demands.length > 0) {
+        demands.data.demands.forEach((demand) => {
+          const row = document.createElement('tr');
+          const statusColor = SalesOrderGLFlow.getStatusColor(
+            demand.demand_status
+          );
+          row.innerHTML = `
+            <td><small>${demand.demand_number}</small></td>
+            <td>${demand.product?.product_name || '-'}</td>
+            <td>${demand.demanded_quantity}</td>
+            <td>${demand.fulfilled_quantity || 0}</td>
+            <td><span class="badge bg-info">${demand.priority}</span></td>
+            <td><span class="badge bg-${statusColor}">${demand.demand_status}</span></td>
+            <td>
+              <button class="btn btn-xs btn-info" onclick="viewDemand('${demand.id}')">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML =
+          '<tr><td colspan="7" class="text-center text-muted">No demands created yet</td></tr>';
+      }
+    } catch (error) {
+      console.error('Error loading demands:', error);
+    }
+  }
+
+  // Show create invoice modal
+  function showCreateInvoiceModal() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('invoiceDate').value = today;
+    new bootstrap.Modal(document.getElementById('createInvoiceModal')).show();
+  }
+
+  // Submit create invoice
+  async function submitCreateInvoice() {
+    const formData = {
+      order_id: currentOrderId,
+      customer_master_id: document.querySelector('[data-customer-id]')?.dataset
+        .customerId,
+      invoice_date: document.getElementById('invoiceDate').value,
+    };
+
+    try {
+      const response = await SalesOrderGLFlow.createInvoice(formData);
+
+      if (response.success) {
+        currentInvoiceId = response.data.id;
+        toastr.success('Invoice created successfully');
+        bootstrap.Modal.getInstance(
+          document.getElementById('createInvoiceModal')
+        ).hide();
+        loadInvoiceData();
+      }
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      toastr.error('Error creating invoice');
+    }
+  }
+
+  // Load invoice data
+  async function loadInvoiceData() {
+    try {
+      if (!currentInvoiceId) return;
+
+      const response = await SalesOrderGLFlow.getInvoiceDetails(
+        currentInvoiceId
+      );
+
+      if (response.success) {
+        const invoice = response.data;
+        document.getElementById('invoiceDetailsPanel').style.display = 'block';
+        document.getElementById('noInvoiceMessage').style.display = 'none';
+
+        document.getElementById('invoiceNumber').textContent =
+          `Invoice #${invoice.invoice_number}`;
+        document.getElementById('invoiceStatus').textContent =
+          invoice.invoice_status;
+        document.getElementById('invoiceStatus').className = `badge bg-${SalesOrderGLFlow.getStatusColor(
+          invoice.invoice_status
+        )}`;
+
+        document.getElementById('invoiceNetAmount').textContent =
+          SalesOrderGLFlow.formatCurrency(invoice.net_amount || 0);
+        document.getElementById('invoiceTaxAmount').textContent =
+          SalesOrderGLFlow.formatCurrency(invoice.tax_amount || 0);
+        document.getElementById('invoiceTotalAmount').textContent =
+          SalesOrderGLFlow.formatCurrency(invoice.total_amount || 0);
+
+        // Populate line items
+        const lineItemsBody = document.getElementById('invoiceLineItemsBody');
+        lineItemsBody.innerHTML = '';
+
+        if (invoice.invoiceLines && invoice.invoiceLines.length > 0) {
+          invoice.invoiceLines.forEach((item) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.product?.product_name || '-'}</td>
+              <td>${item.quantity}</td>
+              <td>${SalesOrderGLFlow.formatCurrency(item.cost_per_unit || 0)}</td>
+              <td>${SalesOrderGLFlow.formatCurrency(item.line_total || 0)}</td>
+            `;
+            lineItemsBody.appendChild(row);
+          });
+        }
+
+        // Update button visibility
+        document.getElementById('postInvoiceBtn').disabled =
+          invoice.invoice_status !== 'DRAFT';
+        document.getElementById('cancelInvoiceBtn').disabled =
+          invoice.invoice_status === 'PAID' ||
+          invoice.invoice_status === 'CANCELLED';
+      }
+    } catch (error) {
+      console.error('Error loading invoice:', error);
+    }
+  }
+
+  // Post invoice to GL
+  async function postInvoiceToGL() {
+    $.confirm({
+      title: 'Post Invoice to GL',
+      content: 'Are you sure you want to post this invoice to the General Ledger?',
+      buttons: {
+        confirm: async function () {
+          try {
+            const response = await SalesOrderGLFlow.postInvoiceToGL(
+              currentInvoiceId,
+              { payment_received: true }
+            );
+
+            if (response.success) {
+              toastr.success('Invoice posted to GL successfully');
+              loadInvoiceData();
+              loadGLEntries();
+            }
+          } catch (error) {
+            console.error('Error posting invoice:', error);
+            toastr.error('Error posting invoice to GL');
+          }
+        },
+        cancel: function () {},
+      },
+    });
+  }
+
+  // Load GL entries
+  async function loadGLEntries() {
+    try {
+      const entries = await SalesOrderGLFlow.getGLEntries({
+        invoice_id: currentInvoiceId,
+      });
+
+      const tbody = document.getElementById('glEntriesBody');
+      tbody.innerHTML = '';
+
+      if (entries.success && entries.data.entries.length > 0) {
+        entries.data.entries.forEach((entry) => {
+          const row = document.createElement('tr');
+          const statusColor = SalesOrderGLFlow.getStatusColor(
+            entry.posting_status
+          );
+          row.innerHTML = `
+            <td><small>${entry.entry_number}</small></td>
+            <td>${entry.account_code}</td>
+            <td>${entry.debit ? SalesOrderGLFlow.formatCurrency(entry.debit) : '-'}</td>
+            <td>${entry.credit ? SalesOrderGLFlow.formatCurrency(entry.credit) : '-'}</td>
+            <td><span class="badge bg-${statusColor}">${entry.posting_status}</span></td>
+            <td>${SalesOrderGLFlow.formatDate(entry.posting_date)}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading GL entries:', error);
+    }
+  }
+
+  // Load trial balance
+  async function loadTrialBalance() {
+    try {
+      const balance = await SalesOrderGLFlow.getTrialBalance();
+
+      if (balance.success) {
+        document.getElementById('trialBalancePanel').style.display = 'block';
+        document.getElementById('totalDebits').textContent =
+          SalesOrderGLFlow.formatCurrency(balance.data.total_debits || 0);
+        document.getElementById('totalCredits').textContent =
+          SalesOrderGLFlow.formatCurrency(balance.data.total_credits || 0);
+
+        const isBalanced = balance.data.is_balanced;
+        document.getElementById('balanceStatus').innerHTML = `
+          <span class="badge bg-${isBalanced ? 'success' : 'danger'}">
+            ${isBalanced ? 'Balanced' : 'Not Balanced'}
+          </span>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading trial balance:', error);
+    }
+  }
+</script>

@@ -2,6 +2,15 @@ export const getAllSchema = {
   description: "Get all purchase inventory data",
   tags: ["Inventory"],
   summary: "Get all purchase inventory data without pagination",
+  querystring: {
+    type: "object",
+    properties: {
+      procurement_product_id: {
+        type: "string",
+        description: "Optional: Filter by procurement product ID",
+      },
+    },
+  },
   response: {
     200: {
       description: "Successful response",

@@ -31,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      // Association with ProductMaster (reverse of ProductMaster.belongsTo)
+      if (models.ProductMaster) {
+        ProductCategoryMaster.hasMany(models.ProductMaster, {
+          foreignKey: "product_category_master_id",
+          onUpdate: "CASCADE",
+          onDelete: "RESTRICT",
+        });
+      }
+
       // Association with ProductCategoryGradeMapping
       ProductCategoryMaster.hasMany(models.ProductCategoryGradeMapping, {
         foreignKey: "product_category_master_id",

@@ -6,6 +6,8 @@ export const getAllSchema = {
       properties: {
         procurement_lot_id: { type: "string" },
         procurement_lot: { type: "string" },
+        product_master_id: { type: "string" },
+        species_master_id: { type: "string" },
         procurement_unit: { type: "string" },
         procurement_species: { type: "string" },
         procurement_product: { type: "string" },

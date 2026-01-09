@@ -1,0 +1,611 @@
+{
+  "info": {
+    "_postman_id": "bse-mgmt-sales-workflow",
+    "name": "BSE Management - Sales Order Workflow",
+    "description": "Complete sales order to invoice workflow with GST tax engine and traceability",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0"
+  },
+  "item": [
+    {
+      "name": "1. Sales Orders",
+      "item": [
+        {
+          "name": "Create Sales Order (DRAFT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_no\": \"SO-2025-001\",\n  \"customer_master_id\": \"{{customer_id}}\",\n  \"payment_terms\": \"Net 30\",\n  \"payment_type\": \"Credit\",\n  \"shipping_method\": \"Air\",\n  \"expected_delivery_date\": \"2025-02-15\",\n  \"order_items\": [\n    {\n      \"packing_id\": \"{{packing_id}}\",\n      \"unit\": 10,\n      \"price\": 500,\n      \"discount\": 0\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/order",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "order"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Sales Order (DRAFT → CONFIRMED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Order confirmed by customer\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/sales-orders/{{order_id}}/confirm",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "sales-orders", "{{order_id}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Get Order with Status History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/sales-orders/{{order_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "sales-orders", "{{order_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Allocation",
+      "item": [
+        {
+          "name": "Allocate Inventory (CONFIRMED → ALLOCATED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"order_product_id\": \"{{order_product_id}}\",\n  \"packing_id\": \"{{packing_id}}\",\n  \"allocated_quantity\": 10\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/allocation/allocate",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "allocation", "allocate"]
+            }
+          }
+        },
+        {
+          "name": "Get Allocation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/allocation/{{allocation_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "allocation", "{{allocation_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Production",
+      "item": [
+        {
+          "name": "Start Production (ALLOCATED → IN_PRODUCTION)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"allocation_id\": \"{{allocation_id}}\",\n  \"species_id\": \"{{species_id}}\",\n  \"product_form\": \"FROZEN\",\n  \"processing_type\": \"HOSO\",\n  \"scheduled_end_date\": \"2025-02-10\",\n  \"unit_id\": \"{{unit_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/production/start",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "production", "start"]
+            }
+          }
+        },
+        {
+          "name": "Capture Yield",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"batch_id\": \"{{batch_id}}\",\n  \"actual_yield_qty\": 9.5,\n  \"remarks\": \"Good yield, minimal loss\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/production/{{batch_id}}/yield",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "production", "{{batch_id}}", "yield"]
+            }
+          }
+        },
+        {
+          "name": "Get Batch Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/production/batch/{{batch_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "production", "batch", "{{batch_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Quality Assurance",
+      "item": [
+        {
+          "name": "Approve QA (READY_FOR_QA → QA_APPROVED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"batch_id\": \"{{batch_id}}\",\n  \"overall_status\": \"PASSED\",\n  \"test_results\": {\n    \"parameter_1\": {\n      \"name\": \"Temperature\",\n      \"result\": \"-18°C\"\n    },\n    \"parameter_2\": {\n      \"name\": \"Color\",\n      \"result\": \"Good\"\n    },\n    \"microbiological\": {\n      \"test\": \"TPC\",\n      \"result\": \"<1000 CFU/g\"\n    }\n  },\n  \"remarks\": \"All parameters within specification\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/qa/approve",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "qa", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Get QA History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/qa/{{batch_id}}/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "qa", "{{batch_id}}", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Packing & Cartons",
+      "item": [
+        {
+          "name": "Create Carton",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"batch_id\": \"{{batch_id}}\",\n  \"packing_id\": \"{{packing_id}}\",\n  \"product_id\": \"{{product_id}}\",\n  \"net_weight_kg\": 9.5,\n  \"gross_weight_kg\": 10.2,\n  \"units_per_carton\": 100,\n  \"best_before_date\": \"2026-02-15\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/packing/carton",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "packing", "carton"]
+            }
+          }
+        },
+        {
+          "name": "Get Carton Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/packing/carton/{{carton_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "packing", "carton", "{{carton_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Dispatch",
+      "item": [
+        {
+          "name": "Create Dispatch (PACKED → READY_FOR_DISPATCH)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{order_id}}\",\n  \"carton_ids\": [\"{{carton_id}}\"],\n  \"vehicle_id\": \"{{vehicle_id}}\",\n  \"driver_id\": \"{{driver_id}}\",\n  \"delivery_address\": \"Customer Address\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/dispatch/create",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "dispatch", "create"]
+            }
+          }
+        },
+        {
+          "name": "Execute Dispatch (READY_FOR_DISPATCH → DISPATCHED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dispatch_date\": \"2025-02-12\",\n  \"remarks\": \"Dispatch executed\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/dispatch/{{dispatch_id}}/execute",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "dispatch", "{{dispatch_id}}", "execute"]
+            }
+          }
+        },
+        {
+          "name": "Get Dispatch Items",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/dispatch/{{dispatch_id}}/items",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "dispatch", "{{dispatch_id}}", "items"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Tax Engine",
+      "item": [
+        {
+          "name": "Get Product Tax Mapping",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/tax/product-mapping/{{product_id}}?supply_type=DOMESTIC",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "tax", "product-mapping", "{{product_id}}"],
+              "query": [
+                {
+                  "key": "supply_type",
+                  "value": "DOMESTIC"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Calculate Line Tax",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"qty_kg\": 10,\n  \"rate_per_kg\": 500,\n  \"supply_type\": \"DOMESTIC\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/tax/calculate-line",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "tax", "calculate-line"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Invoice Tax",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"line_items\": [\n    {\n      \"product_id\": \"{{product_id}}\",\n      \"qty_kg\": 10,\n      \"rate_per_kg\": 500\n    }\n  ],\n  \"supply_type\": \"DOMESTIC\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/tax/calculate-invoice",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "tax", "calculate-invoice"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Invoice",
+      "item": [
+        {
+          "name": "Generate Invoice (DISPATCHED → INVOICED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packing_list_id\": \"{{packing_list_id}}\",\n  \"customer_id\": \"{{customer_id}}\",\n  \"supply_type\": \"DOMESTIC\",\n  \"place_of_supply\": \"Maharashtra\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/invoice/generate",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "invoice", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Get Invoice Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/invoice/{{invoice_id}}/details",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "invoice", "{{invoice_id}}", "details"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. GL Posting",
+      "item": [
+        {
+          "name": "Post Invoice to GL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoice_id\": \"{{invoice_id}}\",\n  \"customer_id\": \"{{customer_id}}\",\n  \"total_taxable_value\": 5000,\n  \"total_gst\": 900\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/posting/invoice",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "posting", "invoice"]
+            }
+          }
+        },
+        {
+          "name": "Post COGS to GL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dispatch_id\": \"{{dispatch_id}}\",\n  \"batch_id\": \"{{batch_id}}\",\n  \"cogs_amount\": 3000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/posting/cogs",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "posting", "cogs"]
+            }
+          }
+        },
+        {
+          "name": "Get Posting History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/posting/{{invoice_id}}/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "posting", "{{invoice_id}}", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Traceability",
+      "item": [
+        {
+          "name": "Forward Traceability (Batch → Customer)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/traceability/forward/{{batch_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "traceability", "forward", "{{batch_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Backward Traceability (Carton → Supplier)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/traceability/backward/{{carton_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "traceability", "backward", "{{carton_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Carton Quality Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:4000/api/traceability/quality/{{carton_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "traceability", "quality", "{{carton_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "order_product_id",
+      "value": ""
+    },
+    {
+      "key": "customer_id",
+      "value": ""
+    },
+    {
+      "key": "packing_id",
+      "value": ""
+    },
+    {
+      "key": "allocation_id",
+      "value": ""
+    },
+    {
+      "key": "batch_id",
+      "value": ""
+    },
+    {
+      "key": "species_id",
+      "value": ""
+    },
+    {
+      "key": "unit_id",
+      "value": ""
+    },
+    {
+      "key": "carton_id",
+      "value": ""
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "vehicle_id",
+      "value": ""
+    },
+    {
+      "key": "driver_id",
+      "value": ""
+    },
+    {
+      "key": "dispatch_id",
+      "value": ""
+    },
+    {
+      "key": "invoice_id",
+      "value": ""
+    },
+    {
+      "key": "packing_list_id",
+      "value": ""
+    }
+  ]
+}

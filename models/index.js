@@ -46,7 +46,12 @@ fs.readdirSync(__dirname)
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
-    db[modelName].associate(db);
+    try {
+      db[modelName].associate(db);
+    } catch (err) {
+      // Skip associations for models with missing dependencies
+      console.warn(`⚠️  Skipping associations for ${modelName}: ${err.message}`);
+    }
   }
 });
 

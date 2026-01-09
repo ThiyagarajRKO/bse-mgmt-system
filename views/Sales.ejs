@@ -13,7 +13,7 @@
       href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
       as="font"
       type="font/ttf"
-      crossorigin
+      crossorigin="anonymous"
     />
     <link
       rel="preload"
@@ -797,86 +797,6 @@
           </div>
         </div>
 
-        <!-- Product Side Modal -->
-        <div id="productSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="productPanelHeading" class="fw-bold fs-5"
-                  >Add New Product</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeProductPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div>
-                <div class="form-group my-2">
-                  <label for="product_name">Product Name</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="modalProductName"
-                    name="modalProductName"
-                  ></select>
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="product_unit">Quantity (in KG)</label>
-                  <input
-                    id="modalProductUnit"
-                    class="form-control"
-                    type="number"
-                    placeholder="eg. 100"
-                    name="product_unit"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="product_price">Price per KG</label>
-                  <input
-                    id="modalProductPrice"
-                    class="form-control"
-                    type="number"
-                    placeholder="eg. 50.00"
-                    name="product_price"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="product_description">Description</label>
-                  <textarea
-                    id="modalProductDescription"
-                    class="form-control"
-                    placeholder="Product description..."
-                    name="product_description"
-                    rows="3"
-                  ></textarea>
-                </div>
-
-                <div class="d-flex justify-content-between mt-4 pb-4">
-                  <div id="submitProductBtn" class="col-lg-auto btn btn-danger">
-                    Add Product
-                  </div>
-                  <div id="resetProductDataBtn" class="col-lg-auto btn btn-outline-warning">
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- modal-dialog-centered modal-dialog-scrollable -->
         <!-- Modal -->
         <div
@@ -1211,7 +1131,6 @@
               >
                 <thead>
                   <tr>
-                    <th style="border-radius: 4px 0 0 0"></th>
                     <th style="border-radius: 4px 0 0 0"></th>
                     <th class="fw-bold"><span>Order No</span></th>
                     <th class="fw-bold"><span>Product Name</span></th>
@@ -1607,121 +1526,6 @@
           </div>
         </div>
 
-        <!-- Allocation Side Modal -->
-        <div id="allocationSlideInPanel" class="slideInPanel px-4 overflow-auto">
-          <div class="row d-flex justify-content-center">
-            <div class="col-sm-12 col-md-12 col-md-12">
-              <div class="text-center mt-4 d-flex justify-content-between">
-                <span id="allocationPanelHeading" class="fw-bold fs-5"
-                  >Allocate Product</span
-                >
-                <div class="col my-auto d-flex justify-content-end">
-                  <i
-                    class="fa-solid fa-circle-xmark my-auto panelClose"
-                    id="closeAllocationPanelBtn"
-                  ></i>
-                </div>
-              </div>
-
-              <hr />
-
-              <div>
-                <div class="form-group my-2">
-                  <label for="allocation_order_no">Order No</label>
-                  <input
-                    id="allocation_order_no"
-                    class="form-control"
-                    type="text"
-                    placeholder="Order number"
-                    name="allocation_order_no"
-                    readonly
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="allocation_product_name">Product Name</label>
-                  <input
-                    id="allocation_product_name"
-                    class="form-control"
-                    type="text"
-                    placeholder="Product name"
-                    name="allocation_product_name"
-                    readonly
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="allocation_quantity_required">Quantity Required (KG)</label>
-                  <input
-                    id="allocation_quantity_required"
-                    class="form-control"
-                    type="number"
-                    placeholder="Quantity required"
-                    name="allocation_quantity_required"
-                    readonly
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="allocation_available_stock">Available Stock (KG)</label>
-                  <div class="d-flex gap-2">
-                    <input
-                      id="allocation_available_stock"
-                      class="form-control"
-                      type="number"
-                      placeholder="Available stock"
-                      name="allocation_available_stock"
-                      readonly
-                    />
-                    <span 
-                      id="stock_badge" 
-                      class="badge bg-success d-flex align-items-center px-3"
-                      style="font-size: 14px; min-width: 80px; justify-content: center;"
-                    >
-                      Available
-                    </span>
-                  </div>
-                  <small class="text-muted" id="stock_message"></small>
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="allocation_quantity">Allocate Quantity (KG)</label>
-                  <input
-                    id="allocation_quantity"
-                    class="form-control"
-                    type="number"
-                    placeholder="eg. 100"
-                    name="allocation_quantity"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-
-                <div class="form-group my-2">
-                  <label for="allocation_remarks">Remarks</label>
-                  <textarea
-                    id="allocation_remarks"
-                    class="form-control"
-                    placeholder="Any remarks about this allocation..."
-                    name="allocation_remarks"
-                    rows="3"
-                  ></textarea>
-                </div>
-
-                <div class="d-flex justify-content-between mt-4 pb-4">
-                  <div id="submitAllocationBtn" class="col-lg-auto btn btn-danger">
-                    Allocate
-                  </div>
-                  <div id="resetAllocationDataBtn" class="col-lg-auto btn btn-outline-warning">
-                    Clear
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- modal-dialog-centered modal-dialog-scrollable -->
         <!-- Modal -->
         <div
@@ -2029,6 +1833,118 @@
         </div>
         <!-- Payment Container Ends -->
       </div>
+
+      <!-- Purchase Request Side Panel (Global) -->
+      <div
+        id="purchaseRequestSlideInPanel"
+        class="slideInPanel px-4 overflow-auto"
+      >
+        <div class="row d-flex justify-content-center">
+          <div class="col-sm-12 col-md-12 col-md-12">
+            <div class="text-center mt-4 d-flex justify-content-between">
+              <span id="purchaseRequestPanelHeading" class="fw-bold"
+                >Raise Purchase Request</span
+              >
+              <div class="col my-auto d-flex justify-content-end">
+                <i
+                  class="fa-solid fa-circle-xmark my-auto panelClose"
+                  id="closePurchaseRequestPanelBtn"
+                  style="cursor: pointer"
+                ></i>
+              </div>
+            </div>
+            <hr />
+            <div>
+              <!-- Order Details -->
+              <div class="form-group my-2">
+                <label><strong>Order Details</strong></label>
+                <div
+                  id="purchaseRequestOrderDetails"
+                  style="
+                    padding: 10px;
+                    background-color: rgba(98, 114, 147, 0.1);
+                    border-radius: 4px;
+                    border-left: 3px solid #627293;
+                  "
+                ></div>
+              </div>
+
+              <!-- AI Analysis Section -->
+              <div
+                id="purchaseRequestAIAnalysis"
+                class="form-group my-3"
+                style="display: none"
+              >
+                <label><strong>AI Analysis & Recommendations</strong></label>
+                <div
+                  id="purchaseRequestAIInsights"
+                  style="
+                    padding: 10px;
+                    background-color: rgba(98, 114, 147, 0.1);
+                    border-radius: 4px;
+                    border-left: 3px solid #627293;
+                  "
+                ></div>
+              </div>
+
+              <!-- Raw Materials Selection -->
+              <div class="form-group my-3">
+                <label for="purchaseRequestRawMaterial"
+                  ><strong>Select Raw Material</strong></label
+                >
+                <div
+                  id="purchaseRequestRawMaterials"
+                  style="
+                    margin-top: 10px;
+                    padding: 10px;
+                    background-color: rgba(98, 114, 147, 0.1);
+                    border-radius: 4px;
+                    border-left: 3px solid #627293;
+                  "
+                >
+                  <p style="color: #999; text-align: center; margin: 0">
+                    Loading raw materials...
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quantity Input -->
+              <div class="form-group my-3">
+                <label for="purchaseRequestQuantity"
+                  >Quantity to Order (kg)</label
+                >
+                <input
+                  type="number"
+                  id="purchaseRequestQuantity"
+                  class="form-control"
+                  placeholder="Enter quantity to order"
+                  min="1"
+                />
+                <small
+                  class="text-muted mt-2"
+                  id="purchaseRequestQuantityHint"
+                ></small>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex gap-2 mt-4 mb-3">
+                <button
+                  id="purchaseRequestCreateBtn"
+                  class="btn btn-danger flex-grow-1"
+                >
+                  <i class="fa-solid fa-check me-2"></i>Create Request
+                </button>
+                <button
+                  id="purchaseRequestCancelBtn"
+                  class="btn btn-secondary flex-grow-1"
+                >
+                  <i class="fa-solid fa-times me-2"></i>Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 
@@ -2204,13 +2120,6 @@
           allowClear: true,
         });
 
-        $("#modalProductName").val(null).trigger("change");
-        $("#modalProductName").select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-          data: productNamesArray,
-        });
-
         $(`.orderProduct:not(".orderProduct_1")`).remove();
         $(`.vl-top:not(".vl-top-1")`).remove();
 
@@ -2284,80 +2193,53 @@
         view_raw_material_id = "";
       });
 
-      // Open product panel
-      $(document).on("click", "#appendProducts", function () {
-        const last_fieldset_index = $("#orderProductContainer fieldset").length;
+      // Purchase Request Panel Handlers
+      $("#closePurchaseRequestPanelBtn").click(function () {
+        closeSlidePanel("purchaseRequestSlideInPanel");
+        window.currentPurchaseRequest = null;
+      });
 
-        if (
-          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
-          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
-        ) {
-          toastr["warning"](
-            "Please fill all the required values in the above product to create a new product"
-          );
+      $("#purchaseRequestCancelBtn").click(function () {
+        $("#closePurchaseRequestPanelBtn").click();
+      });
+
+      $("#purchaseRequestCreateBtn").click(function () {
+        const selectedMaterial = $('input[name="rawMaterial"]:checked').val();
+        const selectedMaterialName = $(
+          'input[name="rawMaterial"]:checked'
+        ).data("material-name");
+        const quantityToOrder = parseFloat($("#purchaseRequestQuantity").val());
+
+        if (!selectedMaterial) {
+          toastr.warning("Please select a raw material", "Info");
           return;
         }
 
-        // Reset product form inputs
-        $("#modalProductName").val(null).trigger("change");
-        $("#modalProductUnit").val("");
-        $("#modalProductPrice").val("");
-        $("#modalProductDescription").val("");
+        if (!quantityToOrder || quantityToOrder <= 0) {
+          toastr.warning("Please enter a valid quantity", "Info");
+          return;
+        }
 
-        // Open the product slide panel
-        openSlidePanel(
-          "productSlideInPanel",
-          "productPanelHeading",
-          "Product",
-          "submitProductBtn",
-          "product_id"
+        // Create purchase request
+        const req = window.currentPurchaseRequest;
+        const materialData = {
+          id: selectedMaterial,
+          procurement_product_name: selectedMaterialName,
+          quantity: quantityToOrder,
+        };
+
+        generatePurchaseRequest(
+          req.orderId,
+          req.productId,
+          req.quantityRequired,
+          req.orderNo,
+          null,
+          null,
+          [materialData]
         );
-      });
 
-      // Close product panel
-      $("#closeProductPanelBtn").click(function () {
-        closeSlidePanel("productSlideInPanel");
-      });
-
-      // Add product from modal
-      $("#submitProductBtn").click(function () {
-        const product_name = $("#modalProductName").val();
-        const product_unit = parseFloat($("#modalProductUnit").val() || 0);
-        const product_price = parseFloat($("#modalProductPrice").val() || 0);
-        const product_description = $("#modalProductDescription").val();
-
-        if (!product_name || product_unit <= 0 || product_price <= 0) {
-          toastr["warning"]("Please fill all required fields with valid values");
-          return;
-        }
-
-        const last_fieldset_index = $("#orderProductContainer fieldset").length;
-        const next_fieldset_index = (last_fieldset_index || 0) + 1;
-
-        // Add the new product fieldset
-        addOutput(next_fieldset_index);
-
-        // Populate the new product fields
-        $(`.orderProductNames_${next_fieldset_index}`).val(product_name).trigger("change");
-        $(`.product_unit_${next_fieldset_index}`).val(product_unit);
-        $(`.product_price_${next_fieldset_index}`).val(product_price);
-        $(`.product_description_${next_fieldset_index}`).val(product_description);
-
-        // Trigger calculation
-        calculatePrice(next_fieldset_index);
-
-        // Close the panel
-        $("#closeProductPanelBtn").click();
-
-        toastr["success"]("Product added successfully");
-      });
-
-      // Reset product form
-      $("#resetProductDataBtn").click(function () {
-        $("#modalProductName").val(null).trigger("change");
-        $("#modalProductUnit").val("");
-        $("#modalProductPrice").val("");
-        $("#modalProductDescription").val("");
+        // Close the panel after successful creation
+        $("#closePurchaseRequestPanelBtn").click();
       });
 
       $(".ordersMenu").click(function () {
@@ -2411,6 +2293,23 @@
           $("#customerOrdersModal").modal("show");
           delete sessionStorage?.customer_id;
         }
+      });
+
+      $(document).on("click", "#appendProducts", (e) => {
+        const last_fieldset_index = $("#orderProductContainer fieldset").length;
+        const next_fieldset_index = (last_fieldset_index || 0) + 1;
+
+        if (
+          !$(`.orderProductNames_${last_fieldset_index}`).val() ||
+          $(`.total_price_${last_fieldset_index}`).text() == "0.00"
+        ) {
+          toastr["warning"](
+            "Please fill all the required values in the above output to create a new output"
+          );
+          return;
+        }
+
+        addOutput(next_fieldset_index);
       });
 
       $(document).on("change", ".orderProductNames", (e) => {
@@ -3191,7 +3090,6 @@
                   order.OrderProducts.forEach((product) => {
                     flatData.push({
                       order_id: order.id,
-                      order_product_id: product.id,
                       order_no: order.order_no,
                       product_name:
                         product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
@@ -3199,20 +3097,17 @@
                       quantity_required: product.unit,
                       allocation_status: order.allocation_status,
                       product_id: product?.Packing?.pd?.pp?.ProductMaster?.id,
-                      packing_id: product.packing_id,
                     });
                   });
                 } else {
                   // Show order even if it has no products
                   flatData.push({
                     order_id: order.id,
-                    order_product_id: null,
                     order_no: order.order_no,
                     product_name: "-",
                     quantity_required: 0,
                     allocation_status: order.allocation_status,
                     product_id: null,
-                    packing_id: null,
                   });
                 }
               });
@@ -3225,7 +3120,6 @@
             },
           },
           columns: [
-            { data: null },
             { data: null },
             { data: "order_no" },
             { data: "product_name" },
@@ -3245,10 +3139,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                if (!row.packing_id || row.packing_id === null) {
-                  return `<span style="color:gray">N/A</span>`;
-                }
-                return `<i class="fa-solid fa-plus-circle allocateProduct" order_id='${row.order_id}' packing_id='${row.packing_id}' order_product_id='${row.order_product_id}' style="font-size:15px;color:#EF7A3F;cursor:pointer" data-toggle="tooltip" data-placement="top" title="Allocate this product"></i>`;
+                return data || "-";
               },
             },
             {
@@ -3262,18 +3153,11 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return data || "-";
-              },
-            },
-            {
-              targets: [4],
-              className: "text-left",
-              render: function (data, type, row) {
                 return data || 0;
               },
             },
             {
-              targets: [5],
+              targets: [4],
               className: "text-left",
               render: function (data, type, row) {
                 // Store product_id in data attribute for inventory lookup
@@ -3285,7 +3169,7 @@
               },
             },
             {
-              targets: [6],
+              targets: [5],
               className: "text-left",
               render: (data, type, row) => {
                 const statusColor =
@@ -3315,13 +3199,16 @@
                     const quantity = response?.data?.available_quantity || 0;
                     const badgeClass =
                       quantity > 0 ? "bg-success" : "bg-danger";
+                    const quantityText =
+                      quantity > 0 ? quantity : "Out of Stock";
                     $element.html(
-                      `<span class="badge ${badgeClass}">${quantity} units</span>`
+                      `<span class="badge ${badgeClass}">${quantityText}</span>`
                     );
                   },
-                  error: function () {
+                  error: function (xhr) {
+                    console.error("Inventory fetch error:", xhr);
                     $element.html(
-                      `<span class="badge bg-secondary">N/A</span>`
+                      `<span class="badge bg-secondary">Error</span>`
                     );
                   },
                 });
@@ -3331,6 +3218,1567 @@
             });
           },
         });
+      }
+
+      // ========== ALLOCATION TABLE EVENT HANDLERS ==========
+
+      // View Order Button Handler
+      $(document).on(
+        "click",
+        ".allocation-table-container .fa-eye.view, #allocationTable .fa-eye.view",
+        function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const row = $(this).closest("tr");
+          const orderNo = row.find("td").eq(1).text(); // order_no is now in column 1
+          const quantityRequired = row.find("td").eq(3).text(); // quantity_required is now in column 3
+
+          // Fetch real order and product data from API
+          $.ajax({
+            url: `/api/order/allocation`,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+              const orders = response?.data?.rows || [];
+              const order = orders.find((o) => o.order_no === orderNo);
+
+              if (!order) {
+                toastr.error("Order not found!", "Error");
+                return;
+              }
+
+              // Get product from the order
+              let productName = "Unknown";
+              let productMasterId = null;
+              let purchaseInventory = 0;
+              let salesInventory = 0;
+              let netInventory = 0;
+
+              if (order.OrderProducts && order.OrderProducts.length > 0) {
+                const product = order.OrderProducts[0];
+                productName =
+                  product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
+                  "Unknown";
+                productMasterId = product?.Packing?.pd?.pp?.ProductMaster?.id;
+
+                // Fetch inventory for this product
+                if (productMasterId) {
+                  $.ajax({
+                    url: `/api/order/check-inventory/${productMasterId}`,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (invResponse) {
+                      purchaseInventory =
+                        invResponse?.data?.available_quantity || 0;
+
+                      // Now fetch sales inventory for the same product
+                      $.ajax({
+                        url: `/api/inventory/sales/all?search=${productMasterId}`,
+                        method: "GET",
+                        dataType: "json",
+                        async: false,
+                        success: function (salesResponse) {
+                          if (salesResponse?.data) {
+                            if (Array.isArray(salesResponse.data)) {
+                              salesInventory = salesResponse.data.reduce(
+                                (sum, inv) => {
+                                  return sum + (inv.quantity || 0);
+                                },
+                                0
+                              );
+                            } else if (
+                              salesResponse.data.quantity !== undefined
+                            ) {
+                              salesInventory = salesResponse.data.quantity || 0;
+                            }
+                          }
+                        },
+                        error: function () {
+                          salesInventory = 0;
+                        },
+                      });
+
+                      // Calculate net inventory
+                      netInventory = Math.max(
+                        0,
+                        purchaseInventory - salesInventory
+                      );
+
+                      showOrderViewModal(
+                        order,
+                        productName,
+                        productMasterId,
+                        quantityRequired,
+                        purchaseInventory,
+                        salesInventory,
+                        netInventory
+                      );
+                    },
+                    error: function () {
+                      showOrderViewModal(
+                        order,
+                        productName,
+                        productMasterId,
+                        quantityRequired,
+                        purchaseInventory,
+                        salesInventory,
+                        netInventory
+                      );
+                    },
+                  });
+                } else {
+                  showOrderViewModal(
+                    order,
+                    productName,
+                    productMasterId,
+                    quantityRequired,
+                    purchaseInventory,
+                    salesInventory,
+                    netInventory
+                  );
+                }
+              } else {
+                toastr.warning("No products found in this order!", "Warning");
+              }
+            },
+            error: function () {
+              toastr.error("Failed to load order details!", "Error");
+            },
+          });
+        }
+      );
+
+      // Display order view modal with real data
+      function showOrderViewModal(
+        order,
+        productName,
+        productMasterId,
+        quantityRequired,
+        purchaseInventory,
+        salesInventory,
+        netInventory
+      ) {
+        const allocationStatus = order.allocation_status;
+
+        // Create a simple modal for viewing order details
+        const modalHtml = `
+          <div class="modal fade" id="allocationViewModal" tabindex="-1" role="dialog" aria-labelledby="allocationViewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="allocationViewModalLabel">Order Details - ${
+                    order.order_no
+                  }</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <h6><strong>Order No:</strong></h6>
+                      <p>${order.order_no}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <h6><strong>Allocation Status:</strong></h6>
+                      <p><span class="${
+                        allocationStatus === "Allocated"
+                          ? "badge badge-success"
+                          : "badge badge-warning"
+                      }">${allocationStatus}</span></p>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-12">
+                      <h6><strong>Product Name:</strong></h6>
+                      <p>${productName}</p>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <h6><strong>Quantity Required:</strong></h6>
+                      <p>${quantityRequired}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <h6><strong>Available Stock (Net Inventory):</strong></h6>
+                      <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="padding: 8px; background: #f5f5f5; border-radius: 3px; border-left: 3px solid #627293;">
+                          <small style="color: #666;">
+                            <div><strong>Purchase Inventory:</strong> ${purchaseInventory} units</div>
+                            <div><strong>Sales Inventory:</strong> ${salesInventory} units</div>
+                          </small>
+                        </div>
+                        <p>
+                          <span class="badge ${
+                            parseFloat(netInventory) >=
+                            parseFloat(quantityRequired)
+                              ? "badge-success"
+                              : "badge-danger"
+                          }" style="font-size: 1em; padding: 8px 12px;">
+                            Current: ${netInventory} units
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
+                    order.id
+                  }" data-product-id="${productMasterId}" data-quantity="${quantityRequired}" data-order-no="${
+          order.order_no
+        }">
+                    <i class="fa-solid fa-plus"></i> Raise Purchase Request
+                  </button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Remove any existing modal
+        $("#allocationViewModal").remove();
+
+        // Add new modal to body
+        $("body").append(modalHtml);
+
+        // Bind hidden event before showing modal
+        $("#allocationViewModal").on("hidden.bs.modal", function () {
+          $(this).remove();
+        });
+
+        // Show modal
+        $("#allocationViewModal").modal("show");
+      }
+
+      // Raise Purchase Request Button Handler
+      $(document).on("click", "#raisePurchaseRequestBtn", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log("Raise Purchase Request button clicked");
+
+        // Close the modal first
+        $("#allocationViewModal").modal("hide");
+
+        const orderId = $(this).data("order-id");
+        const productId = $(this).data("product-id");
+        const quantityRequired = $(this).data("quantity");
+        const orderNo = $(this).data("order-no");
+
+        console.log("Button data:", {
+          orderId,
+          productId,
+          quantityRequired,
+          orderNo,
+        });
+
+        // Validate data
+        if (!productId || productId === "null" || productId === null) {
+          toastr.error(
+            "Product ID not found. Cannot raise purchase request.",
+            "Error"
+          );
+          console.error("Invalid productId:", productId);
+          return;
+        }
+
+        if (!quantityRequired || quantityRequired <= 0) {
+          toastr.error(
+            "Invalid quantity. Please check the order details.",
+            "Error"
+          );
+          return;
+        }
+
+        // Small delay to ensure modal is closed before showing side panel
+        setTimeout(() => {
+          // First, check if a purchase request has already been auto-generated
+          checkExistingPurchaseRequest(
+            orderId,
+            productId,
+            quantityRequired,
+            orderNo
+          );
+        }, 300);
+      });
+
+      // Check if purchase request already exists
+      function checkExistingPurchaseRequest(
+        orderId,
+        productId,
+        quantityRequired,
+        orderNo
+      ) {
+        console.log(
+          "Checking existing purchase request for productId:",
+          productId
+        );
+
+        $.ajax({
+          url: `/api/procurement/product?product_master_id=${productId}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            console.log("API Response:", response);
+            const products = response?.data?.rows || [];
+
+            // Check if there's any procurement product for this product with auto-generated note
+            const autoGenerated = products.some(
+              (prod) =>
+                prod.procurement_purchaser &&
+                prod.procurement_purchaser.includes("System Auto-Generated")
+            );
+
+            if (autoGenerated) {
+              $.alert({
+                title: "Purchase Request Already Exists",
+                content: `A purchase request for this product has already been automatically generated.<br><br>
+                  <strong>Product ID:</strong> ${productId}<br>
+                  <strong>Status:</strong> <span class="badge badge-info">Auto-Generated</span><br><br>
+                  You can view and manage it in the Procurement module.`,
+                type: "info",
+                buttons: {
+                  ok: {
+                    text: "OK",
+                    btnClass: "btn-primary",
+                  },
+                },
+              });
+            } else {
+              // No auto-generated request found, show confirmation dialog
+              console.log("No auto-generated request found, showing dialog");
+              showRaisePurchaseRequestDialog(
+                orderId,
+                productId,
+                quantityRequired,
+                orderNo
+              );
+            }
+          },
+          error: function (xhr, status, error) {
+            // If check fails, still allow manual request
+            console.error("API Error:", status, error);
+            console.log("Allowing manual request despite API error");
+            showRaisePurchaseRequestDialog(
+              orderId,
+              productId,
+              quantityRequired,
+              orderNo
+            );
+          },
+        });
+      }
+
+      // Show dialog to raise purchase request
+      function showRaisePurchaseRequestDialog(
+        orderId,
+        productId,
+        quantityRequired,
+        orderNo
+      ) {
+        console.log("showRaisePurchaseRequestDialog called with:", {
+          orderId,
+          productId,
+          quantityRequired,
+          orderNo,
+        });
+
+        // Store current purchase request data
+        window.currentPurchaseRequest = {
+          orderId,
+          productId,
+          quantityRequired,
+          orderNo,
+        };
+
+        // Populate order details
+        const orderDetailsHtml = `
+          <p><strong>Order #:</strong> ${orderNo}</p>
+          <p><strong>Product ID:</strong> ${productId}</p>
+          <p><strong>Quantity Required:</strong> ${quantityRequired} units</p>
+          <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+            <i class="fa-solid fa-info-circle me-2"></i>
+            A 20% buffer will be added to the order quantity for safety stock.
+          </p>
+        `;
+        $("#purchaseRequestOrderDetails").html(orderDetailsHtml);
+
+        // Initialize quantity field with calculated value (20% buffer)
+        const quantityWithBuffer = Math.ceil(quantityRequired * 1.2);
+        $("#purchaseRequestQuantity").val(quantityWithBuffer);
+        $("#purchaseRequestQuantityHint").text(
+          `Recommended: ${quantityWithBuffer} units (includes 20% buffer)`
+        );
+
+        // Load raw materials
+        $("#purchaseRequestRawMaterials").html(
+          '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+        );
+        loadRawMaterialsForPurchaseRequest(productId, quantityRequired);
+
+        console.log("About to show side panel");
+        // Show the side panel using CSS animation
+        $("#purchaseRequestSlideInPanel").css("right", "0");
+        $("#purchaseRequestSlideInPanel").css("display", "block");
+        console.log("Side panel should now be visible");
+      }
+
+      function loadRawMaterialsForPurchaseRequest(productId, quantityRequired) {
+        console.log(
+          "Loading raw materials for product:",
+          productId,
+          "quantity:",
+          quantityRequired
+        );
+
+        // First, calculate AI-powered requirements
+        loadAICalculatedRequirementsForPanel(productId, quantityRequired);
+
+        // Fetch the product details to get species information for filtering
+        $.ajax({
+          url: `/api/master/product/${productId}`,
+          method: "GET",
+          dataType: "json",
+          timeout: 5000,
+          success: function (response) {
+            console.log("Product API Response:", response);
+            const product = response?.data;
+            const container = $("#purchaseRequestRawMaterials");
+
+            // Clear any existing content first
+            container.html(
+              '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+            );
+
+            if (!product) {
+              console.warn("Product not found in response");
+              container.html(
+                '<p style="color: #d32f2f; text-align: center;">Product not found</p>'
+              );
+              return;
+            }
+
+            console.log("Product found:", product.product_name);
+
+            // Get the species_master_id from the product's category
+            // The relationship is: Product -> ProductCategory -> SpeciesMaster
+            let speciesMasterId = null;
+            if (
+              product.ProductCategoryMaster &&
+              product.ProductCategoryMaster.species_master_id
+            ) {
+              speciesMasterId = product.ProductCategoryMaster.species_master_id;
+              console.log("Product species ID:", speciesMasterId);
+            }
+
+            // Fetch unprocessed procurement products (raw materials) filtered by species and type
+            // The API now supports backend filtering by species_master_id for better performance
+            let apiUrl = `/api/procurement/product?start=0&length=1000&procurement_product_type=UNPROCESSED`;
+
+            // If product has a species, filter by that species on the backend
+            if (speciesMasterId) {
+              apiUrl += `&species_master_id=${speciesMasterId}`;
+            }
+
+            $.ajax({
+              url: apiUrl,
+              method: "GET",
+              dataType: "json",
+              timeout: 5000,
+              success: function (response) {
+                console.log("Procurement products API response:", response);
+                // Handle different response formats
+                let rawMaterials = [];
+
+                if (response?.data) {
+                  // If data is an object with rows (findAndCountAll format)
+                  if (response.data.rows && Array.isArray(response.data.rows)) {
+                    rawMaterials = response.data.rows;
+                  }
+                  // If data is directly an array
+                  else if (Array.isArray(response.data)) {
+                    rawMaterials = response.data;
+                  }
+                  // If data is a single object, wrap it in array
+                  else if (typeof response.data === "object") {
+                    rawMaterials = [response.data];
+                  }
+                }
+
+                console.log(
+                  "Filtered raw materials found:",
+                  rawMaterials.length
+                );
+
+                // No client-side filtering needed - backend already filtered by species and type
+                if (rawMaterials.length === 0) {
+                  container.html(
+                    '<p style="color: #d32f2f; text-align: center;">No unprocessed raw materials found for this product species</p>'
+                  );
+                  return;
+                }
+
+                let materialsHtml =
+                  '<div style="display: flex; flex-direction: column; gap: 10px;">';
+                rawMaterials.forEach((material) => {
+                  // Handle both procurement_product_name and nested ProductMaster.product_name
+                  const materialName =
+                    material.procurement_product_name ||
+                    (material.ProductMaster &&
+                      material.ProductMaster.product_name) ||
+                    "Unknown";
+                  const supplierName =
+                    material.SupplierMaster &&
+                    material.SupplierMaster.supplier_name
+                      ? ` - ${material.SupplierMaster.supplier_name}`
+                      : "";
+
+                  // Fetch the actual available quantity from purchase inventory for this procurement product
+                  let purchaseInventory = 0;
+                  let salesInventory = 0;
+                  let netInventory = 0;
+
+                  // Get product_master_id for sales inventory lookup
+                  const productMasterId = material.product_master_id;
+
+                  // Fetch purchase inventory
+                  $.ajax({
+                    url: `/api/inventory/purchase/all?procurement_product_id=${material.id}`,
+                    method: "GET",
+                    dataType: "json",
+                    timeout: 5000,
+                    async: false,
+                    success: function (inventoryResponse) {
+                      if (inventoryResponse?.data) {
+                        if (Array.isArray(inventoryResponse.data)) {
+                          purchaseInventory = inventoryResponse.data.reduce(
+                            (sum, inv) => {
+                              return (
+                                sum +
+                                (inv.available_quantity ||
+                                  inv.quantity_in_stock ||
+                                  0)
+                              );
+                            },
+                            0
+                          );
+                        } else if (
+                          inventoryResponse.data.available_quantity !==
+                          undefined
+                        ) {
+                          purchaseInventory =
+                            inventoryResponse.data.available_quantity || 0;
+                        } else if (
+                          inventoryResponse.data.quantity_in_stock !== undefined
+                        ) {
+                          purchaseInventory =
+                            inventoryResponse.data.quantity_in_stock || 0;
+                        }
+                      }
+                    },
+                    error: function (xhr, status, error) {
+                      console.error(
+                        `Error fetching purchase inventory for material ${material.id}:`,
+                        status,
+                        error
+                      );
+                      purchaseInventory = 0;
+                    },
+                  });
+
+                  // Fetch sales inventory by product_master_id
+                  if (productMasterId) {
+                    $.ajax({
+                      url: `/api/inventory/sales/all?search=${productMasterId}`,
+                      method: "GET",
+                      dataType: "json",
+                      timeout: 5000,
+                      async: false,
+                      success: function (salesResponse) {
+                        if (salesResponse?.data) {
+                          if (Array.isArray(salesResponse.data)) {
+                            // Sum all sales inventory quantities for this product
+                            salesInventory = salesResponse.data.reduce(
+                              (sum, inv) => {
+                                return sum + (inv.quantity || 0);
+                              },
+                              0
+                            );
+                          } else if (
+                            salesResponse.data.quantity !== undefined
+                          ) {
+                            salesInventory = salesResponse.data.quantity || 0;
+                          }
+                        }
+                      },
+                      error: function (xhr, status, error) {
+                        console.error(
+                          `Error fetching sales inventory for product ${productMasterId}:`,
+                          status,
+                          error
+                        );
+                        salesInventory = 0;
+                      },
+                    });
+                  }
+
+                  // Calculate net inventory
+                  netInventory = Math.max(
+                    0,
+                    purchaseInventory - salesInventory
+                  );
+
+                  console.log(
+                    `Material: ${materialName}, Procurement ID: ${material.id}, Purchase: ${purchaseInventory}, Sales: ${salesInventory}, Net: ${netInventory}`
+                  );
+
+                  const statusColor = netInventory > 0 ? "#4caf50" : "#d32f2f";
+                  const statusText =
+                    netInventory > 0 ? "Available" : "Out of Stock";
+
+                  materialsHtml += `
+                    <div style="padding: 12px; background: #f5f5f5; border-radius: 4px; border-left: 4px solid ${statusColor};">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                          <strong>${materialName}${supplierName}</strong>
+                          <br>
+                          <small style="color: #666; display: block; margin-top: 4px;">
+                            <div style="margin: 4px 0;">Purchase Inventory: <strong>${purchaseInventory}</strong> units</div>
+                            <div style="margin: 4px 0;">Sales Inventory: <strong>${salesInventory}</strong> units</div>
+                            <div style="margin: 4px 0; padding: 4px; background: ${statusColor}22; border-radius: 3px; border-left: 3px solid ${statusColor};">
+                              Current Available: <strong style="color: ${statusColor};">${netInventory}</strong> units
+                            </div>
+                            <div style="margin: 4px 0;">Price: ₹${
+                              material.procurement_price || 0
+                            }</div>
+                          </small>
+                        </div>
+                        <span style="color: ${statusColor}; font-size: 0.9em; white-space: nowrap; margin-left: 10px;">
+                          <strong>${statusText}</strong>
+                        </span>
+                      </div>
+                      <input
+                        type="radio"
+                        name="rawMaterial"
+                        value="${material.id}"
+                        style="margin-top: 8px;"
+                        data-material-name="${materialName}"
+                      >
+                      <label style="margin-left: 5px; font-size: 0.9em; cursor: pointer;">Select this material</label>
+                    </div>
+                  `;
+                });
+                materialsHtml += "</div>";
+
+                container.html(materialsHtml);
+                console.log(
+                  "Raw materials HTML rendered with net inventory (purchase - sales)"
+                );
+              },
+              error: function (xhr, status, error) {
+                console.error(
+                  "Error fetching procurement products:",
+                  status,
+                  error
+                );
+                container.html(
+                  '<p style="color: #d32f2f; text-align: center;">Error loading raw materials: ' +
+                    error +
+                    "</p>"
+                );
+              },
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error("Error fetching product:", status, error);
+            const container = $("#purchaseRequestRawMaterials");
+            container.html(
+              '<p style="color: #d32f2f; text-align: center;">Error loading product details: ' +
+                error +
+                "</p>"
+            );
+          },
+        });
+      }
+
+      function loadAICalculatedRequirementsForPanel(
+        productId,
+        quantityRequired
+      ) {
+        console.log("Loading AI calculation for panel:", {
+          productId,
+          quantityRequired,
+        });
+
+        $.ajax({
+          url: `/api/procurement/product/calculate/requirements?productId=${productId}&quantityRequired=${quantityRequired}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            console.log("API Response received:", response);
+
+            const calculation = response?.data;
+            if (calculation) {
+              console.log("AI Calculation Result:", calculation);
+
+              // Store calculation results for later use
+              window.aiCalculationResults = calculation;
+
+              // Display calculation insights in the panel
+              displayAIInsightsInPanel(calculation);
+            } else {
+              console.warn("No calculation data in response");
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("AI calculation API error:", {
+              status: xhr.status,
+              error,
+              response: xhr.responseText,
+            });
+          },
+        });
+      }
+
+      function displayAIInsightsInPanel(calculation) {
+        // Handle missing aiAnalysis gracefully
+        const insights = calculation?.aiAnalysis || {};
+
+        // If no insights available, skip rendering
+        if (!insights || !insights.recommendation) {
+          console.warn("AI insights not available, skipping display");
+          return;
+        }
+
+        const insightHtml = `
+          <div style="padding: 12px; background: #f0f8ff; border-radius: 4px; border-left: 4px solid #0066cc;">
+            <div style="margin-bottom: 10px;">
+              <strong>Recommendation:</strong>
+              <p style="margin: 5px 0; color: #0066cc;">${
+                insights.recommendation || "N/A"
+              }</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 10px;">
+              <span><strong>Confidence:</strong> ${
+                insights.confidence || 0
+              }%</span>
+              <span><strong>Urgency:</strong> <span style="color: ${
+                insights.urgency === "HIGH"
+                  ? "#dc3545"
+                  : insights.urgency === "MEDIUM"
+                  ? "#ffc107"
+                  : "#28a745"
+              }; font-weight: bold;">${
+          insights.urgency || "NORMAL"
+        }</span></span>
+            </div>
+            <div style="padding: 10px; background: #fff; border-radius: 3px; margin-bottom: 10px;">
+              <strong>Quick Facts:</strong>
+              <ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85em;">
+                <li>Conversion Ratio: ${
+                  calculation.conversionRatio || "N/A"
+                }</li>
+                <li>Yield: ${calculation.yieldPercentage || "N/A"}</li>
+                <li>Recommended Order: <strong>${Math.ceil(
+                  calculation.recommendedOrderQuantity || 0
+                )} units</strong></li>
+                <li>Current Inventory: ${Math.floor(
+                  calculation.currentInventory || 0
+                )} units</li>
+              </ul>
+            </div>
+            ${
+              insights.optimizationTips &&
+              Array.isArray(insights.optimizationTips) &&
+              insights.optimizationTips.length > 0
+                ? `<div style="padding: 10px; background: #fffacd; border-radius: 3px; font-size: 0.85em;">
+                    <strong>Tips:</strong>
+                    <ul style="margin: 5px 0; padding-left: 20px;">
+                      ${insights.optimizationTips
+                        .map((tip) => `<li>${tip}</li>`)
+                        .join("")}
+                    </ul>
+                  </div>`
+                : ""
+            }
+          </div>
+        `;
+
+        // Update the AI analysis section
+        $("#purchaseRequestAIAnalysis").show();
+        $("#purchaseRequestAIInsights").html(insightHtml);
+
+        // Also update the quantity hint
+        $("#purchaseRequestQuantityHint").html(
+          `<strong>AI Recommended:</strong> ${Math.ceil(
+            calculation.recommendedOrderQuantity
+          )} units | 
+           <strong>Current Stock:</strong> ${Math.floor(
+             calculation.currentInventory
+           )} units`
+        );
+      }
+
+      // AI-Powered Raw Material Calculator - Fetch intelligent requirements
+      function loadAICalculatedRequirements(productId, quantityRequired) {
+        console.log("Starting AI calculation for:", {
+          productId,
+          quantityRequired,
+        });
+
+        $.ajax({
+          url: `/api/procurement/product/calculate/requirements?productId=${productId}&quantityRequired=${quantityRequired}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            console.log("API Response received:", response);
+
+            const calculation = response?.data;
+            if (calculation) {
+              console.log("AI Calculation Result:", calculation);
+
+              // Store calculation results for later use
+              window.aiCalculationResults = calculation;
+
+              // Display calculation insights in the dialog
+              displayAIInsights(calculation);
+            } else {
+              console.warn("No calculation data in response");
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("AI calculation API error:", {
+              status: xhr.status,
+              error,
+              response: xhr.responseText,
+            });
+          },
+        });
+      }
+
+      // Display AI Insights in the Purchase Request Dialog
+      function displayAIInsights(calculation) {
+        const insights = calculation.aiAnalysis;
+        const insightHtml = `
+          <div style="margin-top: 15px; padding: 10px; background: #f0f8ff; border-radius: 4px; border-left: 4px solid #0066cc;">
+            <div style="font-weight: bold; color: #0066cc; margin-bottom: 8px;">AI Analysis & Recommendation:</div>
+            <div style="margin-bottom: 8px;">
+              <strong>Recommendation:</strong> ${insights.recommendation}
+            </div>
+            <div style="margin-bottom: 8px; color: #666; font-size: 0.9em;">
+              <strong>Confidence:</strong> ${insights.confidence}% | 
+              <strong>Urgency:</strong> <span style="color: ${
+                insights.urgency === "HIGH"
+                  ? "#dc3545"
+                  : insights.urgency === "MEDIUM"
+                  ? "#ffc107"
+                  : "#28a745"
+              };">${insights.urgency}</span>
+            </div>
+            <div style="margin-bottom: 8px; padding: 8px; background: #fff; border-radius: 3px;">
+              <strong>Quick Facts:</strong>
+              <ul style="margin: 5px 0; padding-left: 20px; font-size: 0.9em;">
+                <li>Conversion Ratio: ${calculation.conversionRatio}</li>
+                <li>Yield: ${calculation.yieldPercentage} (${
+          calculation.productForm
+        })</li>
+                <li>Recommended Order: <strong style="color: #0066cc;">${Math.ceil(
+                  calculation.recommendedOrderQuantity
+                )} units</strong></li>
+                <li>Current Inventory: ${Math.floor(
+                  calculation.currentInventory
+                )} units</li>
+              </ul>
+            </div>
+            ${
+              insights.optimizationTips && insights.optimizationTips.length > 0
+                ? `<div style="padding: 8px; background: #fffacd; border-radius: 3px; font-size: 0.9em;">
+                    <strong>💡 Tips:</strong>
+                    <ul style="margin: 5px 0; padding-left: 20px;">
+                      ${insights.optimizationTips
+                        .map((tip) => `<li>${tip}</li>`)
+                        .join("")}
+                    </ul>
+                  </div>`
+                : ""
+            }
+          </div>
+        `;
+
+        // Find and update the ai-insights container
+        // It's a sibling of rawMaterialsContainer, both inside a wrapper div
+        const insightContainer = $(".ai-insights").last();
+        if (insightContainer.length) {
+          insightContainer.html(insightHtml);
+          console.log("AI insights displayed successfully");
+        } else {
+          console.warn("⚠️ AI insights container not found in DOM");
+        }
+      }
+
+      // Load raw materials list with AI-powered calculation
+      function loadRawMaterialsList(productId, quantityRequired) {
+        // First, calculate AI-powered requirements
+        loadAICalculatedRequirements(productId, quantityRequired);
+
+        // Fetch the product details to get category/species information
+        $.ajax({
+          url: `/api/master/product/${productId}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const product = response?.data;
+            const container = $("#rawMaterialsContainer");
+
+            // Clear any existing content first
+            container.html(
+              '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+            );
+
+            // Get species info from product
+            const speciesName =
+              product?.ProductCategoryMaster?.SpeciesMaster?.species_name || "";
+            const productName = product?.product_name || "";
+
+            console.log("Product loaded:", {
+              speciesName,
+              productName,
+              product,
+            });
+
+            // Load materials for this specific product
+            // Pass productId and quantityRequired for direct matching in procurement database
+            loadProductSpecificMaterials(
+              speciesName,
+              productName,
+              container,
+              productId,
+              quantityRequired
+            );
+          },
+          error: function (xhr) {
+            console.error("Error loading product:", xhr);
+            // Fallback to default materials on error
+            const container = $("#rawMaterialsContainer");
+            loadDefaultRawMaterials(container, quantityRequired);
+          },
+        });
+      }
+
+      // Load product-specific raw materials from database
+      function loadProductSpecificMaterials(
+        speciesName,
+        productName,
+        container,
+        productId,
+        quantityRequired
+      ) {
+        // Strategy: Query procurement products for the specific product_master_id
+        // Display the FIRST material with auto-calculated quantity (20% buffer)
+        // Check inventory availability
+
+        console.log("DEBUG: Loading materials for product ID:", productId);
+
+        // First, try to fetch procurement products for this specific product
+        $.ajax({
+          url: `/api/procurement/product?product_master_id=${productId}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const productSpecificMaterials = response?.data?.rows || [];
+
+            console.log(
+              "DEBUG: Product-specific materials found:",
+              productSpecificMaterials
+            );
+
+            if (
+              productSpecificMaterials &&
+              productSpecificMaterials.length > 0
+            ) {
+              // Filter to only UNPROCESSED materials
+              const unprocessedMaterials = productSpecificMaterials.filter(
+                (mat) => mat.procurement_product_type === "UNPROCESSED"
+              );
+
+              if (unprocessedMaterials.length > 0) {
+                console.log(
+                  "Found product-specific UNPROCESSED materials:",
+                  unprocessedMaterials
+                );
+
+                // Use ONLY the first material
+                const material = unprocessedMaterials[0];
+                let displayName =
+                  material?.ProductMaster?.product_name ||
+                  material.procurement_purchaser ||
+                  "Raw Material";
+
+                console.log("Material mapping:", {
+                  id: material.id,
+                  product_name: material?.ProductMaster?.product_name,
+                  procurement_purchaser: material.procurement_purchaser,
+                  final_name: displayName,
+                });
+
+                // Fetch inventory for this procurement product
+                $.ajax({
+                  url: `/api/inventory/purchase/all`,
+                  method: "GET",
+                  dataType: "json",
+                  success: function (inventoryResponse) {
+                    const inventories = inventoryResponse?.data || [];
+                    const materialInventory = inventories.find(
+                      (inv) =>
+                        inv.procurement_product_id === material.id &&
+                        inv.is_active === true
+                    );
+                    const availableStock = materialInventory?.quantity || 0;
+
+                    console.log("Inventory for material:", {
+                      material_id: material.id,
+                      available_stock: availableStock,
+                    });
+
+                    renderSingleRawMaterial(
+                      material.id,
+                      displayName,
+                      quantityRequired,
+                      container,
+                      availableStock
+                    );
+                  },
+                  error: function (xhr) {
+                    console.error("Error fetching inventory:", xhr);
+                    // Render without inventory data
+                    renderSingleRawMaterial(
+                      material.id,
+                      displayName,
+                      quantityRequired,
+                      container,
+                      0
+                    );
+                  },
+                });
+                return;
+              }
+            }
+
+            // If no product-specific materials, fall back to all UNPROCESSED
+            console.log(
+              "No product-specific materials found, trying all UNPROCESSED materials"
+            );
+            loadUnprocessedMaterials(container, quantityRequired);
+          },
+          error: function (xhr) {
+            console.error("Error fetching product-specific materials:", xhr);
+            loadUnprocessedMaterials(container, quantityRequired);
+          },
+        });
+      }
+
+      // Load unprocessed materials
+      function loadUnprocessedMaterials(container, quantityRequired) {
+        $.ajax({
+          url: "/api/procurement/product?procurement_product_type=UNPROCESSED",
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const procurementProducts = response?.data?.rows || [];
+
+            if (procurementProducts && procurementProducts.length > 0) {
+              console.log("Found unprocessed materials:", procurementProducts);
+
+              // Use ONLY the first material
+              const material = procurementProducts[0];
+              let displayName =
+                material?.ProductMaster?.product_name ||
+                material.procurement_purchaser ||
+                "Raw Material";
+
+              console.log("Using unprocessed material:", {
+                id: material.id,
+                name: displayName,
+              });
+
+              // Fetch inventory for this procurement product
+              $.ajax({
+                url: `/api/inventory/purchase/all`,
+                method: "GET",
+                dataType: "json",
+                success: function (inventoryResponse) {
+                  const inventories = inventoryResponse?.data || [];
+                  const materialInventory = inventories.find(
+                    (inv) =>
+                      inv.procurement_product_id === material.id &&
+                      inv.is_active === true
+                  );
+                  const availableStock = materialInventory?.quantity || 0;
+
+                  console.log("Inventory for unprocessed material:", {
+                    material_id: material.id,
+                    available_stock: availableStock,
+                  });
+
+                  renderSingleRawMaterial(
+                    material.id,
+                    displayName,
+                    quantityRequired,
+                    container,
+                    availableStock
+                  );
+                },
+                error: function (xhr) {
+                  console.error("Error fetching inventory:", xhr);
+                  // Render without inventory data
+                  renderSingleRawMaterial(
+                    material.id,
+                    displayName,
+                    quantityRequired,
+                    container,
+                    0
+                  );
+                },
+              });
+            } else {
+              console.log(
+                "No unprocessed materials found, showing fallback materials"
+              );
+              showFallbackMaterial(container, quantityRequired);
+            }
+          },
+          error: function (xhr) {
+            console.error("Error fetching unprocessed materials:", xhr);
+            showFallbackMaterial(container, quantityRequired);
+          },
+        });
+      }
+
+      // Render single raw material with auto-calculated quantity
+      function renderSingleRawMaterial(
+        materialId,
+        materialName,
+        quantityRequired,
+        container,
+        availableStock = 0
+      ) {
+        // Calculate quantity with 20% buffer
+        const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
+        const roundedQuantity = Math.ceil(bufferedQuantity);
+        const hasStock = availableStock >= roundedQuantity;
+        const stockColor = hasStock ? "#28a745" : "#dc3545";
+        const stockStatus = hasStock ? "✓ Available" : "✗ Out of Stock";
+
+        // Calculate quantity to purchase after deducting available stock
+        const quantityToPurchase = Math.max(
+          0,
+          roundedQuantity - availableStock
+        );
+
+        const html = `
+          <div style="padding: 10px; background: #f9f9f9; border-radius: 3px;">
+            <div style="margin-bottom: 10px;">
+              <strong>Material:</strong> ${materialName}
+            </div>
+            <div style="margin-bottom: 10px; padding: 8px; background: #fff; border-radius: 3px; border-left: 3px solid ${stockColor};">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><strong>Available Stock:</strong> ${availableStock} units</span>
+                <span style="color: ${stockColor}; font-weight: bold;">${stockStatus}</span>
+              </div>
+            </div>
+            <div style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-radius: 3px; border-left: 3px solid #0066cc;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><strong>Quantity Required (with 20% buffer):</strong> ${roundedQuantity} units</span>
+              </div>
+            </div>
+            <div style="margin-bottom: 10px; padding: 8px; background: #fff3cd; border-radius: 3px; border-left: 3px solid #ffc107;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><strong>Quantity to Purchase (after stock deduction):</strong> ${quantityToPurchase} units</span>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <label style="margin: 0;">Adjust Quantity to Purchase:</label>
+              <input 
+                type="number" 
+                id="single-raw-material-qty" 
+                class="form-control form-control-sm" 
+                value="${quantityToPurchase}" 
+                min="0" 
+                step="0.5"
+                style="width: 100px;"
+              >
+              <span style="color: #666; font-size: 0.9em;">Units</span>
+            </div>
+            ${
+              !hasStock
+                ? '<div style="margin-top: 10px; color: #dc3545; font-weight: bold;">⚠️ Current stock insufficient to fulfill complete requirement!</div>'
+                : '<div style="margin-top: 10px; color: #28a745; font-weight: bold;">✓ Sufficient stock available - no additional purchase needed!</div>'
+            }
+            <input type="hidden" id="single-raw-material-id" value="${materialId}">
+            <input type="hidden" id="single-raw-material-name" value="${materialName}">
+            <input type="hidden" id="single-raw-material-available-stock" value="${availableStock}">
+            <input type="hidden" id="single-raw-material-quantity-required" value="${roundedQuantity}">
+          </div>
+        `;
+
+        container.html(html);
+      }
+
+      // Render raw materials
+      function renderRawMaterials(materialsList, container) {
+        let html = "";
+        materialsList.forEach((material) => {
+          html += `
+            <div style="margin-bottom: 10px; padding: 8px; background: #f9f9f9; border-radius: 3px;">
+              <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                <input type="checkbox" class="raw-material-checkbox" value="${material.id}" data-name="${material.name}" style="margin-right: 10px;">
+                <span style="flex: 1;">${material.name}</span>
+                <input type="number" class="form-control form-control-sm raw-material-qty" placeholder="Qty" value="" style="width: 80px; margin-left: 10px;" min="0" step="0.5">
+              </label>
+            </div>
+          `;
+        });
+
+        container.html(html);
+      }
+
+      // Load default raw materials fallback
+      function loadGenericRawMaterials(container) {
+        if (!container || container.length === 0) {
+          container = $("#rawMaterialsContainer");
+        }
+
+        // Fetch all unprocessed materials from database as fallback
+        $.ajax({
+          url: "/api/procurement/product",
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const procurementProducts = response?.data?.rows || [];
+            if (procurementProducts && procurementProducts.length > 0) {
+              const materialsList = procurementProducts.map((material) => ({
+                id: material.id,
+                name: material.procurement_purchaser || "Raw Material",
+              }));
+              console.log(
+                "Loaded generic materials from database:",
+                materialsList
+              );
+              renderRawMaterials(materialsList, container);
+            } else {
+              console.log(
+                "No materials found in database, showing fallback materials"
+              );
+              showFallbackMaterials(container);
+            }
+          },
+          error: function (xhr) {
+            console.error("Error loading generic materials:", xhr);
+            showFallbackMaterials(container);
+          },
+        });
+      }
+
+      function showFallbackMaterial(container, quantityRequired) {
+        // Show a single fallback material with auto-calculated quantity
+        const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
+        const roundedQuantity = Math.ceil(bufferedQuantity);
+
+        const html = `
+          <div style="padding: 10px; background: #f9f9f9; border-radius: 3px;">
+            <div style="margin-bottom: 10px;">
+              <strong>Material:</strong> Raw Material - Not Specified
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <label style="margin: 0;">Quantity Required (with 20% buffer):</label>
+              <input 
+                type="number" 
+                id="single-raw-material-qty" 
+                class="form-control form-control-sm" 
+                value="${roundedQuantity}" 
+                min="0" 
+                step="0.5"
+                style="width: 100px;"
+              >
+              <span style="color: #666; font-size: 0.9em;">Units</span>
+            </div>
+            <input type="hidden" id="single-raw-material-id" value="generic_raw_material_1">
+            <input type="hidden" id="single-raw-material-name" value="Raw Material - Not Specified">
+          </div>
+        `;
+
+        container.html(html);
+      }
+
+      function showFallbackMaterials(container) {
+        const fallbackMaterials = [
+          {
+            id: "generic_raw_material_1",
+            name: "Raw Material - Not Specified",
+          },
+          { id: "processing_supplies", name: "Processing Supplies" },
+          { id: "packaging_materials", name: "Packaging Materials" },
+        ];
+
+        renderRawMaterials(fallbackMaterials, container);
+      }
+
+      // Get single raw material with auto-filled quantity
+      function getSingleRawMaterial() {
+        const materialId = $("#single-raw-material-id").val();
+        const materialName = $("#single-raw-material-name").val();
+        const quantity = $("#single-raw-material-qty").val();
+        const availableStock = parseFloat(
+          $("#single-raw-material-available-stock").val() || 0
+        );
+
+        if (materialId && quantity) {
+          return {
+            id: materialId,
+            name: materialName,
+            quantity: parseFloat(quantity),
+            availableStock: availableStock,
+          };
+        }
+        return null;
+      }
+
+      // Get selected raw materials (for backward compatibility)
+      function getSelectedRawMaterials() {
+        const materials = [];
+        $(".raw-material-checkbox:checked").each(function () {
+          const materialId = $(this).val();
+          const materialName = $(this).data("name"); // Use data-name attribute
+          const quantity = $(this)
+            .closest("label")
+            .find(".raw-material-qty")
+            .val();
+
+          if (materialId && quantity) {
+            materials.push({
+              id: materialId,
+              name: materialName,
+              quantity: parseFloat(quantity),
+            });
+          }
+        });
+        return materials;
+      }
+
+      // Load supplier dropdown
+      function loadSupplierDropdown(selector) {
+        $.ajax({
+          url: "/api/master/supplier",
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const suppliers = response?.data?.rows || [];
+            const selectElement = $(selector);
+
+            suppliers.forEach((supplier) => {
+              const option = `<option value="${supplier.id}">${supplier.supplier_name}</option>`;
+              selectElement.append(option);
+            });
+          },
+          error: function (xhr) {
+            toastr.error("Failed to load suppliers!", "Error");
+          },
+        });
+      }
+
+      // Load unit dropdown
+      function loadUnitDropdown(selector) {
+        $.ajax({
+          url: "/api/master/unit/dropdown",
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const units = response?.data?.rows || [];
+            const selectElement = $(selector);
+
+            units.forEach((unit) => {
+              const option = `<option value="${unit.id}">${unit.unit_name}</option>`;
+              selectElement.append(option);
+            });
+          },
+          error: function (xhr) {
+            toastr.error("Failed to load units!", "Error");
+          },
+        });
+      }
+
+      // Load suppliers for allocation dialog
+      function loadAllocationSuppliers() {
+        $.ajax({
+          url: "/api/master/supplier",
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            const suppliers = response?.data?.rows || [];
+            const selectElement = $("#allocationSupplierSelect");
+
+            suppliers.forEach((supplier) => {
+              const option = `<option value="${supplier.id}">${supplier.supplier_name}</option>`;
+              selectElement.append(option);
+            });
+          },
+          error: function (xhr) {
+            toastr.error("Failed to load suppliers!", "Error");
+          },
+        });
+      }
+
+      // Function to generate purchase request
+      function generatePurchaseRequest(
+        orderId,
+        productId,
+        quantityRequired,
+        orderNo,
+        supplierId,
+        unitId,
+        rawMaterials = []
+      ) {
+        // Show loading toast
+        toastr.info("Generating purchase request...", "Please Wait");
+
+        // Get default supplier and unit if not provided
+        let defaultSupplierId = supplierId;
+        let defaultUnitId = unitId;
+
+        // If supplier or unit are not provided, fetch defaults
+        if (!defaultSupplierId || !defaultUnitId) {
+          // Fetch first supplier and unit as defaults
+          $.ajax({
+            url: "/api/master/supplier",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+              if (response?.data?.rows && response.data.rows.length > 0) {
+                defaultSupplierId = response.data.rows[0].id;
+              }
+              // Fetch unit
+              $.ajax({
+                url: "/api/master/unit/dropdown",
+                method: "GET",
+                dataType: "json",
+                success: function (unitResponse) {
+                  if (
+                    unitResponse?.data?.rows &&
+                    unitResponse.data.rows.length > 0
+                  ) {
+                    defaultUnitId = unitResponse.data.rows[0].id;
+                  }
+                  // Now create the purchase requests
+                  createPurchaseRequests(
+                    rawMaterials,
+                    productId,
+                    quantityRequired,
+                    orderNo,
+                    defaultSupplierId,
+                    defaultUnitId
+                  );
+                },
+                error: function () {
+                  toastr.error("Failed to load units!", "Error");
+                },
+              });
+            },
+            error: function () {
+              toastr.error("Failed to load suppliers!", "Error");
+            },
+          });
+        } else {
+          // Use provided supplier and unit
+          createPurchaseRequests(
+            rawMaterials,
+            productId,
+            quantityRequired,
+            orderNo,
+            defaultSupplierId,
+            defaultUnitId
+          );
+        }
+      }
+
+      // Helper function to create purchase requests
+      function createPurchaseRequests(
+        rawMaterials,
+        productId,
+        quantityRequired,
+        orderNo,
+        supplierId,
+        unitId
+      ) {
+        const procurementDate = new Date().toISOString().split("T")[0];
+        let successCount = 0;
+        let totalCount = rawMaterials.length;
+
+        // If raw materials are provided, create separate purchase requests for each
+        if (rawMaterials && rawMaterials.length > 0) {
+          rawMaterials.forEach((material) => {
+            const materialQuantity = parseFloat(material.quantity) || 0;
+            const materialBuffered = materialQuantity * 1.2; // Add 20% buffer
+            const materialRounded = Math.ceil(materialBuffered);
+
+            const procurementData = {
+              procurement_date: procurementDate,
+              product_master_id: String(productId),
+              supplier_master_id: String(supplierId),
+              unit_master_id: String(unitId),
+              procurement_product_type: "UNPROCESSED",
+              procurement_quantity: materialRounded,
+              procurement_price: null,
+              procurement_purchaser: `System Auto-Generated - ${
+                material.procurement_product_name || "Unknown"
+              }`,
+            };
+
+            $.ajax({
+              url: "/api/procurement/product",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify(procurementData),
+              success: function (response) {
+                successCount++;
+
+                console.log(
+                  `Purchase request created for material ${material.id}: ${materialRounded} units`
+                );
+
+                if (successCount === totalCount) {
+                  // All materials created successfully
+                  toastr.success(
+                    `Purchase requests created successfully!<br>
+                    <strong>${rawMaterials
+                      .map(
+                        (m) =>
+                          `${m.procurement_product_name}: ${
+                            m.quantity
+                          } → ${Math.ceil(m.quantity * 1.2)}`
+                      )
+                      .join("<br>")}</strong>`,
+                    "Success"
+                  );
+
+                  setTimeout(() => {
+                    loadAllocationTableData();
+                  }, 1500);
+                }
+              },
+              error: function (xhr) {
+                let errorMsg = "Failed to generate purchase request!";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                  errorMsg = xhr.responseJSON.message;
+                }
+                toastr.error(
+                  `${material.procurement_product_name}: ${errorMsg}`,
+                  "Error"
+                );
+              },
+            });
+          });
+        }
       }
 
       $(document).on("click", ".delOrder", (e) => {
@@ -3480,167 +4928,6 @@
           },
         });
       });
-
-      // Allocate Product Click Handler - Open Side Modal
-      $(document).on("click", ".allocateProduct", (e) => {
-        const order_id = $(e.target).attr("order_id");
-        const packing_id = $(e.target).attr("packing_id");
-        const order_product_id = $(e.target).attr("order_product_id");
-
-        console.log("Allocate button clicked with:", { order_id, packing_id, order_product_id });
-
-        if (!order_id || !packing_id || packing_id === "undefined") {
-          toastr["error"]("Invalid order or packing ID. Please refresh the page and try again.");
-          return;
-        }
-
-        // Get the row data from the table
-        const row = $(e.target).closest("tr");
-        const order_no = row.find("td").eq(2).text(); // Order No
-        const product_name = row.find("td").eq(3).text(); // Product Name
-        const quantity_required = parseFloat(row.find("td").eq(4).text()) || 0; // Quantity Required
-        const available_stock = parseFloat(row.find("td").eq(5).text()) || 0; // Available Stock
-
-        // Store IDs for later use
-        $("#submitAllocationBtn").attr("order_id", order_id);
-        $("#submitAllocationBtn").attr("packing_id", packing_id);
-        $("#submitAllocationBtn").attr("order_product_id", order_product_id);
-
-        // Populate the form fields
-        $("#allocation_order_no").val(order_no);
-        $("#allocation_product_name").val(product_name);
-        $("#allocation_quantity_required").val(quantity_required.toFixed(2));
-        $("#allocation_available_stock").val(available_stock.toFixed(2));
-        $("#allocation_quantity").val("");
-        $("#allocation_remarks").val("");
-
-        // Update stock badge with color coding
-        const $badge = $("#stock_badge");
-        const $message = $("#stock_message");
-        
-        if (available_stock <= 0) {
-          $badge.removeClass("bg-success bg-warning").addClass("bg-danger");
-          $badge.text("Out of Stock");
-          $message.text("⚠️ No stock available for allocation");
-        } else if (available_stock < quantity_required) {
-          $badge.removeClass("bg-success bg-danger").addClass("bg-warning");
-          $badge.text("Low Stock");
-          $message.text(`⚠️ Available: ${available_stock.toFixed(2)} KG | Required: ${quantity_required.toFixed(2)} KG (Shortage: ${(quantity_required - available_stock).toFixed(2)} KG)`);
-        } else {
-          $badge.removeClass("bg-warning bg-danger").addClass("bg-success");
-          $badge.text("Available");
-          $message.text(`✓ Sufficient stock available. Surplus: ${(available_stock - quantity_required).toFixed(2)} KG`);
-        }
-
-        // Open the allocation side panel
-        openSlidePanel(
-          "allocationSlideInPanel",
-          "allocationPanelHeading",
-          "Allocation",
-          "submitAllocationBtn",
-          "allocation_id"
-        );
-      });
-
-      // Close allocation panel
-      $("#closeAllocationPanelBtn").click(function () {
-        closeSlidePanel("allocationSlideInPanel");
-      });
-
-      // Submit allocation form
-      $("#submitAllocationBtn").click(function () {
-        const order_id = $(this).attr("order_id");
-        const packing_id = $(this).attr("packing_id");
-        const order_product_id = $(this).attr("order_product_id");
-        const allocation_quantity = parseFloat($("#allocation_quantity").val() || 0);
-        const allocation_remarks = $("#allocation_remarks").val();
-        const available_stock = parseFloat($("#allocation_available_stock").val() || 0);
-        const quantity_required = parseFloat($("#allocation_quantity_required").val() || 0);
-
-        // Validation
-        if (!order_id || !packing_id) {
-          toastr["warning"]("Missing order or packing ID");
-          return;
-        }
-
-        if (allocation_quantity <= 0) {
-          toastr["warning"]("Allocation quantity must be greater than 0");
-          return;
-        }
-
-        if (allocation_quantity > available_stock) {
-          toastr["warning"]("Allocation quantity cannot exceed available stock");
-          return;
-        }
-
-        // Calculate 25% more raw materials needed for purchase
-        const purchase_quantity = allocation_quantity * 1.25;
-
-        // Call the allocation API
-        $.ajax({
-          url: "/api/order/allocate-product",
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify({
-            order_id: order_id,
-            packing_id: packing_id,
-            order_product_id: order_product_id,
-            allocation_quantity: allocation_quantity,
-            remarks: allocation_remarks,
-          }),
-          success: (data) => {
-            toastr["success"](data?.message || "Product allocated successfully");
-            
-            // Create purchase request for 25% more raw materials
-            createPurchaseRequest(packing_id, purchase_quantity, allocation_quantity);
-            
-            // Close the panel
-            $("#closeAllocationPanelBtn").click();
-            // Refresh the allocation table
-            loadAllocationTableData();
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"] || "Failed to allocate product");
-            }
-          },
-        });
-      });
-
-      // Reset allocation form
-      $("#resetAllocationDataBtn").click(function () {
-        $("#allocation_quantity").val("");
-        $("#allocation_remarks").val("");
-      });
-
-      // Create purchase request for raw materials (25% more than allocated)
-      function createPurchaseRequest(product_id, purchase_quantity, allocated_quantity) {
-        $.ajax({
-          url: "/api/procurement/lot/purchase-request",
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json",
-          data: JSON.stringify({
-            product_id: product_id,
-            quantity: purchase_quantity,
-            allocated_quantity: allocated_quantity,
-            additional_percentage: 25,
-            request_type: "auto-generated",
-            remarks: `Auto-generated purchase request for product allocation. Allocated: ${allocated_quantity.toFixed(2)} KG, Purchasing: ${purchase_quantity.toFixed(2)} KG (25% buffer)`,
-          }),
-          success: (data) => {
-            toastr["success"](data?.message || "Purchase request created successfully for raw materials");
-          },
-          error: (jqXhr, textStatus, errorThrown) => {
-            // Log the error but don't fail the allocation process
-            console.warn("Purchase request creation failed:", jqXhr?.responseJSON?.message || errorThrown);
-            toastr["info"]("Allocation completed. Note: Purchase request creation needs review.");
-          },
-        });
-      }
 
       function saveOrders() {
         const order_id = $("#submitOrders").attr("order_id");

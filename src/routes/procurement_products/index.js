@@ -8,6 +8,10 @@ import { GetPaymentItems } from "./handlers/get_payment_products";
 import { GetPaidStatus } from "./handlers/get_paid_status";
 import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
 import { GetSalesInventoryItems } from "./handlers/get_sales_inventory_products";
+import {
+  CalculateRequirements,
+  GetMultiCategoryRecommendations,
+} from "./handlers/calculate_requirements";
 
 // Chart Handler
 import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
@@ -26,6 +30,10 @@ import { getNamesSchema } from "./schema/get_names";
 import { getPaymentItemsSchema } from "./schema/get_payment_products";
 import { getPaidStatusSchema } from "./schema/get_paid_status";
 import { getPurchaseInventoryItemsSchema } from "./schema/get_purchase_inventory_products";
+import {
+  calculateRequirementsSchema,
+  multiCategoryRecommendationsSchema,
+} from "./schema/calculate_requirements";
 
 // Chart Schema
 import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
@@ -363,6 +371,61 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const params = { profile_id: req?.token_profile_id, ...req.query };
 
         const result = await GetProcurementAgeByProducts(
+          params,
+          req?.session,
+          fastify
+        );
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  // AI-Powered Raw Material Calculator Routes
+  fastify.get(
+    "/calculate/requirements",
+    calculateRequirementsSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await CalculateRequirements(
+          params,
+          req?.session,
+          fastify
+        );
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/calculate/multi-category",
+    multiCategoryRecommendationsSchema,
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.query };
+
+        const result = await GetMultiCategoryRecommendations(
           params,
           req?.session,
           fastify

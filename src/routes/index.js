@@ -63,6 +63,9 @@ import qaRoute from "./qa";
 import traceabilityRoute from "./traceability";
 import taxEngineRoute from "./tax-engine";
 import postingRoute from "./posting";
+import salesAllocationRoute from "./sales_allocations";
+import salesInvoiceRoute from "./sales_invoices";
+import glPostingRoute from "./gl_postings";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -116,6 +119,34 @@ export const PrivateRouters = (fastify, opts, done) => {
   });
 
   // Master Data Routes
+  fastify.register(companyMasterRoute, {
+    prefix: "/master/company",
+  });
+
+  fastify.register(divisionMasterRoute, {
+    prefix: "/master/division",
+  });
+
+  fastify.register(locationMasterRoute, {
+    prefix: "/master/location",
+  });
+
+  fastify.register(speciesMasterRoute, {
+    prefix: "/master/species",
+  });
+
+  fastify.register(sizeMasterRoute, {
+    prefix: "/master/size",
+  });
+
+  fastify.register(gradeMasterRoute, {
+    prefix: "/master/grade",
+  });
+
+  fastify.register(productCategoryMasterRoute, {
+    prefix: "/master/product-category",
+  });
+
   fastify.register(vehicleMasterRoute, {
     prefix: "/master/vehicle",
   });
@@ -138,6 +169,22 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(supplierMasterRoute, {
     prefix: "/master/supplier",
+  });
+
+  fastify.register(carrierMasterRoute, {
+    prefix: "/master/carrier",
+  });
+
+  fastify.register(packagingMasterRoute, {
+    prefix: "/master/packaging",
+  });
+
+  fastify.register(priceListMasterRoute, {
+    prefix: "/master/price-list",
+  });
+
+  fastify.register(priceListProductMasterRoute, {
+    prefix: "/master/price-list-product",
   });
 
   fastify.register(productMasterRoute, {
@@ -195,6 +242,18 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(postingRoute, {
     prefix: "/posting",
+  });
+
+  fastify.register(salesAllocationRoute, {
+    prefix: "/",
+  });
+
+  fastify.register(salesInvoiceRoute, {
+    prefix: "/",
+  });
+
+  fastify.register(glPostingRoute, {
+    prefix: "/",
   });
 
   // Add a simple test route to check if server can handle routes

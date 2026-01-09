@@ -25,25 +25,10 @@
 
     <link
       rel="preload"
-      href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="/public/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin="anonymous"
-    />
-
-    <link
-      rel="preload"
       href="/public/fonts/Lato/Lato-Regular.ttf"
       as="font"
       type="font/ttf"
-      crossorigin
+      crossorigin="anonymous"
     />
 
     <link
@@ -51,7 +36,7 @@
       href="/public/fonts/Lato/Lato-Bold.ttf"
       as="font"
       type="font/ttf"
-      crossorigin
+      crossorigin="anonymous"
     />
 
     <!-- title logo -->
@@ -5380,116 +5365,55 @@
       }
 
       function loadPackingPackage(productId = null, market = "RETAIL") {
-        let url = "/api/master/packaging";
-        let data = {};
+        // Load packaging options from the packing API
+        $.ajax({
+          url: `/api/packing`,
+          method: "GET",
+          dataType: "json",
+          contentType: "application/json",
+          crossDomain: true,
+          processData: true,
+          success: (response) => {
+            let packagingData = [];
 
-        // If product details are provided, get suggestions from packing rules API
-        if (productId) {
-          // First get product details to extract grade and size
-          $.ajax({
-            url: `/api/master/product/${productId}`,
-            method: "GET",
-            dataType: "json",
-            contentType: "application/json",
-            crossDomain: true,
-            processData: false,
-            success: (productData) => {
-              const grade = productData?.data?.grade_name;
-              const size = productData?.data?.size;
-
-              // Now get packaging suggestions using the derived grade and size
-              url = "/api/packing-rules/suggestions";
-              data = {
-                product_id: productId,
-                market: market
-              };
-
-              $.ajax({
-                url: url,
-                method: "GET",
-                data: data,
-                dataType: "json",
-                contentType: "application/json",
-                crossDomain: true,
-                processData: true,
-                success: (response) => {
-                  let packagingData = [];
-
-                  if (response?.data?.suggestions) {
-                    // Use suggestions from packing rules API
-                    packagingData = response.data.suggestions.map(suggestion => ({
-                      id: suggestion.package_id,
-                      text: suggestion.package_code,
-                      confidence: suggestion.confidence,
-                      package_type: suggestion.package_type,
-                      dimensions_cm: suggestion.dimensions_cm
-                    }));
-                  }
-
-                  $("#packingPackage").select2({
-                    placeholder: "Recommended packaging for selected product",
-                    allowClear: "true",
-                    data: packagingData,
-                    templateResult: function (item) {
-                      if (!item.id) return item.text;
-                      let confidenceText = item.confidence ? ` (Confidence: ${Math.round(item.confidence * 100)}%)` : '';
-                      let dimensionsText = item.dimensions_cm ? ` [${item.dimensions_cm.length}x${item.dimensions_cm.width}x${item.dimensions_cm.height}cm]` : '';
-                      return $(`<span>${item.text}${dimensionsText}${confidenceText}</span>`);
-                    }
-                  });
-
-                  $("#packingPackage").val(null).trigger("change");
-                },
-                error: (jqXhr, textStatus, errorThrown) => {
-                  if (jqXhr["status"] == 420) {
-                    toastr["warning"](jqXhr["responseJSON"]["message"]);
-                  } else {
-                    toastr["error"](jqXhr["responseJSON"]["message"]);
-                  }
-                },
-              });
-            },
-            error: (jqXhr, textStatus, errorThrown) => {
-              console.error("Failed to load product details:", {jqXhr, textStatus, errorThrown});
-              toastr["error"]("Failed to load product details for packaging suggestions");
+            if (response?.data && Array.isArray(response.data)) {
+              // Transform packing data to select2 format
+              packagingData = response.data.map(packing => ({
+                id: packing.id,
+                text: packing.packing_name || packing.name || 'Unknown',
+                package_type: packing.package_type,
+                dimensions_cm: packing.dimensions_cm
+              }));
             }
-          });
-        } else {
-          // No product selected, show all packaging options
-          $.ajax({
-            url: url,
-            method: "GET",
-            data: data,
-            dataType: "json",
-            contentType: "application/json",
-            crossDomain: true,
-            processData: true,
-            success: (response) => {
-              let packagingData = $.map(response?.data?.rows || response?.data, function (item) {
-                return {
-                  id: item.id,
-                  text: item.packaging_code,
-                  package_type: item.package_type
-                };
-              });
 
-              $("#packingPackage").select2({
-                placeholder: "Choose a package",
-                allowClear: "true",
-                data: packagingData
-              });
-
-              $("#packingPackage").val(null).trigger("change");
-            },
-            error: (jqXhr, textStatus, errorThrown) => {
-              if (jqXhr["status"] == 420) {
-                toastr["warning"](jqXhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](jqXhr["responseJSON"]["message"]);
+            $("#packingPackage").select2({
+              placeholder: "Select packaging for product",
+              allowClear: true,
+              data: packagingData,
+              templateResult: function (item) {
+                if (!item.id) return item.text;
+                let dimensionsText = item.dimensions_cm ? ` [${item.dimensions_cm.length}x${item.dimensions_cm.width}x${item.dimensions_cm.height}cm]` : '';
+                return $(`<span>${item.text}${dimensionsText}</span>`);
               }
-            },
-          });
-        }
+            });
+
+            $("#packingPackage").val(null).trigger("change");
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr.status == 420) {
+              toastr["warning"](jqXhr.responseJSON?.message || "Warning loading packing options");
+            } else {
+              console.error("Packing API Error:", jqXhr);
+            }
+
+            // Fallback: still initialize select2 even if API fails
+            $("#packingPackage").select2({
+              placeholder: "Select packaging for product",
+              allowClear: true,
+              data: []
+            });
+          },
+        });
       }
 
 

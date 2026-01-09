@@ -7,6 +7,11 @@ import { GetSizesByGrade } from "./handlers/get_sizes_by_grade";
 import { GetSizesBySpecies } from "./handlers/get_sizes_by_species";
 import { GetGradesByCategory } from "./handlers/get_grades_by_category";
 import { GetDropdown } from "./handlers/get_dropdown";
+import {
+  createWithMapping,
+  getSuggestions,
+  validateCombination,
+} from "./handlers/create-with-mapping";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -268,6 +273,49 @@ export const productMasterRoute = (fastify, opts, done) => {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
+      });
+    }
+  });
+
+  // ========== 4D MAPPING ENDPOINTS ==========
+
+  // Create product with 4D mapping validation
+  fastify.post("/create-with-mapping", async (req, reply) => {
+    try {
+      req.user = { id: req?.token_profile_id };
+      req.profile_id = req?.token_profile_id;
+      await createWithMapping(req, reply);
+    } catch (err) {
+      console.error("Error in create-with-mapping:", err.message);
+      return reply.code(err?.statusCode || 500).send({
+        success: false,
+        message: err?.message || "Failed to create product with mapping",
+      });
+    }
+  });
+
+  // Get product suggestions by species and derivative
+  fastify.get("/suggestions", async (req, reply) => {
+    try {
+      await getSuggestions(req, reply);
+    } catch (err) {
+      console.error("Error in suggestions:", err.message);
+      return reply.code(err?.statusCode || 500).send({
+        success: false,
+        message: err?.message || "Failed to get suggestions",
+      });
+    }
+  });
+
+  // Validate product combination
+  fastify.post("/validate-combination", async (req, reply) => {
+    try {
+      await validateCombination(req, reply);
+    } catch (err) {
+      console.error("Error in validate-combination:", err.message);
+      return reply.code(err?.statusCode || 500).send({
+        success: false,
+        message: err?.message || "Failed to validate combination",
       });
     }
   });

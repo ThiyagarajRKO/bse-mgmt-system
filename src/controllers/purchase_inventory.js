@@ -25,12 +25,17 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length, search }) => {
+export const GetAll = ({ start, length, search, procurement_product_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
+
+      // Filter by procurement product if provided
+      if (procurement_product_id) {
+        where.procurement_product_id = procurement_product_id;
+      }
 
       if (search) {
         where[Op.or] = [
@@ -64,18 +69,28 @@ export const GetAll = ({ start, length, search }) => {
       }
 
       const inventories = await models.PurchaseInventory.findAndCountAll({
-        attributes: ["id", "procurement_product_type", "quantity"],
+        attributes: [
+          "id",
+          "procurement_product_id",
+          "procurement_product_type",
+          "quantity",
+          "available_quantity",
+          "quantity_in_stock",
+        ],
         include: [
           {
             attributes: ["id"],
             model: models.ProcurementProducts,
+            required: false,
             where: {
               is_active: true,
             },
           },
           {
             attributes: ["id", "product_name"],
+            as: "ProductMaster",
             model: models.ProductMaster,
+            required: false,
             where: {
               is_active: true,
             },
