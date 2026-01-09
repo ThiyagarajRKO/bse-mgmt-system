@@ -104,7 +104,7 @@ export const GetDropdown = async (params, session, fastify) => {
           order: [
             [
               sequelize.literal(
-                `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+                `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
               ),
               "ASC",
             ],
@@ -138,7 +138,7 @@ export const GetDropdown = async (params, session, fastify) => {
             order: [
               [
                 sequelize.literal(
-                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
                 ),
                 "ASC",
               ],
@@ -161,7 +161,7 @@ export const GetDropdown = async (params, session, fastify) => {
             order: [
               [
                 sequelize.literal(
-                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
                 ),
                 "ASC",
               ],

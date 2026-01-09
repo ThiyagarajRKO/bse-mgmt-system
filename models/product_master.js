@@ -104,6 +104,34 @@ module.exports = (sequelize, DataTypes) => {
         comment:
           "4D Mapping ID: Links to validated combination of species × derivative × size × grade. Ensures only valid combinations are used.",
       },
+      processing_state: {
+        type: DataTypes.ENUM("RAW", "PROCESSED"),
+        allowNull: false,
+        defaultValue: "PROCESSED",
+        comment:
+          "RAW = unprocessed whole seafood, PROCESSED = derivatives/cooked",
+      },
+      product_role: {
+        type: DataTypes.ENUM("RAW_MATERIAL", "WIP", "FINISHED_GOOD"),
+        allowNull: false,
+        defaultValue: "FINISHED_GOOD",
+        comment: "Accounting role: RAW_MATERIAL, WIP, or FINISHED_GOOD",
+      },
+      is_raw: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        comment: "True if processing_state = RAW (denormalized for queries)",
+      },
+      is_producible: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        comment: "False for RAW (inputs), true for processed (can be produced)",
+      },
+      is_sellable: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        comment: "Whether product can be sold to customers",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -335,6 +363,47 @@ module.exports = (sequelize, DataTypes) => {
       await data.save({ profile_id: options.profile_id });
     } catch (err) {
       console.log("Error while deleting a product master", err?.message || err);
+    }
+  });
+
+  // RAW Product Validation Hook (ERP-grade enforcement)
+  ProductMaster.beforeValidate((product) => {
+    // Enforce RAW product rules
+    if (product.processing_state === "RAW") {
+      // RAW products cannot have grade
+      if (
+        product.grade_master_id !== null &&
+        product.grade_master_id !== undefined
+      ) {
+        throw new Error(
+          "RAW products cannot have grade. Only PROCESSED products can have grade."
+        );
+      }
+
+      // RAW products cannot be producible (they are inputs, not outputs)
+      if (product.is_producible === true) {
+        throw new Error(
+          "RAW products cannot be producible (is_producible must be FALSE)"
+        );
+      }
+
+      // RAW products must have size
+      if (!product.size_master_id) {
+        throw new Error(
+          "RAW products must have a size (e.g., UNSIZED, 1-2kg, etc.)"
+        );
+      }
+
+      // Sync is_raw flag
+      product.is_raw = true;
+    } else {
+      // PROCESSED products
+      product.is_raw = false;
+
+      // PROCESSED products can have grade and be producible
+      if (product.is_producible === undefined) {
+        product.is_producible = true;
+      }
     }
   });
 

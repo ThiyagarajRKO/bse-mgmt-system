@@ -347,41 +347,78 @@ export const GetAll = ({ start, length }) => {
 export const GetNames = ({ start, length }) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // Simplified query that doesn't require nested associations
+      // Try to fetch packings with basic information
       const packings = await models.Packing.findAll({
-        attributes: ["id", "packing_quantity"],
+        attributes: ["id", "packing_quantity", "created_at"],
         where: {
           is_active: true,
         },
-        include: [
-          {
-            attributes: ["id"],
-            as: "pd",
-            model: models.PeeledDispatches,
-            where: { is_active: true },
-            include: [
-              {
-                attributes: ["id"],
-                as: "pp",
-                model: models.PeelingProducts,
-                where: { is_active: true },
-                include: [
-                  {
-                    attributes: ["id", "product_name"],
-                    model: models.ProductMaster,
-                    where: { is_active: true },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        limit: length,
-        offset: start,
+        limit: length || 100,
+        offset: start || 0,
         order: [["created_at", "desc"]],
+        raw: true,
       });
 
-      resolve(packings);
+      // If no packings found, return empty array instead of error
+      if (!packings || packings.length === 0) {
+        return resolve([]);
+      }
+
+      // Try to enrich with product names, but don't fail if associations don't exist
+      try {
+        const enrichedPackings = await Promise.all(
+          packings.map(async (packing) => {
+            try {
+              // Try to get peeled dispatch and product name
+              const packingWithAssoc = await models.Packing.findOne({
+                where: { id: packing.id },
+                attributes: ["id", "packing_quantity"],
+                include: [
+                  {
+                    model: models.PeeledDispatches,
+                    as: "pd",
+                    attributes: ["id"],
+                    required: false,
+                    include: [
+                      {
+                        model: models.PeelingProducts,
+                        as: "pp",
+                        attributes: ["id"],
+                        required: false,
+                        include: [
+                          {
+                            model: models.ProductMaster,
+                            attributes: ["id", "product_name"],
+                            required: false,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              });
+              return packingWithAssoc || packing;
+            } catch (err) {
+              console.warn(
+                `Error enriching packing ${packing.id}:`,
+                err.message
+              );
+              return packing;
+            }
+          })
+        );
+
+        resolve(enrichedPackings);
+      } catch (err) {
+        console.warn(
+          "Error enriching packings, returning base data:",
+          err.message
+        );
+        resolve(packings);
+      }
     } catch (err) {
+      console.error("Error in GetNames:", err);
       reject(err);
     }
   });

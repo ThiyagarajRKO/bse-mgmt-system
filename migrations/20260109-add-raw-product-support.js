@@ -54,7 +54,7 @@ module.exports = {
         transaction,
       });
 
-      // Step 3: Add constraints
+      // Step 3: Add constraints (ERP-grade enforcement)
       console.log("   🔒 Adding database constraints...");
 
       // RAW products must NOT have grade
@@ -66,6 +66,12 @@ module.exports = {
       // RAW products MUST have size_id
       await queryInterface.sequelize.query(
         "ALTER TABLE product_master ADD CONSTRAINT chk_raw_size_required CHECK (processing_state <> 'RAW' OR size_master_id IS NOT NULL)",
+        { transaction }
+      );
+
+      // RAW products cannot be producible (they are inputs, not outputs)
+      await queryInterface.sequelize.query(
+        "ALTER TABLE product_master ADD CONSTRAINT chk_raw_not_producible CHECK ((processing_state = 'RAW' AND is_producible = FALSE) OR processing_state <> 'RAW')",
         { transaction }
       );
 
@@ -90,6 +96,10 @@ module.exports = {
       );
       await queryInterface.sequelize.query(
         "ALTER TABLE product_master DROP CONSTRAINT IF EXISTS chk_raw_size_required",
+        { transaction }
+      );
+      await queryInterface.sequelize.query(
+        "ALTER TABLE product_master DROP CONSTRAINT IF EXISTS chk_raw_not_producible",
         { transaction }
       );
 

@@ -68,6 +68,11 @@ export const GetAll = ({ order_id, start, length, search }) => {
               [Op.iLike]: `%${search}%`,
             },
           },
+          {
+            "$ProductMaster.product_name$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ];
       }
 
@@ -76,6 +81,8 @@ export const GetAll = ({ order_id, start, length, search }) => {
         attributes: [
           "id",
           "order_id",
+          "product_master_id",
+          "packing_id",
           "unit",
           "price",
           "total_price",
@@ -85,28 +92,30 @@ export const GetAll = ({ order_id, start, length, search }) => {
         ],
         include: [
           {
+            attributes: ["id", "product_name"],
+            model: models.ProductMaster,
+            required: false,
+          },
+          {
             attributes: ["id"],
             model: models.Packing,
-            where: {
-              is_active: true,
-            },
+            required: false,
             include: [
               {
                 attributes: ["id"],
                 as: "pd",
                 model: models.PeeledDispatches,
-                where: { is_active: true },
+                required: false,
                 include: [
                   {
                     attributes: ["id"],
                     as: "pp",
                     model: models.PeelingProducts,
-                    where: { is_active: true },
+                    required: false,
                     include: [
                       {
                         attributes: ["id", "product_name"],
                         model: models.ProductMaster,
-                        where: { is_active: true },
                       },
                     ],
                   },

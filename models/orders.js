@@ -125,6 +125,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  // Create Order Products after order is created
+  Orders.afterCreate(async (data, options) => {
+    try {
+      if (options?.OrderProducts && Array.isArray(options.OrderProducts)) {
+        const productsData = options.OrderProducts.map((product) => ({
+          ...product,
+          order_id: data.id,
+          is_active: true,
+          created_by: options.profile_id,
+        }));
+
+        await sequelize.models.OrderProducts.bulkCreate(productsData, {
+          profile_id: options.profile_id,
+        });
+      }
+    } catch (err) {
+      console.log("Error while creating order products", err?.message || err);
+    }
+  });
+
   // Update Hook
   Orders.beforeUpdate(async (data, options) => {
     try {

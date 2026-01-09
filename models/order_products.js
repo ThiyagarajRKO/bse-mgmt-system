@@ -36,6 +36,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      OrderProducts.belongsTo(models.ProductMaster, {
+        foreignKey: "product_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   OrderProducts.init(
@@ -44,6 +50,14 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      },
+      packing_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
+      product_master_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
       },
       unit: {
         type: DataTypes.FLOAT,

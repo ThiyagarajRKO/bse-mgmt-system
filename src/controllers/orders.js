@@ -44,21 +44,14 @@ export const Insert = async (profile_id, order_data, is_products_included) => {
         });
       }
 
-      let options = {};
-      if (is_products_included) {
-        options = {
-          include: [
-            {
-              profile_id,
-              model: models.OrderProducts,
-            },
-          ],
-        };
-      }
+      // Extract OrderProducts from order_data to pass through options instead
+      const orderProducts = order_data.OrderProducts;
+      const cleanOrderData = { ...order_data };
+      delete cleanOrderData.OrderProducts;
 
-      const result = await models.Orders.create(order_data, {
+      const result = await models.Orders.create(cleanOrderData, {
         profile_id,
-        ...options,
+        OrderProducts: orderProducts, // Pass through options for afterCreate hook
       });
       resolve(result);
     } catch (err) {
@@ -241,35 +234,40 @@ export const GetAll = ({ start, length, search }) => {
               "discount",
               "description",
               "delivery_status",
+              "product_master_id",
+              "packing_id",
             ],
             model: models.OrderProducts,
             where: {
               is_active: true,
             },
+            required: false,
             include: [
+              {
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                required: false,
+              },
               {
                 attributes: ["id"],
                 model: models.Packing,
-                where: {
-                  is_active: true,
-                },
+                required: false,
                 include: [
                   {
                     attributes: ["id"],
                     as: "pd",
                     model: models.PeeledDispatches,
-                    where: { is_active: true },
+                    required: false,
                     include: [
                       {
                         attributes: ["id"],
                         as: "pp",
                         model: models.PeelingProducts,
-                        where: { is_active: true },
+                        required: false,
                         include: [
                           {
                             attributes: ["id", "product_name"],
                             model: models.ProductMaster,
-                            where: { is_active: true },
                           },
                         ],
                       },

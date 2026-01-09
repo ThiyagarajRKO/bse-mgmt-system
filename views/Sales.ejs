@@ -918,7 +918,15 @@
                               <tr>
                                 <th style="border-radius: 4px 0 0 0"></th>
                                 <th style="border-radius: 4px 0 0 0"></th>
-                                <th class="fw-bold">
+                                <th
+                                  class="fw-bold"
+                                  style="
+                                    min-width: 250px;
+                                    word-wrap: break-word;
+                                    word-break: break-word;
+                                    white-space: normal;
+                                  "
+                                >
                                   <span>Product Name</span>
                                 </th>
                                 <th class="fw-bold"><span>Quantity</span></th>
@@ -1102,14 +1110,16 @@
                 <button
                   type="button"
                   id="confirmOrderModalBtn"
-                  class="btn btn-danger"
+                  class="btn"
+                  style="background-color: #ea5455; color: white; border: none"
                 >
                   <i class="fa-solid fa-check"></i> Confirm Order
                 </button>
                 <button
                   type="button"
-                  class="close btn btn-danger"
+                  class="close btn"
                   data-dismiss="modal"
+                  style="background-color: #ea5455; color: white; border: none"
                 >
                   Close
                 </button>
@@ -2121,7 +2131,7 @@
         });
 
         $("#orderProductNames").select2({
-          placeholder: "Choose a method",
+          placeholder: "Choose a product",
           allowClear: true,
         });
 
@@ -2787,12 +2797,24 @@
           columns: [
             { data: null },
             { data: null },
-            { data: "Packing.pd.pp.ProductMaster.product_name" },
+            { data: null }, // Will be rendered in columnDefs
             { data: "unit" },
             { data: "price" },
             { data: "total_price" },
           ],
           columnDefs: [
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                // Handle both direct product_master_id and packing path
+                const productName =
+                  row?.ProductMaster?.product_name ||
+                  row?.Packing?.pd?.pp?.ProductMaster?.product_name ||
+                  "Unknown Product";
+                return `<div style="min-width: 250px; word-wrap: break-word; word-break: break-word; white-space: normal; overflow-wrap: break-word;">${productName}</div>`;
+              },
+            },
             {
               targets: [0],
               className: "text-left",
@@ -2952,30 +2974,38 @@
       }
 
       function loadProductNames() {
-        $(".orderProductNames").empty();
         productNamesArray = [];
 
         $.ajax({
-          url: "/api/packing/names",
+          url: "/api/master/product/dropdown",
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: false,
-          success: (data) => {
+          success: (response) => {
             productNamesArray = [];
 
-            data?.data.forEach((item) => {
+            // Handle response structure: { data: { rows: [...], count: ... } }
+            const items = response?.data?.rows || response?.data || [];
+
+            items.forEach((item) => {
               productNamesArray.push({
                 id: item.id,
-                text: item?.pd?.pp?.ProductMaster?.product_name,
-                quantity: item.packing_quantity,
+                text: item.text || item.product_name || item.name,
               });
+            });
+
+            // Destroy existing Select2 and reinitialize with new data
+            $(".orderProductNames").each(function () {
+              if ($(this).data("select2")) {
+                $(this).select2("destroy");
+              }
             });
 
             $(".orderProductNames").select2({
               placeholder: "Choose a product",
-              allowClear: "true",
+              allowClear: true,
               data: productNamesArray,
             });
 
@@ -2983,10 +3013,13 @@
               $(".orderProductNames").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
+            console.error("Product dropdown load error:", jqXhr);
             if (jqXhr["status"] == 420) {
               toastr["warning"](jqXhr["responseJSON"]["message"]);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](
+                jqXhr["responseJSON"]["message"] || "Failed to load products"
+              );
             }
           },
         });
@@ -4956,7 +4989,7 @@
             .find("select")
             .attr("peeled_product_id");
 
-          let packing_id = $(obj)
+          let product_master_id = $(obj)
             .find(`.orderProductNames_${i + 1}`)
             .val();
 
@@ -4980,10 +5013,11 @@
             .find(`.product_desc_${i + 1}`)
             .val();
 
-          if (packing_id) {
+          if (product_master_id) {
             let outputObj = {
               order_id,
-              packing_id,
+              product_master_id,
+              packing_id: null, // Allow null packing_id when using direct product selection
               unit: product_unit,
               price: product_price,
               description: product_desc,
