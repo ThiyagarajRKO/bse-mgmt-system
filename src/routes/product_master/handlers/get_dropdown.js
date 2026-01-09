@@ -60,8 +60,12 @@ export const GetDropdown = async (params, session, fastify) => {
         });
       }
 
-      // Add PurchaseInventory include if it exists
-      if (models.PurchaseInventory) {
+      // Add PurchaseInventory include only if the association is defined
+      if (
+        models.PurchaseInventory &&
+        models.ProductMaster.associations &&
+        models.ProductMaster.associations.PurchaseInventory
+      ) {
         includes.push({
           model: models.PurchaseInventory,
           required: true,
@@ -86,25 +90,45 @@ export const GetDropdown = async (params, session, fastify) => {
           raw: true,
         });
       } catch (includeError) {
-        // If includes fail, try without the problematic ProductCategoryMaster include
+        // If includes fail, try with minimal includes
         console.warn(
           "Error with full includes, falling back to basic query:",
           includeError.message
         );
+        
+        // Fallback: query without any problematic includes
         const fallbackIncludes = includes.filter(
-          (inc) => inc.model.name !== "ProductCategoryMaster"
+          (inc) =>
+            inc.model.name !== "ProductCategoryMaster" &&
+            inc.model.name !== "PurchaseInventory"
         );
 
-        result = await models.ProductMaster.findAndCountAll({
-          attributes: ["id", "product_name"],
-          include: fallbackIncludes,
-          where,
-          offset: parseInt(start) || 0,
-          limit: parseInt(length) || 5000,
-          distinct: true,
-          subQuery: false,
-          raw: true,
-        });
+        try {
+          result = await models.ProductMaster.findAndCountAll({
+            attributes: ["id", "product_name"],
+            include: fallbackIncludes,
+            where,
+            offset: parseInt(start) || 0,
+            limit: parseInt(length) || 5000,
+            distinct: true,
+            subQuery: false,
+            raw: true,
+          });
+        } catch (fallbackError) {
+          // If even fallback fails, return all active products
+          console.warn(
+            "Fallback also failed, returning all active products:",
+            fallbackError.message
+          );
+          result = await models.ProductMaster.findAndCountAll({
+            attributes: ["id", "product_name"],
+            where,
+            offset: parseInt(start) || 0,
+            limit: parseInt(length) || 5000,
+            distinct: true,
+            raw: true,
+          });
+        }
       }
 
       // Format response for Select2
