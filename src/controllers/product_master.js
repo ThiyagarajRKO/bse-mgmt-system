@@ -91,7 +91,7 @@ export const Get = ({ id }) => {
 
       let product;
       try {
-        // Fetch product with ProductCategoryMaster association for species information
+        // Fetch product without associations first
         product = await models.ProductMaster.findOne({
           where: {
             is_active: true,
@@ -115,46 +115,33 @@ export const Get = ({ id }) => {
             "created_at",
             "updated_at",
           ],
-          include: [
-            {
-              model: models.ProductCategoryMaster,
-              attributes: ["id", "category_name", "species_master_id"],
-              required: false,
-            },
-          ],
         });
-      } catch (err) {
-        console.error("Error fetching ProductMaster with associations:", err);
-        // Fallback to simple fetch without associations if association fails
-        try {
-          product = await models.ProductMaster.findOne({
-            where: {
-              is_active: true,
-              id,
-            },
-            attributes: [
-              "id",
-              "product_name",
-              "hsn_code",
-              "processing_state",
-              "product_role",
-              "is_raw",
-              "is_producible",
-              "is_sellable",
-              "product_category_master_id",
-              "size_master_id",
-              "grade_master_id",
-              "derivative_master_id",
-              "species_derivative_size_grade_mapping_id",
-              "is_active",
-              "created_at",
-              "updated_at",
-            ],
-          });
-        } catch (fallbackErr) {
-          console.error("Error in fallback fetch:", fallbackErr);
-          throw fallbackErr;
+
+        // If product found, fetch ProductCategoryMaster separately
+        if (product && product.product_category_master_id) {
+          try {
+            const productCategory = await models.ProductCategoryMaster.findOne({
+              where: {
+                id: product.product_category_master_id,
+              },
+              attributes: ["id", "product_category", "species_master_id"],
+            });
+
+            // Attach the ProductCategoryMaster to the product object
+            if (productCategory) {
+              // Convert to JSON and back to plain object to avoid Sequelize issues
+              const productJson = product.toJSON ? product.toJSON() : product;
+              const categoryJson = productCategory.toJSON ? productCategory.toJSON() : productCategory;
+              product = { ...productJson, ProductCategoryMaster: categoryJson };
+            }
+          } catch (categoryErr) {
+            console.error("Error fetching ProductCategoryMaster:", categoryErr);
+            // Continue without the category association
+          }
         }
+      } catch (err) {
+        console.error("Error fetching ProductMaster:", err);
+        throw err;
       }
 
       resolve(product);
