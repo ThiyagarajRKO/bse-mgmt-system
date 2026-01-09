@@ -3103,6 +3103,7 @@
       }
 
       function loadAllocationTableData() {
+        console.log("📋 Loading allocation table data...");
         $("#allocationTable").DataTable({
           destroy: true,
           responsive: false,
@@ -3116,6 +3117,7 @@
             type: "GET",
             url: "/api/order/allocation",
             error: function (xhr, error, code) {
+              console.error("❌ Allocation API error:", xhr);
               $("#allocationTable").DataTable().destroy();
               $("#allocationTable").DataTable({
                 scrollX: true,
@@ -3129,6 +3131,7 @@
               }
             },
             dataSrc: function (json) {
+              console.log("📊 API Response:", json);
               // Flatten the orders to show each product as a separate row
               const flatData = [];
 
@@ -3136,15 +3139,22 @@
                 if (order.OrderProducts && order.OrderProducts.length > 0) {
                   // For each product in the order, create a new row
                   order.OrderProducts.forEach((product) => {
+                    // Handle both direct product_master_id and packing path
+                    const productName =
+                      product?.ProductMaster?.product_name ||
+                      product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
+                      "Unknown";
+                    const productId =
+                      product?.product_master_id ||
+                      product?.Packing?.pd?.pp?.ProductMaster?.id;
+
                     flatData.push({
                       order_id: order.id,
                       order_no: order.order_no,
-                      product_name:
-                        product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
-                        "Unknown",
+                      product_name: productName,
                       quantity_required: product.unit,
                       allocation_status: order.allocation_status,
-                      product_id: product?.Packing?.pd?.pp?.ProductMaster?.id,
+                      product_id: productId,
                     });
                   });
                 } else {
@@ -3162,6 +3172,9 @@
 
               json.iTotalRecords = flatData.length;
               json.iTotalDisplayRecords = json.data?.count || 0;
+
+              console.log("✅ Flattened allocation data:", flatData);
+              console.log(`   Total records: ${flatData.length}`);
 
               // Return the flattened data to be displayed in the DataTable
               return flatData;
@@ -3306,9 +3319,12 @@
               if (order.OrderProducts && order.OrderProducts.length > 0) {
                 const product = order.OrderProducts[0];
                 productName =
+                  product?.ProductMaster?.product_name ||
                   product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
                   "Unknown";
-                productMasterId = product?.Packing?.pd?.pp?.ProductMaster?.id;
+                productMasterId =
+                  product?.product_master_id ||
+                  product?.Packing?.pd?.pp?.ProductMaster?.id;
 
                 // Fetch inventory for this product
                 if (productMasterId) {
@@ -3472,7 +3488,7 @@
                 <div class="modal-footer">
                   <button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
                     order.id
-                  }" data-product-id="${productMasterId}" data-quantity="${quantityRequired}" data-order-no="${
+                  }" data-product-id="${productMasterId}" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
           order.order_no
         }">
                     <i class="fa-solid fa-plus"></i> Raise Purchase Request
@@ -3511,12 +3527,14 @@
 
         const orderId = $(this).data("order-id");
         const productId = $(this).data("product-id");
+        const productName = $(this).data("product-name");
         const quantityRequired = $(this).data("quantity");
         const orderNo = $(this).data("order-no");
 
         console.log("Button data:", {
           orderId,
           productId,
+          productName,
           quantityRequired,
           orderNo,
         });
@@ -3545,6 +3563,7 @@
           checkExistingPurchaseRequest(
             orderId,
             productId,
+            productName,
             quantityRequired,
             orderNo
           );
@@ -3555,6 +3574,7 @@
       function checkExistingPurchaseRequest(
         orderId,
         productId,
+        productName,
         quantityRequired,
         orderNo
       ) {
@@ -3582,7 +3602,7 @@
               $.alert({
                 title: "Purchase Request Already Exists",
                 content: `A purchase request for this product has already been automatically generated.<br><br>
-                  <strong>Product ID:</strong> ${productId}<br>
+                  <strong>Product:</strong> ${productName}<br>
                   <strong>Status:</strong> <span class="badge badge-info">Auto-Generated</span><br><br>
                   You can view and manage it in the Procurement module.`,
                 type: "info",
@@ -3599,6 +3619,7 @@
               showRaisePurchaseRequestDialog(
                 orderId,
                 productId,
+                productName,
                 quantityRequired,
                 orderNo
               );
@@ -3611,6 +3632,7 @@
             showRaisePurchaseRequestDialog(
               orderId,
               productId,
+              productName,
               quantityRequired,
               orderNo
             );
@@ -3622,12 +3644,14 @@
       function showRaisePurchaseRequestDialog(
         orderId,
         productId,
+        productName,
         quantityRequired,
         orderNo
       ) {
         console.log("showRaisePurchaseRequestDialog called with:", {
           orderId,
           productId,
+          productName,
           quantityRequired,
           orderNo,
         });
@@ -3636,6 +3660,7 @@
         window.currentPurchaseRequest = {
           orderId,
           productId,
+          productName,
           quantityRequired,
           orderNo,
         };
@@ -3643,7 +3668,7 @@
         // Populate order details
         const orderDetailsHtml = `
           <p><strong>Order #:</strong> ${orderNo}</p>
-          <p><strong>Product ID:</strong> ${productId}</p>
+          <p><strong>Product:</strong> ${productName}</p>
           <p><strong>Quantity Required:</strong> ${quantityRequired} units</p>
           <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
             <i class="fa-solid fa-info-circle me-2"></i>

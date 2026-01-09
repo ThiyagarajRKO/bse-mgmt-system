@@ -412,10 +412,10 @@ export const Delete = ({ profile_id, id }) => {
 export const GetAllocationData = ({ start, length, search }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Get orders with delivery_status for allocation (In Transit or Initiated)
+      // Get all active orders that have products (for allocation workflow)
       let where = {
         is_active: true,
-        delivery_status: { [Op.in]: ["Initiated", "In Transit"] }, // Get orders pending allocation
+        // Don't filter by delivery_status - show all active orders
       };
 
       if (search) {
@@ -477,35 +477,41 @@ export const GetAllocationData = ({ start, length, search }) => {
               "discount",
               "description",
               "delivery_status",
+              "product_master_id",
+              "packing_id",
             ],
             model: models.OrderProducts,
             where: {
               is_active: true,
             },
+            required: false,
             include: [
+              {
+                attributes: ["id", "product_name"],
+                model: models.ProductMaster,
+                required: false,
+              },
               {
                 attributes: ["id"],
                 model: models.Packing,
-                where: {
-                  is_active: true,
-                },
+                required: false,
                 include: [
                   {
                     attributes: ["id"],
                     as: "pd",
                     model: models.PeeledDispatches,
-                    where: { is_active: true },
+                    required: false,
                     include: [
                       {
                         attributes: ["id"],
                         as: "pp",
                         model: models.PeelingProducts,
-                        where: { is_active: true },
+                        required: false,
                         include: [
                           {
                             attributes: ["id", "product_name"],
                             model: models.ProductMaster,
-                            where: { is_active: true },
+                            required: false,
                           },
                         ],
                       },
