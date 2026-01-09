@@ -60,6 +60,19 @@ export const GetDropdown = async (params, session, fastify) => {
         });
       }
 
+      // Add DerivativeMaster include for sorting (raw materials first)
+      if (
+        models.DerivativeMaster &&
+        models.ProductMaster.associations &&
+        models.ProductMaster.associations.DerivativeMaster
+      ) {
+        includes.push({
+          model: models.DerivativeMaster,
+          required: false,
+          attributes: ["derivative_code"],
+        });
+      }
+
       // Add PurchaseInventory include only if the association is defined
       if (
         models.PurchaseInventory &&
@@ -88,6 +101,15 @@ export const GetDropdown = async (params, session, fastify) => {
           distinct: true,
           subQuery: false,
           raw: true,
+          order: [
+            [
+              sequelize.literal(
+                `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+              ),
+              "ASC",
+            ],
+            ["product_name", "ASC"],
+          ],
         });
       } catch (includeError) {
         // If includes fail, try with minimal includes
@@ -95,7 +117,7 @@ export const GetDropdown = async (params, session, fastify) => {
           "Error with full includes, falling back to basic query:",
           includeError.message
         );
-        
+
         // Fallback: query without any problematic includes
         const fallbackIncludes = includes.filter(
           (inc) =>
@@ -113,6 +135,15 @@ export const GetDropdown = async (params, session, fastify) => {
             distinct: true,
             subQuery: false,
             raw: true,
+            order: [
+              [
+                sequelize.literal(
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+                ),
+                "ASC",
+              ],
+              ["product_name", "ASC"],
+            ],
           });
         } catch (fallbackError) {
           // If even fallback fails, return all active products
@@ -127,6 +158,15 @@ export const GetDropdown = async (params, session, fastify) => {
             limit: parseInt(length) || 5000,
             distinct: true,
             raw: true,
+            order: [
+              [
+                sequelize.literal(
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 0 ELSE 1 END`
+                ),
+                "ASC",
+              ],
+              ["product_name", "ASC"],
+            ],
           });
         }
       }

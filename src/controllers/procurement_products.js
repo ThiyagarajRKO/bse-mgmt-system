@@ -314,44 +314,109 @@ export const GetAll = ({
           attributes: ["id", "product_name", "product_category_master_id"],
           model: models.ProductMaster,
           required: Object.keys(productCategoryWhere).length > 0,
-          include: [
-            {
-              model: models.ProductCategoryMaster,
-              attributes: ["id", "product_category", "species_master_id"],
-              required: Object.keys(productCategoryWhere).length > 0,
-              where:
-                Object.keys(productCategoryWhere).length > 0
-                  ? productCategoryWhere
-                  : undefined,
-            },
-          ],
+          include:
+            models.ProductCategoryMaster &&
+            models.ProductMaster.associations &&
+            models.ProductMaster.associations.ProductCategoryMaster
+              ? [
+                  {
+                    model: models.ProductCategoryMaster,
+                    attributes: ["id", "product_category", "species_master_id"],
+                    required: Object.keys(productCategoryWhere).length > 0,
+                    where:
+                      Object.keys(productCategoryWhere).length > 0
+                        ? productCategoryWhere
+                        : undefined,
+                  },
+                ]
+              : [],
         },
       ];
 
-      const procurements = await models.ProcurementProducts.findAndCountAll({
-        subQuery: false,
-        attributes: [
-          "id",
-          "procurement_lot_id",
-          "procurement_product_type",
-          "procurement_quantity",
-          "adjusted_quantity",
-          "procurement_price",
-          "adjusted_price",
-          "adjusted_reason",
-          "adjusted_surveyor",
-          "procurement_purchaser",
-          "procurement_totalamount",
-          "created_at",
-        ],
-        include: includeConfig,
-        where,
-        offset: parseInt(start) || 0,
-        limit: parseInt(length) || 10,
-        order: [["created_at", "desc"]],
+      let procurements;
+      try {
+        procurements = await models.ProcurementProducts.findAndCountAll({
+          subQuery: false,
+          attributes: [
+            "id",
+            "procurement_lot_id",
+            "procurement_product_type",
+            "procurement_quantity",
+            "adjusted_quantity",
+            "procurement_price",
+            "adjusted_price",
+            "adjusted_reason",
+            "adjusted_surveyor",
+            "procurement_purchaser",
+            "procurement_totalamount",
+            "created_at",
+          ],
+          include: includeConfig,
+          where,
+          offset: parseInt(start) || 0,
+          limit: parseInt(length) || 10,
+          order: [["created_at", "desc"]],
+          raw: false, // Don't flatten to allow nested object access
+        });
+      } catch (includeError) {
+        // If include fails, try with simpler includes
+        console.warn(
+          "Error with full includes, falling back to basic includes:",
+          includeError.message
+        );
+        procurements = await models.ProcurementProducts.findAndCountAll({
+          subQuery: false,
+          attributes: [
+            "id",
+            "procurement_lot_id",
+            "procurement_product_type",
+            "procurement_quantity",
+            "adjusted_quantity",
+            "procurement_price",
+            "adjusted_price",
+            "adjusted_reason",
+            "adjusted_surveyor",
+            "procurement_purchaser",
+            "procurement_totalamount",
+            "created_at",
+          ],
+          include: [
+            {
+              as: "pl",
+              attributes: ["id", "procurement_lot"],
+              model: models.ProcurementLots,
+              required: false,
+            },
+            {
+              attributes: ["id", "supplier_name"],
+              model: models.SupplierMaster,
+              required: false,
+            },
+            {
+              as: "ProductMaster",
+              attributes: ["id", "product_name"],
+              model: models.ProductMaster,
+              required: false,
+            },
+          ],
+          where,
+          offset: parseInt(start) || 0,
+          limit: parseInt(length) || 10,
+          order: [["created_at", "desc"]],
+          raw: false, // Don't flatten to allow nested object access
+        });
+      }
+
+      // Format the response to match DataTable expectations
+      const rows = procurements.rows.map((row) => {
+        const plainRow = row.get({ plain: true });
+        return plainRow;
       });
 
-      resolve(procurements);
+      resolve({
+        rows,
+        count: procurements.count,
+      });
     } catch (err) {
       reject(err);
     }

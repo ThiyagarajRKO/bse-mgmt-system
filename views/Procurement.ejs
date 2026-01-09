@@ -871,6 +871,7 @@
                 <thead>
                   <tr>
                     <th></th>
+                    <th></th>
                     <th class="fw-bold"><span>Purchase Date</span></th>
                     <th class="fw-bold"><span>Lot no</span></th>
                     <th class="fw-bold"><span>Total Product Items</span></th>
@@ -934,10 +935,16 @@
                   <thead>
                     <tr>
                       <th style="border-radius: 4px 0 0 0"></th>
-                      <th style="border-radius: 4px 0 0 0"></th>
+                      <th></th>
                       <th class="fw-bold"><span>Product Name</span></th>
                       <th class="fw-bold">
                         <span>Purchased Type</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Purchase Date</span>
+                      </th>
+                      <th class="fw-bold">
+                        <span>Lot No</span>
                       </th>
                       <th class="fw-bold">
                         <span>Purchased Quantity</span>
@@ -1828,10 +1835,11 @@
           allowClear: true,
         });
 
-        $("#procurement_product").select2({
-          placeholder: "Choose a product",
-          allowClear: true,
-        });
+        // Product dropdown will be initialized with AJAX in loadProcurementProducts()
+        // $("#procurement_product").select2({
+        //   placeholder: "Choose a product",
+        //   allowClear: true,
+        // });
 
         $("#procurement_product_type").select2({
           placeholder: "Choose a product type",
@@ -2724,8 +2732,8 @@
             },
           },
           columns: [
-            { data: null },
-            { data: null },
+            { data: null }, // View button
+            { data: null }, // Delete button
             { data: "procurement_date" },
             { data: "procurement_lot" },
             { data: "total_product_count" },
@@ -2737,7 +2745,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this Procurement"></i>`;
+                return `<i class="fa-solid fa-eye view viewProcurementProducts" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this Procurement"></i>`;
               },
             },
             {
@@ -2771,6 +2779,13 @@
                 var month = months[date.getMonth()];
                 var day = date.getDate().toString().padStart(2, "0"); // Ensure day is always two digits
                 return day + "-" + month + "-" + date.getFullYear();
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.procurement_lot || data || "-";
               },
             },
             {
@@ -2808,7 +2823,7 @@
         const view_lot_no = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(2)
+          .eq(3)
           .text();
 
         const procurement_lot_id = $(e.target).attr("procurement_lot_id");
@@ -2816,13 +2831,13 @@
         const view_total_products = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(3)
+          .eq(4)
           .text();
 
         const view_total_weight = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(4)
+          .eq(5)
           .text();
 
         $("#view_lot_no").text(view_lot_no);
@@ -2831,12 +2846,12 @@
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(1).text()
+          $(e.target).closest("tr").children("td").eq(2).text()
         );
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(1).text()
+          $(e.target).closest("tr").children("td").eq(2).text()
         );
 
         $("#view_total_products").text(view_total_products);
@@ -2852,6 +2867,7 @@
       function loadProcurementProductTableData(procurement_lot_id) {
         if (!procurement_lot_id) {
           toastr["warning"]("Lot no should not be empty!");
+          return;
         }
         $("#procurementProductTable").DataTable({
           // searching: true,
@@ -2888,16 +2904,18 @@
             },
           },
           columns: [
-            { data: null },
-            { data: null },
+            { data: null }, // Edit button column
+            { data: null }, // Delete button column
             { data: "ProductMaster.product_name" },
             { data: "procurement_product_type" },
+            { data: "created_at" }, // Purchase Date
+            { data: "ProcurementLots.procurement_lot" }, // Lot No
             { data: "procurement_quantity" },
             { data: "procurement_price" },
             { data: "procurement_totalamount" },
             { data: "SupplierMaster.supplier_name" },
             { data: "procurement_purchaser" },
-            { data: null },
+            { data: null }, // Payment Status column
           ],
           columnDefs: [
             {
@@ -2932,7 +2950,35 @@
               },
             },
             {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data;
+              },
+            },
+            {
               targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (!data) return "";
+                const date = new Date(data);
+                return date.toLocaleDateString("en-IN");
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return (
+                  row?.ProcurementLots?.procurement_lot ||
+                  row?.procurement_lot ||
+                  data ||
+                  "-"
+                );
+              },
+            },
+            {
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -2941,7 +2987,7 @@
               },
             },
             {
-              targets: [5],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
@@ -2950,21 +2996,28 @@
               },
             },
             {
-              targets: [6],
+              targets: [8],
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(data || 0).toFixed(2);
               },
             },
             {
-              targets: [7],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span supplier_master_id=${row["SupplierMaster"]?.id}>${data}</span>`;
               },
             },
             {
-              targets: [9],
+              targets: [10],
+              className: "text-left",
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+            {
+              targets: [11],
               className: "text-left",
               render: function (data, type, row) {
                 if (parseFloat(row["total_paid"] || 0) == 0) {
@@ -2993,7 +3046,7 @@
         const supplier_master_id = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(7)
+          .eq(9)
           .find("span")
           .attr("supplier_master_id");
 
@@ -3040,11 +3093,11 @@
           .trigger("change");
 
         $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(4).text()
+          $(e.target).closest("tr").children("td").eq(6).text()
         );
 
         $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
+          $(e.target).closest("tr").children("td").eq(7).text()
         );
 
         $("#procurement_product_supplier")
@@ -3052,7 +3105,7 @@
           .trigger("change");
 
         $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(8).text()
+          $(e.target).closest("tr").children("td").eq(10).text()
         );
 
         // Opening Slied Panel
@@ -3086,7 +3139,7 @@
         const supplier_master_id = $(e.target)
           .closest("tr")
           .children("td")
-          .eq(7)
+          .eq(9)
           .find("span")
           .attr("supplier_master_id");
         const currentRow = $(e.target).closest("tr");
@@ -3231,61 +3284,80 @@
       }
 
       function loadProcurementProducts() {
-        // Load Products from public dropdown endpoint
-        $.ajax({
-          url: "/api/master/product/dropdown",
-          method: "GET",
-          dataType: "json",
-          contentType: "application/json",
-          crossDomain: true,
-          processData: false,
-          success: (response) => {
-            console.log("Products loaded:", response);
+        // Load Products using Select2 AJAX
+        console.log("Loading procurement products via Select2 AJAX...");
 
-            // Check if data exists
-            if (!response || !response.data || !response.data.rows) {
-              console.error("No products data in response:", response);
-              toastr.error("No products found");
-              return;
-            }
+        // Destroy existing select2 instance if it exists
+        try {
+          if ($("#procurement_product").hasClass("select2-hidden-accessible")) {
+            $("#procurement_product").select2("destroy");
+          }
+        } catch (e) {
+          console.log("Select2 destroy note:", e.message);
+        }
 
-            // Loading data
-            $("#procurement_product").select2({
-              placeholder: "Choose a product",
-              allowClear: true,
-              data: $.map(response.data.rows, function (item) {
+        // Initialize Select2 with AJAX data source
+        $("#procurement_product").select2({
+          placeholder: "Choose a product",
+          allowClear: true,
+          width: "100%",
+          ajax: {
+            url: "/api/master/product/dropdown",
+            type: "GET",
+            dataType: "json",
+            delay: 250,
+            data: function (params) {
+              return {
+                search: params.term || "",
+                start: 0,
+                length: 100,
+              };
+            },
+            processResults: function (response) {
+              // Defensive mapping: API may return rows as { id, product_name } or already as { id, text }
+              console.log("Select2 AJAX response:", response);
+
+              if (!response || !response.data || !response.data.rows) {
+                console.warn("No data in response");
+                return { results: [] };
+              }
+
+              const results = response.data.rows.map(function (item) {
+                // item can be { id, text } or { id, product_name } or other shapes
+                const id = item?.id ?? item?.value ?? null;
+                const text =
+                  item?.text ??
+                  item?.product_name ??
+                  item?.name ??
+                  (id ? String(id) : undefined);
                 return {
-                  id: item.id,
-                  text: item.product_name,
+                  id: id,
+                  text: text,
                 };
-              }),
-            });
+              });
 
-            // Clearing selected value
-            $("#procurement_product").val(null).trigger("change");
+              console.log("Processed results:", results);
+              return {
+                results: results,
+                pagination: {
+                  more: false,
+                },
+              };
+            },
+            error: function (jqXhr, status, error) {
+              console.error("Select2 AJAX error:", {
+                status: status,
+                error: error,
+                statusCode: jqXhr.status,
+                message: jqXhr.responseJSON?.message,
+              });
+              toastr.error("Failed to load products: " + error);
+            },
           },
-          error: (jqXhr, textStatus, errorThrown) => {
-            console.error("Error loading products:", {
-              status: jqXhr.status,
-              statusText: jqXhr.statusText,
-              responseText: jqXhr.responseText,
-              textStatus: textStatus,
-              errorThrown: errorThrown,
-            });
-
-            if (jqXhr.status == 420) {
-              toastr.warning(
-                jqXhr.responseJSON?.message || "Error loading products"
-              );
-            } else {
-              toastr.error(
-                jqXhr.responseJSON?.message ||
-                  errorThrown ||
-                  "Failed to load products"
-              );
-            }
-          },
+          minimumInputLength: 0,
         });
+
+        console.log("Product Select2 AJAX initialized");
       }
 
       function loadProcurementUnits() {

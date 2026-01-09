@@ -9,11 +9,12 @@
 Browser console was displaying repeated warnings about unused preloaded resources:
 
 ```
-The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. 
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event.
 Please make sure it has an appropriate `as` value and it is preloaded intentionally.
 ```
 
 Additionally, the `/fonts/` paths were incorrectly trying to access resources at:
+
 - `http://127.0.0.1:4000/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf` (404)
 - `http://127.0.0.1:4000/fonts/CerebriSansPro/CerebriSansPro-Regular.ttf` (404)
 
@@ -26,17 +27,24 @@ Additionally, the `/fonts/` paths were incorrectly trying to access resources at
 ## Solution Implemented
 
 ### 1. Corrected Font Paths
+
 Reverted to proper paths with `/public/fonts/` prefix:
+
 ```html
 <!-- BEFORE (incorrect) -->
 <link href="/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" ... />
 
 <!-- AFTER (correct) -->
-<link href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf" ... />
+<link
+  href="/public/fonts/CassandraPersonalUse/CassandraPersonalUse-Regular.ttf"
+  ...
+/>
 ```
 
 ### 2. Fixed `crossorigin` Attribute
+
 Changed from invalid attribute value to standard boolean attribute:
+
 ```html
 <!-- BEFORE (invalid) -->
 <link href="..." crossorigin="anonymous" />
@@ -48,6 +56,7 @@ Changed from invalid attribute value to standard boolean attribute:
 The boolean `crossorigin` attribute is the correct HTML5 syntax for CORS requests.
 
 ### 3. Ensured Proper Type Specifications
+
 Kept `as="font"` and `type="font/ttf"` attributes to properly describe the preload resource.
 
 ## Files Modified
@@ -68,12 +77,14 @@ Fixed preload links in 8 EJS template files:
 ## Impact
 
 ✅ **Resolved Issues**:
+
 - Font 404 errors eliminated (fonts now load from `/public/fonts/`)
 - Browser console warnings about unused preloaded resources eliminated
 - Proper CORS handling for font resources with correct `crossorigin` attribute
 - Improved page load performance with properly configured font preloading
 
 ✅ **No Breaking Changes**:
+
 - All existing functionality preserved
 - Non-destructive fixes to HTML structure
 - Server restart verified and working
@@ -88,6 +99,7 @@ Fixed preload links in 8 EJS template files:
 ## Browser Compatibility
 
 The fixes use standard HTML5 syntax:
+
 - `rel="preload"` - W3C standard resource hint
 - `as="font"` - Proper resource type specification
 - `type="font/ttf"` - Font MIME type
