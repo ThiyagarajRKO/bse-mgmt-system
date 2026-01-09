@@ -3754,6 +3754,8 @@
               apiUrl += `&species_master_id=${speciesMasterId}`;
             }
 
+            console.log("Fetching raw materials with URL:", apiUrl);
+
             $.ajax({
               url: apiUrl,
               method: "GET",
@@ -3761,7 +3763,6 @@
               timeout: 5000,
               success: function (response) {
                 console.log("Procurement products API response:", response);
-                // Handle different response formats
                 let rawMaterials = [];
 
                 if (response?.data) {
@@ -3784,10 +3785,10 @@
                   rawMaterials.length
                 );
 
-                // No client-side filtering needed - backend already filtered by species and type
+                // No client-side filtering needed - backend already filtered by product_master_id
                 if (rawMaterials.length === 0) {
                   container.html(
-                    '<p style="color: #d32f2f; text-align: center;">No unprocessed raw materials found for this product species</p>'
+                    '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>'
                   );
                   return;
                 }
@@ -4801,7 +4802,7 @@
               unit_master_id: String(unitId),
               procurement_product_type: "UNPROCESSED",
               procurement_quantity: materialRounded,
-              procurement_price: null,
+              procurement_price: 0, // Default price, can be updated later
               procurement_purchaser: `System Auto-Generated - ${
                 material.procurement_product_name || "Unknown"
               }`,

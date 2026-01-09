@@ -89,45 +89,73 @@ export const Get = ({ id }) => {
         });
       }
 
-      const product = await models.ProductMaster.findOne({
-        required: true,
-        include: [
-          {
-            required: true,
-            model: models.ProductCategoryMaster,
-            include: [
-              {
-                attributes: ["id", "species_name", "species_code"],
-                model: models.SpeciesMaster,
-                where: {
-                  is_active: true,
-                },
-              },
+      let product;
+      try {
+        // Fetch product with ProductCategoryMaster association for species information
+        product = await models.ProductMaster.findOne({
+          where: {
+            is_active: true,
+            id,
+          },
+          attributes: [
+            "id",
+            "product_name",
+            "hsn_code",
+            "processing_state",
+            "product_role",
+            "is_raw",
+            "is_producible",
+            "is_sellable",
+            "product_category_master_id",
+            "size_master_id",
+            "grade_master_id",
+            "derivative_master_id",
+            "species_derivative_size_grade_mapping_id",
+            "is_active",
+            "created_at",
+            "updated_at",
+          ],
+          include: [
+            {
+              model: models.ProductCategoryMaster,
+              attributes: ["id", "category_name", "species_master_id"],
+              required: false,
+            },
+          ],
+        });
+      } catch (err) {
+        console.error("Error fetching ProductMaster with associations:", err);
+        // Fallback to simple fetch without associations if association fails
+        try {
+          product = await models.ProductMaster.findOne({
+            where: {
+              is_active: true,
+              id,
+            },
+            attributes: [
+              "id",
+              "product_name",
+              "hsn_code",
+              "processing_state",
+              "product_role",
+              "is_raw",
+              "is_producible",
+              "is_sellable",
+              "product_category_master_id",
+              "size_master_id",
+              "grade_master_id",
+              "derivative_master_id",
+              "species_derivative_size_grade_mapping_id",
+              "is_active",
+              "created_at",
+              "updated_at",
             ],
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            required: true,
-            model: models.GradeMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            required: true,
-            model: models.SizeMaster,
-            where: {
-              is_active: true,
-            },
-          },
-        ],
-        where: {
-          is_active: true,
-          id,
-        },
-      });
+          });
+        } catch (fallbackErr) {
+          console.error("Error in fallback fetch:", fallbackErr);
+          throw fallbackErr;
+        }
+      }
 
       resolve(product);
     } catch (err) {
