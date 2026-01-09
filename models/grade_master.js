@@ -43,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
       grade_name: {
         type: DataTypes.STRING,
       },
+      grade_code: {
+        type: DataTypes.STRING,
+        comment:
+          "Grade code: A (Premium Export), B (Standard Export), C (Domestic/Processing), D (Industrial)",
+      },
       description: {
         type: DataTypes.TEXT,
       },

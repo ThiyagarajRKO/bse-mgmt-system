@@ -43,6 +43,23 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      ProductMaster.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_master_id",
+        as: "Derivative",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      // 4D Mapping Association (Species × Derivative × Size × Grade)
+      if (models.SpeciesDerivativeSizeGradeMapping) {
+        ProductMaster.belongsTo(models.SpeciesDerivativeSizeGradeMapping, {
+          foreignKey: "species_derivative_size_grade_mapping_id",
+          as: "MappingProfile",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+        });
+      }
+
       // Has One
       ProductMaster.hasOne(models.ProcurementProducts, {
         foreignKey: "product_master_id",
@@ -66,6 +83,26 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         comment:
           "HSN (Harmonized System of Nomenclature) code for GST classification",
+      },
+      derivative_master_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "derivative_master",
+          key: "id",
+        },
+        comment:
+          "Foreign key reference to derivative_master. Defines processing level (Raw, Cooked, RTC, etc.)",
+      },
+      species_derivative_size_grade_mapping_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "species_derivative_size_grade_mapping",
+          key: "id",
+        },
+        comment:
+          "4D Mapping ID: Links to validated combination of species × derivative × size × grade. Ensures only valid combinations are used.",
       },
       is_active: {
         type: DataTypes.BOOLEAN,

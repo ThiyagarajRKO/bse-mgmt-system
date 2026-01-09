@@ -43,8 +43,22 @@ module.exports = (sequelize, DataTypes) => {
       size: {
         type: DataTypes.STRING,
       },
+      size_category: {
+        type: DataTypes.STRING,
+        comment: "Category: FISH, SHRIMP, CEPHALOPOD, CRUSTACEAN, BIVALVE",
+      },
       unit_of_measure: {
         type: DataTypes.STRING,
+      },
+      min_value: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+        comment: "Minimum value in appropriate unit",
+      },
+      max_value: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+        comment: "Maximum value in appropriate unit",
       },
       description: {
         type: DataTypes.TEXT,
