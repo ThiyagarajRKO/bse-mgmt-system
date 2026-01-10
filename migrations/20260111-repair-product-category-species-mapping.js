@@ -43,7 +43,9 @@ module.exports = {
       }
 
       console.log(
-        `\n📍 Found ${Object.keys(speciesCategoryMap).length} species-mapped categories`
+        `\n📍 Found ${
+          Object.keys(speciesCategoryMap).length
+        } species-mapped categories`
       );
 
       // Step 2: For each product with a 4D mapping, ensure it has the right category
@@ -63,7 +65,10 @@ module.exports = {
       for (const product of productsToFix) {
         const targetCategoryId = speciesCategoryMap[product.species_master_id];
 
-        if (targetCategoryId && targetCategoryId !== product.product_category_master_id) {
+        if (
+          targetCategoryId &&
+          targetCategoryId !== product.product_category_master_id
+        ) {
           await queryInterface.sequelize.query(
             `UPDATE product_master SET product_category_master_id = :categoryId, updated_at = NOW() 
              WHERE id = :productId`,
@@ -99,12 +104,8 @@ module.exports = {
         { type: Sequelize.QueryTypes.SELECT, transaction }
       );
 
-      console.log(
-        `\n📊 Post-repair verification:`
-      );
-      console.log(
-        `   - Total products: ${verification[0].total_products}`
-      );
+      console.log(`\n📊 Post-repair verification:`);
+      console.log(`   - Total products: ${verification[0].total_products}`);
       console.log(
         `   - Unique species referenced: ${verification[0].unique_species}`
       );

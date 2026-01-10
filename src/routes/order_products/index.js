@@ -8,7 +8,7 @@ import { deleteSchema } from "./schema/delete";
 import { getPaymentItemsSchema } from "./schema/get_payment_products";
 
 export const orderProductsRoute = (fastify, opts, done) => {
-  fastify.get("/", getAllSchema, async (req, reply) => {
+  fastify.get("/", async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
@@ -18,14 +18,14 @@ export const orderProductsRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/payment/items", getPaymentItemsSchema, async (req, reply) => {
     try {
@@ -37,14 +37,14 @@ export const orderProductsRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -56,14 +56,14 @@ export const orderProductsRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   done();
 };

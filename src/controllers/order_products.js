@@ -61,21 +61,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         where.order_id = order_id;
       }
 
-      if (search) {
-        where[Op.or] = [
-          {
-            "$Packing.pd.pp.ProductMaster.product_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          {
-            "$ProductMaster.product_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-        ];
-      }
-
+      // Query order products with product details
       const suppliers = await models.OrderProducts.findAndCountAll({
         subQuery: false,
         attributes: [
@@ -95,55 +81,6 @@ export const GetAll = ({ order_id, start, length, search }) => {
             attributes: ["id", "product_name", "product_category_master_id"],
             model: models.ProductMaster,
             required: false,
-            include: [
-              {
-                attributes: ["id", "product_category", "species_master_id"],
-                model: models.ProductCategoryMaster,
-                required: false,
-              },
-            ],
-          },
-          {
-            attributes: ["id"],
-            model: models.Packing,
-            required: false,
-            include: [
-              {
-                attributes: ["id"],
-                as: "pd",
-                model: models.PeeledDispatches,
-                required: false,
-                include: [
-                  {
-                    attributes: ["id"],
-                    as: "pp",
-                    model: models.PeelingProducts,
-                    required: false,
-                    include: [
-                      {
-                        attributes: [
-                          "id",
-                          "product_name",
-                          "product_category_master_id",
-                        ],
-                        model: models.ProductMaster,
-                        include: [
-                          {
-                            attributes: [
-                              "id",
-                              "product_category",
-                              "species_master_id",
-                            ],
-                            model: models.ProductCategoryMaster,
-                            required: false,
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
           },
         ],
         where,
