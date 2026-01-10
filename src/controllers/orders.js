@@ -543,3 +543,70 @@ export const GetAllocationData = ({ start, length, search }) => {
     }
   });
 };
+
+/**
+ * Delete orders that have no associated products
+ */
+export const DeleteEmpty = ({ profile_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "User ID must not be empty!",
+        });
+      }
+
+      // Find all orders created by this user
+      const emptyOrders = await models.Orders.findAll({
+        where: {
+          is_active: true,
+          created_by: profile_id,
+        },
+        attributes: ["id"],
+        include: [
+          {
+            model: models.OrderProducts,
+            attributes: ["id"],
+            where: { is_active: true },
+            required: false,
+          },
+        ],
+        raw: false,
+      });
+
+      // Filter orders that have no products
+      const ordersToDelete = emptyOrders.filter(
+        (order) => !order.OrderProducts || order.OrderProducts.length === 0
+      );
+
+      if (ordersToDelete.length === 0) {
+        return resolve({
+          message: "No empty orders found to delete",
+          deletedCount: 0,
+        });
+      }
+
+      const orderIdsToDelete = ordersToDelete.map((order) => order.id);
+
+      // Delete the empty orders
+      const deletedCount = await models.Orders.destroy({
+        where: {
+          id: {
+            [Op.in]: orderIdsToDelete,
+          },
+          created_by: profile_id,
+        },
+        individualHooks: true,
+        profile_id,
+      });
+
+      resolve({
+        message: `Successfully deleted ${deletedCount} empty orders`,
+        deletedCount,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

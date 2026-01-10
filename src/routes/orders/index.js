@@ -7,6 +7,7 @@ import { GetOrderNumbers } from "./handlers/get_order_no";
 import { Confirm } from "./handlers/confirm";
 import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
+import { DeleteEmpty } from "./handlers/delete_empty";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -177,6 +178,26 @@ export const ordersRoute = (fastify, opts, done) => {
       };
 
       const result = await CheckInventory(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  // Delete empty orders (orders without any products)
+  fastify.delete("/empty", async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id };
+
+      const result = await DeleteEmpty(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,
