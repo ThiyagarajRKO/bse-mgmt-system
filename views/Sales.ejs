@@ -4877,7 +4877,8 @@
               action: function () {
                 $.ajax({
                   url: "/api/order?order_id=" + order_id,
-                  method: "delete",
+                  method: "DELETE",
+                  contentType: "application/json",
                 })
                   .done(function (response) {
                     //loading data to table
@@ -4888,8 +4889,13 @@
                       "Deleted"
                     );
                   })
-                  .fail(function () {
-                    toastr.error("Order detail failed to delete!", "Error");
+                  .fail(function (xhr) {
+                    let errorMsg = "Order detail failed to delete!";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                      errorMsg = xhr.responseJSON.message;
+                    }
+                    console.error("Delete order error:", xhr);
+                    toastr.error(errorMsg, "Error");
                   });
               },
             },

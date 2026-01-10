@@ -131,7 +131,9 @@ export const Get = ({ id }) => {
             if (productCategory) {
               // Convert to JSON and back to plain object to avoid Sequelize issues
               const productJson = product.toJSON ? product.toJSON() : product;
-              const categoryJson = productCategory.toJSON ? productCategory.toJSON() : productCategory;
+              const categoryJson = productCategory.toJSON
+                ? productCategory.toJSON()
+                : productCategory;
               product = { ...productJson, ProductCategoryMaster: categoryJson };
             }
           } catch (categoryErr) {
