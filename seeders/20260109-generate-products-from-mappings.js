@@ -110,15 +110,38 @@ module.exports = {
       }
 
       // ================================================================
-      // Step 2: Build species-to-category mapping
+      // Step 2: Build species-to-category mapping (Create if missing)
       // ================================================================
       console.log("\n🗂️  Building species-to-category mapping...");
 
       const speciesCategoryMap = {};
+      const speciesNameMap = {}; // Cache species names for category creation
       const uniqueSpecies = [...new Set(mappings.map((m) => m.species_id))];
 
+      // First, get species names for all unique species
+      const speciesData = await queryInterface.sequelize.query(
+        `
+        SELECT id, species_name, species_code
+        FROM species_master
+        WHERE id IN (${uniqueSpecies.map(() => "?").join(",")})
+          AND is_active = true
+        `,
+        { replacements: uniqueSpecies, type: Sequelize.QueryTypes.SELECT }
+      );
+
+      speciesData.forEach((s) => {
+        speciesNameMap[s.id] = {
+          name: s.species_name,
+          code: s.species_code,
+        };
+      });
+
+      // Build categories for each species (create if doesn't exist)
+      let categoriesCreated = 0;
+
       for (const speciesId of uniqueSpecies) {
-        const categories = await queryInterface.sequelize.query(
+        // First check if category exists
+        const existingCategories = await queryInterface.sequelize.query(
           `
           SELECT id, product_category, species_master_id
           FROM product_category_master
@@ -129,20 +152,50 @@ module.exports = {
           { replacements: [speciesId], type: Sequelize.QueryTypes.SELECT }
         );
 
-        if (categories.length > 0) {
-          speciesCategoryMap[speciesId] = categories[0].id;
+        if (existingCategories.length > 0) {
+          speciesCategoryMap[speciesId] = existingCategories[0].id;
         } else {
-          console.warn(
-            `⚠️  No active product category found for species ID: ${speciesId}`
-          );
-          speciesCategoryMap[speciesId] = null;
+          // Create a new category for this species
+          const speciesInfo = speciesNameMap[speciesId];
+          if (speciesInfo) {
+            const categoryId = uuidv4();
+            const categoryName = `${speciesInfo.name} - Processed`;
+
+            await queryInterface.insert(
+              null,
+              "product_category_master",
+              {
+                id: categoryId,
+                product_category: categoryName,
+                product_category_description: `Processed products category for ${speciesInfo.name}`,
+                species_master_id: speciesId,
+                is_active: true,
+                created_by: systemUserId,
+                updated_by: systemUserId,
+                created_at: new Date(),
+                updated_at: new Date(),
+              },
+              { transaction }
+            );
+
+            speciesCategoryMap[speciesId] = categoryId;
+            categoriesCreated++;
+            console.log(
+              `   ✓ Created category: ${categoryName} for species ${speciesId}`
+            );
+          } else {
+            console.warn(
+              `⚠️  Could not find species info for ID: ${speciesId}`
+            );
+            speciesCategoryMap[speciesId] = null;
+          }
         }
       }
 
       console.log(
         `✓ Mapped ${
           Object.keys(speciesCategoryMap).length
-        } species to categories`
+        } species to categories (${categoriesCreated} created)`
       );
 
       // ================================================================

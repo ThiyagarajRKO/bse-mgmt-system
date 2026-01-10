@@ -58,6 +58,9 @@ const PRODUCT_MASTER_MIGRATIONS = [
   "20251125173715-create-tax-code-master.js",
   "20251206000001-create-product-taxcode-gst-mapping.js",
   "20251211000000-consolidate-gst-mapping-schema.js",
+
+  // Repair migrations (data integrity fixes)
+  "20260111-repair-product-category-species-mapping.js",
 ];
 
 async function runProductMasterMigrations() {
