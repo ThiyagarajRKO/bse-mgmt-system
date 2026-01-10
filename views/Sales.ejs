@@ -3342,8 +3342,10 @@
                   product?.Packing?.pd?.pp?.ProductMaster?.id;
 
                 // Extract species_master_id from the product
-                // Try direct ProductMaster first, then nested Packing structure
+                // First try the enriched species_id directly added by API
+                // Then try ProductMaster association, then nested Packing structure
                 speciesMasterId =
+                  product?.species_id ||
                   product?.ProductMaster?.ProductCategoryMaster
                     ?.species_master_id ||
                   product?.Packing?.pd?.pp?.ProductMaster?.ProductCategoryMaster
