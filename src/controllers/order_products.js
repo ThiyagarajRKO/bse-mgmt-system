@@ -89,6 +89,22 @@ export const GetAll = ({ order_id, start, length, search }) => {
         order: [["created_at", "desc"]],
       });
 
+      // Add species_id to each order product by joining with ProductCategoryMaster
+      if (suppliers.rows && suppliers.rows.length > 0) {
+        for (let row of suppliers.rows) {
+          if (row.ProductMaster && row.ProductMaster.product_category_master_id) {
+            const category = await models.ProductCategoryMaster.findOne({
+              attributes: ["species_master_id"],
+              where: { id: row.ProductMaster.product_category_master_id },
+            });
+            if (category) {
+              // Add species_id to the response
+              row.species_id = category.species_master_id;
+            }
+          }
+        }
+      }
+
       resolve(suppliers);
     } catch (err) {
       reject(err);

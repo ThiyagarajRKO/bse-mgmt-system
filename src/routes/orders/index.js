@@ -7,6 +7,7 @@ import { GetOrderNumbers } from "./handlers/get_order_no";
 import { Confirm } from "./handlers/confirm";
 import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
+import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
 import { DeleteEmpty } from "./handlers/delete_empty";
 
 // Schema
@@ -191,6 +192,35 @@ export const ordersRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  fastify.get(
+    "/check-fulfillment-route/:product_master_id",
+    async (req, reply) => {
+      try {
+        const params = {
+          product_master_id: req?.params?.product_master_id,
+          order_id: req?.query?.order_id,
+        };
+
+        const result = await CheckFulfillmentRoute(
+          params,
+          req?.session,
+          fastify
+        );
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
 
   // Delete empty orders (orders without any products)
   fastify.delete("/empty", async (req, reply) => {

@@ -136,9 +136,37 @@ module.exports = (sequelize, DataTypes) => {
           created_by: options.profile_id,
         }));
 
-        await sequelize.models.OrderProducts.bulkCreate(productsData, {
-          profile_id: options.profile_id,
-        });
+        const createdOrderProducts =
+          await sequelize.models.OrderProducts.bulkCreate(productsData, {
+            profile_id: options.profile_id,
+          });
+
+        // Route each order product to production or procurement based on inventory
+        // This will be handled by a separate fulfillment service
+        // For now, we'll log the created products for fulfillment routing
+        console.log(
+          `[Orders] Created ${createdOrderProducts.length} order products for order ${data.id}`
+        );
+
+        // Trigger fulfillment routing for each product
+        // This can be queued for async processing
+        if (createdOrderProducts && createdOrderProducts.length > 0) {
+          for (const orderProduct of createdOrderProducts) {
+            try {
+              // Import and call fulfillment service
+              // This will determine if raw material is available for production
+              // or if we need to route to procurement
+              console.log(
+                `[Orders] Routing order product ${orderProduct.id} for product ${orderProduct.product_master_id}`
+              );
+
+              // The actual fulfillment routing will be handled by a separate service
+              // that can be called asynchronously to avoid blocking order creation
+            } catch (routingErr) {
+              console.error("Error routing order product:", routingErr);
+            }
+          }
+        }
       }
     } catch (err) {
       console.log("Error while creating order products", err?.message || err);
