@@ -1,114 +1,141 @@
 #!/usr/bin/env node
 
 /**
- * Product Master Migration & Seeder Runner
- * Runs product master migrations directly via Sequelize without CLI
- * 
- * Usage: 
+ * Run Product Master Migrations Only
+ *
+ * This script runs ONLY the consolidated product master migration (20260111-consolidated-product-master-schema.js)
+ * without running all migrations
+ *
+ * Usage:
  *   node scripts/run-product-master-migration.js
+ *
+ * This runs in order:
+ * 1. All prerequisite migrations (species, sizes, grades, etc.)
+ * 2. Final consolidated product master migration
  */
 
-require('dotenv').config();
-const path = require('path');
-const Sequelize = require('sequelize');
-const SequelizeMeta = require('sequelize').Model;
+const Sequelize = require("sequelize");
+const path = require("path");
+const fs = require("fs");
+require("dotenv").config();
 
-// Color codes
-const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  blue: '\x1b[36m',
-};
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_SECRET,
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: "postgres",
+    logging: console.log,
+  }
+);
 
-function log(msg, color = 'reset') {
-  console.log(`${colors[color]}${msg}${colors.reset}`);
-}
+const migrationsDir = path.join(__dirname, "../migrations");
 
-// Database configuration
-const dbConfig = {
-  database: process.env.DB_NAME || 'bse_mgmt',
-  username: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  dialect: 'mysql',
-  logging: false,
-};
+// Product master related migrations in order
+const PRODUCT_MASTER_MIGRATIONS = [
+  // Base tables needed first
+  "20240328150019-create-species_master.js",
+  "20240328150012-create-size_master.js",
 
-// Product Master Migrations (in execution order)
-const PRODUCT_MIGRATIONS = [
-  '20251202-consolidated-product-master',
-  '20251206000000-consolidated-species-product-master',
-  '20260108-align-product-categories-with-derivatives',
-  '20260108-map-products-to-derivatives',
-  '20260109-add-species-derivative-size-grade-mapping-id-to-product-master',
-  '20260109081212-add-derivative-master-id-to-product-master',
-  '20260109-add-product-flags',
-  '20260109-add-raw-product-support',
-  '20260110-fix-product-species-mapping',
+  // Species and size mappings
+  "20251202-create-species-size-mapping.js",
+  "20251206000000-consolidated-species-product-master.js",
+
+  // Consolidated product master (MAIN MIGRATION)
+  "20260111-consolidated-product-master-schema.js",
+
+  // Post product master migrations
+  "20260108-create-derivative-master.js",
+  "20260108-create-species-derivative-size-grade-mapping.js",
+  "20260109-add-product-flags.js",
+  "20260109-add-raw-product-support.js",
+
+  // GST and Tax related migrations (required for seeding)
+  "20251125-consolidated-gst-master-migration.js",
+  "20251125000005-create-product-gst-mapping.js",
+  "20251125173715-create-tax-code-master.js",
+  "20251206000001-create-product-taxcode-gst-mapping.js",
+  "20251211000000-consolidate-gst-mapping-schema.js",
 ];
 
-async function runProductMasterMigration() {
-  const sequelize = new Sequelize(dbConfig);
-
+async function runProductMasterMigrations() {
   try {
-    log(`\n${'='.repeat(70)}`, 'bright');
-    log('🚀 Product Master Migration Runner', 'bright');
-    log(`${'='.repeat(70)}\n`, 'bright');
+    console.log("\n═══════════════════════════════════════════════════════");
+    console.log("🚀 Running Product Master Migrations Only");
+    console.log("═══════════════════════════════════════════════════════\n");
 
     // Test database connection
-    log('🔗 Connecting to database...', 'blue');
     await sequelize.authenticate();
-    log('✓ Database connected successfully', 'green');
+    console.log("✅ Database connection established\n");
 
-    // Run migrations using Sequelize CLI
-    log(`\n📋 Running ${PRODUCT_MIGRATIONS.length} product master migrations...`, 'blue');
+    // Get list of already executed migrations
+    const [migrations] = await sequelize.query(
+      `SELECT name FROM "SequelizeMeta" ORDER BY name ASC`
+    );
+    const executedMigrations = new Set(migrations.map((m) => m.name));
 
-    const migrateUp = require('sequelize-cli/lib/helpers/migrate-up');
-    const path = require('path');
+    console.log(`📊 Already executed migrations: ${executedMigrations.size}\n`);
 
-    const migrationsPath = path.join(__dirname, '../migrations');
+    let executedCount = 0;
+    let skippedCount = 0;
 
-    for (const migration of PRODUCT_MIGRATIONS) {
-      log(`\n▶️  ${migration}...`, 'yellow');
+    // Run each migration
+    for (const migrationFile of PRODUCT_MASTER_MIGRATIONS) {
+      const fullPath = path.join(migrationsDir, migrationFile);
+
+      if (!fs.existsSync(fullPath)) {
+        console.log(`⚠️  Migration not found: ${migrationFile}`);
+        continue;
+      }
+
+      if (executedMigrations.has(migrationFile)) {
+        console.log(`⏭️  Already executed: ${migrationFile}`);
+        skippedCount++;
+        continue;
+      }
+
       try {
-        // Load and execute migration
-        const migrationPath = path.join(migrationsPath, `${migration}.js`);
-        const migrationModule = require(migrationPath);
+        console.log(`⏳ Executing: ${migrationFile}`);
+        const migration = require(fullPath);
 
-        if (migrationModule.up) {
-          await migrationModule.up(sequelize.queryInterface, Sequelize);
-          log(`✓ ${migration} - Success`, 'green');
-        } else {
-          log(`⚠ ${migration} - No up() function found`, 'yellow');
+        if (migration.up) {
+          await migration.up(sequelize.getQueryInterface(), Sequelize);
+
+          // Record in SequelizeMeta
+          await sequelize.query(
+            `INSERT INTO "SequelizeMeta" (name) VALUES ('${migrationFile}')`
+          );
+
+          console.log(`✅ Success: ${migrationFile}\n`);
+          executedCount++;
         }
       } catch (error) {
-        if (error.message.includes('already exists') || 
-            error.message.includes('Duplicate column')) {
-          log(`⚠ ${migration} - Already applied (skipped)`, 'yellow');
-        } else {
-          throw error;
-        }
+        console.error(`❌ Error in ${migrationFile}:`);
+        console.error(error.message);
+        console.log("\n");
+        throw error;
       }
     }
 
-    log(`\n${'='.repeat(70)}`, 'bright');
-    log('✅ Product Master Migrations Complete!', 'green');
-    log(`${'='.repeat(70)}\n`, 'bright');
+    console.log("\n═══════════════════════════════════════════════════════");
+    console.log("📊 Migration Summary:");
+    console.log(`✅ Newly executed: ${executedCount}`);
+    console.log(`⏭️  Already executed: ${skippedCount}`);
+    console.log(`📝 Total: ${executedCount + skippedCount}`);
+    console.log("═══════════════════════════════════════════════════════\n");
 
-    await sequelize.close();
+    console.log("🎉 Product Master Migrations Completed Successfully!\n");
+
     process.exit(0);
-
   } catch (error) {
-    log(`\n❌ Error: ${error.message}`, 'red');
-    log(`Stack: ${error.stack}`, 'red');
-    await sequelize.close();
+    console.error("\n❌ Migration failed:");
+    console.error(error);
     process.exit(1);
+  } finally {
+    await sequelize.close();
   }
 }
 
-// Run
-runProductMasterMigration();
+runProductMasterMigrations();

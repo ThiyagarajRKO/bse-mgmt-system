@@ -14,9 +14,9 @@
     "copy-assets": "node scripts/copy-assets.js",
     "migrate": "node_modules/sequelize-cli/lib/sequelize db:migrate",
     "seed": "node_modules/sequelize-cli/lib/sequelize db:seed:all",
-    "migrate:product-master": "node scripts/migrate-product-master-sequelize.js",
-    "seed:product-master": "node scripts/seed-product-master-sequelize.js",
-    "migrate:seed:product-master": "npm run migrate:product-master && npm run seed:product-master",
+    "migrate:product-master": "node scripts/run-product-master-migration.js",
+    "seed:product-master": "node scripts/run-product-master-seeder.js",
+    "setup:product-master": "node scripts/run-product-master-full.js",
     "lint": "eslint"
   },
   "keywords": [],

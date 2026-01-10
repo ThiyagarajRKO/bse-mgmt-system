@@ -7,16 +7,19 @@
 ## 🚀 Commands
 
 ### **Run Everything (Recommended)**
+
 ```bash
 npm run migrate:seed:product-master
 ```
 
 ### **Run Migrations Only**
+
 ```bash
 npm run migrate:product-master
 ```
 
 ### **Run Seeders Only**
+
 ```bash
 npm run seed:product-master
 ```
@@ -26,6 +29,7 @@ npm run seed:product-master
 ## 📋 What Runs
 
 ### **9 Migrations**
+
 1. consolidated-product-master
 2. consolidated-species-product-master
 3. align-product-categories-with-derivatives
@@ -37,6 +41,7 @@ npm run seed:product-master
 9. fix-product-species-mapping
 
 ### **2 Seeders**
+
 1. consolidated-product-master-seeder
 2. generate-products-from-mappings
 
@@ -101,29 +106,30 @@ mysql -u root -p -D bse_mgmt -e "SELECT COUNT(*) as categories FROM product_cate
 
 ## 🐛 Troubleshooting
 
-| Issue | Fix |
-|-------|-----|
-| Connection error | Check `.env` DB settings |
-| Already executed | Safe to run again (idempotent) |
-| Permission denied | `chmod +x scripts/*.js` |
+| Issue              | Fix                                                          |
+| ------------------ | ------------------------------------------------------------ |
+| Connection error   | Check `.env` DB settings                                     |
+| Already executed   | Safe to run again (idempotent)                               |
+| Permission denied  | `chmod +x scripts/*.js`                                      |
 | Database not found | Create it: `mysql -u root -p -e "CREATE DATABASE bse_mgmt;"` |
 
 ---
 
 ## 📊 Status Codes
 
-| Symbol | Meaning |
-|--------|---------|
-| ✓ | Migration/Seeder ran successfully |
-| ⏭️  | Already executed (skipped) |
-| ✗ | Failed (check error message) |
-| ⚠️  | Warning (file not found, skipped) |
+| Symbol | Meaning                           |
+| ------ | --------------------------------- |
+| ✓      | Migration/Seeder ran successfully |
+| ⏭️     | Already executed (skipped)        |
+| ✗      | Failed (check error message)      |
+| ⚠️     | Warning (file not found, skipped) |
 
 ---
 
 ## 🔄 Repeat
 
 Safe to run multiple times:
+
 ```bash
 npm run migrate:seed:product-master
 # Already-executed ones will be skipped with ⏭️
