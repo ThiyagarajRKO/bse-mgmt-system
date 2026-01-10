@@ -39,7 +39,10 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.procurement_price) {
+      if (
+        procurement_data?.procurement_price === null ||
+        procurement_data?.procurement_price === undefined
+      ) {
         return reject({
           statusCode: 420,
           message: "Purchase Price must not be empty!",
@@ -314,22 +317,17 @@ export const GetAll = ({
           attributes: ["id", "product_name", "product_category_master_id"],
           model: models.ProductMaster,
           required: Object.keys(productCategoryWhere).length > 0,
-          include:
-            models.ProductCategoryMaster &&
-            models.ProductMaster.associations &&
-            models.ProductMaster.associations.ProductCategoryMaster
-              ? [
-                  {
-                    model: models.ProductCategoryMaster,
-                    attributes: ["id", "product_category", "species_master_id"],
-                    required: Object.keys(productCategoryWhere).length > 0,
-                    where:
-                      Object.keys(productCategoryWhere).length > 0
-                        ? productCategoryWhere
-                        : undefined,
-                  },
-                ]
-              : [],
+          include: [
+            {
+              model: models.ProductCategoryMaster,
+              attributes: ["id", "product_category", "species_master_id"],
+              required: Object.keys(productCategoryWhere).length > 0,
+              where:
+                Object.keys(productCategoryWhere).length > 0
+                  ? productCategoryWhere
+                  : undefined,
+            },
+          ],
         },
       ];
 

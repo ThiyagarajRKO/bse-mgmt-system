@@ -1140,8 +1140,13 @@
               <div class="d-flex rounded-2 justify-content-end pb-4 gap-2">
                 <div
                   id="refreshAllocationBtn"
-                  class="btn btn-danger d-flex justify-content-around"
-                  style="width: 150px"
+                  class="btn d-flex justify-content-around"
+                  style="
+                    width: 150px;
+                    background-color: #ea5455;
+                    color: white;
+                    border: none;
+                  "
                 >
                   <i class="fa-solid fa-arrows-rotate my-auto"></i>
                   <span style="margin-top: 4px" class="fw-bold my-auto"
@@ -1867,29 +1872,34 @@
         <div class="row d-flex justify-content-center">
           <div class="col-sm-12 col-md-12 col-md-12">
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span id="purchaseRequestPanelHeading" class="fw-bold"
+              <span
+                id="purchaseRequestPanelHeading"
+                class="fw-bold"
+                style="color: #ea5455"
                 >Raise Purchase Request</span
               >
               <div class="col my-auto d-flex justify-content-end">
                 <i
                   class="fa-solid fa-circle-xmark my-auto panelClose"
                   id="closePurchaseRequestPanelBtn"
-                  style="cursor: pointer"
+                  style="cursor: pointer; color: #ea5455"
                 ></i>
               </div>
             </div>
-            <hr />
+            <hr style="border-color: #ea5455" />
             <div>
               <!-- Order Details -->
               <div class="form-group my-2">
-                <label><strong>Order Details</strong></label>
+                <label style="color: #ea5455"
+                  ><strong>Order Details</strong></label
+                >
                 <div
                   id="purchaseRequestOrderDetails"
                   style="
                     padding: 10px;
-                    background-color: rgba(98, 114, 147, 0.1);
+                    background-color: rgba(234, 84, 85, 0.1);
                     border-radius: 4px;
-                    border-left: 3px solid #627293;
+                    border-left: 3px solid #ea5455;
                   "
                 ></div>
               </div>
@@ -1900,21 +1910,23 @@
                 class="form-group my-3"
                 style="display: none"
               >
-                <label><strong>AI Analysis & Recommendations</strong></label>
+                <label style="color: #ea5455"
+                  ><strong>AI Analysis & Recommendations</strong></label
+                >
                 <div
                   id="purchaseRequestAIInsights"
                   style="
                     padding: 10px;
-                    background-color: rgba(98, 114, 147, 0.1);
+                    background-color: rgba(234, 84, 85, 0.1);
                     border-radius: 4px;
-                    border-left: 3px solid #627293;
+                    border-left: 3px solid #ea5455;
                   "
                 ></div>
               </div>
 
               <!-- Raw Materials Selection -->
               <div class="form-group my-3">
-                <label for="purchaseRequestRawMaterial"
+                <label for="purchaseRequestRawMaterial" style="color: #ea5455"
                   ><strong>Select Raw Material</strong></label
                 >
                 <div
@@ -1922,9 +1934,9 @@
                   style="
                     margin-top: 10px;
                     padding: 10px;
-                    background-color: rgba(98, 114, 147, 0.1);
+                    background-color: rgba(234, 84, 85, 0.1);
                     border-radius: 4px;
-                    border-left: 3px solid #627293;
+                    border-left: 3px solid #ea5455;
                   "
                 >
                   <p style="color: #999; text-align: center; margin: 0">
@@ -1935,8 +1947,8 @@
 
               <!-- Quantity Input -->
               <div class="form-group my-3">
-                <label for="purchaseRequestQuantity"
-                  >Quantity to Order (kg)</label
+                <label for="purchaseRequestQuantity" style="color: #ea5455"
+                  ><strong>Quantity to Order (kg)</strong></label
                 >
                 <input
                   type="number"
@@ -1944,6 +1956,7 @@
                   class="form-control"
                   placeholder="Enter quantity to order"
                   min="1"
+                  style="border-color: #ea5455"
                 />
                 <small
                   class="text-muted mt-2"
@@ -1955,7 +1968,8 @@
               <div class="d-flex gap-2 mt-4 mb-3">
                 <button
                   id="purchaseRequestCreateBtn"
-                  class="btn btn-danger flex-grow-1"
+                  class="btn flex-grow-1"
+                  style="background-color: #ea5455; color: white; border: none"
                 >
                   <i class="fa-solid fa-check me-2"></i>Create Request
                 </button>
@@ -4807,6 +4821,11 @@
                 material.procurement_product_name || "Unknown"
               }`,
             };
+
+            console.log(
+              "Creating procurement request with data:",
+              procurementData
+            );
 
             $.ajax({
               url: "/api/procurement/product",
