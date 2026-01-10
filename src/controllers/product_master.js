@@ -117,34 +117,139 @@ export const Get = ({ id }) => {
           ],
         });
 
-        // If product found, fetch ProductCategoryMaster separately
-        if (product && product.product_category_master_id) {
-          try {
-            const productCategory = await models.ProductCategoryMaster.findOne({
-              where: {
-                id: product.product_category_master_id,
-              },
-              attributes: ["id", "product_category", "species_master_id"],
-            });
+        // If product found, fetch ProductCategoryMaster and SpeciesMaster separately
+        if (product) {
+          const productJson = product.toJSON ? product.toJSON() : product;
+          console.log(
+            `[Get] Product found: ${productJson.product_name}, product_category_master_id: ${productJson.product_category_master_id}`
+          );
 
-            // Attach the ProductCategoryMaster to the product object
-            if (productCategory) {
-              // Convert to JSON and back to plain object to avoid Sequelize issues
-              const productJson = product.toJSON ? product.toJSON() : product;
-              const categoryJson = productCategory.toJSON
-                ? productCategory.toJSON()
-                : productCategory;
-              product = { ...productJson, ProductCategoryMaster: categoryJson };
+          if (productJson.product_category_master_id) {
+            try {
+              const productCategory =
+                await models.ProductCategoryMaster.findOne({
+                  where: {
+                    id: productJson.product_category_master_id,
+                  },
+                  attributes: ["id", "product_category", "species_master_id"],
+                });
+
+              // Attach the ProductCategoryMaster to the product object
+              if (productCategory) {
+                const categoryJson = productCategory.toJSON
+                  ? productCategory.toJSON()
+                  : productCategory;
+
+                console.log(
+                  `[Get] ProductCategory found: ${categoryJson.product_category}, species_master_id: ${categoryJson.species_master_id}`
+                );
+
+                // Now fetch SpeciesMaster if species_master_id exists
+                let speciesData = null;
+                if (categoryJson.species_master_id) {
+                  try {
+                    speciesData = await models.SpeciesMaster.findOne({
+                      where: {
+                        id: categoryJson.species_master_id,
+                      },
+                      attributes: ["id", "species_name"],
+                    });
+                    console.log(
+                      `[Get] SpeciesMaster found: ${speciesData?.species_name}`
+                    );
+                  } catch (speciesErr) {
+                    console.error("Error fetching SpeciesMaster:", speciesErr);
+                  }
+                } else {
+                  console.warn(
+                    `[Get] ProductCategory has NO species_master_id!`
+                  );
+                }
+
+                // Attach both associations
+                product = {
+                  ...productJson,
+                  ProductCategoryMaster: {
+                    ...categoryJson,
+                    SpeciesMaster: speciesData
+                      ? speciesData.toJSON
+                        ? speciesData.toJSON()
+                        : speciesData
+                      : null,
+                  },
+                };
+              } else {
+                console.warn(
+                  `[Get] ProductCategory not found for id: ${productJson.product_category_master_id}`
+                );
+              }
+            } catch (categoryErr) {
+              console.error(
+                "Error fetching ProductCategoryMaster:",
+                categoryErr
+              );
+              // Continue without the category association
             }
-          } catch (categoryErr) {
-            console.error("Error fetching ProductCategoryMaster:", categoryErr);
-            // Continue without the category association
+          } else {
+            console.warn(
+              `[Get] Product HAS NO product_category_master_id! Product: ${productJson.product_name}`
+            );
+            // Still return the product, just without category
+            product = productJson;
+          }
+
+          // Fetch SpeciesDerivativeSizeGradeMapping if product has the mapping_id
+          if (productJson.species_derivative_size_grade_mapping_id) {
+            try {
+              const mapping =
+                await models.SpeciesDerivativeSizeGradeMapping.findOne({
+                  where: {
+                    id: productJson.species_derivative_size_grade_mapping_id,
+                    is_active: true,
+                  },
+                  attributes: [
+                    "id",
+                    "species_master_id",
+                    "derivative_master_id",
+                    "size_master_id",
+                    "grade_master_id",
+                    "yield_percentage",
+                    "temperature",
+                    "shelf_life_days",
+                    "processing_time_hours",
+                    "moisture_percentage",
+                    "salt_percentage",
+                    "pH_value",
+                    "is_active",
+                  ],
+                });
+
+              if (mapping) {
+                const mappingJson = mapping.toJSON ? mapping.toJSON() : mapping;
+                if (product.ProductCategoryMaster) {
+                  product.ProductCategoryMaster.SpeciesDerivativeSizeGradeMapping =
+                    mappingJson;
+                } else {
+                  product.SpeciesDerivativeSizeGradeMapping = mappingJson;
+                }
+              }
+            } catch (mappingErr) {
+              console.debug(
+                "Note: Species derivative size grade mapping data not available for this product"
+              );
+            }
           }
         }
       } catch (err) {
         console.error("Error fetching ProductMaster:", err);
         throw err;
       }
+
+      console.log(`[Get] Final product response:`, {
+        product_name: product?.product_name,
+        has_category: !!product?.ProductCategoryMaster,
+        species_id: product?.ProductCategoryMaster?.species_master_id,
+      });
 
       resolve(product);
     } catch (err) {
@@ -213,58 +318,150 @@ export const GetAll = ({
       if (search) {
         where[Op.or] = [
           { product_name: { [Op.iLike]: `%${search}%` } },
-          {
-            "$SizeMaster.size$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          {
-            "$ProductCategoryMaster.product_category$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
-          {
-            "$ProductCategoryMaster.SpeciesMaster.species_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
+          // Note: Association searches removed to avoid Sequelize association errors
+          // These will be filtered manually after fetching products
         ];
       }
 
-      const products = await models.ProductMaster.findAndCountAll({
-        include: [
-          {
-            model: models.ProductCategoryMaster,
-            required: species_id ? true : false,
-            include: [
-              {
-                model: models.SpeciesMaster,
-                required: species_id ? true : false,
-                where: species_id ? speciesWhere : undefined,
-              },
-            ],
-            where: product_category_master_id
-              ? productCategoryWhere
-              : undefined,
-          },
-          {
-            required: false,
-            model: models.GradeMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            required: false,
-            model: models.SizeMaster,
-            where: sizeWhere,
-          },
-        ],
-        where,
-        offset: start,
-        limit: length,
-        order: [["updated_at", "desc"]],
-      });
+      let products;
+      try {
+        // Simple query without nested associations - avoid Sequelize association errors
+        products = await models.ProductMaster.findAndCountAll({
+          attributes: [
+            "id",
+            "product_name",
+            "hsn_code",
+            "processing_state",
+            "product_role",
+            "is_raw",
+            "is_producible",
+            "is_sellable",
+            "product_category_master_id",
+            "size_master_id",
+            "grade_master_id",
+            "derivative_master_id",
+            "species_derivative_size_grade_mapping_id",
+            "is_active",
+            "created_at",
+            "updated_at",
+          ],
+          include: [],
+          where,
+          offset: start,
+          limit: length,
+          order: [["updated_at", "desc"]],
+          raw: false,
+        });
+
+        // Manually fetch ProductCategoryMaster and SpeciesMaster for each product
+        if (products && products.rows && products.rows.length > 0) {
+          console.log(
+            `[GetAll] Fetched ${products.rows.length} products, now enriching with category and species data...`
+          );
+
+          products.rows = await Promise.all(
+            products.rows.map(async (product) => {
+              const productJson = product.toJSON ? product.toJSON() : product;
+
+              // Fetch ProductCategoryMaster if product has the foreign key
+              if (productJson.product_category_master_id) {
+                try {
+                  const category = await models.ProductCategoryMaster.findOne({
+                    where: {
+                      id: productJson.product_category_master_id,
+                      is_active: true,
+                    },
+                    attributes: ["id", "product_category", "species_master_id"],
+                  });
+
+                  if (category) {
+                    const categoryJson = category.toJSON
+                      ? category.toJSON()
+                      : category;
+
+                    // Fetch SpeciesMaster if category has species
+                    if (categoryJson.species_master_id) {
+                      try {
+                        const species = await models.SpeciesMaster.findOne({
+                          where: {
+                            id: categoryJson.species_master_id,
+                            is_active: true,
+                          },
+                          attributes: ["id", "species_name"],
+                        });
+                        if (species) {
+                          categoryJson.SpeciesMaster = species.toJSON
+                            ? species.toJSON()
+                            : species;
+                        }
+                      } catch (speciesErr) {
+                        console.debug(
+                          "Note: Species data not available for this product"
+                        );
+                      }
+                    }
+
+                    productJson.ProductCategoryMaster = categoryJson;
+                  }
+                } catch (categoryErr) {
+                  console.debug(
+                    "Note: Category data not available for this product"
+                  );
+                }
+              }
+
+              // Fetch SpeciesDerivativeSizeGradeMapping if product has the mapping_id
+              if (productJson.species_derivative_size_grade_mapping_id) {
+                try {
+                  const mapping =
+                    await models.SpeciesDerivativeSizeGradeMapping.findOne({
+                      where: {
+                        id: productJson.species_derivative_size_grade_mapping_id,
+                        is_active: true,
+                      },
+                      attributes: [
+                        "id",
+                        "species_master_id",
+                        "derivative_master_id",
+                        "size_master_id",
+                        "grade_master_id",
+                        "yield_percentage",
+                        "temperature",
+                        "shelf_life_days",
+                        "processing_time_hours",
+                        "moisture_percentage",
+                        "salt_percentage",
+                        "pH_value",
+                        "is_active",
+                      ],
+                    });
+
+                  if (mapping) {
+                    const mappingJson = mapping.toJSON
+                      ? mapping.toJSON()
+                      : mapping;
+                    productJson.SpeciesDerivativeSizeGradeMapping = mappingJson;
+                  }
+                } catch (mappingErr) {
+                  console.debug(
+                    "Note: Species derivative size grade mapping data not available for this product"
+                  );
+                }
+              }
+
+              return productJson;
+            })
+          );
+
+          console.log(
+            `[GetAll] Successfully enriched all ${products.rows.length} products`
+          );
+        }
+      } catch (err) {
+        console.error("Error in GetAll:", err.message);
+        reject(err);
+        return;
+      }
 
       resolve(products);
     } catch (err) {

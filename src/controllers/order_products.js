@@ -92,9 +92,16 @@ export const GetAll = ({ order_id, start, length, search }) => {
         ],
         include: [
           {
-            attributes: ["id", "product_name"],
+            attributes: ["id", "product_name", "product_category_master_id"],
             model: models.ProductMaster,
             required: false,
+            include: [
+              {
+                attributes: ["id", "product_category", "species_master_id"],
+                model: models.ProductCategoryMaster,
+                required: false,
+              },
+            ],
           },
           {
             attributes: ["id"],
@@ -114,8 +121,23 @@ export const GetAll = ({ order_id, start, length, search }) => {
                     required: false,
                     include: [
                       {
-                        attributes: ["id", "product_name"],
+                        attributes: [
+                          "id",
+                          "product_name",
+                          "product_category_master_id",
+                        ],
                         model: models.ProductMaster,
+                        include: [
+                          {
+                            attributes: [
+                              "id",
+                              "product_category",
+                              "species_master_id",
+                            ],
+                            model: models.ProductCategoryMaster,
+                            required: false,
+                          },
+                        ],
                       },
                     ],
                   },

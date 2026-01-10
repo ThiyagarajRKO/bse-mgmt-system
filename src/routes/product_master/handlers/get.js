@@ -14,6 +14,14 @@ export const Get = ({ product_master_id }, session, fastify) => {
         });
       }
 
+      console.log("GET PRODUCT HANDLER - Retrieved product:", {
+        product_name: product_master?.product_name,
+        product_category_master_id: product_master?.product_category_master_id,
+        ProductCategoryMaster: product_master?.ProductCategoryMaster,
+        species_master_id:
+          product_master?.ProductCategoryMaster?.species_master_id,
+      });
+
       resolve({
         data: product_master,
       });

@@ -41,17 +41,17 @@ module.exports = (sequelize) => {
       });
 
       // Audit trail associations
-      this.belongsTo(models.UserProfiles, {
+      this.belongsTo(models.UserProfile, {
         foreignKey: "created_by",
         as: "createdByUser",
       });
 
-      this.belongsTo(models.UserProfiles, {
+      this.belongsTo(models.UserProfile, {
         foreignKey: "updated_by",
         as: "updatedByUser",
       });
 
-      this.belongsTo(models.UserProfiles, {
+      this.belongsTo(models.UserProfile, {
         foreignKey: "deleted_by",
         as: "deletedByUser",
       });

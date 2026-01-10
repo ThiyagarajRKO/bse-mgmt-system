@@ -435,98 +435,190 @@ export const GetAllocationData = ({ start, length, search }) => {
         ];
       }
 
-      const orders = await models.Orders.findAndCountAll({
-        subQuery: false,
-        attributes: [
-          "id",
-          "order_no",
-          "created_at",
-          "payment_terms",
-          "payment_type",
-          "shipping_date",
-          "shipping_address",
-          "shipping_method",
-          "expected_delivery_date",
-          "delivery_status",
-          [
-            sequelize.literal(
-              `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
-            ),
-            "total_products_price",
+      let orders;
+      try {
+        orders = await models.Orders.findAndCountAll({
+          subQuery: false,
+          attributes: [
+            "id",
+            "order_no",
+            "created_at",
+            "payment_terms",
+            "payment_type",
+            "shipping_date",
+            "shipping_address",
+            "shipping_method",
+            "expected_delivery_date",
+            "delivery_status",
+            [
+              sequelize.literal(
+                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+              ),
+              "total_products_price",
+            ],
           ],
-        ],
-        include: [
-          {
-            attributes: [
-              "id",
-              "customer_name",
-              "customer_country",
-              "customer_email",
-              "customer_phone",
-            ],
-            model: models.CustomerMaster,
-            where: {
-              is_active: true,
-            },
-          },
-          {
-            attributes: [
-              "id",
-              "unit",
-              "price",
-              "discount",
-              "description",
-              "delivery_status",
-              "product_master_id",
-              "packing_id",
-            ],
-            model: models.OrderProducts,
-            where: {
-              is_active: true,
-            },
-            required: false,
-            include: [
-              {
-                attributes: ["id", "product_name"],
-                model: models.ProductMaster,
-                required: false,
+          include: [
+            {
+              attributes: [
+                "id",
+                "customer_name",
+                "customer_country",
+                "customer_email",
+                "customer_phone",
+              ],
+              model: models.CustomerMaster,
+              where: {
+                is_active: true,
               },
-              {
-                attributes: ["id"],
-                model: models.Packing,
-                required: false,
-                include: [
-                  {
-                    attributes: ["id"],
-                    as: "pd",
-                    model: models.PeeledDispatches,
-                    required: false,
-                    include: [
-                      {
-                        attributes: ["id"],
-                        as: "pp",
-                        model: models.PeelingProducts,
-                        required: false,
-                        include: [
-                          {
-                            attributes: ["id", "product_name"],
-                            model: models.ProductMaster,
-                            required: false,
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
+            },
+            {
+              attributes: [
+                "id",
+                "unit",
+                "price",
+                "discount",
+                "description",
+                "delivery_status",
+                "product_master_id",
+                "packing_id",
+              ],
+              model: models.OrderProducts,
+              where: {
+                is_active: true,
               },
+              required: false,
+              include: [
+                {
+                  attributes: [
+                    "id",
+                    "product_name",
+                    "product_category_master_id",
+                  ],
+                  model: models.ProductMaster,
+                  required: false,
+                  include: [
+                    {
+                      attributes: [
+                        "id",
+                        "product_category",
+                        "species_master_id",
+                      ],
+                      model: models.ProductCategoryMaster,
+                      required: false,
+                    },
+                  ],
+                },
+                {
+                  attributes: ["id"],
+                  model: models.Packing,
+                  required: false,
+                  include: [
+                    {
+                      attributes: ["id"],
+                      as: "pd",
+                      model: models.PeeledDispatches,
+                      required: false,
+                      include: [
+                        {
+                          attributes: ["id"],
+                          as: "pp",
+                          model: models.PeelingProducts,
+                          required: false,
+                          include: [
+                            {
+                              attributes: ["id", "product_name"],
+                              model: models.ProductMaster,
+                              required: false,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          where,
+          offset: start,
+          limit: length,
+          order: [["created_at", "desc"]],
+        });
+      } catch (includeError) {
+        // If include fails, try without ProductCategoryMaster association
+        console.warn(
+          "Error with ProductCategoryMaster include, falling back to simpler query:",
+          includeError.message
+        );
+        orders = await models.Orders.findAndCountAll({
+          subQuery: false,
+          attributes: [
+            "id",
+            "order_no",
+            "created_at",
+            "payment_terms",
+            "payment_type",
+            "shipping_date",
+            "shipping_address",
+            "shipping_method",
+            "expected_delivery_date",
+            "delivery_status",
+            [
+              sequelize.literal(
+                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+              ),
+              "total_products_price",
             ],
-          },
-        ],
-        where,
-        offset: start,
-        limit: length,
-        order: [["created_at", "desc"]],
-      });
+          ],
+          include: [
+            {
+              attributes: [
+                "id",
+                "customer_name",
+                "customer_country",
+                "customer_email",
+                "customer_phone",
+              ],
+              model: models.CustomerMaster,
+              where: {
+                is_active: true,
+              },
+            },
+            {
+              attributes: [
+                "id",
+                "unit",
+                "price",
+                "discount",
+                "description",
+                "delivery_status",
+                "product_master_id",
+                "packing_id",
+              ],
+              model: models.OrderProducts,
+              where: {
+                is_active: true,
+              },
+              required: false,
+              include: [
+                {
+                  attributes: [
+                    "id",
+                    "product_name",
+                    "product_category_master_id",
+                  ],
+                  model: models.ProductMaster,
+                  required: false,
+                },
+              ],
+            },
+          ],
+          where,
+          offset: start,
+          limit: length,
+          order: [["created_at", "desc"]],
+        });
+      }
 
       // Add allocation_status to each order
       const processedOrders = orders.rows.map((order) => ({

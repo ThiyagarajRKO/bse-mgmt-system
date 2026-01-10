@@ -277,6 +277,14 @@ export const GetAll = ({
       // This filters through ProductMaster -> ProductCategory -> Species relationship
       if (species_master_id) {
         productCategoryWhere.species_master_id = species_master_id;
+        console.log(
+          "[GetAll] Filtering procurement products by species_master_id:",
+          species_master_id
+        );
+      } else {
+        console.log(
+          "[GetAll] No species filter applied - returning ALL procurement products"
+        );
       }
 
       if (search) {
@@ -356,6 +364,16 @@ export const GetAll = ({
           order: [["created_at", "desc"]],
           raw: false, // Don't flatten to allow nested object access
         });
+
+        if (species_master_id) {
+          console.log(
+            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page for species: ${species_master_id}`
+          );
+        } else {
+          console.log(
+            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page (NO FILTER)`
+          );
+        }
       } catch (includeError) {
         // If include fails, try with simpler includes
         console.warn(
