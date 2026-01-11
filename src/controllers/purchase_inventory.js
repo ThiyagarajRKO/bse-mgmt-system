@@ -210,6 +210,8 @@ export const GetBySpecies = ({ species_id, start, length, search }) => {
 
       let where = {
         is_active: true,
+        // Only show UNPROCESSED raw materials, exclude processed products
+        procurement_product_type: "UNPROCESSED",
       };
 
       // Optional search filter
@@ -310,16 +312,27 @@ export const GetBySpecies = ({ species_id, start, length, search }) => {
         })
       );
 
-      // Filter results to only include materials matching the specified species_id
-      const filteredRows = enrichedRows.filter(
-        (row) => row.species_id === species_id
-      );
+      // Filter results to only include materials matching the specified species_id AND contain "raw" in the name
+      const filteredRows = enrichedRows.filter((row) => {
+        // Check species match
+        const speciesMatch = row.species_id === species_id;
+
+        // Check if product name contains "raw" (case-insensitive)
+        const productName = (
+          row.ProductMaster?.product_name ||
+          row.procurement_product_name ||
+          ""
+        ).toLowerCase();
+        const containsRaw = productName.includes("raw");
+
+        return speciesMatch && containsRaw;
+      });
 
       resolve({
         rows: filteredRows,
         count: filteredRows.length,
         species_id: species_id,
-        message: `Found ${filteredRows.length} raw materials matching species ${species_id}`,
+        message: `Found ${filteredRows.length} unprocessed raw materials matching species ${species_id}`,
       });
     } catch (err) {
       reject(err);

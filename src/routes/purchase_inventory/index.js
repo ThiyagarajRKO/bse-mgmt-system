@@ -58,10 +58,15 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:purchase_inventory_id", getSchema, async (req, reply) => {
+  // Get raw materials filtered by species_id (MUST be before /:id route)
+  fastify.get("/by-species/:species_id", async (req, reply) => {
     try {
-      let result = await Get(
-        { profile_id: req?.token_profile_id, ...req.params },
+      let result = await GetBySpeciesHandler(
+        {
+          profile_id: req?.token_profile_id,
+          species_id: req.params.species_id,
+          ...req.query,
+        },
         req?.session,
         fastify
       );
@@ -79,15 +84,10 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
     }
   });
 
-  // Get raw materials filtered by species_id
-  fastify.get("/by-species/:species_id", async (req, reply) => {
+  fastify.get("/:purchase_inventory_id", getSchema, async (req, reply) => {
     try {
-      let result = await GetBySpeciesHandler(
-        {
-          profile_id: req?.token_profile_id,
-          species_id: req.params.species_id,
-          ...req.query,
-        },
+      let result = await Get(
+        { profile_id: req?.token_profile_id, ...req.params },
         req?.session,
         fastify
       );

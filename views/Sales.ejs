@@ -1872,113 +1872,100 @@
         <div class="row d-flex justify-content-center">
           <div class="col-sm-12 col-md-12 col-md-12">
             <div class="text-center mt-4 d-flex justify-content-between">
-              <span
-                id="purchaseRequestPanelHeading"
-                class="fw-bold"
-                style="color: #ea5455"
+              <span id="purchaseRequestPanelHeading" class="fw-bold fs-5"
                 >Raise Purchase Request</span
               >
               <div class="col my-auto d-flex justify-content-end">
                 <i
                   class="fa-solid fa-circle-xmark my-auto panelClose"
                   id="closePurchaseRequestPanelBtn"
-                  style="cursor: pointer; color: #ea5455"
                 ></i>
               </div>
             </div>
-            <hr style="border-color: #ea5455" />
-            <div>
-              <!-- Order Details -->
-              <div class="form-group my-2">
-                <label style="color: #ea5455"
-                  ><strong>Order Details</strong></label
-                >
-                <div
-                  id="purchaseRequestOrderDetails"
-                  style="
-                    padding: 10px;
-                    background-color: rgba(234, 84, 85, 0.1);
-                    border-radius: 4px;
-                    border-left: 3px solid #ea5455;
-                  "
-                ></div>
-              </div>
 
-              <!-- AI Analysis Section -->
+            <hr />
+
+            <div class="form-group mt-4">
+              <label><strong>Order Details</strong></label>
               <div
-                id="purchaseRequestAIAnalysis"
-                class="form-group my-3"
-                style="display: none"
+                id="purchaseRequestOrderDetails"
+                style="
+                  padding: 12px;
+                  background-color: rgba(98, 114, 147, 0.15);
+                  border-radius: 6px;
+                  border-left: 4px solid #627293;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              ></div>
+            </div>
+
+            <!-- AI Analysis Section -->
+            <div
+              id="purchaseRequestAIAnalysis"
+              class="form-group mt-4"
+              style="display: none"
+            >
+              <label><strong>AI Analysis & Recommendations</strong></label>
+              <div
+                id="purchaseRequestAIInsights"
+                style="
+                  padding: 12px;
+                  background-color: rgba(98, 114, 147, 0.15);
+                  border-radius: 6px;
+                  border-left: 4px solid #627293;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              ></div>
+            </div>
+
+            <!-- Raw Materials Selection -->
+            <div class="form-group mt-4">
+              <label for="purchaseRequestRawMaterial"
+                ><strong>Select Raw Material</strong></label
               >
-                <label style="color: #ea5455"
-                  ><strong>AI Analysis & Recommendations</strong></label
-                >
-                <div
-                  id="purchaseRequestAIInsights"
-                  style="
-                    padding: 10px;
-                    background-color: rgba(234, 84, 85, 0.1);
-                    border-radius: 4px;
-                    border-left: 3px solid #ea5455;
-                  "
-                ></div>
+              <div
+                id="purchaseRequestRawMaterials"
+                style="margin-top: 12px; max-height: 300px; overflow-y: auto"
+              >
+                <p style="color: #999; text-align: center; margin: 0">
+                  Loading raw materials...
+                </p>
               </div>
+            </div>
 
-              <!-- Raw Materials Selection -->
-              <div class="form-group my-3">
-                <label for="purchaseRequestRawMaterial" style="color: #ea5455"
-                  ><strong>Select Raw Material</strong></label
-                >
-                <div
-                  id="purchaseRequestRawMaterials"
-                  style="
-                    margin-top: 10px;
-                    padding: 10px;
-                    background-color: rgba(234, 84, 85, 0.1);
-                    border-radius: 4px;
-                    border-left: 3px solid #ea5455;
-                  "
-                >
-                  <p style="color: #999; text-align: center; margin: 0">
-                    Loading raw materials...
-                  </p>
-                </div>
+            <!-- Quantity Input -->
+            <div class="form-group mt-4">
+              <label for="purchaseRequestQuantity"
+                ><strong>Quantity to Order (kg)</strong></label
+              >
+              <input
+                type="number"
+                id="purchaseRequestQuantity"
+                class="form-control"
+                placeholder="eg. 100"
+                min="1"
+              />
+              <small
+                class="text-muted mt-2"
+                id="purchaseRequestQuantityHint"
+              ></small>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+              <div
+                id="purchaseRequestCreateBtn"
+                class="col-lg-5 btn btn-danger"
+              >
+                <i class="fa-solid fa-check me-2"></i>Save
               </div>
-
-              <!-- Quantity Input -->
-              <div class="form-group my-3">
-                <label for="purchaseRequestQuantity" style="color: #ea5455"
-                  ><strong>Quantity to Order (kg)</strong></label
-                >
-                <input
-                  type="number"
-                  id="purchaseRequestQuantity"
-                  class="form-control"
-                  placeholder="Enter quantity to order"
-                  min="1"
-                  style="border-color: #ea5455"
-                />
-                <small
-                  class="text-muted mt-2"
-                  id="purchaseRequestQuantityHint"
-                ></small>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="d-flex gap-2 mt-4 mb-3">
-                <button
-                  id="purchaseRequestCreateBtn"
-                  class="btn flex-grow-1"
-                  style="background-color: #ea5455; color: white; border: none"
-                >
-                  <i class="fa-solid fa-check me-2"></i>Create Request
-                </button>
-                <button
-                  id="purchaseRequestCancelBtn"
-                  class="btn btn-secondary flex-grow-1"
-                >
-                  <i class="fa-solid fa-times me-2"></i>Cancel
-                </button>
+              <div
+                id="purchaseRequestCancelBtn"
+                class="col-lg-5 btn btn-outline-danger"
+              >
+                <i class="fa-solid fa-times me-2"></i>Clear
               </div>
             </div>
           </div>
@@ -3874,20 +3861,20 @@
           `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}`
         );
 
-        let apiUrl = `/api/procurement/product?start=0&length=1000&procurement_product_type=UNPROCESSED`;
+        let apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
 
-        // Add species filter
+        // Use the new species-filtered endpoint
         if (speciesMasterId) {
-          apiUrl += `&species_master_id=${speciesMasterId}`;
           console.log(
-            "✓ Filtering by species. Fetching raw materials with URL:",
+            "✓ Using new species-filtered endpoint. Fetching raw materials with URL:",
             apiUrl
           );
         } else {
-          console.warn(
-            "⚠ No species ID provided. Fetching ALL raw materials with URL:",
-            apiUrl
+          console.warn("⚠ No species ID provided. Cannot fetch materials.");
+          container.html(
+            '<p style="color: #d32f2f; text-align: center;">Species information not available</p>'
           );
+          return;
         }
 
         $.ajax({
@@ -4085,41 +4072,73 @@
                 netInventory > 0 ? "Available" : "Out of Stock";
 
               materialsHtml += `
-                <div style="padding: 12px; background: #f5f5f5; border-radius: 4px; border-left: 4px solid ${statusColor};">
-                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="
+                  padding: 14px;
+                  background: linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%);
+                  border-radius: 6px;
+                  border-left: 4px solid #627293;
+                  margin-bottom: 10px;
+                  transition: all 0.3s ease;
+                  cursor: pointer;
+                  position: relative;
+                " class="raw-material-card" onmouseover="this.style.boxShadow='0 4px 12px rgba(98, 114, 147, 0.25)'" onmouseout="this.style.boxShadow='none'">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
                     <div style="flex: 1;">
-                      <strong>${materialName}${supplierName}</strong>
-                      <br>
-                      <small style="color: #666; display: block; margin-top: 4px;">
-                        <div style="margin: 4px 0;">
-                          <strong>Inventory Breakdown:</strong>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <input
+                          type="radio"
+                          name="rawMaterial"
+                          value="${material.id}"
+                          data-material-name="${materialName}"
+                          style="cursor: pointer; width: 18px; height: 18px; accent-color: #627293;"
+                        >
+                        <strong style="color: #e3e3e3; font-size: 14px;">${materialName}${supplierName}</strong>
+                      </div>
+                      
+                      <div style="background: rgba(98, 114, 147, 0.1); padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid rgba(98, 114, 147, 0.3);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                          <div>
+                            <span style="color: #999;">Purchase:</span>
+                            <strong style="color: #e3e3e3; display: block;">${purchaseInventory} units</strong>
+                          </div>
+                          <div>
+                            <span style="color: #999;">Production:</span>
+                            <strong style="color: #e3e3e3; display: block;">${productionInventory} units</strong>
+                          </div>
+                          <div>
+                            <span style="color: #999;">Raw Material:</span>
+                            <strong style="color: #e3e3e3; display: block;">${rawMaterialInventory} units</strong>
+                          </div>
+                          <div>
+                            <span style="color: #999;">Sales Allocated:</span>
+                            <strong style="color: #e3e3e3; display: block;">${salesInventory} units</strong>
+                          </div>
                         </div>
-                        <div style="margin: 4px 0; margin-left: 8px;">
-                          <div>Purchase Inventory: <strong>${purchaseInventory}</strong> units</div>
-                          <div>Production Inventory: <strong>${productionInventory}</strong> units</div>
-                          <div>Raw Material Inventory: <strong>${rawMaterialInventory}</strong> units</div>
-                          <div>Sales Allocated: <strong>${salesInventory}</strong> units</div>
+                      </div>
+
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
+                          <span style="color: #999; font-size: 12px;">Available:</span>
+                          <strong style="color: ${statusColor}; display: block; font-size: 14px;">${netInventory} units</strong>
                         </div>
-                        <div style="margin: 8px 0; padding: 6px; background: ${statusColor}22; border-radius: 3px; border-left: 3px solid ${statusColor};">
-                          <strong>Current Available: <span style="color: ${statusColor};">${netInventory}</span> units</strong>
+                        <div style="text-align: right; margin-left: 10px;">
+                          <small style="color: #999;">Price</small>
+                          <div style="color: #f7f9fc; font-weight: bold; font-size: 14px;">₹${
+                            material.procurement_price || 0
+                          }</div>
                         </div>
-                        <div style="margin: 4px 0;">Price: ₹${
-                          material.procurement_price || 0
-                        }</div>
-                      </small>
+                      </div>
                     </div>
-                    <span style="color: ${statusColor}; font-size: 0.9em; white-space: nowrap; margin-left: 10px;">
-                      <strong>${statusText}</strong>
-                    </span>
+                    <span style="
+                      background: ${statusColor};
+                      color: white;
+                      padding: 6px 12px;
+                      border-radius: 20px;
+                      font-size: 12px;
+                      font-weight: bold;
+                      white-space: nowrap;
+                    ">${statusText}</span>
                   </div>
-                  <input
-                    type="radio"
-                    name="rawMaterial"
-                    value="${material.id}"
-                    style="margin-top: 8px;"
-                    data-material-name="${materialName}"
-                  >
-                  <label style="margin-left: 5px; font-size: 0.9em; cursor: pointer;">Select this material</label>
                 </div>
               `;
             });
