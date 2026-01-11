@@ -1,5 +1,6 @@
 import purchaseInventoryRoute from "./purchase";
 import salesInventoryRoute from "./sales";
+import stockRoute from "./stock";
 
 export const inventoryRoute = (fastify, opts, done) => {
   fastify.register(purchaseInventoryRoute, {
@@ -8,6 +9,10 @@ export const inventoryRoute = (fastify, opts, done) => {
 
   fastify.register(salesInventoryRoute, {
     prefix: "/sales",
+  });
+
+  fastify.register(stockRoute, {
+    prefix: "/stock",
   });
 
   done();

@@ -1,0 +1,212 @@
+<div class="card mb-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">
+      <i class="fas fa-clipboard-check"></i> Record Production Output
+    </h5>
+  </div>
+  <div class="card-body">
+    <div id="productionOutputContainer">
+      <div class="alert alert-warning">
+        <i class="fas fa-info-circle"></i> Select a production order with RAW_ISSUED status
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Production Output Recorder Handler
+let currentOrderForOutput = null;
+let expectedOutputs = [];
+
+async function displayProductionOutputRecorder(productionOrder) {
+  currentOrderForOutput = productionOrder;
+
+  if (!productionOrder || productionOrder.status !== 'RAW_ISSUED') {
+    let html = '<div class="alert alert-info">';
+    if (productionOrder) {
+      html += `Current status: <strong>${productionOrder.status}</strong><br>Production must be RAW_ISSUED to record output`;
+    } else {
+      html += '<i class="fas fa-info-circle"></i> Select a production order with RAW_ISSUED status';
+    }
+    html += '</div>';
+    document.getElementById('productionOutputContainer').innerHTML = html;
+    return;
+  }
+
+  // Load expected outputs from BOM
+  try {
+    const response = await fetch(`/api/production/orders/${productionOrder.id}`);
+    if (!response.ok) throw new Error('Failed to fetch order details');
+    const result = await response.json();
+    expectedOutputs = result.data.bom_explosion?.planned_outputs || [];
+  } catch (error) {
+    console.error('Error loading expected outputs:', error);
+    expectedOutputs = [];
+  }
+
+  let html = `
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <small class="text-muted">Order Number</small>
+        <p class="fw-bold">${productionOrder.order_number}</p>
+      </div>
+      <div class="col-md-4">
+        <small class="text-muted">Status</small>
+        <p><span class="badge bg-info">${productionOrder.status}</span></p>
+      </div>
+      <div class="col-md-4">
+        <small class="text-muted">Started At</small>
+        <p class="fw-bold">${new Date(productionOrder.started_at || Date.now()).toLocaleDateString()}</p>
+      </div>
+    </div>
+
+    <h6 class="mt-4">Record Actual Outputs</h6>
+    <div class="table-responsive mb-3">
+      <table class="table table-sm table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Derivative</th>
+            <th class="text-end">Planned Qty (kg)</th>
+            <th class="text-end">Actual Qty (kg)</th>
+            <th>Actual Grade</th>
+            <th class="text-end">Variance %</th>
+            <th>Variance Type</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  expectedOutputs.forEach((output, idx) => {
+    html += `
+      <tr>
+        <td>
+          <strong>${output.derivative_name}</strong>
+          <br>
+          <small class="text-muted">${output.derivative_code}</small>
+        </td>
+        <td class="text-end">${output.planned_quantity_kg?.toFixed(2) || 0}</td>
+        <td class="text-end">
+          <input 
+            type="number"
+            step="0.01"
+            class="form-control form-control-sm"
+            min="0"
+            placeholder="0.00"
+            data-derivative-id="${output.derivative_id}"
+            data-index="${idx}"
+            onchange="updateVarianceDisplay()"
+          >
+        </td>
+        <td>
+          <select 
+            class="form-control form-control-sm"
+            data-grade-select="${idx}"
+          >
+            <option value="">Select</option>
+            <option value="A">Grade A</option>
+            <option value="B">Grade B</option>
+            <option value="C">Grade C</option>
+            <option value="D">Grade D</option>
+          </select>
+        </td>
+        <td class="text-end">
+          <small class="variance-pct" data-index="${idx}">-</small>
+        </td>
+        <td>
+          <small class="variance-type" data-index="${idx}">-</small>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Variance Reason (if any)</label>
+      <textarea 
+        id="varianceReason"
+        class="form-control" 
+        rows="2"
+        placeholder="Explain any variance from expected output..."
+      ></textarea>
+    </div>
+
+    <div class="mt-3">
+      <button 
+        onclick="submitProductionOutput()"
+        class="btn btn-success"
+      >
+        <i class="fas fa-save"></i> Record Output & Create GL Posting
+      </button>
+      <small class="d-block mt-2 text-muted">
+        Recording output will update inventory and post GL entries automatically.
+      </small>
+    </div>
+  `;
+
+  document.getElementById('productionOutputContainer').innerHTML = html;
+}
+
+function updateVarianceDisplay() {
+  expectedOutputs.forEach((output, idx) => {
+    const plannedQty = output.planned_quantity_kg || 0;
+    const actualInput = document.querySelector(`input[data-index="${idx}"]`);
+    const actualQty = parseFloat(actualInput?.value) || 0;
+    const pctElement = document.querySelector(`.variance-pct[data-index="${idx}"]`);
+    const typeElement = document.querySelector(`.variance-type[data-index="${idx}"]`);
+
+    const variance = ((actualQty - plannedQty) / (plannedQty || 1)) * 100;
+    const varianceType = Math.abs(variance) > 5 ? 'ABNORMAL' : 'NORMAL';
+
+    if (pctElement) pctElement.textContent = variance.toFixed(2) + '%';
+    if (typeElement) {
+      typeElement.textContent = varianceType;
+      typeElement.className = `variance-type badge ${varianceType === 'ABNORMAL' ? 'bg-danger' : 'bg-success'}`;
+    }
+  });
+}
+
+async function submitProductionOutput() {
+  const actualOutputs = expectedOutputs.map((output, idx) => {
+    const actualQty = parseFloat(document.querySelector(`input[data-index="${idx}"]`).value) || 0;
+    const gradeSelect = document.querySelector(`select[data-grade-select="${idx}"]`);
+    const actualGrade = gradeSelect?.value || output.grade || 'B';
+    
+    return {
+      derivative_id: output.derivative_id,
+      actual_quantity_kg: actualQty,
+      expected_quantity_kg: output.planned_quantity_kg,
+      actual_grade: actualGrade,
+      size_code: output.size_code || 'MEDIUM',
+      variance_reason: document.getElementById('varianceReason')?.value || ''
+    };
+  });
+
+  try {
+    const response = await fetch(`/api/production/${currentOrderForOutput.id}/output`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actual_outputs: actualOutputs })
+    });
+
+    if (!response.ok) throw new Error('Failed to record output');
+    const result = await response.json();
+    
+    alert(`Production output recorded!\nFG Inventory created: ${result.data.fg_inventory_created}\nGL entries posted: ${result.data.total_gl_entries_posted}`);
+    window.dispatchEvent(new CustomEvent('outputRecorded', { detail: result.data }));
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  }
+}
+
+// Listen for order selection
+window.addEventListener('outputReady', function(event) {
+  if (event.detail && event.detail.id) {
+    displayProductionOutputRecorder(event.detail);
+  }
+});
+</script>

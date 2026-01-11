@@ -14,10 +14,12 @@ A complete species-based filtering system that enables matching ordered (process
 ### Core Functionality
 
 1. **Order Product Enrichment**
+
    - Existing: Order products display species_id ✅
    - Enhancement: New endpoint to find matching raw materials
 
 2. **Raw Material Filtering**
+
    - New: Get raw materials by species_id
    - New: Get raw materials matching a specific order product's species
 
@@ -33,18 +35,22 @@ A complete species-based filtering system that enables matching ordered (process
 ### New API Endpoints (2)
 
 #### Endpoint 1: Get Matching Raw Materials for Order Product
+
 ```
 GET /api/order/product/matching-raw-materials/:order_product_id
 ```
+
 - **Purpose:** Show only raw materials that match an order product's species
 - **Status:** ✅ Implemented and tested
 - **Handler:** `src/routes/order_products/handlers/get_matching_raw_materials.js`
 - **Controller:** `OrderProducts.GetMatchingRawMaterials()`
 
 #### Endpoint 2: Get Raw Materials by Species
+
 ```
 GET /api/purchase-inventory/by-species/:species_id
 ```
+
 - **Purpose:** Retrieve all raw materials for a specific species
 - **Status:** ✅ Implemented and tested
 - **Handler:** `src/routes/purchase_inventory/handlers/get_by_species.js`
@@ -57,6 +63,7 @@ GET /api/purchase-inventory/by-species/:species_id
 ### 1. Controller Enhancements
 
 **File:** `src/controllers/order_products.js`
+
 - Added: `GetMatchingRawMaterials()` method (130+ lines)
 - Functionality:
   - Fetches order product and extracts species_id
@@ -66,6 +73,7 @@ GET /api/purchase-inventory/by-species/:species_id
   - Returns detailed order and raw material information
 
 **File:** `src/controllers/purchase_inventory.js`
+
 - Added: `GetBySpecies()` method (120+ lines)
 - Functionality:
   - Filters raw materials by species_id
@@ -76,11 +84,13 @@ GET /api/purchase-inventory/by-species/:species_id
 ### 2. Route Setup
 
 **File:** `src/routes/order_products/index.js`
+
 - Added import: `GetMatchingRawMaterialsHandler`
 - Added route handler for `/api/order/product/matching-raw-materials/:order_product_id`
 - Proper error handling and parameter validation
 
 **File:** `src/routes/purchase_inventory/index.js`
+
 - Added import: `GetBySpeciesHandler`
 - Added route handler for `/api/purchase-inventory/by-species/:species_id`
 - Pagination and search support
@@ -88,11 +98,13 @@ GET /api/purchase-inventory/by-species/:species_id
 ### 3. Route Handlers
 
 **File:** `src/routes/order_products/handlers/get_matching_raw_materials.js` (NEW)
+
 - Handles incoming request parameters
 - Calls GetMatchingRawMaterials controller
 - Returns standardized API response
 
 **File:** `src/routes/purchase_inventory/handlers/get_by_species.js` (NEW)
+
 - Handles species-based filtering requests
 - Calls GetBySpecies controller
 - Returns standardized API response
@@ -141,12 +153,14 @@ GET /api/purchase-inventory/by-species/:species_id
 ## Testing Verification
 
 ### Build Status
+
 ```
 ✅ npm run build
 Successfully compiled 691 files with Babel (4048ms)
 ```
 
 ### Files Modified: 6
+
 - ✅ src/controllers/order_products.js
 - ✅ src/controllers/purchase_inventory.js
 - ✅ src/routes/order_products/index.js
@@ -155,6 +169,7 @@ Successfully compiled 691 files with Babel (4048ms)
 - ✅ src/routes/purchase_inventory/handlers/get_by_species.js (NEW)
 
 ### Documentation Created: 3
+
 - ✅ SPECIES_MATCHING_IMPLEMENTATION.md (Detailed technical documentation)
 - ✅ SPECIES_MATCHING_QUICK_REFERENCE.md (Quick reference guide)
 - ✅ SPECIES_ID_MATCHING_COMPLETE.md (This file)
@@ -164,16 +179,19 @@ Successfully compiled 691 files with Babel (4048ms)
 ## Feature Benefits
 
 ### For Operations
+
 - **Accurate Fulfillment:** Ensures orders are fulfilled with correct species
 - **Reduced Errors:** Species mismatch prevents wrong materials being used
 - **Faster Processing:** Quick lookup of available materials for an order
 
 ### For Inventory
+
 - **Better Tracking:** Species-based inventory management
 - **Allocation Support:** Match materials to orders automatically
 - **Reporting:** Filter inventory by species for reports
 
 ### For System
+
 - **Scalable:** Works with any number of species and products
 - **Maintainable:** Uses existing patterns and associations
 - **Extensible:** Easy to add more filtering criteria
@@ -183,11 +201,13 @@ Successfully compiled 691 files with Babel (4048ms)
 ## API Response Examples
 
 ### Request 1: Get Matching Raw Materials
+
 ```bash
 GET /api/order/product/matching-raw-materials/244f5f6c-5a14-4d52-be29-177d0f6af950
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -240,11 +260,13 @@ GET /api/order/product/matching-raw-materials/244f5f6c-5a14-4d52-be29-177d0f6af9
 ```
 
 ### Request 2: Get Raw Materials by Species
+
 ```bash
 GET /api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?start=0&length=10
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -281,7 +303,9 @@ GET /api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?star
 - [x] Ready for deployment
 
 ### No Database Migrations Needed
+
 ✅ Uses existing tables and relationships:
+
 - `order_products`
 - `purchase_inventory`
 - `product_master`
@@ -293,16 +317,20 @@ GET /api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?star
 ## Future Enhancements
 
 ### Phase 2 (Optional)
+
 1. **UI Integration**
+
    - Add "View Matching Raw Materials" button in Sales.ejs Order View
    - Display species name and matching count
    - Show total available quantity for the species
 
 2. **Bulk Operations**
+
    - Allocate multiple raw materials at once
    - Batch assign raw materials to multiple order products
 
 3. **Advanced Filtering**
+
    - Filter by procurement type (Fresh, Frozen, etc.)
    - Filter by size category
    - Filter by supplier
@@ -317,12 +345,14 @@ GET /api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?star
 ## Support & Maintenance
 
 ### If Issues Occur
+
 1. Check API endpoint response format
 2. Verify species_id exists in database
 3. Check order product has valid ProductCategoryMaster
 4. Review controller error logs for detailed messages
 
 ### Key Validation Points
+
 - Order product must exist and be active
 - Order product must have ProductMaster with product_category_master_id
 - ProductCategoryMaster must have valid species_master_id

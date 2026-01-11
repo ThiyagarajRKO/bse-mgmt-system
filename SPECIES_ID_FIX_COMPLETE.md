@@ -5,12 +5,14 @@
 **Status:** ✅ RESOLVED
 
 ## Issue Summary
+
 **Before:** Order View displayed "Species ID: null" for all products  
 **After:** Order View correctly displays "Species ID: 8fe3b25f-9ba2-449e-91d1-11f0cd2253a0"
 
 ## Root Causes (Dual Layer Problem)
 
 ### Issue #1: API Response Not Including species_id
+
 **Problem:** The enrichment loop in the controller was trying to add properties to Sequelize instances, which don't allow dynamic property assignment.
 
 **Solution:** Convert Sequelize instances to plain JavaScript objects before adding the species_id property.
@@ -27,18 +29,21 @@ suppliers.rows[i] = rowData; // Update array
 ```
 
 ### Issue #2: Frontend Looking for Wrong Property
+
 **Problem:** The Sales.ejs Order View was looking for nested associations that don't exist in the API response:
+
 ```javascript
 // BEFORE (wrong)
-product?.ProductMaster?.ProductCategoryMaster?.species_master_id
+product?.ProductMaster?.ProductCategoryMaster?.species_master_id;
 
 // AFTER (correct)
-product?.species_id  // First check for enriched property
+product?.species_id; // First check for enriched property
 ```
 
 ## Files Fixed
 
 ### 1. src/controllers/order_products.js (GetAll Method)
+
 **Change:** Convert Sequelize instances to plain objects before property assignment
 
 ```javascript
@@ -48,8 +53,11 @@ if (suppliers.rows && suppliers.rows.length > 0) {
     let row = suppliers.rows[i];
     // Convert Sequelize instance to plain object
     const rowData = row.toJSON ? row.toJSON() : row;
-    
-    if (rowData.ProductMaster && rowData.ProductMaster.product_category_master_id) {
+
+    if (
+      rowData.ProductMaster &&
+      rowData.ProductMaster.product_category_master_id
+    ) {
       const category = await models.ProductCategoryMaster.findOne({
         attributes: ["species_master_id"],
         where: { id: rowData.ProductMaster.product_category_master_id },
@@ -64,6 +72,7 @@ if (suppliers.rows && suppliers.rows.length > 0) {
 ```
 
 ### 2. views/Sales.ejs (Order View Template)
+
 **Change:** Update species_id extraction to check enriched property first
 
 ```javascript
@@ -73,18 +82,21 @@ if (suppliers.rows && suppliers.rows.length > 0) {
 speciesMasterId =
   product?.species_id ||
   product?.ProductMaster?.ProductCategoryMaster?.species_master_id ||
-  product?.Packing?.pd?.pp?.ProductMaster?.ProductCategoryMaster?.species_master_id ||
+  product?.Packing?.pd?.pp?.ProductMaster?.ProductCategoryMaster
+    ?.species_master_id ||
   null;
 ```
 
 ## Verification Results
 
 ### API Response Test
+
 ```bash
 curl "http://127.0.0.1:4000/api/order/product?order_id=64e39a97-d9f6-455e-a419-97c63e25ae51&start=0&length=1"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -111,8 +123,9 @@ curl "http://127.0.0.1:4000/api/order/product?order_id=64e39a97-d9f6-455e-a419-9
 ✅ **species_id is now correctly included in the response!**
 
 ### Console Output Test
+
 ```
-[Order View] Product: Arabian Cuttlefish – Boiled – 2_3KG – Domestic / Processing, 
+[Order View] Product: Arabian Cuttlefish – Boiled – 2_3KG – Domestic / Processing,
 Species ID: 8fe3b25f-9ba2-449e-91d1-11f0cd2253a0
 ```
 

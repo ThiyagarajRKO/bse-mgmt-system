@@ -27,6 +27,7 @@ Core service handling inventory checks and routing decisions.
 **Exported Functions:**
 
 1. **`checkRawMaterialAvailability(product_master_id)`**
+
    - Checks if raw material exists in inventory for a product
    - Returns:
      ```javascript
@@ -44,6 +45,7 @@ Core service handling inventory checks and routing decisions.
      ```
 
 2. **`determineOrderRoute(product_master_id)`**
+
    - Determines whether order should go to PRODUCTION or PROCUREMENT
    - Returns:
      ```javascript
@@ -65,9 +67,11 @@ Core service handling inventory checks and routing decisions.
 Check the fulfillment route for an ordered product.
 
 **Query Parameters:**
+
 - `order_id` (optional): The order ID for reference
 
 **Response Example:**
+
 ```json
 {
   "success": true,
@@ -115,6 +119,7 @@ if (routeDecision.route === "PROCUREMENT") {
 ### 3. Inventory Tracking
 
 The service integrates with:
+
 - `ProductMaster` - To get product details and derivatives
 - `Packing` - To check available stock in warehouse
 - `PeeledDispatches` - To calculate net available quantity (stock - dispatched)
@@ -125,15 +130,16 @@ The service integrates with:
 ### Inventory Stock Calculation
 
 ```sql
-Total Available = 
-  SUM(packing.quantity) 
-  - SUM(peeled_dispatches.quantity) 
+Total Available =
+  SUM(packing.quantity)
+  - SUM(peeled_dispatches.quantity)
   WHERE is_active = true
 ```
 
 ### Raw Material Identification
 
 Products with derivatives like:
+
 - `RAW_WHOLE_ROUND` - Raw whole/round material
 - `RAW_FILLET` - Raw fillet cuts
 - `RAW_TUBE` - Raw tube forms
@@ -142,6 +148,7 @@ Products with derivatives like:
 - `SEMI_PD` - Semi-peeled and deveined
 
 Are considered raw materials vs. finished products like:
+
 - `COOKED_BOILED`
 - `RTC_BREADED`
 - `RTE_CANNED`
@@ -172,7 +179,7 @@ Modify the raw material derivative search in `order_fulfillment.js`:
 const rawMaterialDerivatives = await models.DerivativeMaster.findAll({
   where: {
     derivative_code: {
-      [Op.iLike]: "RAW%",  // <-- Customize this pattern
+      [Op.iLike]: "RAW%", // <-- Customize this pattern
     },
     is_active: true,
   },
@@ -194,6 +201,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 ## Status & Next Steps
 
 ### Completed ✅
+
 - [x] Order fulfillment service created
 - [x] Inventory availability check implemented
 - [x] Route determination logic implemented
@@ -201,6 +209,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 - [x] Integration placeholder in Orders model
 
 ### To Implement 📋
+
 - [ ] Fulfillment tracking table/model (optional)
 - [ ] Automatic fulfillment path creation on order placement
 - [ ] Production order creation for PRODUCTION route
@@ -213,6 +222,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 ## Testing
 
 ### Test Case 1: Raw Material Available
+
 ```javascript
 // Product: Mud Crab - Cooked Boiled
 // Raw Material: Mud Crab - Raw Whole (500 units in stock)
@@ -220,6 +230,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 ```
 
 ### Test Case 2: Raw Material Not Available
+
 ```javascript
 // Product: King Crab - RTC Breaded
 // Raw Material: King Crab - Raw Whole (0 units in stock)
@@ -227,6 +238,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 ```
 
 ### Test Case 3: Species Mismatch
+
 ```javascript
 // Product: Shrimp - Cooked
 // Raw Material: Not found for this species
@@ -236,6 +248,7 @@ if (totalAvailableQuantity >= MIN_INVENTORY_THRESHOLD) {
 ## Error Handling
 
 The service gracefully handles:
+
 - Missing products
 - Missing derivatives
 - No inventory records

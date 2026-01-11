@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOM Explosion Viewer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background-color: #f8f9fa; }
+    .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+    .page-header h1 { margin: 0; display: flex; align-items: center; gap: 15px; }
+    .page-header p { margin: 10px 0 0 0; opacity: 0.9; }
+    .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; }
+    .bom-table { width: 100%; }
+    .bom-table thead th { background-color: #f8f9fa; color: #333; font-weight: 600; border-top: none; }
+    .bom-row { padding: 15px; border-bottom: 1px solid #ddd; display: flex; gap: 15px; align-items: center; }
+    .bom-row:hover { background-color: #f8f9fa; }
+    .bom-item-name { font-weight: 500; color: #333; }
+    .bom-item-spec { font-size: 0.9em; color: #666; }
+    .badge-custom { padding: 8px 12px; border-radius: 4px; font-size: 0.85em; font-weight: 500; }
+    .loading { text-align: center; padding: 40px; }
+    .spinner { color: #667eea; }
+    .order-selector { margin-bottom: 20px; }
+    .bom-section { margin-bottom: 30px; }
+    .section-title { font-size: 1.1em; font-weight: 600; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .empty-state { text-align: center; padding: 40px; color: #999; }
+    .empty-state i { font-size: 3em; margin-bottom: 15px; opacity: 0.5; }
+    .action-button { margin-top: 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-card { background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-label { font-size: 0.85em; color: #666; margin-bottom: 5px; }
+    .stat-value { font-size: 1.5em; font-weight: 700; color: #667eea; }
+  </style>
+</head>
+<body>
+  <div class="container-lg py-4">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>
+        <i class="fas fa-cube"></i>
+        BOM Explosion Viewer
+      </h1>
+      <p>View complete Bill of Materials breakdown for production orders</p>
+    </div>
+
+    <!-- Order Selection -->
+    <div class="card order-selector">
+      <div class="card-header">
+        <i class="fas fa-list"></i> Select Production Order
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label">Production Order</label>
+            <select id="orderSelect" class="form-control" onchange="loadBOM()">
+              <option value="">-- Select an order to view BOM --</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">&nbsp;</label>
+            <button onclick="loadOrders()" class="btn btn-primary w-100">
+              <i class="fas fa-sync-alt"></i> Refresh Orders
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading" style="display: none;">
+      <div class="spinner">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <p class="mt-3">Loading BOM data...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>Select a production order to view its BOM</p>
+    </div>
+
+    <!-- BOM Content -->
+    <div id="bomContent" style="display: none;">
+      <!-- Order Summary -->
+      <div class="card bom-section">
+        <div class="card-header">
+          <i class="fas fa-info-circle"></i> Order Summary
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Order Number:</strong> <span id="orderNumber">-</span></p>
+              <p><strong>Plant:</strong> <span id="plant">-</span></p>
+              <p><strong>Status:</strong> <span id="orderStatus">-</span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Input Species:</strong> <span id="inputSpecies">-</span></p>
+              <p><strong>Quantity (kg):</strong> <span id="quantity">-</span></p>
+              <p><strong>Grade:</strong> <span id="grade">-</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <!-- Input Materials -->
+      <div class="card bom-section">
+        <div class="card-header">
+          <i class="fas fa-arrow-right"></i> Input Materials Required
+        </div>
+        <div class="card-body">
+          <div id="inputMaterials"></div>
+        </div>
+      </div>
+
+      <!-- Output Products -->
+      <div class="card bom-section">
+        <div class="card-header">
+          <i class="fas fa-cubes"></i> Output Products
+        </div>
+        <div class="card-body">
+          <div id="outputProducts"></div>
+        </div>
+      </div>
+
+      <!-- By-Products -->
+      <div class="card bom-section" id="byProductsCard" style="display: none;">
+        <div class="card-header">
+          <i class="fas fa-boxes"></i> By-Products / Co-Products
+        </div>
+        <div class="card-body">
+          <div id="byProducts"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-button">
+        <button onclick="startProduction()" class="btn btn-success btn-lg me-2">
+          <i class="fas fa-play"></i> Start Production
+        </button>
+        <button onclick="exportBOM()" class="btn btn-secondary btn-lg">
+          <i class="fas fa-download"></i> Export BOM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let selectedOrder = null;
+    let bomData = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadOrders();
+    });
+
+    async function loadOrders() {
+      try {
+        const response = await fetch('/api/production/orders?page=1&limit=100');
+        if (!response.ok) throw new Error('Failed to load orders');
+        const data = await response.json();
+        
+        const orderSelect = document.getElementById('orderSelect');
+        orderSelect.innerHTML = '<option value="">-- Select an order to view BOM --</option>';
+        
+        (data.data || []).forEach(order => {
+          const option = document.createElement('option');
+          option.value = order.id;
+          option.textContent = `${order.order_number} (${order.input_species_id} - ${order.planned_quantity_kg} kg)`;
+          orderSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        alert('Error loading orders: ' + error.message);
+      }
+    }
+
+    async function loadBOM() {
+      const orderId = document.getElementById('orderSelect').value;
+      if (!orderId) {
+        document.getElementById('bomContent').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('loadingState').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('bomContent').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
+
+      try {
+        const response = await fetch(`/api/production/orders/${orderId}`);
+        if (!response.ok) throw new Error('Failed to load BOM');
+        const data = await response.json();
+        
+        selectedOrder = data;
+        bomData = data.bom || {};
+        
+        displayBOM();
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('bomContent').style.display = 'block';
+      } catch (error) {
+        console.error('Error loading BOM:', error);
+        document.getElementById('loadingState').style.display = 'none';
+        alert('Error loading BOM: ' + error.message);
+      }
+    }
+
+    function displayBOM() {
+      // Order Summary
+      document.getElementById('orderNumber').textContent = selectedOrder.order_number || '-';
+      document.getElementById('plant').textContent = selectedOrder.plant_id || '-';
+      document.getElementById('inputSpecies').textContent = selectedOrder.input_species_id || '-';
+      document.getElementById('quantity').textContent = (selectedOrder.planned_quantity_kg || 0).toLocaleString() + ' kg';
+      document.getElementById('grade').textContent = selectedOrder.initial_grade || '-';
+      document.getElementById('orderStatus').textContent = `<span class="badge bg-${getStatusColor(selectedOrder.status)}">${selectedOrder.status}</span>`;
+
+      // Stats Grid
+      const statsGrid = document.getElementById('statsGrid');
+      statsGrid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">Total Input</div>
+          <div class="stat-value">${(selectedOrder.planned_quantity_kg || 0).toLocaleString()}</div>
+          <div class="stat-label">kg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Expected Output</div>
+          <div class="stat-value">${((bomData.outputs || []).reduce((sum, o) => sum + (o.quantity || 0), 0)).toLocaleString()}</div>
+          <div class="stat-label">kg</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Yield %</div>
+          <div class="stat-value">${calculateYield(selectedOrder.planned_quantity_kg, bomData.outputs)}</div>
+          <div class="stat-label">%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Recipes/Steps</div>
+          <div class="stat-value">${(bomData.steps || []).length}</div>
+          <div class="stat-label">steps</div>
+        </div>
+      `;
+
+      // Input Materials
+      const inputMaterials = document.getElementById('inputMaterials');
+      const inputs = bomData.inputs || [];
+      if (inputs.length > 0) {
+        inputMaterials.innerHTML = inputs.map((input, idx) => `
+          <div class="bom-row">
+            <div style="flex: 0 0 30px; text-align: center;">
+              <span class="badge bg-primary">${idx + 1}</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="bom-item-name">${input.material_name || input.product_id || 'Unknown'}</div>
+              <div class="bom-item-spec">${input.product_id || ''} | Grade: ${input.grade || '-'}</div>
+            </div>
+            <div style="flex: 0 0 120px; text-align: right;">
+              <span class="badge-custom bg-light text-dark">${(input.quantity || 0).toLocaleString()} kg</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        inputMaterials.innerHTML = '<p class="text-muted">No input materials specified</p>';
+      }
+
+      // Output Products
+      const outputProducts = document.getElementById('outputProducts');
+      const outputs = (bomData.outputs || []).filter(o => !o.is_byproduct);
+      if (outputs.length > 0) {
+        outputProducts.innerHTML = outputs.map((output, idx) => `
+          <div class="bom-row">
+            <div style="flex: 0 0 30px; text-align: center;">
+              <span class="badge bg-success">${idx + 1}</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="bom-item-name">${output.product_name || output.product_id || 'Unknown'}</div>
+              <div class="bom-item-spec">${output.product_id || ''} | Grade: ${output.grade || '-'}</div>
+            </div>
+            <div style="flex: 0 0 120px; text-align: right;">
+              <span class="badge-custom bg-success text-white">${(output.quantity || 0).toLocaleString()} kg</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        outputProducts.innerHTML = '<p class="text-muted">No output products specified</p>';
+      }
+
+      // By-Products
+      const byProducts = (bomData.outputs || []).filter(o => o.is_byproduct);
+      const byProductsCard = document.getElementById('byProductsCard');
+      if (byProducts.length > 0) {
+        byProductsCard.style.display = 'block';
+        document.getElementById('byProducts').innerHTML = byProducts.map((byproduct, idx) => `
+          <div class="bom-row">
+            <div style="flex: 0 0 30px; text-align: center;">
+              <span class="badge bg-warning">${idx + 1}</span>
+            </div>
+            <div style="flex: 1;">
+              <div class="bom-item-name">${byproduct.product_name || byproduct.product_id || 'Unknown'}</div>
+              <div class="bom-item-spec">${byproduct.product_id || ''} | Grade: ${byproduct.grade || '-'}</div>
+            </div>
+            <div style="flex: 0 0 120px; text-align: right;">
+              <span class="badge-custom bg-warning text-dark">${(byproduct.quantity || 0).toLocaleString()} kg</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        byProductsCard.style.display = 'none';
+      }
+    }
+
+    function calculateYield(input, outputs) {
+      if (!input || !outputs || outputs.length === 0) return '0.0';
+      const totalOutput = outputs.reduce((sum, o) => sum + (o.quantity || 0), 0);
+      const yield_ = (totalOutput / input) * 100;
+      return yield_.toFixed(1);
+    }
+
+    function getStatusColor(status) {
+      const colors = {
+        'PLANNED': 'secondary',
+        'RAW_ISSUED': 'warning',
+        'IN_PROGRESS': 'info',
+        'COMPLETED': 'success',
+        'CLOSED': 'primary'
+      };
+      return colors[status] || 'light';
+    }
+
+    async function startProduction() {
+      if (!selectedOrder) {
+        alert('Please select an order first');
+        return;
+      }
+
+      if (!confirm('Start production for order ' + selectedOrder.order_number + '?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/production/${selectedOrder.id}/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ started_by: 'current_user' })
+        });
+
+        if (!response.ok) throw new Error('Failed to start production');
+        const result = await response.json();
+        
+        alert('Production started successfully!');
+        loadOrders();
+        document.getElementById('orderSelect').value = '';
+        document.getElementById('bomContent').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'block';
+      } catch (error) {
+        console.error('Error starting production:', error);
+        alert('Error starting production: ' + error.message);
+      }
+    }
+
+    function exportBOM() {
+      if (!selectedOrder || !bomData) {
+        alert('No BOM data to export');
+        return;
+      }
+
+      const csvContent = [
+        ['BOM EXPORT - ' + selectedOrder.order_number],
+        [''],
+        ['ORDER DETAILS'],
+        ['Order Number', selectedOrder.order_number],
+        ['Plant', selectedOrder.plant_id],
+        ['Input Species', selectedOrder.input_species_id],
+        ['Quantity (kg)', selectedOrder.planned_quantity_kg],
+        ['Grade', selectedOrder.initial_grade],
+        [''],
+        ['INPUT MATERIALS'],
+        ['#', 'Material', 'Product ID', 'Grade', 'Quantity (kg)'],
+        ...(bomData.inputs || []).map((input, idx) => [
+          idx + 1,
+          input.material_name || '',
+          input.product_id || '',
+          input.grade || '',
+          input.quantity || 0
+        ]),
+        [''],
+        ['OUTPUT PRODUCTS'],
+        ['#', 'Product', 'Product ID', 'Grade', 'Quantity (kg)'],
+        ...((bomData.outputs || []).filter(o => !o.is_byproduct).map((output, idx) => [
+          idx + 1,
+          output.product_name || '',
+          output.product_id || '',
+          output.grade || '',
+          output.quantity || 0
+        ]))
+      ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BOM_${selectedOrder.order_number}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>

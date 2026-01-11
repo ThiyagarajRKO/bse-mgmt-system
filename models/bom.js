@@ -1,6 +1,8 @@
-import { DataTypes } from "sequelize";
+"use strict";
 
-export default (sequelize) => {
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
   const BomMaster = sequelize.define(
     "BomMaster",
     {
@@ -192,11 +194,12 @@ export default (sequelize) => {
   BomMaster.hasMany(BomCost, { foreignKey: "bom_id", as: "costs" });
   BomCost.belongsTo(BomMaster, { foreignKey: "bom_id" });
 
+  // Return models using pattern expected by models/index.js
   return {
-    BomMaster,
-    BomInput,
-    BomOutput,
-    DerivativeGradeSizeRule,
-    BomCost,
+    BomMaster: BomMaster,
+    BomInput: BomInput,
+    BomOutput: BomOutput,
+    DerivativeGradeSizeRule: DerivativeGradeSizeRule,
+    BomCost: BomCost,
   };
 };

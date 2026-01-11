@@ -14,93 +14,137 @@ export const CheckInventory = async (
         });
       }
 
-      let procProductIds = [];
+      // Step 1: Get the product and its species
+      const product = await models.ProductMaster.findOne({
+        where: { id: product_master_id, is_active: true },
+        attributes: ["id", "product_name"],
+      });
 
-      // Step 1: Check if this product has direct procurement products (raw materials)
-      const directProcProducts = await models.ProcurementProducts.findAll({
+      if (!product) {
+        return resolve({
+          statusCode: 200,
+          message: "Product not found",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+          },
+        });
+      }
+
+      // Step 2: Get the species of the product via the species_derivative_size_grade_mapping
+      const productMapping = await models.sequelize.query(
+        `SELECT DISTINCT sm.id as species_id
+         FROM product_master pm
+         LEFT JOIN species_derivative_size_grade_mapping sdsgm ON pm.species_derivative_size_grade_mapping_id = sdsgm.id
+         LEFT JOIN species_master sm ON sdsgm.species_master_id = sm.id
+         WHERE pm.id = :product_id`,
+        {
+          replacements: { product_id: product_master_id },
+          type: models.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if (
+        !productMapping ||
+        productMapping.length === 0 ||
+        !productMapping[0].species_id
+      ) {
+        return resolve({
+          statusCode: 200,
+          message: "Product species not found",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+          },
+        });
+      }
+
+      const speciesId = productMapping[0].species_id;
+
+      // Step 3: Find BOMs for this species
+      const bomsForSpecies = await models.BomMaster.findAll({
         where: {
-          product_master_id,
+          species_id: speciesId,
+          is_active: true,
+        },
+        attributes: ["id"],
+        include: [
+          {
+            model: models.BomInput,
+            as: "inputs",
+            attributes: ["raw_product_id"],
+            required: true,
+          },
+        ],
+      });
+
+      if (!bomsForSpecies || bomsForSpecies.length === 0) {
+        return resolve({
+          statusCode: 200,
+          message: "No BOMs found for this species",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+          },
+        });
+      }
+
+      // Step 4: Extract all raw product IDs from BOMs
+      const rawProductIds = [];
+      bomsForSpecies.forEach((bom) => {
+        if (bom.inputs && bom.inputs.length > 0) {
+          bom.inputs.forEach((input) => {
+            if (
+              input.raw_product_id &&
+              !rawProductIds.includes(input.raw_product_id)
+            ) {
+              rawProductIds.push(input.raw_product_id);
+            }
+          });
+        }
+      });
+
+      if (rawProductIds.length === 0) {
+        return resolve({
+          statusCode: 200,
+          message: "No raw materials defined in BOMs",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+          },
+        });
+      }
+
+      // Step 5: Get procurement products for these raw materials
+      const rawProcProducts = await models.ProcurementProducts.findAll({
+        where: {
+          product_master_id: rawProductIds,
           is_active: true,
         },
         attributes: ["id"],
       });
 
-      if (directProcProducts && directProcProducts.length > 0) {
-        procProductIds = directProcProducts.map((p) => p.id);
-      } else {
-        // Step 2: If no direct procurement products, use BOM to find raw materials
-        // This handles finished products (e.g., IQF) that require raw materials (e.g., Whole Raw)
-
-        // First, get the product's category
-        const product = await models.ProductMaster.findOne({
-          where: { id: product_master_id, is_active: true },
-          attributes: ["id", "product_category_master_id"],
+      if (!rawProcProducts || rawProcProducts.length === 0) {
+        return resolve({
+          statusCode: 200,
+          message: "No procurement products found for raw materials",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+          },
         });
-
-        if (product?.product_category_master_id) {
-          // Get the category to find species
-          const category = await models.ProductCategoryMaster.findOne({
-            where: { id: product.product_category_master_id },
-            attributes: ["species_master_id"],
-          });
-
-          if (category?.species_master_id) {
-            const speciesId = category.species_master_id;
-
-            // Find BOMs for this species
-            const boms = await models.BomMaster.findAll({
-              where: {
-                species_id: speciesId,
-                is_active: true,
-              },
-              attributes: ["id"],
-              include: [
-                {
-                  model: models.BomInput,
-                  as: "inputs",
-                  attributes: ["raw_product_id"],
-                  required: true,
-                },
-              ],
-            });
-
-            if (boms && boms.length > 0) {
-              // Extract all raw product IDs from BOM inputs
-              const rawProductIds = [];
-              boms.forEach((bom) => {
-                bom.inputs.forEach((input) => {
-                  if (
-                    input.raw_product_id &&
-                    !rawProductIds.includes(input.raw_product_id)
-                  ) {
-                    rawProductIds.push(input.raw_product_id);
-                  }
-                });
-              });
-
-              // Get procurement products for these raw materials
-              if (rawProductIds.length > 0) {
-                const rawProcProducts =
-                  await models.ProcurementProducts.findAll({
-                    where: {
-                      product_master_id: rawProductIds,
-                      is_active: true,
-                    },
-                    attributes: ["id"],
-                  });
-
-                if (rawProcProducts && rawProcProducts.length > 0) {
-                  procProductIds = rawProcProducts.map((p) => p.id);
-                }
-              }
-            }
-          }
-        }
       }
 
+      const procProductIds = rawProcProducts.map((p) => p.id);
+
+      // Step 6: Sum inventory for the relevant raw materials only
       let totalPurchaseInventory = 0;
 
-      // Sum up purchase inventory for all relevant procurement products
       if (procProductIds.length > 0) {
         const purchaseInventories = await models.PurchaseInventory.findAll({
           where: {
@@ -112,7 +156,6 @@ export const CheckInventory = async (
 
         totalPurchaseInventory = purchaseInventories.reduce((sum, inv) => {
           const qty = inv?.quantity;
-          // Only add if quantity is a valid number (not null, NaN, or undefined)
           if (qty !== null && qty !== undefined && !isNaN(qty)) {
             return sum + qty;
           }

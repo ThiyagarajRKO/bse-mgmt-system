@@ -11,17 +11,20 @@ This feature enables matching species IDs of ordered (processed) products with a
 ## API Endpoints
 
 ### 1. Get Raw Materials Matching an Ordered Product
+
 **Endpoint:** `GET /api/order/product/matching-raw-materials/:order_product_id`
 
 **Purpose:** Retrieve all raw materials that match the species of a specific ordered product.
 
 **Parameters:**
+
 - `order_product_id` (Path) - UUID of the order product to match
 - `start` (Query, optional) - Pagination offset, default: 0
 - `length` (Query, optional) - Page size, default: 10
 - `search` (Query, optional) - Search filter for product name or category
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -61,6 +64,7 @@ This feature enables matching species IDs of ordered (processed) products with a
 ```
 
 **Error Response (404):**
+
 ```json
 {
   "success": false,
@@ -69,6 +73,7 @@ This feature enables matching species IDs of ordered (processed) products with a
 ```
 
 **Error Response (422):**
+
 ```json
 {
   "success": false,
@@ -79,17 +84,20 @@ This feature enables matching species IDs of ordered (processed) products with a
 ---
 
 ### 2. Get Raw Materials Filtered by Species
+
 **Endpoint:** `GET /api/purchase-inventory/by-species/:species_id`
 
 **Purpose:** Retrieve all raw materials for a specific species.
 
 **Parameters:**
+
 - `species_id` (Path) - UUID of the species to filter by
 - `start` (Query, optional) - Pagination offset, default: 0
 - `length` (Query, optional) - Page size, default: 10
 - `search` (Query, optional) - Search filter for product name or category
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -134,7 +142,7 @@ Order View (Sales.ejs)
     ↓
 GET /api/order/product?order_id=...
     ↓
-OrderProducts.GetAll() 
+OrderProducts.GetAll()
     ↓
 Enrich with species_id from ProductCategoryMaster
     ↓
@@ -185,9 +193,11 @@ PurchaseInventory (Raw Material)
 ### Controller Methods
 
 #### 1. `OrderProducts.GetMatchingRawMaterials()`
+
 **Location:** `src/controllers/order_products.js`
 
 **Function:**
+
 - Takes `order_product_id` as input
 - Fetches the ordered product and its species_id
 - Queries all raw materials (PurchaseInventory)
@@ -196,6 +206,7 @@ PurchaseInventory (Raw Material)
 - Returns order product info and filtered raw materials list
 
 **Key Logic:**
+
 ```javascript
 // 1. Get order product and its species
 const orderProduct = await OrderProducts.findOne(...);
@@ -211,9 +222,11 @@ const matchingRawMaterials = enrichedRows.filter(
 ```
 
 #### 2. `PurchaseInventory.GetBySpecies()`
+
 **Location:** `src/controllers/purchase_inventory.js`
 
 **Function:**
+
 - Takes `species_id` as input parameter
 - Queries all raw materials from PurchaseInventory
 - Enriches with ProductCategoryMaster and SpeciesMaster
@@ -221,6 +234,7 @@ const matchingRawMaterials = enrichedRows.filter(
 - Supports pagination and search
 
 **Key Logic:**
+
 ```javascript
 // Filter to only include materials matching species_id
 const filteredRows = enrichedRows.filter(
@@ -231,10 +245,12 @@ const filteredRows = enrichedRows.filter(
 ### Route Handlers
 
 #### 1. Order Product Matching Raw Materials
+
 **File:** `src/routes/order_products/handlers/get_matching_raw_materials.js`
 **Route:** `GET /api/order/product/matching-raw-materials/:order_product_id`
 
 #### 2. Purchase Inventory by Species
+
 **File:** `src/routes/purchase_inventory/handlers/get_by_species.js`
 **Route:** `GET /api/purchase-inventory/by-species/:species_id`
 
@@ -245,23 +261,27 @@ const filteredRows = enrichedRows.filter(
 ### Modified Files
 
 **1. `src/controllers/order_products.js`**
+
 - Added `GetMatchingRawMaterials()` method (130 lines)
 - Filters raw materials by matching species_id of ordered product
 - Returns detailed information about matching raw materials
 - Includes error handling for invalid order product ID
 
 **2. `src/controllers/purchase_inventory.js`**
+
 - Added `GetBySpecies()` method (120 lines)
 - Filters purchase inventory by species_id
 - Enriches results with ProductCategoryMaster and SpeciesMaster
 - Supports pagination and search filters
 
 **3. `src/routes/order_products/index.js`**
+
 - Added import for `GetMatchingRawMaterialsHandler`
 - Added route: `GET /api/order/product/matching-raw-materials/:order_product_id`
 - Properly handles path parameters and query parameters
 
 **4. `src/routes/purchase_inventory/index.js`**
+
 - Added import for `GetBySpeciesHandler`
 - Added route: `GET /api/purchase-inventory/by-species/:species_id`
 - Handles pagination and search filters
@@ -290,6 +310,7 @@ curl -X GET \
 ```
 
 **Expected Result:**
+
 - Returns order product with its species_id
 - Shows only raw materials with the same species_id
 - Lists total quantity of matching materials
@@ -307,6 +328,7 @@ curl -X GET \
 ```
 
 **Expected Result:**
+
 - Returns only raw materials matching the species
 - Shows count of matching materials
 - Includes full product and species information
@@ -345,14 +367,14 @@ async function getMatchingRawMaterials(orderProductId) {
     );
 
     const result = await response.json();
-    
+
     if (result.success) {
       console.log("Matching raw materials:", result.data.rawMaterials);
-      console.log("Total matching quantity:", result.data.rawMaterials.reduce(
-        (sum, r) => sum + (r.quantity || 0), 
-        0
-      ));
-      
+      console.log(
+        "Total matching quantity:",
+        result.data.rawMaterials.reduce((sum, r) => sum + (r.quantity || 0), 0)
+      );
+
       // Display in a dropdown or table
       displayRawMaterials(result.data.rawMaterials);
     } else {
@@ -367,7 +389,7 @@ async function getMatchingRawMaterials(orderProductId) {
 function displayRawMaterials(materials) {
   const dropdown = document.getElementById("rawMaterialsDropdown");
   dropdown.innerHTML = "";
-  
+
   materials.forEach((material) => {
     const option = document.createElement("option");
     option.value = material.id;
@@ -382,6 +404,7 @@ function displayRawMaterials(materials) {
 ## Performance Considerations
 
 ### Query Performance
+
 - **Pagination:** Implemented with `start` and `length` parameters to limit database load
 - **N+1 Queries:** Mitigated through controlled enrichment pattern
 - **Database Indexes:** Uses existing indexes on:
@@ -390,6 +413,7 @@ function displayRawMaterials(materials) {
   - `purchase_inventory.product_category_master_id`
 
 ### Optimization Opportunities (Future)
+
 1. **Eager Loading:** Once Sequelize associations are fixed, use nested includes
 2. **Caching:** Cache species_id lookups for frequently accessed products
 3. **Batch Operations:** Group multiple enrichment queries per batch request
@@ -401,13 +425,13 @@ function displayRawMaterials(materials) {
 
 ### Status Codes and Messages
 
-| Status | Scenario | Message |
-|--------|----------|---------|
-| 200 | Success | "Found X matching raw materials for this ordered product" |
-| 404 | Order product not found | "Order product not found" |
-| 422 | Species cannot be determined | "Unable to determine species for this ordered product" |
-| 422 | Missing required parameter | "Species ID is required to filter raw materials" |
-| 400 | Other errors | Specific error message from database |
+| Status | Scenario                     | Message                                                   |
+| ------ | ---------------------------- | --------------------------------------------------------- |
+| 200    | Success                      | "Found X matching raw materials for this ordered product" |
+| 404    | Order product not found      | "Order product not found"                                 |
+| 422    | Species cannot be determined | "Unable to determine species for this ordered product"    |
+| 422    | Missing required parameter   | "Species ID is required to filter raw materials"          |
+| 400    | Other errors                 | Specific error message from database                      |
 
 ---
 
@@ -418,6 +442,6 @@ This feature provides a critical workflow enhancement for order fulfillment:
 ✅ **Ordered Product** → Species ID extracted  
 ✅ **Raw Materials** → Filtered by matching species  
 ✅ **Inventory Management** → Only relevant materials shown  
-✅ **Data Integrity** → Ensures correct species matching  
+✅ **Data Integrity** → Ensures correct species matching
 
 The implementation follows existing patterns in the codebase and maintains backward compatibility while adding powerful new capabilities for fulfillment operations.

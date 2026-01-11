@@ -119,6 +119,34 @@ fastify.get("/order-workflow", function (req, res) {
   });
 });
 
+fastify.get("/production-workflow", function (req, res) {
+  res.view("production-workflow.ejs", {
+    user: req?.session,
+    pageTitle: "Production Workflow - BOM Management",
+    breadcrumb: [
+      { label: "Dashboard", url: "/" },
+      { label: "Production", url: "/Production", active: false },
+      {
+        label: "Production Workflow",
+        url: "/production-workflow",
+        active: true,
+      },
+    ],
+  });
+});
+
+fastify.get("/bom-explosion", function (req, res) {
+  res.view("bom-explosion.ejs", {
+    user: req?.session,
+    pageTitle: "BOM Explosion Viewer",
+    breadcrumb: [
+      { label: "Dashboard", url: "/" },
+      { label: "Production", url: "/Production", active: false },
+      { label: "BOM Explosion", url: "/bom-explosion", active: true },
+    ],
+  });
+});
+
 fastify.get("/AuditLogs", function (req, res) {
   res.view("AuditLogs.ejs");
 });

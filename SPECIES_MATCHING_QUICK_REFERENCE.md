@@ -3,9 +3,11 @@
 ## Feature: Match Ordered Products with Raw Materials by Species
 
 ### What It Does
+
 When you view an order and want to allocate raw materials to fulfill it, the system now shows ONLY the raw materials that have the same species as the ordered product.
 
 **Example:**
+
 - Order contains: "Arabian Cuttlefish - Boiled - 2_3KG"
 - Species ID: `8fe3b25f-9ba2-449e-91d1-11f0cd2253a0`
 - Raw materials shown: Only "Arabian Cuttlefish - Whole", "Arabian Cuttlefish - Fresh", etc.
@@ -16,16 +18,19 @@ When you view an order and want to allocate raw materials to fulfill it, the sys
 ## API Endpoints
 
 ### 1. Get Matching Raw Materials for an Order Product
+
 ```
 GET /api/order/product/matching-raw-materials/:order_product_id
 ```
 
 **Example:**
+
 ```bash
 curl "http://127.0.0.1:4000/api/order/product/matching-raw-materials/244f5f6c-5a14-4d52-be29-177d0f6af950"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -62,16 +67,19 @@ curl "http://127.0.0.1:4000/api/order/product/matching-raw-materials/244f5f6c-5a
 ---
 
 ### 2. Get All Raw Materials for a Species
+
 ```
 GET /api/purchase-inventory/by-species/:species_id
 ```
 
 **Example:**
+
 ```bash
 curl "http://127.0.0.1:4000/api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?start=0&length=10"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -96,19 +104,20 @@ curl "http://127.0.0.1:4000/api/purchase-inventory/by-species/8fe3b25f-9ba2-449e
 
 ## Key Endpoints Summary
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/order/product` | GET | Get order products with species_id |
-| `/api/order/product/matching-raw-materials/:id` | GET | Get raw materials matching an order product's species |
-| `/api/purchase-inventory/by-species/:id` | GET | Get raw materials filtered by species |
+| Endpoint                                        | Method | Purpose                                               |
+| ----------------------------------------------- | ------ | ----------------------------------------------------- |
+| `/api/order/product`                            | GET    | Get order products with species_id                    |
+| `/api/order/product/matching-raw-materials/:id` | GET    | Get raw materials matching an order product's species |
+| `/api/purchase-inventory/by-species/:id`        | GET    | Get raw materials filtered by species                 |
 
 ---
 
 ## Controller Methods
 
 ### OrderProducts.GetMatchingRawMaterials()
+
 - **Input:** `order_product_id`
-- **Process:** 
+- **Process:**
   1. Fetch order product
   2. Get its species_id from ProductCategoryMaster
   3. Query all raw materials
@@ -116,8 +125,9 @@ curl "http://127.0.0.1:4000/api/purchase-inventory/by-species/8fe3b25f-9ba2-449e
 - **Output:** Order product + matching raw materials
 
 ### PurchaseInventory.GetBySpecies()
+
 - **Input:** `species_id`
-- **Process:** 
+- **Process:**
   1. Query all raw materials
   2. Enrich with ProductCategoryMaster
   3. Filter by species_id
@@ -176,11 +186,13 @@ async function loadMatchingRawMaterials(orderProductId) {
     { credentials: "include" }
   );
   const data = await response.json();
-  
+
   if (data.success) {
     // Display only matching materials
-    data.data.rawMaterials.forEach(material => {
-      console.log(`${material.ProductMaster.product_name}: ${material.quantity} units`);
+    data.data.rawMaterials.forEach((material) => {
+      console.log(
+        `${material.ProductMaster.product_name}: ${material.quantity} units`
+      );
     });
   }
 }
@@ -201,18 +213,27 @@ const url = `/api/order/product/matching-raw-materials/${productId}?search=fresh
 ## Error Handling
 
 **Order product not found:**
+
 ```json
 { "success": false, "message": "Order product not found" }
 ```
 
 **Species cannot be determined:**
+
 ```json
-{ "success": false, "message": "Unable to determine species for this ordered product" }
+{
+  "success": false,
+  "message": "Unable to determine species for this ordered product"
+}
 ```
 
 **Missing required parameter:**
+
 ```json
-{ "success": false, "message": "Species ID is required to filter raw materials" }
+{
+  "success": false,
+  "message": "Species ID is required to filter raw materials"
+}
 ```
 
 ---

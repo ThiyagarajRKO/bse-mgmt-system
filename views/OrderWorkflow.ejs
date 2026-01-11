@@ -617,13 +617,23 @@
             </h2>
             <p class="workflow-card-subtitle">Create and manage sales orders</p>
           </div>
-          <button
-            class="btn-primary-workflow"
-            data-bs-toggle="modal"
-            data-bs-target="#createOrderModal"
-          >
-            <i class="fas fa-plus"></i> Create Order
-          </button>
+          <div style="display: flex; gap: 10px;">
+            <button
+              class="btn-primary-workflow"
+              data-bs-toggle="modal"
+              data-bs-target="#bomExplosionModal"
+              title="View BOM Details"
+            >
+              <i class="fas fa-cube"></i> BOM Explosion
+            </button>
+            <button
+              class="btn-primary-workflow"
+              data-bs-toggle="modal"
+              data-bs-target="#createOrderModal"
+            >
+              <i class="fas fa-plus"></i> Create Order
+            </button>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -1214,6 +1224,77 @@
       </div>
     </div>
 
+    <!-- BOM Explosion Viewer Modal -->
+    <div class="modal fade" id="bomExplosionModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header" style="background: linear-gradient(90deg, #771daa 0%, #e15554 100%); color: white;">
+            <h5 class="modal-title">
+              <i class="fas fa-cube"></i> BOM Explosion Viewer
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+            <!-- Order Selection -->
+            <div class="form-group-workflow">
+              <label class="form-label-workflow">Select Production Order *</label>
+              <div class="row">
+                <div class="col-md-8">
+                  <select class="form-control-workflow" id="bomOrderSelect" onchange="loadOrderBOM()">
+                    <option value="">-- Select an order to view BOM --</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <button onclick="loadBOMOrders()" class="btn btn-primary w-100">
+                    <i class="fas fa-sync-alt"></i> Refresh Orders
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="bomEmpty" class="text-center" style="padding: 40px; color: #999;">
+              <i class="fas fa-inbox" style="font-size: 3em; margin-bottom: 15px; opacity: 0.5;"></i>
+              <p>Select a production order to view its BOM</p>
+            </div>
+
+            <!-- BOM Content -->
+            <div id="bomContent" style="display: none;">
+              <!-- Order Summary -->
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h6 style="color: #771daa; margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Order Summary</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Order Number:</strong> <span id="bomOrderNumber">-</span></p>
+                    <p><strong>Plant:</strong> <span id="bomPlant">-</span></p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Input Species:</strong> <span id="bomInputSpecies">-</span></p>
+                    <p><strong>Quantity (kg):</strong> <span id="bomQuantity">-</span></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Materials -->
+              <div style="margin-bottom: 20px;">
+                <h6 style="color: #771daa; margin-bottom: 10px;"><i class="fas fa-arrow-right"></i> Input Materials</h6>
+                <div id="bomInputMaterials" style="border: 1px solid #ddd; border-radius: 8px;"></div>
+              </div>
+
+              <!-- Output Products -->
+              <div>
+                <h6 style="color: #771daa; margin-bottom: 10px;"><i class="fas fa-cubes"></i> Output Products</h6>
+                <div id="bomOutputProducts" style="border: 1px solid #ddd; border-radius: 8px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script>
       // Initialize tooltips
@@ -1268,6 +1349,105 @@
           document.getElementById("createOrderModal")
         ).hide();
       }
+
+      // BOM Explosion Viewer Functions
+      async function loadBOMOrders() {
+        try {
+          const response = await fetch('/api/production/orders?page=1&limit=100');
+          if (!response.ok) throw new Error('Failed to load orders');
+          const data = await response.json();
+          
+          const orderSelect = document.getElementById('bomOrderSelect');
+          orderSelect.innerHTML = '<option value="">-- Select an order to view BOM --</option>';
+          
+          (data.data || []).forEach(order => {
+            const option = document.createElement('option');
+            option.value = order.id;
+            option.textContent = `${order.order_number} (${order.input_species_id} - ${order.planned_quantity_kg} kg)`;
+            orderSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error loading orders:', error);
+          toastr.error('Error loading orders: ' + error.message);
+        }
+      }
+
+      async function loadOrderBOM() {
+        const orderId = document.getElementById('bomOrderSelect').value;
+        if (!orderId) {
+          document.getElementById('bomContent').style.display = 'none';
+          document.getElementById('bomEmpty').style.display = 'block';
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/production/orders/${orderId}`);
+          if (!response.ok) throw new Error('Failed to load BOM');
+          const data = await response.json();
+          
+          displayOrderBOM(data);
+          document.getElementById('bomContent').style.display = 'block';
+          document.getElementById('bomEmpty').style.display = 'none';
+        } catch (error) {
+          console.error('Error loading BOM:', error);
+          toastr.error('Error loading BOM: ' + error.message);
+        }
+      }
+
+      function displayOrderBOM(order) {
+        const bomData = order.bom || {};
+
+        // Order Summary
+        document.getElementById('bomOrderNumber').textContent = order.order_number || '-';
+        document.getElementById('bomPlant').textContent = order.plant_id || '-';
+        document.getElementById('bomInputSpecies').textContent = order.input_species_id || '-';
+        document.getElementById('bomQuantity').textContent = (order.planned_quantity_kg || 0).toLocaleString() + ' kg';
+
+        // Input Materials
+        const inputMaterials = document.getElementById('bomInputMaterials');
+        const inputs = bomData.inputs || [];
+        if (inputs.length > 0) {
+          inputMaterials.innerHTML = inputs.map((input, idx) => `
+            <div style="padding: 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${input.material_name || input.product_id || 'Unknown'}</strong>
+                <br>
+                <small style="color: #666;">${input.product_id || ''} | Grade: ${input.grade || '-'}</small>
+              </div>
+              <span style="background-color: #e8f4f8; padding: 6px 12px; border-radius: 4px; font-weight: 500;">
+                ${(input.quantity || 0).toLocaleString()} kg
+              </span>
+            </div>
+          `).join('');
+        } else {
+          inputMaterials.innerHTML = '<p class="text-muted" style="padding: 15px;">No input materials specified</p>';
+        }
+
+        // Output Products
+        const outputProducts = document.getElementById('bomOutputProducts');
+        const outputs = (bomData.outputs || []).filter(o => !o.is_byproduct);
+        if (outputs.length > 0) {
+          outputProducts.innerHTML = outputs.map((output, idx) => `
+            <div style="padding: 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${output.product_name || output.product_id || 'Unknown'}</strong>
+                <br>
+                <small style="color: #666;">${output.product_id || ''} | Grade: ${output.grade || '-'}</small>
+              </div>
+              <span style="background-color: #d4edda; padding: 6px 12px; border-radius: 4px; font-weight: 500; color: #155724;">
+                ${(output.quantity || 0).toLocaleString()} kg
+              </span>
+            </div>
+          `).join('');
+        } else {
+          outputProducts.innerHTML = '<p class="text-muted" style="padding: 15px;">No output products specified</p>';
+        }
+      }
+
+      // Load orders when modal opens
+      $(document).on('show.bs.modal', '#bomExplosionModal', function () {
+        loadBOMOrders();
+      });
     </script>
   </body>
 </html>

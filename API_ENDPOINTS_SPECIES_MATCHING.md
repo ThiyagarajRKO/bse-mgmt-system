@@ -60,16 +60,19 @@ ENDPOINT 2: Purchase Inventory Routes
 **Description:** Retrieve all raw materials that match the species of a specific ordered product.
 
 **URL Structure:**
+
 ```
 GET /api/order/product/matching-raw-materials/{order_product_id}?start=0&length=10&search=query
 ```
 
 **Path Parameters:**
+
 ```
 order_product_id  (UUID) - The ID of the order product to match
 ```
 
 **Query Parameters:**
+
 ```
 start     (number, optional)  - Pagination offset (default: 0)
 length    (number, optional)  - Page size (default: 10)
@@ -77,6 +80,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -115,6 +119,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **Error Responses:**
+
 ```
 404 Not Found:
 { "success": false, "message": "Order product not found" }
@@ -127,6 +132,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **cURL Example:**
+
 ```bash
 curl -X GET \
   "http://127.0.0.1:4000/api/order/product/matching-raw-materials/244f5f6c-5a14-4d52-be29-177d0f6af950?start=0&length=10" \
@@ -135,6 +141,7 @@ curl -X GET \
 ```
 
 **JavaScript Example:**
+
 ```javascript
 async function getMatchingRawMaterials(orderProductId) {
   const response = await fetch(
@@ -142,7 +149,7 @@ async function getMatchingRawMaterials(orderProductId) {
     {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     }
   );
   return await response.json();
@@ -156,16 +163,19 @@ async function getMatchingRawMaterials(orderProductId) {
 **Description:** Retrieve all raw materials (purchase inventory) filtered by species ID.
 
 **URL Structure:**
+
 ```
 GET /api/purchase-inventory/by-species/{species_id}?start=0&length=10&search=query
 ```
 
 **Path Parameters:**
+
 ```
 species_id  (UUID) - The ID of the species to filter by
 ```
 
 **Query Parameters:**
+
 ```
 start     (number, optional)  - Pagination offset (default: 0)
 length    (number, optional)  - Page size (default: 10)
@@ -173,6 +183,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -212,6 +223,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **Error Responses:**
+
 ```
 422 Unprocessable Entity:
 { "success": false, "message": "Species ID is required to filter raw materials" }
@@ -221,6 +233,7 @@ search    (string, optional)  - Filter by product name/category
 ```
 
 **cURL Example:**
+
 ```bash
 curl -X GET \
   "http://127.0.0.1:4000/api/purchase-inventory/by-species/8fe3b25f-9ba2-449e-91d1-11f0cd2253a0?start=0&length=10" \
@@ -229,6 +242,7 @@ curl -X GET \
 ```
 
 **JavaScript Example:**
+
 ```javascript
 async function getRawMaterialsBySpecies(speciesId) {
   const response = await fetch(
@@ -236,7 +250,7 @@ async function getRawMaterialsBySpecies(speciesId) {
     {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     }
   );
   return await response.json();
@@ -249,14 +263,14 @@ async function getRawMaterialsBySpecies(speciesId) {
 
 ### Data Retrieval Comparison
 
-| Aspect | Endpoint 1: Matching | Endpoint 2: By Species | Endpoint 3: All Products |
-|--------|---------------------|----------------------|-------------------------|
-| **URL** | `/order/product/matching-raw-materials/:id` | `/purchase-inventory/by-species/:id` | `/purchase-inventory/` |
-| **Purpose** | Match one order product | Filter by species | Get all raw materials |
-| **Input** | Order product UUID | Species UUID | (none required) |
-| **Filtering** | Automatic by species | By species ID | By procurement product |
-| **Result** | Matching materials only | Filtered materials | All materials |
-| **Use Case** | Fulfill specific order | List species inventory | Inventory overview |
+| Aspect        | Endpoint 1: Matching                        | Endpoint 2: By Species               | Endpoint 3: All Products |
+| ------------- | ------------------------------------------- | ------------------------------------ | ------------------------ |
+| **URL**       | `/order/product/matching-raw-materials/:id` | `/purchase-inventory/by-species/:id` | `/purchase-inventory/`   |
+| **Purpose**   | Match one order product                     | Filter by species                    | Get all raw materials    |
+| **Input**     | Order product UUID                          | Species UUID                         | (none required)          |
+| **Filtering** | Automatic by species                        | By species ID                        | By procurement product   |
+| **Result**    | Matching materials only                     | Filtered materials                   | All materials            |
+| **Use Case**  | Fulfill specific order                      | List species inventory               | Inventory overview       |
 
 ---
 
@@ -311,6 +325,7 @@ Output: Filtered and paginated raw materials
 ## Integration Points
 
 ### With Order View (Sales.ejs)
+
 ```javascript
 // When user clicks "View Matching Raw Materials" button
 const orderProductId = "244f5f6c-...";
@@ -321,20 +336,20 @@ const response = await fetch(
 ```
 
 ### With Inventory Dashboard
+
 ```javascript
 // When user selects a species from filter
 const speciesId = "8fe3b25f-...";
-const response = await fetch(
-  `/api/purchase-inventory/by-species/${speciesId}`
-);
+const response = await fetch(`/api/purchase-inventory/by-species/${speciesId}`);
 // Show all raw materials for that species
 ```
 
 ### With Procurement System
+
 ```javascript
 // When allocating raw materials to orders
 const rawMaterials = response.data.rawMaterials;
-rawMaterials.forEach(material => {
+rawMaterials.forEach((material) => {
   // Update allocation, track usage
   allocateToOrder(material.id, quantity);
 });
@@ -345,12 +360,14 @@ rawMaterials.forEach(material => {
 ## Performance Characteristics
 
 ### Endpoint 1: Matching Raw Materials
+
 - **Database Queries:** 1 (order product) + n (enrichment for each raw material)
 - **Typical Response Time:** 50-100ms (with 10 items)
 - **Scalability:** Good up to 1000+ raw materials
 - **Pagination:** Supported (limits raw materials per request)
 
 ### Endpoint 2: Filter by Species
+
 - **Database Queries:** 1 (bulk query) + n (enrichment for each result)
 - **Typical Response Time:** 30-80ms (with 10 items)
 - **Scalability:** Excellent (pre-filtered by species)
@@ -362,13 +379,13 @@ rawMaterials.forEach(material => {
 
 ### Common Errors and Solutions
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `Order product not found` | Invalid order_product_id | Verify UUID format and existence |
-| `Unable to determine species` | Product missing category | Ensure ProductCategoryMaster exists |
-| `Species ID is required` | Missing :species_id parameter | Include species_id in URL path |
-| `Invalid UUID format` | Malformed UUID | Use valid UUID v4 format |
-| `500 Internal Server Error` | Database connection issue | Check database status |
+| Error                         | Cause                         | Solution                            |
+| ----------------------------- | ----------------------------- | ----------------------------------- |
+| `Order product not found`     | Invalid order_product_id      | Verify UUID format and existence    |
+| `Unable to determine species` | Product missing category      | Ensure ProductCategoryMaster exists |
+| `Species ID is required`      | Missing :species_id parameter | Include species_id in URL path      |
+| `Invalid UUID format`         | Malformed UUID                | Use valid UUID v4 format            |
+| `500 Internal Server Error`   | Database connection issue     | Check database status               |
 
 ---
 
@@ -389,15 +406,16 @@ rawMaterials.forEach(material => {
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2026-01-11 | Initial implementation - Endpoint 1 & 2 |
+| Version | Date       | Changes                                 |
+| ------- | ---------- | --------------------------------------- |
+| 1.0     | 2026-01-11 | Initial implementation - Endpoint 1 & 2 |
 
 ---
 
 ## Contact & Support
 
 For issues or questions about these endpoints:
+
 1. Check SPECIES_MATCHING_IMPLEMENTATION.md for detailed documentation
 2. Review SPECIES_MATCHING_QUICK_REFERENCE.md for quick answers
 3. Check controller logs for detailed error messages
