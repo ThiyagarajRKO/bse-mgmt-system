@@ -7,6 +7,7 @@ export const getAllSchema = {
         start: { type: "number" },
         length: { type: "number" },
         "search[value]": { type: "string" },
+        procurement_product_id: { type: "string" },
       },
     },
   },

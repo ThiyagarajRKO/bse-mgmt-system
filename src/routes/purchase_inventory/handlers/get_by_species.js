@@ -1,0 +1,26 @@
+import { GetBySpecies } from "../../../controllers";
+
+export const GetBySpeciesHandler = (
+  { species_id, start, length, search },
+  session,
+  fastify
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await GetBySpecies({
+        species_id,
+        start: parseInt(start) || 0,
+        length: parseInt(length) || 10,
+        search,
+      });
+
+      resolve({
+        statusCode: 200,
+        message: result.message,
+        data: result,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};

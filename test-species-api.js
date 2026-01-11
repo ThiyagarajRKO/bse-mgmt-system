@@ -5,13 +5,13 @@
  * Tests the fix for issue where species_id was showing as null
  */
 
-const models = require('./models');
+const models = require("./models");
 
 (async () => {
   try {
-    const order_id = '64e39a97-d9f6-455e-a419-97c63e25ae51';
-    
-    console.log('\n🔍 Testing Order Products with Species ID...\n');
+    const order_id = "64e39a97-d9f6-455e-a419-97c63e25ae51";
+
+    console.log("\n🔍 Testing Order Products with Species ID...\n");
     console.log(`Order ID: ${order_id}`);
 
     // Simulate the GetAll controller logic with species_id enrichment
@@ -61,31 +61,37 @@ const models = require('./models');
     }
 
     // Display results
-    console.log('Sample Product (First Row):');
-    console.log('─'.repeat(80));
+    console.log("Sample Product (First Row):");
+    console.log("─".repeat(80));
     if (suppliers.rows.length > 0) {
       const row = suppliers.rows[0];
       console.log(`ID:            ${row.id}`);
       console.log(`Order ID:      ${row.order_id}`);
-      console.log(`Product Name:  ${row.ProductMaster?.product_name || 'N/A'}`);
-      console.log(`Category ID:   ${row.ProductMaster?.product_category_master_id || 'N/A'}`);
-      console.log(`Species ID:    ${row.species_id || 'NULL'}`);
+      console.log(`Product Name:  ${row.ProductMaster?.product_name || "N/A"}`);
+      console.log(
+        `Category ID:   ${
+          row.ProductMaster?.product_category_master_id || "N/A"
+        }`
+      );
+      console.log(`Species ID:    ${row.species_id || "NULL"}`);
       console.log(`Unit:          ${row.unit}`);
       console.log(`Price:         ${row.price}`);
-      console.log('─'.repeat(80));
-      
+      console.log("─".repeat(80));
+
       if (row.species_id) {
-        console.log('\n✅ SUCCESS: species_id is now included in the response!');
+        console.log(
+          "\n✅ SUCCESS: species_id is now included in the response!"
+        );
       } else {
-        console.log('\n❌ FAILED: species_id is still NULL');
+        console.log("\n❌ FAILED: species_id is still NULL");
       }
     } else {
-      console.log('❌ No order products found for this order');
+      console.log("❌ No order products found for this order");
     }
 
     process.exit(0);
   } catch (err) {
-    console.error('\n❌ Error:', err.message);
+    console.error("\n❌ Error:", err.message);
     console.error(err.stack);
     process.exit(1);
   }

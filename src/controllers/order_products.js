@@ -95,8 +95,11 @@ export const GetAll = ({ order_id, start, length, search }) => {
           let row = suppliers.rows[i];
           // Convert Sequelize instance to plain object to allow property assignment
           const rowData = row.toJSON ? row.toJSON() : row;
-          
-          if (rowData.ProductMaster && rowData.ProductMaster.product_category_master_id) {
+
+          if (
+            rowData.ProductMaster &&
+            rowData.ProductMaster.product_category_master_id
+          ) {
             const category = await models.ProductCategoryMaster.findOne({
               attributes: ["species_master_id"],
               where: { id: rowData.ProductMaster.product_category_master_id },
@@ -111,6 +114,221 @@ export const GetAll = ({ order_id, start, length, search }) => {
       }
 
       resolve(suppliers);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Get matching raw materials for an ordered product based on species_id
+ * This helps fulfill orders with raw materials of the same species
+ */
+export const GetMatchingRawMaterials = ({
+  order_product_id,
+  start,
+  length,
+  search,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Validate order_product_id is provided
+      if (!order_product_id) {
+        return reject({
+          statusCode: 422,
+          message: "Order Product ID is required",
+        });
+      }
+
+      // First, get the order product and its species_id
+      const orderProduct = await models.OrderProducts.findOne({
+        where: { id: order_product_id, is_active: true },
+        attributes: [
+          "id",
+          "order_id",
+          "product_master_id",
+          "unit",
+          "price",
+          "total_price",
+        ],
+        include: [
+          {
+            attributes: ["id", "product_name", "product_category_master_id"],
+            model: models.ProductMaster,
+            required: false,
+          },
+        ],
+      });
+
+      if (!orderProduct) {
+        return reject({
+          statusCode: 404,
+          message: "Order product not found",
+        });
+      }
+
+      // Get the species_id from ProductCategoryMaster
+      let species_id = null;
+      if (
+        orderProduct.ProductMaster &&
+        orderProduct.ProductMaster.product_category_master_id
+      ) {
+        const category = await models.ProductCategoryMaster.findOne({
+          attributes: ["species_master_id"],
+          where: { id: orderProduct.ProductMaster.product_category_master_id },
+        });
+        if (category) {
+          species_id = category.species_master_id;
+        }
+      }
+
+      if (!species_id) {
+        return reject({
+          statusCode: 422,
+          message: "Unable to determine species for this ordered product",
+        });
+      }
+
+      console.log(
+        `[GetMatchingRawMaterials] Order Product Species ID: ${species_id}`
+      );
+
+      // Now fetch all raw materials and filter by species
+      let where = {
+        is_active: true,
+      };
+
+      if (search) {
+        where[Op.or] = [
+          { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          {
+            "$ProductMaster.ProductCategoryMaster.product_category$": {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+        ];
+      }
+
+      // Query all raw materials (without pagination) to filter by species first
+      const purchaseInventories =
+        await models.PurchaseInventory.findAndCountAll({
+          attributes: [
+            "id",
+            "procurement_product_id",
+            "procurement_product_type",
+            "quantity",
+          ],
+          include: [
+            {
+              attributes: ["id"],
+              model: models.ProcurementProducts,
+              required: false,
+            },
+            {
+              attributes: [
+                "id",
+                "product_name",
+                "product_category_master_id",
+                "size_master_id",
+              ],
+              as: "ProductMaster",
+              model: models.ProductMaster,
+              required: false,
+            },
+          ],
+          where,
+          // NO PAGINATION HERE - will apply after filtering by species
+          order: [["created_at", "desc"]],
+          raw: false,
+          subQuery: false,
+        });
+
+      // Enrich rows with category and species data
+      const enrichedRows = await Promise.all(
+        purchaseInventories.rows.map(async (row) => {
+          const plainRow = row.get ? row.get({ plain: true }) : row;
+
+          if (plainRow.ProductMaster?.product_category_master_id) {
+            try {
+              const category = await models.ProductCategoryMaster.findOne({
+                where: {
+                  id: plainRow.ProductMaster.product_category_master_id,
+                },
+                attributes: ["id", "product_category", "species_master_id"],
+                include: [
+                  {
+                    model: models.SpeciesMaster,
+                    attributes: ["id", "species_name"],
+                    required: false,
+                  },
+                ],
+              });
+              if (category) {
+                plainRow.ProductMaster.ProductCategoryMaster = category.get
+                  ? category.get({ plain: true })
+                  : category;
+                plainRow.species_id = category.species_master_id;
+                console.log(
+                  `[GetMatchingRawMaterials] Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID: ${plainRow.species_id}`
+                );
+              }
+            } catch (err) {
+              console.warn("Error fetching category:", err.message);
+            }
+          }
+
+          if (plainRow.ProductMaster?.size_master_id) {
+            try {
+              const size = await models.SizeMaster.findOne({
+                where: { id: plainRow.ProductMaster.size_master_id },
+                attributes: ["id", "size"],
+              });
+              if (size) {
+                plainRow.ProductMaster.SizeMaster = size.get
+                  ? size.get({ plain: true })
+                  : size;
+              }
+            } catch (err) {
+              console.warn("Error fetching size:", err.message);
+            }
+          }
+
+          return plainRow;
+        })
+      );
+
+      // Filter to only include raw materials with matching species_id
+      const matchingRawMaterials = enrichedRows.filter(
+        (row) => row.species_id === species_id
+      );
+
+      console.log(
+        `[GetMatchingRawMaterials] Total raw materials: ${enrichedRows.length}, Matching species: ${matchingRawMaterials.length}`
+      );
+
+      // Apply pagination AFTER filtering by species
+      const paginatedResults = matchingRawMaterials.slice(
+        start || 0,
+        (start || 0) + (length || 10)
+      );
+
+      resolve({
+        orderProduct: {
+          id: orderProduct.id,
+          product_name: orderProduct.ProductMaster?.product_name,
+          species_id: species_id,
+        },
+        rawMaterials: paginatedResults,
+        count: matchingRawMaterials.length,
+        totalAvailable: purchaseInventories.count,
+        filteredCount: matchingRawMaterials.length,
+        message: `Found ${
+          matchingRawMaterials.length
+        } matching raw materials for this ordered product (${matchingRawMaterials.reduce(
+          (sum, r) => sum + (r.quantity || 0),
+          0
+        )} units total)`,
+      });
     } catch (err) {
       reject(err);
     }
