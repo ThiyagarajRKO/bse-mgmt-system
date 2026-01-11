@@ -307,12 +307,14 @@ export default async (fastify) => {
             variance_quantity_kg:
               output.actual_quantity_kg - (output.expected_quantity_kg || 0),
             variance_percent:
-              ((output.actual_quantity_kg - (output.expected_quantity_kg || 0)) /
+              ((output.actual_quantity_kg -
+                (output.expected_quantity_kg || 0)) /
                 (output.expected_quantity_kg || 1)) *
               100,
             variance_type:
               Math.abs(
-                ((output.actual_quantity_kg - (output.expected_quantity_kg || 0)) /
+                ((output.actual_quantity_kg -
+                  (output.expected_quantity_kg || 0)) /
                   (output.expected_quantity_kg || 1)) *
                   100
               ) > 5
@@ -493,5 +495,4 @@ export default async (fastify) => {
       }
     },
   });
-
 };

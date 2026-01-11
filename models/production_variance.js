@@ -3,13 +3,13 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Production Variance - Yield loss tracking & GL posting
- * 
+ *
  * Types:
  *   NORMAL_LOSS → Absorbed (no GL entry, just analytics)
  *   ABNORMAL_LOSS → Posted to GL (YIELD_VARIANCE_EXPENSE)
  *   GRADE_VARIANCE → Downgrade absorption (cost of quality)
  *   SIZE_VARIANCE → Size tolerance variance
- * 
+ *
  * Row: PRODUCTION_ORDER | DERIVATIVE | PLANNED_QTY | ACTUAL_QTY | VARIANCE_QTY | VARIANCE_REASON
  */
 module.exports = (sequelize) => {

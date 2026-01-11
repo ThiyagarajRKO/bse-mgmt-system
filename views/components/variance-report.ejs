@@ -1,39 +1,41 @@
 <div class="card mb-4">
   <div class="card-header bg-danger text-white">
-    <h5 class="mb-0">
-      <i class="fas fa-chart-bar"></i> Variance Report
-    </h5>
+    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Variance Report</h5>
   </div>
   <div class="card-body">
     <div id="varianceReportContainer">
       <div class="alert alert-warning">
-        <i class="fas fa-info-circle"></i> Select a completed production order to view variance report
+        <i class="fas fa-info-circle"></i> Select a completed production order
+        to view variance report
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Variance Report Handler
-async function displayVarianceReport(productionOrder) {
-  if (!productionOrder || productionOrder.status !== 'COMPLETED') {
-    let html = '<div class="alert alert-info">';
-    if (productionOrder) {
-      html += `Current status: <strong>${productionOrder.status}</strong><br>Select a COMPLETED production order to view variance`;
-    } else {
-      html += '<i class="fas fa-info-circle"></i> Select a completed production order to view variance report';
+  // Variance Report Handler
+  async function displayVarianceReport(productionOrder) {
+    if (!productionOrder || productionOrder.status !== "COMPLETED") {
+      let html = '<div class="alert alert-info">';
+      if (productionOrder) {
+        html += `Current status: <strong>${productionOrder.status}</strong><br>Select a COMPLETED production order to view variance`;
+      } else {
+        html +=
+          '<i class="fas fa-info-circle"></i> Select a completed production order to view variance report';
+      }
+      html += "</div>";
+      document.getElementById("varianceReportContainer").innerHTML = html;
+      return;
     }
-    html += '</div>';
-    document.getElementById('varianceReportContainer').innerHTML = html;
-    return;
-  }
 
-  try {
-    const response = await fetch(`/api/production/${productionOrder.id}/variance`);
-    if (!response.ok) throw new Error('Failed to fetch variance report');
-    const result = await response.json();
+    try {
+      const response = await fetch(
+        `/api/production/${productionOrder.id}/variance`
+      );
+      if (!response.ok) throw new Error("Failed to fetch variance report");
+      const result = await response.json();
 
-    let html = `
+      let html = `
       <div class="row mb-3">
         <div class="col-md-6">
           <small class="text-muted">Order Number</small>
@@ -41,7 +43,9 @@ async function displayVarianceReport(productionOrder) {
         </div>
         <div class="col-md-6">
           <small class="text-muted">Completed At</small>
-          <p class="fw-bold">${new Date(productionOrder.completed_at || Date.now()).toLocaleDateString()}</p>
+          <p class="fw-bold">${new Date(
+            productionOrder.completed_at || Date.now()
+          ).toLocaleDateString()}</p>
         </div>
       </div>
 
@@ -51,7 +55,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card bg-light">
             <div class="card-body">
               <small class="text-muted">Derivatives</small>
-              <p class="card-title fw-bold h4">${result.data.derivative_count || 0}</p>
+              <p class="card-title fw-bold h4">${
+                result.data.derivative_count || 0
+              }</p>
             </div>
           </div>
         </div>
@@ -59,7 +65,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card bg-success text-white">
             <div class="card-body">
               <small>Normal Variance</small>
-              <p class="card-title fw-bold h4">${result.data.normal_variance_count || 0}</p>
+              <p class="card-title fw-bold h4">${
+                result.data.normal_variance_count || 0
+              }</p>
               <small class="text-white-50">≤ 5%</small>
             </div>
           </div>
@@ -68,7 +76,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card bg-danger text-white">
             <div class="card-body">
               <small>Abnormal Variance</small>
-              <p class="card-title fw-bold h4">${result.data.abnormal_variance_count || 0}</p>
+              <p class="card-title fw-bold h4">${
+                result.data.abnormal_variance_count || 0
+              }</p>
               <small class="text-white-50">> 5%</small>
             </div>
           </div>
@@ -77,7 +87,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card bg-info text-white">
             <div class="card-body">
               <small>GL Postings</small>
-              <p class="card-title fw-bold h4">${result.data.gl_posted_count || 0}</p>
+              <p class="card-title fw-bold h4">${
+                result.data.gl_posted_count || 0
+              }</p>
               <small class="text-white-50">Abnormal only</small>
             </div>
           </div>
@@ -89,7 +101,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card border-primary">
             <div class="card-body">
               <small class="text-muted">Total Planned</small>
-              <p class="fw-bold h5">${result.data.summary?.total_planned_kg?.toFixed(2) || 0} kg</p>
+              <p class="fw-bold h5">${
+                result.data.summary?.total_planned_kg?.toFixed(2) || 0
+              } kg</p>
             </div>
           </div>
         </div>
@@ -97,7 +111,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card border-success">
             <div class="card-body">
               <small class="text-muted">Total Actual</small>
-              <p class="fw-bold h5 text-success">${result.data.summary?.total_actual_kg?.toFixed(2) || 0} kg</p>
+              <p class="fw-bold h5 text-success">${
+                result.data.summary?.total_actual_kg?.toFixed(2) || 0
+              } kg</p>
             </div>
           </div>
         </div>
@@ -105,7 +121,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card border-warning">
             <div class="card-body">
               <small class="text-muted">Total Variance</small>
-              <p class="fw-bold h5 text-warning">${result.data.summary?.total_variance_kg?.toFixed(2) || 0} kg</p>
+              <p class="fw-bold h5 text-warning">${
+                result.data.summary?.total_variance_kg?.toFixed(2) || 0
+              } kg</p>
             </div>
           </div>
         </div>
@@ -113,7 +131,9 @@ async function displayVarianceReport(productionOrder) {
           <div class="card border-info">
             <div class="card-body">
               <small class="text-muted">Avg Variance %</small>
-              <p class="fw-bold h5 text-info">${result.data.summary?.overall_variance_percent?.toFixed(2) || 0}%</p>
+              <p class="fw-bold h5 text-info">${
+                result.data.summary?.overall_variance_percent?.toFixed(2) || 0
+              }%</p>
             </div>
           </div>
         </div>
@@ -137,29 +157,47 @@ async function displayVarianceReport(productionOrder) {
           <tbody>
     `;
 
-    if (result.data.variances && result.data.variances.length > 0) {
-      result.data.variances.forEach(variance => {
-        const typeClass = variance.variance_type === 'ABNORMAL' ? 'badge bg-danger' : 'badge bg-success';
-        const glPosted = result.data.gl_postings?.some(gl => gl.reference_id == variance.id) ? '<i class="fas fa-check text-success"></i>' : '-';
-        
-        html += `
+      if (result.data.variances && result.data.variances.length > 0) {
+        result.data.variances.forEach((variance) => {
+          const typeClass =
+            variance.variance_type === "ABNORMAL"
+              ? "badge bg-danger"
+              : "badge bg-success";
+          const glPosted = result.data.gl_postings?.some(
+            (gl) => gl.reference_id == variance.id
+          )
+            ? '<i class="fas fa-check text-success"></i>'
+            : "-";
+
+          html += `
           <tr>
-            <td><strong>${variance.derivative_name || 'Unknown'}</strong></td>
-            <td class="text-end">${variance.planned_quantity_kg?.toFixed(2) || 0}</td>
-            <td class="text-end">${variance.actual_quantity_kg?.toFixed(2) || 0}</td>
-            <td class="text-end">${variance.variance_quantity_kg?.toFixed(2) || 0}</td>
-            <td class="text-end"><strong>${variance.variance_percent?.toFixed(2) || 0}%</strong></td>
+            <td><strong>${variance.derivative_name || "Unknown"}</strong></td>
+            <td class="text-end">${
+              variance.planned_quantity_kg?.toFixed(2) || 0
+            }</td>
+            <td class="text-end">${
+              variance.actual_quantity_kg?.toFixed(2) || 0
+            }</td>
+            <td class="text-end">${
+              variance.variance_quantity_kg?.toFixed(2) || 0
+            }</td>
+            <td class="text-end"><strong>${
+              variance.variance_percent?.toFixed(2) || 0
+            }%</strong></td>
             <td><span class="${typeClass}">${variance.variance_type}</span></td>
-            <td><small>${variance.variance_reason || 'Normal processing'}</small></td>
+            <td><small>${
+              variance.variance_reason || "Normal processing"
+            }</small></td>
             <td class="text-center">${glPosted}</td>
           </tr>
         `;
-      });
-    } else {
-      html += '<tr><td colspan="8" class="text-center text-muted">No variances recorded</td></tr>';
-    }
+        });
+      } else {
+        html +=
+          '<tr><td colspan="8" class="text-center text-muted">No variances recorded</td></tr>';
+      }
 
-    html += `
+      html += `
           </tbody>
         </table>
       </div>
@@ -172,21 +210,21 @@ async function displayVarianceReport(productionOrder) {
       </div>
     `;
 
-    document.getElementById('varianceReportContainer').innerHTML = html;
-  } catch (error) {
-    console.error('Error:', error);
-    document.getElementById('varianceReportContainer').innerHTML = `
+      document.getElementById("varianceReportContainer").innerHTML = html;
+    } catch (error) {
+      console.error("Error:", error);
+      document.getElementById("varianceReportContainer").innerHTML = `
       <div class="alert alert-danger">
         <i class="fas fa-exclamation-circle"></i> Error loading variance report: ${error.message}
       </div>
     `;
+    }
   }
-}
 
-// Listen for order completion
-window.addEventListener('orderCompleted', function(event) {
-  if (event.detail && event.detail.id) {
-    displayVarianceReport(event.detail);
-  }
-});
+  // Listen for order completion
+  window.addEventListener("orderCompleted", function (event) {
+    if (event.detail && event.detail.id) {
+      displayVarianceReport(event.detail);
+    }
+  });
 </script>

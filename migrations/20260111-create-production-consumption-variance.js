@@ -2,11 +2,11 @@
 
 /**
  * Migration: Create Production Consumption & Variance Tables
- * 
+ *
  * Creates:
  *   1. production_consumption - Raw material detail tracking
  *   2. production_variance - Yield loss & variance posting
- * 
+ *
  * Date: 11 January 2026
  */
 
@@ -81,7 +81,9 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("production_consumption", ["production_order_id"]);
+    await queryInterface.addIndex("production_consumption", [
+      "production_order_id",
+    ]);
     await queryInterface.addIndex("production_consumption", ["lot_id"]);
     await queryInterface.addIndex("production_consumption", ["cost_layer_id"]);
 
@@ -157,7 +159,9 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("production_variance", ["production_order_id"]);
+    await queryInterface.addIndex("production_variance", [
+      "production_order_id",
+    ]);
     await queryInterface.addIndex("production_variance", ["variance_type"]);
     await queryInterface.addIndex("production_variance", ["gl_posted"]);
   },

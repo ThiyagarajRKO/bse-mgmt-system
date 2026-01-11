@@ -3,11 +3,11 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Inventory Transaction Log - Immutable audit trail
- * 
+ *
  * Every movement creates one transaction.
  * Never deleted (compliance).
  * Drives reconciliation & analytics.
- * 
+ *
  * Types: PRODUCTION_CONSUME, PRODUCTION_RECEIPT, DISPATCH, WASTE, ADJUSTMENT
  */
 module.exports = (sequelize) => {

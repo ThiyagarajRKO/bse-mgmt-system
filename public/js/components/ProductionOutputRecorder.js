@@ -3,7 +3,7 @@
  * Records actual output with grades, sizes, and quantities
  */
 
-Vue.component('production-output-recorder', {
+Vue.component("production-output-recorder", {
   template: `
     <div class="card mb-4">
       <div class="card-header bg-success text-white">
@@ -161,7 +161,8 @@ Vue.component('production-output-recorder', {
     totalWaste() {
       return Math.max(
         0,
-        (this.productionOrder?.planned_quantity_kg || 0) - this.totalActualOutput
+        (this.productionOrder?.planned_quantity_kg || 0) -
+          this.totalActualOutput
       );
     },
     wastePercent() {
@@ -178,12 +179,12 @@ Vue.component('production-output-recorder', {
   methods: {
     getVarianceBadge(variancePercent) {
       if (variancePercent === undefined || variancePercent === null) {
-        return 'badge bg-light text-dark';
+        return "badge bg-light text-dark";
       }
-      if (variancePercent <= -5) return 'badge bg-danger';
-      if (variancePercent < 0) return 'badge bg-warning';
-      if (variancePercent === 0) return 'badge bg-success';
-      return 'badge bg-info';
+      if (variancePercent <= -5) return "badge bg-danger";
+      if (variancePercent < 0) return "badge bg-warning";
+      if (variancePercent === 0) return "badge bg-success";
+      return "badge bg-info";
     },
     calculateVariance(output) {
       if (output.expected_quantity_kg && output.actual_quantity_kg !== null) {
@@ -204,22 +205,22 @@ Vue.component('production-output-recorder', {
         );
         this.actualOutputs = response.data.data.map((output) => ({
           derivative_id: output.derivative_id,
-          derivative_code: output.derivative_code || 'Unknown',
-          derivative_name: output.derivative_name || 'Unknown',
+          derivative_code: output.derivative_code || "Unknown",
+          derivative_name: output.derivative_name || "Unknown",
           expected_quantity_kg: output.expected_quantity_kg || 0,
           actual_quantity_kg: 0,
-          actual_grade: 'B',
-          size_code: 'MEDIUM',
-          variance_reason: '',
+          actual_grade: "B",
+          size_code: "MEDIUM",
+          variance_reason: "",
           variance_percent: 0,
         }));
       } catch (error) {
-        console.error('Error loading outputs:', error);
-        alert('Error loading production outputs');
+        console.error("Error loading outputs:", error);
+        alert("Error loading production outputs");
       }
     },
     async submitOutput() {
-      if (!confirm('Submit production output?')) return;
+      if (!confirm("Submit production output?")) return;
 
       this.isSubmitting = true;
       try {
@@ -232,10 +233,10 @@ Vue.component('production-output-recorder', {
         alert(
           `Output recorded successfully! Created ${result.data.fg_inventory_created} FG items`
         );
-        this.$emit('output-recorded', result.data);
+        this.$emit("output-recorded", result.data);
         this.resetForm();
       } catch (error) {
-        alert('Error: ' + error.message);
+        alert("Error: " + error.message);
       } finally {
         this.isSubmitting = false;
       }
@@ -243,22 +244,22 @@ Vue.component('production-output-recorder', {
     resetForm() {
       this.actualOutputs.forEach((output) => {
         output.actual_quantity_kg = 0;
-        output.actual_grade = 'B';
-        output.size_code = 'MEDIUM';
-        output.variance_reason = '';
+        output.actual_grade = "B";
+        output.size_code = "MEDIUM";
+        output.variance_reason = "";
         output.variance_percent = 0;
       });
     },
   },
   watch: {
     productionOrder() {
-      if (this.productionOrder?.status === 'RAW_ISSUED') {
+      if (this.productionOrder?.status === "RAW_ISSUED") {
         this.loadOutputs();
       }
     },
   },
   mounted() {
-    if (this.productionOrder?.status === 'RAW_ISSUED') {
+    if (this.productionOrder?.status === "RAW_ISSUED") {
       this.loadOutputs();
     }
   },

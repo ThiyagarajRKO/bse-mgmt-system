@@ -5,19 +5,22 @@
     </h5>
   </div>
   <div class="card-body">
-    <form id="productionOrderForm" onsubmit="handleProductionOrderSubmit(event)">
+    <form
+      id="productionOrderForm"
+      onsubmit="handleProductionOrderSubmit(event)"
+    >
       <div class="row">
         <!-- Order Number -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Order Number</label>
-          <input 
+          <input
             id="order_number"
             name="order_number"
-            type="text" 
-            class="form-control" 
+            type="text"
+            class="form-control"
             placeholder="e.g., PO-20260111-001"
             required
-          >
+          />
         </div>
 
         <!-- Plant -->
@@ -33,10 +36,10 @@
         <!-- Species Selection -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Species</label>
-          <select 
+          <select
             id="input_species_id"
             name="input_species_id"
-            class="form-control" 
+            class="form-control"
             onchange="handleSpeciesChange()"
             required
           >
@@ -59,28 +62,28 @@
         <!-- Planned Quantity -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Planned Quantity (kg)</label>
-          <input 
+          <input
             id="planned_quantity_kg"
             name="planned_quantity_kg"
-            type="number" 
+            type="number"
             step="0.01"
             class="form-control"
             min="0"
             value="1000"
             required
-          >
+          />
         </div>
 
         <!-- Start Date -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Start Date</label>
-          <input 
+          <input
             id="planned_start_date"
             name="planned_start_date"
-            type="datetime-local" 
+            type="datetime-local"
             class="form-control"
             required
-          >
+          />
         </div>
 
         <!-- Initial Grade -->
@@ -108,10 +111,10 @@
         <!-- Remarks -->
         <div class="col-md-12 mb-3">
           <label class="form-label">Remarks</label>
-          <textarea 
+          <textarea
             id="remarks"
             name="remarks"
-            class="form-control" 
+            class="form-control"
             rows="2"
             placeholder="Any special notes..."
           ></textarea>
@@ -119,115 +122,117 @@
       </div>
 
       <!-- BOM Preview -->
-      <div id="bomPreview" class="alert alert-info mt-3" style="display:none;">
+      <div id="bomPreview" class="alert alert-info mt-3" style="display: none">
         <strong>BOM for <span id="speciesName"></span>:</strong>
-        <p class="mb-0"><span id="bomCount">Loading...</span> outputs configured</p>
+        <p class="mb-0">
+          <span id="bomCount">Loading...</span> outputs configured
+        </p>
       </div>
 
       <!-- Buttons -->
       <div class="mt-4">
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          id="submitBtn"
-        >
+        <button type="submit" class="btn btn-primary" id="submitBtn">
           <i class="fas fa-play-circle"></i>
           Create Production Order
         </button>
-        <button 
-          type="reset" 
-          class="btn btn-secondary ms-2"
-        >
-          Clear
-        </button>
+        <button type="reset" class="btn btn-secondary ms-2">Clear</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-// Production Order Form Handler
-let speciesList = [];
-let selectedSpecies = null;
+  // Production Order Form Handler
+  let speciesList = [];
+  let selectedSpecies = null;
 
-// Load species on page load
-async function loadSpeciesData() {
-  try {
-    const response = await fetch('/api/species');
-    if (!response.ok) throw new Error('Failed to load species');
-    const result = await response.json();
-    speciesList = result.data || [];
-    
-    // Populate species dropdown
-    const select = document.getElementById('input_species_id');
-    select.innerHTML = '<option value="">Select Species</option>';
-    speciesList.forEach(species => {
-      const option = document.createElement('option');
-      option.value = species.id;
-      option.textContent = `${species.species_name} (${species.species_code})`;
-      select.appendChild(option);
-    });
-  } catch (error) {
-    console.error('Error loading species:', error);
-    alert('Error loading species data: ' + error.message);
+  // Load species on page load
+  async function loadSpeciesData() {
+    try {
+      const response = await fetch("/api/species");
+      if (!response.ok) throw new Error("Failed to load species");
+      const result = await response.json();
+      speciesList = result.data || [];
+
+      // Populate species dropdown
+      const select = document.getElementById("input_species_id");
+      select.innerHTML = '<option value="">Select Species</option>';
+      speciesList.forEach((species) => {
+        const option = document.createElement("option");
+        option.value = species.id;
+        option.textContent = `${species.species_name} (${species.species_code})`;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error loading species:", error);
+      alert("Error loading species data: " + error.message);
+    }
   }
-}
 
-// Handle species change
-function handleSpeciesChange() {
-  const speciesId = document.getElementById('input_species_id').value;
-  selectedSpecies = speciesList.find(s => s.id == speciesId);
-  
-  if (selectedSpecies) {
-    document.getElementById('bomPreview').style.display = 'block';
-    document.getElementById('speciesName').textContent = selectedSpecies.species_name;
-    document.getElementById('bomCount').textContent = selectedSpecies.bom_count || '0';
-  } else {
-    document.getElementById('bomPreview').style.display = 'none';
+  // Handle species change
+  function handleSpeciesChange() {
+    const speciesId = document.getElementById("input_species_id").value;
+    selectedSpecies = speciesList.find((s) => s.id == speciesId);
+
+    if (selectedSpecies) {
+      document.getElementById("bomPreview").style.display = "block";
+      document.getElementById("speciesName").textContent =
+        selectedSpecies.species_name;
+      document.getElementById("bomCount").textContent =
+        selectedSpecies.bom_count || "0";
+    } else {
+      document.getElementById("bomPreview").style.display = "none";
+    }
   }
-}
 
-// Handle form submission
-async function handleProductionOrderSubmit(event) {
-  event.preventDefault();
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+  // Handle form submission
+  async function handleProductionOrderSubmit(event) {
+    event.preventDefault();
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
 
-  try {
-    const formData = new FormData(document.getElementById('productionOrderForm'));
-    const data = Object.fromEntries(formData);
+    try {
+      const formData = new FormData(
+        document.getElementById("productionOrderForm")
+      );
+      const data = Object.fromEntries(formData);
 
-    const response = await fetch('/api/production/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
+      const response = await fetch("/api/production/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    if (!response.ok) throw new Error('Failed to create production order');
-    const result = await response.json();
-    
-    alert(`Production Order created! ID: ${result.data.id}`);
-    document.getElementById('productionOrderForm').reset();
-    
-    // Emit custom event for parent component
-    window.dispatchEvent(new CustomEvent('orderCreated', { detail: result.data }));
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error: ' + error.message);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fas fa-play-circle"></i> Create Production Order';
+      if (!response.ok) throw new Error("Failed to create production order");
+      const result = await response.json();
+
+      alert(`Production Order created! ID: ${result.data.id}`);
+      document.getElementById("productionOrderForm").reset();
+
+      // Emit custom event for parent component
+      window.dispatchEvent(
+        new CustomEvent("orderCreated", { detail: result.data })
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error: " + error.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML =
+        '<i class="fas fa-play-circle"></i> Create Production Order';
+    }
   }
-}
 
-// Set default start date
-document.addEventListener('DOMContentLoaded', function() {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  document.getElementById('planned_start_date').value = now.toISOString().slice(0, 16);
-  
-  // Load species data
-  loadSpeciesData();
-});
+  // Set default start date
+  document.addEventListener("DOMContentLoaded", function () {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById("planned_start_date").value = now
+      .toISOString()
+      .slice(0, 16);
+
+    // Load species data
+    loadSpeciesData();
+  });
 </script>

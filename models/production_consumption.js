@@ -3,10 +3,10 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Production Consumption - Raw material usage detail
- * 
+ *
  * ONE record per (production_order, raw product, lot)
  * Tracks what was consumed, from where, cost absorption
- * 
+ *
  * Row: PRODUCTION_ORDER | RAW_PRODUCT_ID | LOT_ID | QTY | COST
  */
 module.exports = (sequelize) => {

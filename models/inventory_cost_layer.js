@@ -3,10 +3,10 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Inventory Cost Layer - FIFO/LIFO absorption
- * 
+ *
  * ONE record per (lot, received date)
  * Tracks cost flow through warehouse → production → FG → COGS
- * 
+ *
  * FIFO: Consume oldest cost layers first
  * LIFO: Consume newest cost layers first
  */

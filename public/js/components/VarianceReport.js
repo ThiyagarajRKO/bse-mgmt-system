@@ -3,7 +3,7 @@
  * Displays yield variance analysis (normal vs abnormal)
  */
 
-Vue.component('variance-report', {
+Vue.component("variance-report", {
   template: `
     <div class="card mb-4">
       <div class="card-header bg-info text-white">
@@ -253,23 +253,23 @@ Vue.component('variance-report', {
   methods: {
     getVarianceClass(variancePercent) {
       if (variancePercent === undefined || variancePercent === null) {
-        return 'text-muted';
+        return "text-muted";
       }
       const abs = Math.abs(variancePercent);
-      if (abs <= 5) return 'text-success';
-      if (abs <= 10) return 'text-warning';
-      return 'text-danger';
+      if (abs <= 5) return "text-success";
+      if (abs <= 10) return "text-warning";
+      return "text-danger";
     },
     getVarianceBadge(varianceType) {
       switch (varianceType) {
-        case 'NORMAL':
-          return 'badge bg-success';
-        case 'ABNORMAL':
-          return 'badge bg-danger';
-        case 'GRADE_VARIANCE':
-          return 'badge bg-warning';
+        case "NORMAL":
+          return "badge bg-success";
+        case "ABNORMAL":
+          return "badge bg-danger";
+        case "GRADE_VARIANCE":
+          return "badge bg-warning";
         default:
-          return 'badge bg-light text-dark';
+          return "badge bg-light text-dark";
       }
     },
     async loadVarianceReport() {
@@ -282,8 +282,8 @@ Vue.component('variance-report', {
         );
         this.varianceData = response.data;
       } catch (error) {
-        console.error('Error loading variance report:', error);
-        alert('Error loading variance report');
+        console.error("Error loading variance report:", error);
+        alert("Error loading variance report");
       } finally {
         this.isLoading = false;
       }
@@ -295,9 +295,9 @@ Vue.component('variance-report', {
       if (!this.varianceData) return;
 
       const csv = this.generateCSV();
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const blob = new Blob([csv], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `variance-report-${this.productionOrder.order_number}.csv`;
       a.click();
@@ -305,26 +305,39 @@ Vue.component('variance-report', {
     },
     generateCSV() {
       const data = this.varianceData;
-      let csv = 'Derivative,Planned (kg),Actual (kg),Variance (kg),Variance %,Type,Reason\n';
-      
+      let csv =
+        "Derivative,Planned (kg),Actual (kg),Variance (kg),Variance %,Type,Reason\n";
+
       data.variances.forEach((v) => {
-        csv += `"${v.derivative_name}",${v.planned_quantity_kg.toFixed(2)},${v.actual_quantity_kg.toFixed(2)},${v.variance_quantity_kg.toFixed(2)},${v.variance_percent.toFixed(2)},${v.variance_type},"${v.variance_reason || ''}"\n`;
+        csv += `"${v.derivative_name}",${v.planned_quantity_kg.toFixed(
+          2
+        )},${v.actual_quantity_kg.toFixed(2)},${v.variance_quantity_kg.toFixed(
+          2
+        )},${v.variance_percent.toFixed(2)},${v.variance_type},"${
+          v.variance_reason || ""
+        }"\n`;
       });
 
-      csv += `\nSummary\nTotal Planned,${data.total_planned_kg.toFixed(2)}\nTotal Actual,${data.total_actual_kg.toFixed(2)}\nTotal Variance,${data.total_variance_kg.toFixed(2)}\nVariance %,${data.overall_variance_percent.toFixed(2)}\n`;
+      csv += `\nSummary\nTotal Planned,${data.total_planned_kg.toFixed(
+        2
+      )}\nTotal Actual,${data.total_actual_kg.toFixed(
+        2
+      )}\nTotal Variance,${data.total_variance_kg.toFixed(
+        2
+      )}\nVariance %,${data.overall_variance_percent.toFixed(2)}\n`;
 
       return csv;
     },
   },
   watch: {
     productionOrder() {
-      if (this.productionOrder?.status === 'COMPLETED') {
+      if (this.productionOrder?.status === "COMPLETED") {
         this.loadVarianceReport();
       }
     },
   },
   mounted() {
-    if (this.productionOrder?.status === 'COMPLETED') {
+    if (this.productionOrder?.status === "COMPLETED") {
       this.loadVarianceReport();
     }
   },

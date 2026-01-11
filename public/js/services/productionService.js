@@ -1,18 +1,18 @@
 /**
  * BOM Production Management Service
  * Handles all API calls for BOM-driven production workflow
- * 
+ *
  * Integration: Calls Fastify backend endpoints
  */
 
 class ProductionService {
-  constructor(baseURL = '/api/production') {
+  constructor(baseURL = "/api/production") {
     this.baseURL = baseURL;
     this.apiClient = axios.create({
       baseURL: this.baseURL,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
   }
@@ -22,10 +22,10 @@ class ProductionService {
    */
   async createProductionOrder(data) {
     try {
-      const response = await this.apiClient.post('/orders', data);
+      const response = await this.apiClient.post("/orders", data);
       return response.data;
     } catch (error) {
-      console.error('Error creating production order:', error);
+      console.error("Error creating production order:", error);
       throw error;
     }
   }
@@ -38,7 +38,7 @@ class ProductionService {
       const response = await this.apiClient.get(`/orders/${orderId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching production order:', error);
+      console.error("Error fetching production order:", error);
       throw error;
     }
   }
@@ -48,7 +48,7 @@ class ProductionService {
    */
   async getAllProductionOrders(page = 1, limit = 20, filters = {}) {
     try {
-      const response = await this.apiClient.get('/orders', {
+      const response = await this.apiClient.get("/orders", {
         params: {
           page,
           limit,
@@ -57,7 +57,7 @@ class ProductionService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching production orders:', error);
+      console.error("Error fetching production orders:", error);
       throw error;
     }
   }
@@ -70,7 +70,7 @@ class ProductionService {
       const response = await this.apiClient.post(`/${orderId}/start`, data);
       return response.data;
     } catch (error) {
-      console.error('Error starting production:', error);
+      console.error("Error starting production:", error);
       throw error;
     }
   }
@@ -83,7 +83,7 @@ class ProductionService {
       const response = await this.apiClient.post(`/${orderId}/consume`);
       return response.data;
     } catch (error) {
-      console.error('Error consuming raw material:', error);
+      console.error("Error consuming raw material:", error);
       throw error;
     }
   }
@@ -96,7 +96,7 @@ class ProductionService {
       const response = await this.apiClient.post(`/${orderId}/output`, data);
       return response.data;
     } catch (error) {
-      console.error('Error receiving production output:', error);
+      console.error("Error receiving production output:", error);
       throw error;
     }
   }
@@ -109,7 +109,7 @@ class ProductionService {
       const response = await this.apiClient.post(`/${orderId}/close`);
       return response.data;
     } catch (error) {
-      console.error('Error closing production order:', error);
+      console.error("Error closing production order:", error);
       throw error;
     }
   }
@@ -119,12 +119,12 @@ class ProductionService {
    */
   async getInventoryStock(filters = {}) {
     try {
-      const response = await axios.get('/api/inventory/stock', {
+      const response = await axios.get("/api/inventory/stock", {
         params: filters,
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching inventory stock:', error);
+      console.error("Error fetching inventory stock:", error);
       throw error;
     }
   }
@@ -137,7 +137,7 @@ class ProductionService {
       const response = await this.apiClient.get(`/${orderId}/variance`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching variance report:', error);
+      console.error("Error fetching variance report:", error);
       throw error;
     }
   }

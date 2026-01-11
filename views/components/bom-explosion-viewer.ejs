@@ -1,42 +1,41 @@
 <div class="card mb-4">
   <div class="card-header bg-info text-white">
-    <h5 class="mb-0">
-      <i class="fas fa-sitemap"></i> BOM Explosion
-    </h5>
+    <h5 class="mb-0"><i class="fas fa-sitemap"></i> BOM Explosion</h5>
   </div>
   <div class="card-body">
     <div id="bomContainer">
       <div class="alert alert-warning">
-        <i class="fas fa-info-circle"></i> Select a production order to view BOM explosion
+        <i class="fas fa-info-circle"></i> Select a production order to view BOM
+        explosion
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// BOM Explosion Viewer Handler
-let currentProductionOrder = null;
-let bomExplosion = null;
+  // BOM Explosion Viewer Handler
+  let currentProductionOrder = null;
+  let bomExplosion = null;
 
-// Status badge mapping
-const statusBadges = {
-  'PLANNED': 'badge bg-warning',
-  'RAW_ISSUED': 'badge bg-info',
-  'IN_PRODUCTION': 'badge bg-primary',
-  'COMPLETED': 'badge bg-success',
-  'CLOSED': 'badge bg-secondary'
-};
+  // Status badge mapping
+  const statusBadges = {
+    PLANNED: "badge bg-warning",
+    RAW_ISSUED: "badge bg-info",
+    IN_PRODUCTION: "badge bg-primary",
+    COMPLETED: "badge bg-success",
+    CLOSED: "badge bg-secondary",
+  };
 
-function getStatusBadge(status) {
-  return statusBadges[status] || 'badge bg-light';
-}
+  function getStatusBadge(status) {
+    return statusBadges[status] || "badge bg-light";
+  }
 
-// Display BOM explosion
-function displayBOMExplosion(productionOrder, bomData) {
-  currentProductionOrder = productionOrder;
-  bomExplosion = bomData;
+  // Display BOM explosion
+  function displayBOMExplosion(productionOrder, bomData) {
+    currentProductionOrder = productionOrder;
+    bomExplosion = bomData;
 
-  let html = `
+    let html = `
     <div class="row mb-3">
       <div class="col-md-3">
         <small class="text-muted">Order Number</small>
@@ -58,7 +57,7 @@ function displayBOMExplosion(productionOrder, bomData) {
         <button 
           onclick="startProductionFlow(${productionOrder.id})"
           class="btn btn-sm btn-success"
-          ${productionOrder.status !== 'PLANNED' ? 'disabled' : ''}
+          ${productionOrder.status !== "PLANNED" ? "disabled" : ""}
         >
           <i class="fas fa-play"></i> Start Production
         </button>
@@ -66,8 +65,12 @@ function displayBOMExplosion(productionOrder, bomData) {
     </div>
   `;
 
-  if (bomData && bomData.planned_outputs && bomData.planned_outputs.length > 0) {
-    html += `
+    if (
+      bomData &&
+      bomData.planned_outputs &&
+      bomData.planned_outputs.length > 0
+    ) {
+      html += `
       <div class="table-responsive">
         <table class="table table-sm table-hover">
           <thead class="table-light">
@@ -83,9 +86,10 @@ function displayBOMExplosion(productionOrder, bomData) {
           <tbody>
     `;
 
-    bomData.planned_outputs.forEach(output => {
-      const rowClass = output.derivative_code === 'WASTE' ? 'table-danger' : '';
-      html += `
+      bomData.planned_outputs.forEach((output) => {
+        const rowClass =
+          output.derivative_code === "WASTE" ? "table-danger" : "";
+        html += `
         <tr class="${rowClass}">
           <td>
             <strong>${output.derivative_name}</strong>
@@ -97,8 +101,8 @@ function displayBOMExplosion(productionOrder, bomData) {
               ${output.base_yield_percent}%
             </span>
           </td>
-          <td class="text-end">${output.grade_multiplier || '-'}</td>
-          <td class="text-end">${output.size_multiplier || '-'}</td>
+          <td class="text-end">${output.grade_multiplier || "-"}</td>
+          <td class="text-end">${output.size_multiplier || "-"}</td>
           <td class="text-end">
             <strong>${output.effective_yield_percent}%</strong>
           </td>
@@ -107,9 +111,9 @@ function displayBOMExplosion(productionOrder, bomData) {
           </td>
         </tr>
       `;
-    });
+      });
 
-    html += `
+      html += `
           </tbody>
           <tfoot class="table-light fw-bold">
             <tr>
@@ -124,62 +128,64 @@ function displayBOMExplosion(productionOrder, bomData) {
         </table>
       </div>
     `;
+    }
+
+    document.getElementById("bomContainer").innerHTML = html;
   }
 
-  document.getElementById('bomContainer').innerHTML = html;
-}
+  // Start production flow
+  async function startProductionFlow(orderId) {
+    if (!confirm("Start production for this order?")) return;
 
-// Start production flow
-async function startProductionFlow(orderId) {
-  if (!confirm('Start production for this order?')) return;
+    try {
+      const response = await fetch(`/api/production/${orderId}/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          initial_grade: "B",
+          size_code: "MEDIUM",
+        }),
+      });
 
-  try {
-    const response = await fetch(`/api/production/${orderId}/start`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        initial_grade: 'B',
-        size_code: 'MEDIUM'
-      })
-    });
+      if (!response.ok) throw new Error("Failed to start production");
+      const result = await response.json();
 
-    if (!response.ok) throw new Error('Failed to start production');
-    const result = await response.json();
+      if (result.data && result.data.bom_explosion) {
+        displayBOMExplosion(
+          { ...currentProductionOrder, status: "RAW_ISSUED" },
+          result.data.bom_explosion
+        );
+      }
 
-    if (result.data && result.data.bom_explosion) {
-      displayBOMExplosion(
-        { ...currentProductionOrder, status: 'RAW_ISSUED' },
-        result.data.bom_explosion
+      alert("Production started! BOM exploded.");
+      window.dispatchEvent(
+        new CustomEvent("productionStarted", { detail: result.data })
       );
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error: " + error.message);
     }
-
-    alert('Production started! BOM exploded.');
-    window.dispatchEvent(new CustomEvent('productionStarted', { detail: result.data }));
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error: ' + error.message);
   }
-}
 
-// Load BOM explosion for a production order
-async function loadBOMExplosion(orderId) {
-  try {
-    const response = await fetch(`/api/production/orders/${orderId}`);
-    if (!response.ok) throw new Error('Failed to fetch order');
-    const result = await response.json();
-    
-    if (result.data) {
-      displayBOMExplosion(result.data, result.data.bom_explosion || null);
+  // Load BOM explosion for a production order
+  async function loadBOMExplosion(orderId) {
+    try {
+      const response = await fetch(`/api/production/orders/${orderId}`);
+      if (!response.ok) throw new Error("Failed to fetch order");
+      const result = await response.json();
+
+      if (result.data) {
+        displayBOMExplosion(result.data, result.data.bom_explosion || null);
+      }
+    } catch (error) {
+      console.error("Error loading BOM:", error);
     }
-  } catch (error) {
-    console.error('Error loading BOM:', error);
   }
-}
 
-// Listen for order selection events
-window.addEventListener('orderSelected', function(event) {
-  if (event.detail && event.detail.id) {
-    loadBOMExplosion(event.detail.id);
-  }
-});
+  // Listen for order selection events
+  window.addEventListener("orderSelected", function (event) {
+    if (event.detail && event.detail.id) {
+      loadBOMExplosion(event.detail.id);
+    }
+  });
 </script>

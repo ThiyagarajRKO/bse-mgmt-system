@@ -1,14 +1,14 @@
 /**
  * Raw Material Consumption Handler
- * 
+ *
  * ENTRY: Production Order starting (operator clicks START)
- * ACTION: 
+ * ACTION:
  *   1. Pick from RAW_INVENTORY (FIFO by lot)
  *   2. Move to WIP_RAW_CONSUMPTION
  *   3. Post inventory transactions
  *   4. Absorb cost
  * EXIT: production_consumption records created, inventory transacted
- * 
+ *
  * Accounting:
  *   DR WIP_RAW_CONSUMPTION
  *   CR RAW_INVENTORY
@@ -238,7 +238,9 @@ export async function consumeRawMaterial(productionOrderId, db) {
     // Check if we got enough
     if (remainingQty > 0) {
       throw new Error(
-        `Insufficient inventory. Need ${po.planned_quantity_kg}, only found ${po.planned_quantity_kg - remainingQty}`
+        `Insufficient inventory. Need ${po.planned_quantity_kg}, only found ${
+          po.planned_quantity_kg - remainingQty
+        }`
       );
     }
 

@@ -3,7 +3,7 @@
  * Handles FIFO-based raw material consumption from RAW_INVENTORY to WIP
  */
 
-Vue.component('raw-material-consumption', {
+Vue.component("raw-material-consumption", {
   template: `
     <div class="card mb-4">
       <div class="card-header bg-warning text-dark">
@@ -172,20 +172,19 @@ Vue.component('raw-material-consumption', {
     },
     totalCost() {
       return this.availableLots.reduce(
-        (sum, lot) =>
-          sum + ((lot.consume_quantity || 0) * lot.cost_per_unit),
+        (sum, lot) => sum + (lot.consume_quantity || 0) * lot.cost_per_unit,
         0
       );
     },
   },
   methods: {
     formatDate(dateStr) {
-      if (!dateStr) return 'N/A';
+      if (!dateStr) return "N/A";
       const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
     },
     async loadAvailableLots() {
@@ -203,7 +202,7 @@ Vue.component('raw-material-consumption', {
             consume_quantity: 0,
           }));
       } catch (error) {
-        console.error('Error loading available lots:', error);
+        console.error("Error loading available lots:", error);
         this.availableLots = [];
       }
     },
@@ -216,7 +215,11 @@ Vue.component('raw-material-consumption', {
       });
     },
     async consumeRawMaterial() {
-      if (!confirm('Consume raw material? This will transition to RAW_ISSUED status.')) {
+      if (
+        !confirm(
+          "Consume raw material? This will transition to RAW_ISSUED status."
+        )
+      ) {
         return;
       }
 
@@ -238,10 +241,10 @@ Vue.component('raw-material-consumption', {
         alert(
           `Raw material consumed! WIP inventory created. Transaction ID: ${result.data.transaction_id}`
         );
-        this.$emit('raw-consumed', result.data);
+        this.$emit("raw-consumed", result.data);
         this.availableLots = [];
       } catch (error) {
-        alert('Error: ' + error.message);
+        alert("Error: " + error.message);
       } finally {
         this.isSubmitting = false;
       }
@@ -254,13 +257,13 @@ Vue.component('raw-material-consumption', {
   },
   watch: {
     productionOrder() {
-      if (this.productionOrder?.status === 'PLANNED') {
+      if (this.productionOrder?.status === "PLANNED") {
         this.loadAvailableLots();
       }
     },
   },
   mounted() {
-    if (this.productionOrder?.status === 'PLANNED') {
+    if (this.productionOrder?.status === "PLANNED") {
       this.loadAvailableLots();
     }
   },

@@ -7,44 +7,48 @@
   <div class="card-body">
     <div id="productionOutputContainer">
       <div class="alert alert-warning">
-        <i class="fas fa-info-circle"></i> Select a production order with RAW_ISSUED status
+        <i class="fas fa-info-circle"></i> Select a production order with
+        RAW_ISSUED status
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Production Output Recorder Handler
-let currentOrderForOutput = null;
-let expectedOutputs = [];
+  // Production Output Recorder Handler
+  let currentOrderForOutput = null;
+  let expectedOutputs = [];
 
-async function displayProductionOutputRecorder(productionOrder) {
-  currentOrderForOutput = productionOrder;
+  async function displayProductionOutputRecorder(productionOrder) {
+    currentOrderForOutput = productionOrder;
 
-  if (!productionOrder || productionOrder.status !== 'RAW_ISSUED') {
-    let html = '<div class="alert alert-info">';
-    if (productionOrder) {
-      html += `Current status: <strong>${productionOrder.status}</strong><br>Production must be RAW_ISSUED to record output`;
-    } else {
-      html += '<i class="fas fa-info-circle"></i> Select a production order with RAW_ISSUED status';
+    if (!productionOrder || productionOrder.status !== "RAW_ISSUED") {
+      let html = '<div class="alert alert-info">';
+      if (productionOrder) {
+        html += `Current status: <strong>${productionOrder.status}</strong><br>Production must be RAW_ISSUED to record output`;
+      } else {
+        html +=
+          '<i class="fas fa-info-circle"></i> Select a production order with RAW_ISSUED status';
+      }
+      html += "</div>";
+      document.getElementById("productionOutputContainer").innerHTML = html;
+      return;
     }
-    html += '</div>';
-    document.getElementById('productionOutputContainer').innerHTML = html;
-    return;
-  }
 
-  // Load expected outputs from BOM
-  try {
-    const response = await fetch(`/api/production/orders/${productionOrder.id}`);
-    if (!response.ok) throw new Error('Failed to fetch order details');
-    const result = await response.json();
-    expectedOutputs = result.data.bom_explosion?.planned_outputs || [];
-  } catch (error) {
-    console.error('Error loading expected outputs:', error);
-    expectedOutputs = [];
-  }
+    // Load expected outputs from BOM
+    try {
+      const response = await fetch(
+        `/api/production/orders/${productionOrder.id}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch order details");
+      const result = await response.json();
+      expectedOutputs = result.data.bom_explosion?.planned_outputs || [];
+    } catch (error) {
+      console.error("Error loading expected outputs:", error);
+      expectedOutputs = [];
+    }
 
-  let html = `
+    let html = `
     <div class="row mb-3">
       <div class="col-md-4">
         <small class="text-muted">Order Number</small>
@@ -56,7 +60,9 @@ async function displayProductionOutputRecorder(productionOrder) {
       </div>
       <div class="col-md-4">
         <small class="text-muted">Started At</small>
-        <p class="fw-bold">${new Date(productionOrder.started_at || Date.now()).toLocaleDateString()}</p>
+        <p class="fw-bold">${new Date(
+          productionOrder.started_at || Date.now()
+        ).toLocaleDateString()}</p>
       </div>
     </div>
 
@@ -76,8 +82,8 @@ async function displayProductionOutputRecorder(productionOrder) {
         <tbody>
   `;
 
-  expectedOutputs.forEach((output, idx) => {
-    html += `
+    expectedOutputs.forEach((output, idx) => {
+      html += `
       <tr>
         <td>
           <strong>${output.derivative_name}</strong>
@@ -117,9 +123,9 @@ async function displayProductionOutputRecorder(productionOrder) {
         </td>
       </tr>
     `;
-  });
+    });
 
-  html += `
+    html += `
         </tbody>
       </table>
     </div>
@@ -147,66 +153,84 @@ async function displayProductionOutputRecorder(productionOrder) {
     </div>
   `;
 
-  document.getElementById('productionOutputContainer').innerHTML = html;
-}
+    document.getElementById("productionOutputContainer").innerHTML = html;
+  }
 
-function updateVarianceDisplay() {
-  expectedOutputs.forEach((output, idx) => {
-    const plannedQty = output.planned_quantity_kg || 0;
-    const actualInput = document.querySelector(`input[data-index="${idx}"]`);
-    const actualQty = parseFloat(actualInput?.value) || 0;
-    const pctElement = document.querySelector(`.variance-pct[data-index="${idx}"]`);
-    const typeElement = document.querySelector(`.variance-type[data-index="${idx}"]`);
+  function updateVarianceDisplay() {
+    expectedOutputs.forEach((output, idx) => {
+      const plannedQty = output.planned_quantity_kg || 0;
+      const actualInput = document.querySelector(`input[data-index="${idx}"]`);
+      const actualQty = parseFloat(actualInput?.value) || 0;
+      const pctElement = document.querySelector(
+        `.variance-pct[data-index="${idx}"]`
+      );
+      const typeElement = document.querySelector(
+        `.variance-type[data-index="${idx}"]`
+      );
 
-    const variance = ((actualQty - plannedQty) / (plannedQty || 1)) * 100;
-    const varianceType = Math.abs(variance) > 5 ? 'ABNORMAL' : 'NORMAL';
+      const variance = ((actualQty - plannedQty) / (plannedQty || 1)) * 100;
+      const varianceType = Math.abs(variance) > 5 ? "ABNORMAL" : "NORMAL";
 
-    if (pctElement) pctElement.textContent = variance.toFixed(2) + '%';
-    if (typeElement) {
-      typeElement.textContent = varianceType;
-      typeElement.className = `variance-type badge ${varianceType === 'ABNORMAL' ? 'bg-danger' : 'bg-success'}`;
-    }
-  });
-}
+      if (pctElement) pctElement.textContent = variance.toFixed(2) + "%";
+      if (typeElement) {
+        typeElement.textContent = varianceType;
+        typeElement.className = `variance-type badge ${
+          varianceType === "ABNORMAL" ? "bg-danger" : "bg-success"
+        }`;
+      }
+    });
+  }
 
-async function submitProductionOutput() {
-  const actualOutputs = expectedOutputs.map((output, idx) => {
-    const actualQty = parseFloat(document.querySelector(`input[data-index="${idx}"]`).value) || 0;
-    const gradeSelect = document.querySelector(`select[data-grade-select="${idx}"]`);
-    const actualGrade = gradeSelect?.value || output.grade || 'B';
-    
-    return {
-      derivative_id: output.derivative_id,
-      actual_quantity_kg: actualQty,
-      expected_quantity_kg: output.planned_quantity_kg,
-      actual_grade: actualGrade,
-      size_code: output.size_code || 'MEDIUM',
-      variance_reason: document.getElementById('varianceReason')?.value || ''
-    };
-  });
+  async function submitProductionOutput() {
+    const actualOutputs = expectedOutputs.map((output, idx) => {
+      const actualQty =
+        parseFloat(
+          document.querySelector(`input[data-index="${idx}"]`).value
+        ) || 0;
+      const gradeSelect = document.querySelector(
+        `select[data-grade-select="${idx}"]`
+      );
+      const actualGrade = gradeSelect?.value || output.grade || "B";
 
-  try {
-    const response = await fetch(`/api/production/${currentOrderForOutput.id}/output`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ actual_outputs: actualOutputs })
+      return {
+        derivative_id: output.derivative_id,
+        actual_quantity_kg: actualQty,
+        expected_quantity_kg: output.planned_quantity_kg,
+        actual_grade: actualGrade,
+        size_code: output.size_code || "MEDIUM",
+        variance_reason: document.getElementById("varianceReason")?.value || "",
+      };
     });
 
-    if (!response.ok) throw new Error('Failed to record output');
-    const result = await response.json();
-    
-    alert(`Production output recorded!\nFG Inventory created: ${result.data.fg_inventory_created}\nGL entries posted: ${result.data.total_gl_entries_posted}`);
-    window.dispatchEvent(new CustomEvent('outputRecorded', { detail: result.data }));
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error: ' + error.message);
-  }
-}
+    try {
+      const response = await fetch(
+        `/api/production/${currentOrderForOutput.id}/output`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actual_outputs: actualOutputs }),
+        }
+      );
 
-// Listen for order selection
-window.addEventListener('outputReady', function(event) {
-  if (event.detail && event.detail.id) {
-    displayProductionOutputRecorder(event.detail);
+      if (!response.ok) throw new Error("Failed to record output");
+      const result = await response.json();
+
+      alert(
+        `Production output recorded!\nFG Inventory created: ${result.data.fg_inventory_created}\nGL entries posted: ${result.data.total_gl_entries_posted}`
+      );
+      window.dispatchEvent(
+        new CustomEvent("outputRecorded", { detail: result.data })
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error: " + error.message);
+    }
   }
-});
+
+  // Listen for order selection
+  window.addEventListener("outputReady", function (event) {
+    if (event.detail && event.detail.id) {
+      displayProductionOutputRecorder(event.detail);
+    }
+  });
 </script>

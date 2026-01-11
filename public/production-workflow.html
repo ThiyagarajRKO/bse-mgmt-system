@@ -1,387 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Production Workflow - BOM Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .workflow-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .workflow-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 30px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-    }
-    .workflow-header h1 {
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .workflow-header p {
-      margin: 5px 0 0 0;
-      opacity: 0.9;
-    }
-    .step-indicator {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-    .step-badge {
-      padding: 8px 12px;
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    .step-badge.active {
-      background-color: white;
-      color: #667eea;
-    }
-    .sidebar {
-      position: sticky;
-      top: 20px;
-      height: fit-content;
-    }
-    .order-selector {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .order-item {
-      padding: 12px;
-      border-left: 4px solid #667eea;
-      margin-bottom: 10px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: all 0.2s;
-      background: #f8f9fa;
-    }
-    .order-item:hover {
-      background: #e9ecef;
-    }
-    .order-item.active {
-      background: #e7e5ff;
-      border-left-color: #667eea;
-    }
-    .order-item small {
-      display: block;
-      margin-top: 4px;
-    }
-    .component-section {
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #667eea;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <!-- Header -->
-    <div class="workflow-header">
-      <h1>
-        <i class="fas fa-cog"></i>
-        Production Workflow
-      </h1>
-      <p>Manage BOM-driven production orders, track inventory, and analyze variances</p>
-      <div class="step-indicator">
-        <span class="step-badge" :class="{ active: !selectedOrder }">
-          <i class="fas fa-list"></i> Select Order
-        </span>
-        <span v-if="selectedOrder" class="step-badge" :class="{ active: selectedOrder.status === 'PLANNED' }">
-          <i class="fas fa-cube"></i> BOM Explosion
-        </span>
-        <span v-if="selectedOrder" class="step-badge" :class="{ active: selectedOrder.status === 'PLANNED' }">
-          <i class="fas fa-arrow-right"></i> Consume Raw
-        </span>
-        <span v-if="selectedOrder" class="step-badge" :class="{ active: selectedOrder.status === 'RAW_ISSUED' }">
-          <i class="fas fa-cubes"></i> Record Output
-        </span>
-        <span v-if="selectedOrder" class="step-badge" :class="{ active: selectedOrder.status === 'COMPLETED' }">
-          <i class="fas fa-chart-bar"></i> Variance Report
-        </span>
-      </div>
-    </div>
-
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Main Content Area -->
-        <div class="col-lg-9">
-          <!-- Step 1: Create Production Order -->
-          <div class="component-section" v-if="!selectedOrder">
-            <p class="section-title">Step 1: Create Production Order</p>
-            <production-order-form @order-created="onOrderCreated"></production-order-form>
-          </div>
-
-          <!-- Steps 2-5: Workflow Components -->
-          <div v-else>
-            <!-- BOM Explosion -->
-            <div class="component-section">
-              <p class="section-title">Step 2: BOM Explosion</p>
-              <bom-explosion-viewer :productionOrder="selectedOrder" @production-started="onProductionStarted"></bom-explosion-viewer>
-            </div>
-
-            <!-- Raw Material Consumption -->
-            <div class="component-section">
-              <p class="section-title">Step 3: Consume Raw Material</p>
-              <raw-material-consumption :productionOrder="selectedOrder" @raw-consumed="onRawConsumed"></raw-material-consumption>
-            </div>
-
-            <!-- Production Output -->
-            <div class="component-section">
-              <p class="section-title">Step 4: Record Production Output</p>
-              <production-output-recorder :productionOrder="selectedOrder" @output-recorded="onOutputRecorded"></production-output-recorder>
-            </div>
-
-            <!-- Variance Report -->
-            <div class="component-section">
-              <p class="section-title">Step 5: Variance Analysis</p>
-              <variance-report :productionOrder="selectedOrder"></variance-report>
-            </div>
-          </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Production Workflow - BOM Management</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .workflow-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .workflow-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+      }
+      .workflow-header h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .workflow-header p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+      }
+      .step-indicator {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .step-badge {
+        padding: 8px 12px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .step-badge.active {
+        background-color: white;
+        color: #667eea;
+      }
+      .sidebar {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+      }
+      .order-selector {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .order-item {
+        padding: 12px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        background: #f8f9fa;
+      }
+      .order-item:hover {
+        background: #e9ecef;
+      }
+      .order-item.active {
+        background: #e7e5ff;
+        border-left-color: #667eea;
+      }
+      .order-item small {
+        display: block;
+        margin-top: 4px;
+      }
+      .component-section {
+        margin-bottom: 20px;
+      }
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <div class="workflow-header">
+        <h1>
+          <i class="fas fa-cog"></i>
+          Production Workflow
+        </h1>
+        <p>
+          Manage BOM-driven production orders, track inventory, and analyze
+          variances
+        </p>
+        <div class="step-indicator">
+          <span class="step-badge" :class="{ active: !selectedOrder }">
+            <i class="fas fa-list"></i> Select Order
+          </span>
+          <span
+            v-if="selectedOrder"
+            class="step-badge"
+            :class="{ active: selectedOrder.status === 'PLANNED' }"
+          >
+            <i class="fas fa-cube"></i> BOM Explosion
+          </span>
+          <span
+            v-if="selectedOrder"
+            class="step-badge"
+            :class="{ active: selectedOrder.status === 'PLANNED' }"
+          >
+            <i class="fas fa-arrow-right"></i> Consume Raw
+          </span>
+          <span
+            v-if="selectedOrder"
+            class="step-badge"
+            :class="{ active: selectedOrder.status === 'RAW_ISSUED' }"
+          >
+            <i class="fas fa-cubes"></i> Record Output
+          </span>
+          <span
+            v-if="selectedOrder"
+            class="step-badge"
+            :class="{ active: selectedOrder.status === 'COMPLETED' }"
+          >
+            <i class="fas fa-chart-bar"></i> Variance Report
+          </span>
         </div>
+      </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-3">
-          <div class="sidebar">
-            <!-- Current Order Summary -->
-            <div v-if="selectedOrder" class="order-selector">
-              <h6><i class="fas fa-info-circle"></i> Current Order</h6>
-              <div class="order-item active">
-                <strong>{{ selectedOrder.order_number }}</strong>
-                <small>Species: {{ selectedOrder.input_species_name }}</small>
-                <small>Qty: {{ selectedOrder.planned_quantity_kg }} kg</small>
-                <small>
-                  Status: <span :class="getStatusBadge(selectedOrder.status)">
-                    {{ selectedOrder.status }}
-                  </span>
-                </small>
-              </div>
-              <button @click="deselectOrder" class="btn btn-sm btn-outline-secondary w-100 mt-2">
-                <i class="fas fa-times"></i> Clear Selection
-              </button>
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Main Content Area -->
+          <div class="col-lg-9">
+            <!-- Step 1: Create Production Order -->
+            <div class="component-section" v-if="!selectedOrder">
+              <p class="section-title">Step 1: Create Production Order</p>
+              <production-order-form
+                @order-created="onOrderCreated"
+              ></production-order-form>
             </div>
 
-            <!-- Production Orders List -->
-            <div class="order-selector">
-              <h6><i class="fas fa-list"></i> Recent Orders</h6>
-              <div v-if="productionOrders.length === 0" class="text-muted small">
-                No orders found
+            <!-- Steps 2-5: Workflow Components -->
+            <div v-else>
+              <!-- BOM Explosion -->
+              <div class="component-section">
+                <p class="section-title">Step 2: BOM Explosion</p>
+                <bom-explosion-viewer
+                  :productionOrder="selectedOrder"
+                  @production-started="onProductionStarted"
+                ></bom-explosion-viewer>
               </div>
-              <div v-else style="max-height: 400px; overflow-y: auto;">
-                <div 
-                  v-for="order in productionOrders"
-                  :key="order.id"
-                  class="order-item"
-                  :class="{ active: selectedOrder?.id === order.id }"
-                  @click="selectOrder(order)"
-                >
-                  <strong>{{ order.order_number }}</strong>
-                  <small>{{ order.input_species_name }}</small>
-                  <small>{{ order.planned_quantity_kg }} kg</small>
+
+              <!-- Raw Material Consumption -->
+              <div class="component-section">
+                <p class="section-title">Step 3: Consume Raw Material</p>
+                <raw-material-consumption
+                  :productionOrder="selectedOrder"
+                  @raw-consumed="onRawConsumed"
+                ></raw-material-consumption>
+              </div>
+
+              <!-- Production Output -->
+              <div class="component-section">
+                <p class="section-title">Step 4: Record Production Output</p>
+                <production-output-recorder
+                  :productionOrder="selectedOrder"
+                  @output-recorded="onOutputRecorded"
+                ></production-output-recorder>
+              </div>
+
+              <!-- Variance Report -->
+              <div class="component-section">
+                <p class="section-title">Step 5: Variance Analysis</p>
+                <variance-report
+                  :productionOrder="selectedOrder"
+                ></variance-report>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="col-lg-3">
+            <div class="sidebar">
+              <!-- Current Order Summary -->
+              <div v-if="selectedOrder" class="order-selector">
+                <h6><i class="fas fa-info-circle"></i> Current Order</h6>
+                <div class="order-item active">
+                  <strong>{{ selectedOrder.order_number }}</strong>
+                  <small>Species: {{ selectedOrder.input_species_name }}</small>
+                  <small>Qty: {{ selectedOrder.planned_quantity_kg }} kg</small>
                   <small>
-                    <span :class="getStatusBadge(order.status)">
-                      {{ order.status }}
+                    Status:
+                    <span :class="getStatusBadge(selectedOrder.status)">
+                      {{ selectedOrder.status }}
                     </span>
                   </small>
                 </div>
+                <button
+                  @click="deselectOrder"
+                  class="btn btn-sm btn-outline-secondary w-100 mt-2"
+                >
+                  <i class="fas fa-times"></i> Clear Selection
+                </button>
               </div>
-              <button @click="loadOrders" class="btn btn-sm btn-primary w-100 mt-2">
-                <i class="fas fa-sync-alt"></i> Refresh
-              </button>
-            </div>
 
-            <!-- Quick Stats -->
-            <div class="order-selector">
-              <h6><i class="fas fa-chart-pie"></i> Quick Stats</h6>
-              <div class="row text-center">
-                <div class="col-6">
-                  <small class="text-muted">Active Orders</small>
-                  <p class="h6 mb-0">{{ activeOrders }}</p>
+              <!-- Production Orders List -->
+              <div class="order-selector">
+                <h6><i class="fas fa-list"></i> Recent Orders</h6>
+                <div
+                  v-if="productionOrders.length === 0"
+                  class="text-muted small"
+                >
+                  No orders found
                 </div>
-                <div class="col-6">
-                  <small class="text-muted">Completed</small>
-                  <p class="h6 mb-0">{{ completedOrders }}</p>
+                <div v-else style="max-height: 400px; overflow-y: auto">
+                  <div
+                    v-for="order in productionOrders"
+                    :key="order.id"
+                    class="order-item"
+                    :class="{ active: selectedOrder?.id === order.id }"
+                    @click="selectOrder(order)"
+                  >
+                    <strong>{{ order.order_number }}</strong>
+                    <small>{{ order.input_species_name }}</small>
+                    <small>{{ order.planned_quantity_kg }} kg</small>
+                    <small>
+                      <span :class="getStatusBadge(order.status)">
+                        {{ order.status }}
+                      </span>
+                    </small>
+                  </div>
+                </div>
+                <button
+                  @click="loadOrders"
+                  class="btn btn-sm btn-primary w-100 mt-2"
+                >
+                  <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+              </div>
+
+              <!-- Quick Stats -->
+              <div class="order-selector">
+                <h6><i class="fas fa-chart-pie"></i> Quick Stats</h6>
+                <div class="row text-center">
+                  <div class="col-6">
+                    <small class="text-muted">Active Orders</small>
+                    <p class="h6 mb-0">{{ activeOrders }}</p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">Completed</small>
+                    <p class="h6 mb-0">{{ completedOrders }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Inventory Dashboard Widget -->
-            <div class="card">
-              <div class="card-body">
-                <h6><i class="fas fa-warehouse"></i> Inventory Summary</h6>
-                <div class="text-center">
-                  <small class="text-muted">Total On-Hand</small>
-                  <p class="h6 mb-2">{{ totalInventory }} kg</p>
-                  <button @click="showInventoryDashboard = !showInventoryDashboard" class="btn btn-sm btn-outline-primary w-100">
-                    <i class="fas fa-eye"></i> View Details
-                  </button>
+              <!-- Inventory Dashboard Widget -->
+              <div class="card">
+                <div class="card-body">
+                  <h6><i class="fas fa-warehouse"></i> Inventory Summary</h6>
+                  <div class="text-center">
+                    <small class="text-muted">Total On-Hand</small>
+                    <p class="h6 mb-2">{{ totalInventory }} kg</p>
+                    <button
+                      @click="showInventoryDashboard = !showInventoryDashboard"
+                      class="btn btn-sm btn-outline-primary w-100"
+                    >
+                      <i class="fas fa-eye"></i> View Details
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Inventory Dashboard Modal -->
-    <div v-if="showInventoryDashboard" class="container-fluid mt-4">
-      <div class="row">
-        <div class="col-12">
-          <inventory-dashboard></inventory-dashboard>
+      <!-- Inventory Dashboard Modal -->
+      <div v-if="showInventoryDashboard" class="container-fluid mt-4">
+        <div class="row">
+          <div class="col-12">
+            <inventory-dashboard></inventory-dashboard>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Component Services -->
-  <script src="/js/services/productionService.js"></script>
+    <!-- Component Services -->
+    <script src="/js/services/productionService.js"></script>
 
-  <!-- Vue Components -->
-  <script src="/js/components/ProductionOrderForm.js"></script>
-  <script src="/js/components/BOMExplosionViewer.js"></script>
-  <script src="/js/components/RawMaterialConsumption.js"></script>
-  <script src="/js/components/ProductionOutputRecorder.js"></script>
-  <script src="/js/components/VarianceReport.js"></script>
-  <script src="/js/components/InventoryDashboard.js"></script>
+    <!-- Vue Components -->
+    <script src="/js/components/ProductionOrderForm.js"></script>
+    <script src="/js/components/BOMExplosionViewer.js"></script>
+    <script src="/js/components/RawMaterialConsumption.js"></script>
+    <script src="/js/components/ProductionOutputRecorder.js"></script>
+    <script src="/js/components/VarianceReport.js"></script>
+    <script src="/js/components/InventoryDashboard.js"></script>
 
-  <script>
-    new Vue({
-      el: '#app',
-      data: {
-        productionOrders: [],
-        selectedOrder: null,
-        showInventoryDashboard: false,
-        totalInventory: 0,
-        activeOrders: 0,
-        completedOrders: 0,
-        isLoading: false,
-      },
-      computed: {
-        filteredOrders() {
-          return this.productionOrders.slice(0, 10);
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          productionOrders: [],
+          selectedOrder: null,
+          showInventoryDashboard: false,
+          totalInventory: 0,
+          activeOrders: 0,
+          completedOrders: 0,
+          isLoading: false,
         },
-      },
-      methods: {
-        getStatusBadge(status) {
-          const badges = {
-            PLANNED: 'badge bg-secondary',
-            RAW_ISSUED: 'badge bg-warning text-dark',
-            COMPLETED: 'badge bg-success',
-            CLOSED: 'badge bg-primary',
-          };
-          return badges[status] || 'badge bg-light text-dark';
+        computed: {
+          filteredOrders() {
+            return this.productionOrders.slice(0, 10);
+          },
         },
-        selectOrder(order) {
-          this.selectedOrder = order;
-        },
-        deselectOrder() {
-          this.selectedOrder = null;
-        },
-        async loadOrders() {
-          try {
-            const response = await productionService.getAllProductionOrders(1, 20);
-            this.productionOrders = response.data.data || [];
+        methods: {
+          getStatusBadge(status) {
+            const badges = {
+              PLANNED: "badge bg-secondary",
+              RAW_ISSUED: "badge bg-warning text-dark",
+              COMPLETED: "badge bg-success",
+              CLOSED: "badge bg-primary",
+            };
+            return badges[status] || "badge bg-light text-dark";
+          },
+          selectOrder(order) {
+            this.selectedOrder = order;
+          },
+          deselectOrder() {
+            this.selectedOrder = null;
+          },
+          async loadOrders() {
+            try {
+              const response = await productionService.getAllProductionOrders(
+                1,
+                20
+              );
+              this.productionOrders = response.data.data || [];
 
-            // Calculate stats
-            this.activeOrders = this.productionOrders.filter(
-              (o) => o.status === 'PLANNED' || o.status === 'RAW_ISSUED'
-            ).length;
-            this.completedOrders = this.productionOrders.filter(
-              (o) => o.status === 'COMPLETED' || o.status === 'CLOSED'
-            ).length;
-          } catch (error) {
-            console.error('Error loading orders:', error);
-          }
-        },
-        async loadInventorySummary() {
-          try {
-            const response = await productionService.getInventoryStock({});
-            this.totalInventory = response.data.data
-              .reduce((sum, item) => sum + item.on_hand_quantity, 0)
-              .toFixed(2);
-          } catch (error) {
-            console.error('Error loading inventory:', error);
-          }
-        },
-        onOrderCreated(data) {
-          this.loadOrders();
-          // Auto-select newly created order
-          const newOrder = this.productionOrders.find((o) => o.id === data.id);
-          if (newOrder) {
-            this.selectedOrder = newOrder;
-          }
-        },
-        onProductionStarted() {
-          this.loadOrders();
-          if (this.selectedOrder) {
-            const updatedOrder = this.productionOrders.find(
-              (o) => o.id === this.selectedOrder.id
-            );
-            if (updatedOrder) {
-              this.selectedOrder = updatedOrder;
+              // Calculate stats
+              this.activeOrders = this.productionOrders.filter(
+                (o) => o.status === "PLANNED" || o.status === "RAW_ISSUED"
+              ).length;
+              this.completedOrders = this.productionOrders.filter(
+                (o) => o.status === "COMPLETED" || o.status === "CLOSED"
+              ).length;
+            } catch (error) {
+              console.error("Error loading orders:", error);
             }
-          }
-        },
-        onRawConsumed() {
-          this.loadOrders();
-          if (this.selectedOrder) {
-            const updatedOrder = this.productionOrders.find(
-              (o) => o.id === this.selectedOrder.id
-            );
-            if (updatedOrder) {
-              this.selectedOrder = updatedOrder;
+          },
+          async loadInventorySummary() {
+            try {
+              const response = await productionService.getInventoryStock({});
+              this.totalInventory = response.data.data
+                .reduce((sum, item) => sum + item.on_hand_quantity, 0)
+                .toFixed(2);
+            } catch (error) {
+              console.error("Error loading inventory:", error);
             }
-          }
+          },
+          onOrderCreated(data) {
+            this.loadOrders();
+            // Auto-select newly created order
+            const newOrder = this.productionOrders.find(
+              (o) => o.id === data.id
+            );
+            if (newOrder) {
+              this.selectedOrder = newOrder;
+            }
+          },
+          onProductionStarted() {
+            this.loadOrders();
+            if (this.selectedOrder) {
+              const updatedOrder = this.productionOrders.find(
+                (o) => o.id === this.selectedOrder.id
+              );
+              if (updatedOrder) {
+                this.selectedOrder = updatedOrder;
+              }
+            }
+          },
+          onRawConsumed() {
+            this.loadOrders();
+            if (this.selectedOrder) {
+              const updatedOrder = this.productionOrders.find(
+                (o) => o.id === this.selectedOrder.id
+              );
+              if (updatedOrder) {
+                this.selectedOrder = updatedOrder;
+              }
+            }
+          },
+          onOutputRecorded() {
+            this.loadOrders();
+            this.loadInventorySummary();
+            if (this.selectedOrder) {
+              const updatedOrder = this.productionOrders.find(
+                (o) => o.id === this.selectedOrder.id
+              );
+              if (updatedOrder) {
+                this.selectedOrder = updatedOrder;
+              }
+            }
+          },
         },
-        onOutputRecorded() {
+        mounted() {
           this.loadOrders();
           this.loadInventorySummary();
-          if (this.selectedOrder) {
-            const updatedOrder = this.productionOrders.find(
-              (o) => o.id === this.selectedOrder.id
-            );
-            if (updatedOrder) {
-              this.selectedOrder = updatedOrder;
-            }
-          }
+          // Refresh every 2 minutes
+          setInterval(() => {
+            this.loadOrders();
+            this.loadInventorySummary();
+          }, 120000);
         },
-      },
-      mounted() {
-        this.loadOrders();
-        this.loadInventorySummary();
-        // Refresh every 2 minutes
-        setInterval(() => {
-          this.loadOrders();
-          this.loadInventorySummary();
-        }, 120000);
-      },
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>

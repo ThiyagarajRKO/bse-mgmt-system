@@ -3,7 +3,7 @@
  * Displays planned outputs from BOM explosion
  */
 
-Vue.component('bom-explosion-viewer', {
+Vue.component("bom-explosion-viewer", {
   template: `
     <div class="card mb-4">
       <div class="card-header bg-info text-white">
@@ -123,31 +123,31 @@ Vue.component('bom-explosion-viewer', {
   methods: {
     getStatusBadge(status) {
       const badges = {
-        PLANNED: 'badge bg-warning',
-        RAW_ISSUED: 'badge bg-info',
-        IN_PRODUCTION: 'badge bg-primary',
-        COMPLETED: 'badge bg-success',
-        CLOSED: 'badge bg-secondary',
+        PLANNED: "badge bg-warning",
+        RAW_ISSUED: "badge bg-info",
+        IN_PRODUCTION: "badge bg-primary",
+        COMPLETED: "badge bg-success",
+        CLOSED: "badge bg-secondary",
       };
-      return badges[status] || 'badge bg-light';
+      return badges[status] || "badge bg-light";
     },
     async startProduction() {
-      if (!confirm('Start production for this order?')) return;
+      if (!confirm("Start production for this order?")) return;
 
       this.isLoading = true;
       try {
         const result = await productionService.startProduction(
           this.productionOrder.id,
           {
-            initial_grade: 'B',
-            size_code: 'MEDIUM',
+            initial_grade: "B",
+            size_code: "MEDIUM",
           }
         );
         this.bomExplosion = result.data.bom_explosion;
-        alert('Production started! BOM exploded.');
-        this.$emit('production-started', result.data);
+        alert("Production started! BOM exploded.");
+        this.$emit("production-started", result.data);
       } catch (error) {
-        alert('Error: ' + error.message);
+        alert("Error: " + error.message);
       } finally {
         this.isLoading = false;
       }
@@ -165,7 +165,7 @@ Vue.component('bom-explosion-viewer', {
           this.bomExplosion = result.data.bom_explosion;
         }
       } catch (error) {
-        console.error('Error loading BOM:', error);
+        console.error("Error loading BOM:", error);
       } finally {
         this.isLoading = false;
       }

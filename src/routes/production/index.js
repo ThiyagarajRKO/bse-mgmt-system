@@ -10,7 +10,7 @@ export default async (fastify) => {
   fastify.register(getAllRoute);
   fastify.register(getRoute);
   fastify.register(updateRoute);
-  
+
   // Register workflow routes (BOM operations, inventory)
   fastify.register(workflowRoute);
 };

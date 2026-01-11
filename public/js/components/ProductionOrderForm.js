@@ -3,7 +3,7 @@
  * Handles creation of new production orders with BOM
  */
 
-Vue.component('production-order-form', {
+Vue.component("production-order-form", {
   template: `
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
@@ -155,15 +155,15 @@ Vue.component('production-order-form', {
   data() {
     return {
       form: {
-        order_number: '',
-        plant_id: 'PLANT_001',
-        input_species_id: '',
-        order_type: 'PRIMARY',
+        order_number: "",
+        plant_id: "PLANT_001",
+        input_species_id: "",
+        order_type: "PRIMARY",
         planned_quantity_kg: 1000,
         planned_start_date: new Date().toISOString().slice(0, 16),
-        initial_grade: 'B',
-        size_code: 'MEDIUM',
-        remarks: '',
+        initial_grade: "B",
+        size_code: "MEDIUM",
+        remarks: "",
       },
       species_list: [],
       selectedSpecies: null,
@@ -173,10 +173,10 @@ Vue.component('production-order-form', {
   methods: {
     async loadSpecies() {
       try {
-        const response = await axios.get('/api/species');
+        const response = await axios.get("/api/species");
         this.species_list = response.data.data || [];
       } catch (error) {
-        alert('Error loading species: ' + error.message);
+        alert("Error loading species: " + error.message);
       }
     },
     onSpeciesChange() {
@@ -189,20 +189,20 @@ Vue.component('production-order-form', {
       try {
         const result = await productionService.createProductionOrder(this.form);
         alert(`Production Order created! ID: ${result.data.id}`);
-        this.$emit('order-created', result.data);
+        this.$emit("order-created", result.data);
         this.form = {
-          order_number: '',
-          plant_id: 'PLANT_001',
-          input_species_id: '',
-          order_type: 'PRIMARY',
+          order_number: "",
+          plant_id: "PLANT_001",
+          input_species_id: "",
+          order_type: "PRIMARY",
           planned_quantity_kg: 1000,
           planned_start_date: new Date().toISOString().slice(0, 16),
-          initial_grade: 'B',
-          size_code: 'MEDIUM',
-          remarks: '',
+          initial_grade: "B",
+          size_code: "MEDIUM",
+          remarks: "",
         };
       } catch (error) {
-        alert('Error: ' + error.message);
+        alert("Error: " + error.message);
       } finally {
         this.isSubmitting = false;
       }

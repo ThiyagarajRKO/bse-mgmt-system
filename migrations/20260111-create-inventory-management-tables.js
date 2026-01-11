@@ -2,13 +2,13 @@
 
 /**
  * Migration: Create Inventory Management Tables
- * 
+ *
  * Creates:
  *   1. inventory_stock - Real-time balances
  *   2. inventory_transaction - Audit trail
  *   3. inventory_lot - Lot tracking
  *   4. inventory_cost_layer - FIFO/LIFO
- * 
+ *
  * Date: 11 January 2026
  */
 
@@ -79,7 +79,10 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("inventory_lot", ["product_id", "received_date"]);
+    await queryInterface.addIndex("inventory_lot", [
+      "product_id",
+      "received_date",
+    ]);
     await queryInterface.addIndex("inventory_lot", ["expiry_date"]);
 
     // 2. inventory_cost_layer (for FIFO tracking)
@@ -144,7 +147,10 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("inventory_cost_layer", ["product_id", "received_date"]);
+    await queryInterface.addIndex("inventory_cost_layer", [
+      "product_id",
+      "received_date",
+    ]);
     await queryInterface.addIndex("inventory_cost_layer", ["fifo_sequence"]);
 
     // 3. inventory_stock (real-time balances)
@@ -296,9 +302,14 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("inventory_transaction", ["product_id", "created_at"]);
+    await queryInterface.addIndex("inventory_transaction", [
+      "product_id",
+      "created_at",
+    ]);
     await queryInterface.addIndex("inventory_transaction", ["reference_id"]);
-    await queryInterface.addIndex("inventory_transaction", ["transaction_type"]);
+    await queryInterface.addIndex("inventory_transaction", [
+      "transaction_type",
+    ]);
     await queryInterface.addIndex("inventory_transaction", ["created_at"]);
   },
 

@@ -3,10 +3,10 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Inventory Stock - Real-time on-hand balances
- * 
+ *
  * ONE RECORD per (product, warehouse, lot)
  * Always in sync with transactions
- * 
+ *
  * States: RAW → WIP → FG → COGS
  */
 module.exports = (sequelize) => {

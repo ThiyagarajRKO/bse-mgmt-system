@@ -375,8 +375,7 @@ module.exports = {
                 derivative_code: deriv.derivative_code,
                 product_id: derivProduct ? derivProduct.id : null,
                 base_yield_percent: yieldPercent,
-                loss_type:
-                  deriv.derivative_code === "WASTE" ? "WASTE" : "TRIM",
+                loss_type: deriv.derivative_code === "WASTE" ? "WASTE" : "TRIM",
                 created_at: new Date(),
                 updated_at: new Date(),
               },

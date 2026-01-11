@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 
 /**
  * Inventory Lot - Traceability & expiry tracking
- * 
+ *
  * One lot per raw material purchase/receipt
  * Links to cost layer for FIFO
  * Tracks expiry, supplier, etc

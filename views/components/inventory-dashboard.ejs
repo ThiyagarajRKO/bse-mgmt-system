@@ -1,8 +1,6 @@
 <div class="card mb-4">
   <div class="card-header bg-secondary text-white">
-    <h5 class="mb-0">
-      <i class="fas fa-boxes"></i> Inventory Dashboard
-    </h5>
+    <h5 class="mb-0"><i class="fas fa-boxes"></i> Inventory Dashboard</h5>
   </div>
   <div class="card-body">
     <div class="row mb-4">
@@ -48,7 +46,11 @@
     <div class="row mb-3">
       <div class="col-md-4">
         <label class="form-label">Warehouse</label>
-        <select id="warehouseFilter" class="form-control" onchange="loadInventoryData()">
+        <select
+          id="warehouseFilter"
+          class="form-control"
+          onchange="loadInventoryData()"
+        >
           <option value="">All Warehouses</option>
           <option value="WH-01">WH-01</option>
           <option value="WH-02">WH-02</option>
@@ -57,7 +59,11 @@
       </div>
       <div class="col-md-4">
         <label class="form-label">Status</label>
-        <select id="statusFilter" class="form-control" onchange="loadInventoryData()">
+        <select
+          id="statusFilter"
+          class="form-control"
+          onchange="loadInventoryData()"
+        >
           <option value="">All Status</option>
           <option value="RAW_INVENTORY">RAW Inventory</option>
           <option value="WIP_RAW_CONSUMPTION">WIP Consumption</option>
@@ -106,156 +112,172 @@
 </div>
 
 <script>
-// Inventory Dashboard Handler
-let currentPage = 1;
-let totalPages = 1;
-let inventoryData = [];
+  // Inventory Dashboard Handler
+  let currentPage = 1;
+  let totalPages = 1;
+  let inventoryData = [];
 
-async function loadInventorySummary() {
-  try {
-    const response = await fetch('/api/inventory/stock/summary');
-    if (!response.ok) throw new Error('Failed to fetch summary');
-    const result = await response.json();
+  async function loadInventorySummary() {
+    try {
+      const response = await fetch("/api/inventory/stock/summary");
+      if (!response.ok) throw new Error("Failed to fetch summary");
+      const result = await response.json();
 
-    document.getElementById('rawInventoryCount').textContent = result.data.raw_inventory || 0;
-    document.getElementById('wipInventoryCount').textContent = result.data.wip_inventory || 0;
-    document.getElementById('fgInventoryCount').textContent = result.data.fg_inventory || 0;
-    document.getElementById('totalInventoryCount').textContent = result.data.total || 0;
-  } catch (error) {
-    console.error('Error loading summary:', error);
+      document.getElementById("rawInventoryCount").textContent =
+        result.data.raw_inventory || 0;
+      document.getElementById("wipInventoryCount").textContent =
+        result.data.wip_inventory || 0;
+      document.getElementById("fgInventoryCount").textContent =
+        result.data.fg_inventory || 0;
+      document.getElementById("totalInventoryCount").textContent =
+        result.data.total || 0;
+    } catch (error) {
+      console.error("Error loading summary:", error);
+    }
   }
-}
 
-async function loadInventoryData(page = 1) {
-  currentPage = page;
+  async function loadInventoryData(page = 1) {
+    currentPage = page;
 
-  const warehouse = document.getElementById('warehouseFilter')?.value || '';
-  const status = document.getElementById('statusFilter')?.value || '';
+    const warehouse = document.getElementById("warehouseFilter")?.value || "";
+    const status = document.getElementById("statusFilter")?.value || "";
 
-  const params = new URLSearchParams({
-    page: currentPage,
-    limit: 20,
-    ...(warehouse && { warehouse }),
-    ...(status && { status })
-  });
+    const params = new URLSearchParams({
+      page: currentPage,
+      limit: 20,
+      ...(warehouse && { warehouse }),
+      ...(status && { status }),
+    });
 
-  try {
-    const response = await fetch(`/api/inventory/stock?${params}`);
-    if (!response.ok) throw new Error('Failed to fetch inventory');
-    const result = await response.json();
+    try {
+      const response = await fetch(`/api/inventory/stock?${params}`);
+      if (!response.ok) throw new Error("Failed to fetch inventory");
+      const result = await response.json();
 
-    inventoryData = result.data || [];
-    totalPages = result.pages || 1;
+      inventoryData = result.data || [];
+      totalPages = result.pages || 1;
 
-    displayInventoryTable();
-    displayPagination();
-    loadInventorySummary();
-  } catch (error) {
-    console.error('Error:', error);
-    document.getElementById('inventoryTableBody').innerHTML = `
+      displayInventoryTable();
+      displayPagination();
+      loadInventorySummary();
+    } catch (error) {
+      console.error("Error:", error);
+      document.getElementById("inventoryTableBody").innerHTML = `
       <tr>
         <td colspan="8" class="text-center text-danger">
           <i class="fas fa-exclamation-circle"></i> Error loading inventory: ${error.message}
         </td>
       </tr>
     `;
+    }
   }
-}
 
-function displayInventoryTable() {
-  let html = '';
+  function displayInventoryTable() {
+    let html = "";
 
-  if (inventoryData.length === 0) {
-    html = `
+    if (inventoryData.length === 0) {
+      html = `
       <tr>
         <td colspan="8" class="text-center text-muted">
           No inventory records found
         </td>
       </tr>
     `;
-  } else {
-    inventoryData.forEach(item => {
-      const statusBadgeClass = item.status === 'RAW_INVENTORY' ? 'bg-light text-dark' :
-                               item.status === 'WIP_RAW_CONSUMPTION' ? 'bg-warning' :
-                               'bg-success';
-      
-      const totalCost = (item.quantity_kg || 0) * (item.cost_per_unit || 0);
-      const receivedDate = item.received_date ? 
-        new Date(item.received_date).toLocaleDateString() : 'N/A';
+    } else {
+      inventoryData.forEach((item) => {
+        const statusBadgeClass =
+          item.status === "RAW_INVENTORY"
+            ? "bg-light text-dark"
+            : item.status === "WIP_RAW_CONSUMPTION"
+            ? "bg-warning"
+            : "bg-success";
 
-      html += `
+        const totalCost = (item.quantity_kg || 0) * (item.cost_per_unit || 0);
+        const receivedDate = item.received_date
+          ? new Date(item.received_date).toLocaleDateString()
+          : "N/A";
+
+        html += `
         <tr>
           <td>
-            <strong>${item.lot_number || 'LOT-' + item.id}</strong>
+            <strong>${item.lot_number || "LOT-" + item.id}</strong>
             <br>
             <small class="text-muted">${item.id}</small>
           </td>
-          <td>${item.product_name || 'Unknown'}</td>
+          <td>${item.product_name || "Unknown"}</td>
           <td>
             <span class="badge ${statusBadgeClass}">
               ${item.status}
             </span>
           </td>
-          <td>${item.warehouse || 'N/A'}</td>
-          <td class="text-end"><strong>${(item.quantity_kg || 0).toFixed(2)}</strong></td>
+          <td>${item.warehouse || "N/A"}</td>
+          <td class="text-end"><strong>${(item.quantity_kg || 0).toFixed(
+            2
+          )}</strong></td>
           <td class="text-end">₹${(item.cost_per_unit || 0).toFixed(2)}</td>
           <td class="text-end">₹${totalCost.toFixed(2)}</td>
           <td>${receivedDate}</td>
         </tr>
       `;
-    });
+      });
+    }
+
+    document.getElementById("inventoryTableBody").innerHTML = html;
   }
 
-  document.getElementById('inventoryTableBody').innerHTML = html;
-}
+  function displayPagination() {
+    let html = '<ul class="pagination justify-content-center">';
 
-function displayPagination() {
-  let html = '<ul class="pagination justify-content-center">';
-
-  // Previous button
-  html += `
-    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-      <a class="page-link" href="#" onclick="loadInventoryData(${Math.max(1, currentPage - 1)})">
+    // Previous button
+    html += `
+    <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+      <a class="page-link" href="#" onclick="loadInventoryData(${Math.max(
+        1,
+        currentPage - 1
+      )})">
         Previous
       </a>
     </li>
   `;
 
-  // Page numbers
-  for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-    const adjustedPage = i + (currentPage - 3);
-    if (adjustedPage > 0 && adjustedPage <= totalPages) {
-      html += `
-        <li class="page-item ${adjustedPage === currentPage ? 'active' : ''}">
+    // Page numbers
+    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+      const adjustedPage = i + (currentPage - 3);
+      if (adjustedPage > 0 && adjustedPage <= totalPages) {
+        html += `
+        <li class="page-item ${adjustedPage === currentPage ? "active" : ""}">
           <a class="page-link" href="#" onclick="loadInventoryData(${adjustedPage})">
             ${adjustedPage}
           </a>
         </li>
       `;
+      }
     }
-  }
 
-  // Next button
-  html += `
-    <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
-      <a class="page-link" href="#" onclick="loadInventoryData(${Math.min(totalPages, currentPage + 1)})">
+    // Next button
+    html += `
+    <li class="page-item ${currentPage >= totalPages ? "disabled" : ""}">
+      <a class="page-link" href="#" onclick="loadInventoryData(${Math.min(
+        totalPages,
+        currentPage + 1
+      )})">
         Next
       </a>
     </li>
   `;
 
-  html += '</ul>';
-  document.getElementById('paginationContainer').innerHTML = html;
-}
+    html += "</ul>";
+    document.getElementById("paginationContainer").innerHTML = html;
+  }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  loadInventorySummary();
-  loadInventoryData(1);
-  
-  // Refresh every 30 seconds
-  setInterval(() => {
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", function () {
     loadInventorySummary();
-  }, 30000);
-});
+    loadInventoryData(1);
+
+    // Refresh every 30 seconds
+    setInterval(() => {
+      loadInventorySummary();
+    }, 30000);
+  });
 </script>

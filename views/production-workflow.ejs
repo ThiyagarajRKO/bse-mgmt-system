@@ -1,267 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Production Workflow - BOM Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body { background-color: #f8f9fa; }
-    .workflow-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-    .workflow-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
-    .workflow-header h1 { margin: 0; display: flex; align-items: center; gap: 15px; }
-    .step-indicator { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-    .step-badge { padding: 8px 12px; background-color: rgba(255,255,255,0.2); border-radius: 20px; font-size: 12px; font-weight: 500; }
-    .step-badge.active { background-color: white; color: #667eea; }
-    .nav-tabs .nav-link { color: #666; border: none; border-bottom: 3px solid transparent; }
-    .nav-tabs .nav-link.active { color: #667eea; background-color: transparent; border-color: #667eea; }
-    .sidebar-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .sidebar-section h6 { color: #667eea; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .order-list { max-height: 500px; overflow-y: auto; }
-    .order-item { padding: 10px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
-    .order-item:hover { border-color: #667eea; background-color: #f0f0ff; }
-    .order-item.active { border-color: #667eea; background-color: #667eea; color: white; }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <!-- Header -->
-    <div class="workflow-header">
-      <h1>
-        <i class="fas fa-cog"></i>
-        Production Workflow
-      </h1>
-      <p>Manage BOM-driven production orders, track inventory, and analyze variances</p>
-      <div class="step-indicator">
-        <span class="step-badge active">
-          <i class="fas fa-list"></i> Select Order
-        </span>
-        <span class="step-badge">
-          <i class="fas fa-cube"></i> BOM Explosion
-        </span>
-        <span class="step-badge">
-          <i class="fas fa-arrow-right"></i> Consume Raw
-        </span>
-        <span class="step-badge">
-          <i class="fas fa-cubes"></i> Record Output
-        </span>
-        <span class="step-badge">
-          <i class="fas fa-chart-bar"></i> Variance Report
-        </span>
-      </div>
-    </div>
-
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Main Content Area -->
-        <div class="col-lg-9">
-        <!-- Step 1: Create Production Order -->
-        <div class="component-section" id="step1-section">
-          <p class="section-title">Step 1: Create Production Order</p>
-          <%- include('./components/production-order-form') %>
-        </div>
-
-        <!-- Steps 2-5: Workflow Components -->
-        <div id="steps-2-5-section" style="display: none;">
-          <!-- BOM Explosion -->
-          <div class="component-section">
-            <p class="section-title">Step 2: BOM Explosion</p>
-            <%- include('./components/bom-explosion-viewer') %>
-          </div>
-
-          <!-- Raw Material Consumption -->
-          <div class="component-section">
-            <p class="section-title">Step 3: Consume Raw Material</p>
-            <%- include('./components/raw-material-consumption') %>
-          </div>
-
-          <!-- Production Output -->
-          <div class="component-section">
-            <p class="section-title">Step 4: Record Production Output</p>
-            <%- include('./components/production-output-recorder') %>
-          </div>
-
-          <!-- Variance Report -->
-          <div class="component-section">
-            <p class="section-title">Step 5: Variance Analysis</p>
-            <%- include('./components/variance-report') %>
-          </div>
-        </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-3">
-          <div class="sidebar">
-            <!-- Current Order Summary -->
-            <div id="selected-order-info"></div>
-
-            <!-- Production Orders List -->
-            <div class="sidebar-section">
-              <h6><i class="fas fa-list"></i> Recent Orders</h6>
-              <div id="order-list" class="order-list"></div>
-              <button onclick="loadOrders()" class="btn btn-sm btn-primary w-100 mt-2">
-                <i class="fas fa-sync-alt"></i> Refresh
-              </button>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="sidebar-section">
-              <h6><i class="fas fa-chart-pie"></i> Quick Stats</h6>
-              <div class="row text-center">
-                <div class="col-6">
-                  <small class="text-muted">Total Orders</small>
-                  <p class="h6 mb-0" id="total-orders">0</p>
-                </div>
-                <div class="col-6">
-                  <small class="text-muted">Active Orders</small>
-                  <p class="h6 mb-0" id="active-orders">0</p>
-                </div>
-              </div>
-              <div class="row text-center mt-2">
-                <div class="col-12">
-                  <small class="text-muted">Completed Orders</small>
-                  <p class="h6 mb-0" id="completed-orders">0</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Inventory Quick View -->
-            <div class="sidebar-section">
-              <h6><i class="fas fa-warehouse"></i> Inventory Dashboard</h6>
-              <%- include('./components/inventory-dashboard') %>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Production Workflow Components (EJS Templates) -->
-  <script>
-    // Global state management for production workflow
-    let productionOrders = [];
-    let selectedOrder = null;
-    let showInventoryDashboard = false;
-    let totalInventory = 0;
-    let activeOrders = 0;
-    let completedOrders = 0;
-    let isLoading = false;
-
-    // Initialize workflow
-    document.addEventListener('DOMContentLoaded', function() {
-      loadOrders();
-      setupEventListeners();
-    });
-
-    async function loadOrders() {
-      try {
-        isLoading = true;
-        const response = await fetch('/api/production/orders?page=1&limit=20');
-        if (!response.ok) throw new Error('Failed to load orders');
-        const data = await response.json();
-        productionOrders = data.data || [];
-
-        // Calculate stats
-        activeOrders = productionOrders.filter(
-          (o) => o.status === 'PLANNED' || o.status === 'RAW_ISSUED'
-        ).length;
-        completedOrders = productionOrders.filter(
-          (o) => o.status === 'COMPLETED' || o.status === 'CLOSED'
-        ).length;
-
-        updateOrdersList();
-        updateStats();
-      } catch (error) {
-        console.error('Error loading orders:', error);
-      } finally {
-        isLoading = false;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Production Workflow - BOM Management</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      body {
+        background-color: #f8f9fa;
       }
-    }
+      .workflow-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .workflow-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+      }
+      .workflow-header h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .step-indicator {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .step-badge {
+        padding: 8px 12px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .step-badge.active {
+        background-color: white;
+        color: #667eea;
+      }
+      .nav-tabs .nav-link {
+        color: #666;
+        border: none;
+        border-bottom: 3px solid transparent;
+      }
+      .nav-tabs .nav-link.active {
+        color: #667eea;
+        background-color: transparent;
+        border-color: #667eea;
+      }
+      .sidebar-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar-section h6 {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+      .order-list {
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .order-item {
+        padding: 10px;
+        margin-bottom: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .order-item:hover {
+        border-color: #667eea;
+        background-color: #f0f0ff;
+      }
+      .order-item.active {
+        border-color: #667eea;
+        background-color: #667eea;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <div class="workflow-header">
+        <h1>
+          <i class="fas fa-cog"></i>
+          Production Workflow
+        </h1>
+        <p>
+          Manage BOM-driven production orders, track inventory, and analyze
+          variances
+        </p>
+        <div class="step-indicator">
+          <span class="step-badge active">
+            <i class="fas fa-list"></i> Select Order
+          </span>
+          <span class="step-badge">
+            <i class="fas fa-cube"></i> BOM Explosion
+          </span>
+          <span class="step-badge">
+            <i class="fas fa-arrow-right"></i> Consume Raw
+          </span>
+          <span class="step-badge">
+            <i class="fas fa-cubes"></i> Record Output
+          </span>
+          <span class="step-badge">
+            <i class="fas fa-chart-bar"></i> Variance Report
+          </span>
+        </div>
+      </div>
 
-    function setupEventListeners() {
-      // Listen for order creation events
-      window.addEventListener('orderCreated', function(event) {
-        console.log('Order created:', event.detail);
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Main Content Area -->
+          <div class="col-lg-9">
+            <!-- Step 1: Create Production Order -->
+            <div class="component-section" id="step1-section">
+              <p class="section-title">Step 1: Create Production Order</p>
+              <%- include('./components/production-order-form') %>
+            </div>
+
+            <!-- Steps 2-5: Workflow Components -->
+            <div id="steps-2-5-section" style="display: none">
+              <!-- BOM Explosion -->
+              <div class="component-section">
+                <p class="section-title">Step 2: BOM Explosion</p>
+                <%- include('./components/bom-explosion-viewer') %>
+              </div>
+
+              <!-- Raw Material Consumption -->
+              <div class="component-section">
+                <p class="section-title">Step 3: Consume Raw Material</p>
+                <%- include('./components/raw-material-consumption') %>
+              </div>
+
+              <!-- Production Output -->
+              <div class="component-section">
+                <p class="section-title">Step 4: Record Production Output</p>
+                <%- include('./components/production-output-recorder') %>
+              </div>
+
+              <!-- Variance Report -->
+              <div class="component-section">
+                <p class="section-title">Step 5: Variance Analysis</p>
+                <%- include('./components/variance-report') %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="col-lg-3">
+            <div class="sidebar">
+              <!-- Current Order Summary -->
+              <div id="selected-order-info"></div>
+
+              <!-- Production Orders List -->
+              <div class="sidebar-section">
+                <h6><i class="fas fa-list"></i> Recent Orders</h6>
+                <div id="order-list" class="order-list"></div>
+                <button
+                  onclick="loadOrders()"
+                  class="btn btn-sm btn-primary w-100 mt-2"
+                >
+                  <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+              </div>
+
+              <!-- Quick Stats -->
+              <div class="sidebar-section">
+                <h6><i class="fas fa-chart-pie"></i> Quick Stats</h6>
+                <div class="row text-center">
+                  <div class="col-6">
+                    <small class="text-muted">Total Orders</small>
+                    <p class="h6 mb-0" id="total-orders">0</p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">Active Orders</small>
+                    <p class="h6 mb-0" id="active-orders">0</p>
+                  </div>
+                </div>
+                <div class="row text-center mt-2">
+                  <div class="col-12">
+                    <small class="text-muted">Completed Orders</small>
+                    <p class="h6 mb-0" id="completed-orders">0</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inventory Quick View -->
+              <div class="sidebar-section">
+                <h6><i class="fas fa-warehouse"></i> Inventory Dashboard</h6>
+                <%- include('./components/inventory-dashboard') %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Production Workflow Components (EJS Templates) -->
+    <script>
+      // Global state management for production workflow
+      let productionOrders = [];
+      let selectedOrder = null;
+      let showInventoryDashboard = false;
+      let totalInventory = 0;
+      let activeOrders = 0;
+      let completedOrders = 0;
+      let isLoading = false;
+
+      // Initialize workflow
+      document.addEventListener("DOMContentLoaded", function () {
         loadOrders();
+        setupEventListeners();
       });
 
-      // Listen for production started events
-      window.addEventListener('productionStarted', function(event) {
-        console.log('Production started:', event.detail);
-        loadOrders();
-      });
+      async function loadOrders() {
+        try {
+          isLoading = true;
+          const response = await fetch(
+            "/api/production/orders?page=1&limit=20"
+          );
+          if (!response.ok) throw new Error("Failed to load orders");
+          const data = await response.json();
+          productionOrders = data.data || [];
 
-      // Listen for raw material consumed events
-      window.addEventListener('rawMaterialConsumed', function(event) {
-        console.log('Raw material consumed:', event.detail);
-        loadOrders();
-      });
+          // Calculate stats
+          activeOrders = productionOrders.filter(
+            (o) => o.status === "PLANNED" || o.status === "RAW_ISSUED"
+          ).length;
+          completedOrders = productionOrders.filter(
+            (o) => o.status === "COMPLETED" || o.status === "CLOSED"
+          ).length;
 
-      // Listen for output recorded events
-      window.addEventListener('outputRecorded', function(event) {
-        console.log('Output recorded:', event.detail);
-        loadOrders();
-      });
-    }
+          updateOrdersList();
+          updateStats();
+        } catch (error) {
+          console.error("Error loading orders:", error);
+        } finally {
+          isLoading = false;
+        }
+      }
 
-    function updateOrdersList() {
-      const orderList = document.getElementById('order-list');
-      if (!orderList) return;
+      function setupEventListeners() {
+        // Listen for order creation events
+        window.addEventListener("orderCreated", function (event) {
+          console.log("Order created:", event.detail);
+          loadOrders();
+        });
 
-      orderList.innerHTML = productionOrders.slice(0, 10).map(order => `
-        <div class="order-item ${selectedOrder?.id === order.id ? 'active' : ''}" onclick="selectOrder(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+        // Listen for production started events
+        window.addEventListener("productionStarted", function (event) {
+          console.log("Production started:", event.detail);
+          loadOrders();
+        });
+
+        // Listen for raw material consumed events
+        window.addEventListener("rawMaterialConsumed", function (event) {
+          console.log("Raw material consumed:", event.detail);
+          loadOrders();
+        });
+
+        // Listen for output recorded events
+        window.addEventListener("outputRecorded", function (event) {
+          console.log("Output recorded:", event.detail);
+          loadOrders();
+        });
+      }
+
+      function updateOrdersList() {
+        const orderList = document.getElementById("order-list");
+        if (!orderList) return;
+
+        orderList.innerHTML = productionOrders
+          .slice(0, 10)
+          .map(
+            (order) => `
+        <div class="order-item ${
+          selectedOrder?.id === order.id ? "active" : ""
+        }" onclick="selectOrder(${JSON.stringify(order).replace(
+              /"/g,
+              "&quot;"
+            )})">
           <strong>${order.order_number}</strong>
           <small>Qty: ${order.quantity} | Status: ${order.status}</small>
           <span class="float-end">${getStatusBadge(order.status)}</span>
         </div>
-      `).join('');
-    }
+      `
+          )
+          .join("");
+      }
 
-    function updateStats() {
-      document.getElementById('total-orders').textContent = productionOrders.length;
-      document.getElementById('active-orders').textContent = activeOrders;
-      document.getElementById('completed-orders').textContent = completedOrders;
-    }
+      function updateStats() {
+        document.getElementById("total-orders").textContent =
+          productionOrders.length;
+        document.getElementById("active-orders").textContent = activeOrders;
+        document.getElementById("completed-orders").textContent =
+          completedOrders;
+      }
 
-    function selectOrder(order) {
-      selectedOrder = order;
-      document.getElementById('selected-order-info').innerHTML = `
+      function selectOrder(order) {
+        selectedOrder = order;
+        document.getElementById("selected-order-info").innerHTML = `
         <div class="alert alert-info">
           <h6>Selected Order: ${order.order_number}</h6>
           <p class="mb-0">Plant: ${order.plant_id} | Species: ${order.input_species_id} | Qty: ${order.quantity}</p>
         </div>
       `;
-      updateOrdersList();
-      // Show workflow steps when order is selected
-      document.getElementById('step1-section').style.display = 'none';
-      document.getElementById('steps-2-5-section').style.display = 'block';
-      window.dispatchEvent(new CustomEvent('orderSelected', { detail: order }));
-    }
+        updateOrdersList();
+        // Show workflow steps when order is selected
+        document.getElementById("step1-section").style.display = "none";
+        document.getElementById("steps-2-5-section").style.display = "block";
+        window.dispatchEvent(
+          new CustomEvent("orderSelected", { detail: order })
+        );
+      }
 
-    function deselectOrder() {
-      selectedOrder = null;
-      document.getElementById('selected-order-info').innerHTML = '';
-      updateOrdersList();
-      // Hide workflow steps when order is deselected
-      document.getElementById('step1-section').style.display = 'block';
-      document.getElementById('steps-2-5-section').style.display = 'none';
-    }
+      function deselectOrder() {
+        selectedOrder = null;
+        document.getElementById("selected-order-info").innerHTML = "";
+        updateOrdersList();
+        // Hide workflow steps when order is deselected
+        document.getElementById("step1-section").style.display = "block";
+        document.getElementById("steps-2-5-section").style.display = "none";
+      }
 
-
-    function getStatusBadge(status) {
-      const badges = {
-        PLANNED: 'badge bg-secondary',
-        RAW_ISSUED: 'badge bg-warning text-dark',
-        COMPLETED: 'badge bg-success',
-        CLOSED: 'badge bg-primary',
-      };
-      return badges[status] || 'badge bg-light text-dark';
-    }
-  </script>
-</body>
+      function getStatusBadge(status) {
+        const badges = {
+          PLANNED: "badge bg-secondary",
+          RAW_ISSUED: "badge bg-warning text-dark",
+          COMPLETED: "badge bg-success",
+          CLOSED: "badge bg-primary",
+        };
+        return badges[status] || "badge bg-light text-dark";
+      }
+    </script>
+  </body>
 </html>
