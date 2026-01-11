@@ -104,6 +104,10 @@ fastify.get("/Sales", function (req, res) {
   res.view("Sales.ejs");
 });
 
+fastify.get("/PriceRecommendations", function (req, res) {
+  res.view("PriceRecommendations.ejs");
+});
+
 fastify.get("/order-workflow", function (req, res) {
   res.view("OrderWorkflow.ejs", {
     user: req?.session,
