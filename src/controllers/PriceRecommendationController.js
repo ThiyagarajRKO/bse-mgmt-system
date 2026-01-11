@@ -522,9 +522,29 @@ class PriceRecommendationController {
 
       // Get top recommendations
       const topRecommendations = await PriceRecommendation.findAll({
+        attributes: [
+          "id",
+          "product_id",
+          "species_id",
+          "recommendation_type",
+          "priority",
+          "expected_margin_impact",
+          "confidence_score",
+          "status",
+        ],
         include: [
-          { model: models.ProductMaster, as: "product", required: false },
-          { model: models.SpeciesMaster, as: "species", required: false },
+          {
+            model: models.ProductMaster,
+            as: "product",
+            required: false,
+            attributes: ["id", "product_name", "hsn_code"], // Use id instead of product_code
+          },
+          {
+            model: models.SpeciesMaster,
+            as: "species",
+            required: false,
+            attributes: ["id", "species_name"],
+          },
         ],
         where: { status: "PENDING" },
         order: [["expected_margin_impact", "ASC"]], // Most negative impact first
