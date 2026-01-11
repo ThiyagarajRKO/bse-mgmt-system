@@ -31,65 +31,67 @@ export const CheckInventory = async (
         // Step 2: If no direct procurement products, use BOM to find raw materials
         // This handles finished products (e.g., IQF) that require raw materials (e.g., Whole Raw)
 
-        // First, get the product's species
+        // First, get the product's category
         const product = await models.ProductMaster.findOne({
           where: { id: product_master_id, is_active: true },
           attributes: ["id", "product_category_master_id"],
-          include: [
-            {
-              model: models.ProductCategoryMaster,
-              attributes: ["species_master_id"],
-              required: false,
-            },
-          ],
         });
 
-        if (product?.ProductCategoryMaster?.species_master_id) {
-          const speciesId = product.ProductCategoryMaster.species_master_id;
-
-          // Find BOMs for this species
-          const boms = await models.BomMaster.findAll({
-            where: {
-              species_id: speciesId,
-              is_active: true,
-            },
-            attributes: ["id"],
-            include: [
-              {
-                model: models.BomInput,
-                as: "inputs",
-                attributes: ["raw_product_id"],
-                required: true,
-              },
-            ],
+        if (product?.product_category_master_id) {
+          // Get the category to find species
+          const category = await models.ProductCategoryMaster.findOne({
+            where: { id: product.product_category_master_id },
+            attributes: ["species_master_id"],
           });
 
-          if (boms && boms.length > 0) {
-            // Extract all raw product IDs from BOM inputs
-            const rawProductIds = [];
-            boms.forEach((bom) => {
-              bom.inputs.forEach((input) => {
-                if (
-                  input.raw_product_id &&
-                  !rawProductIds.includes(input.raw_product_id)
-                ) {
-                  rawProductIds.push(input.raw_product_id);
-                }
-              });
+          if (category?.species_master_id) {
+            const speciesId = category.species_master_id;
+
+            // Find BOMs for this species
+            const boms = await models.BomMaster.findAll({
+              where: {
+                species_id: speciesId,
+                is_active: true,
+              },
+              attributes: ["id"],
+              include: [
+                {
+                  model: models.BomInput,
+                  as: "inputs",
+                  attributes: ["raw_product_id"],
+                  required: true,
+                },
+              ],
             });
 
-            // Get procurement products for these raw materials
-            if (rawProductIds.length > 0) {
-              const rawProcProducts = await models.ProcurementProducts.findAll({
-                where: {
-                  product_master_id: rawProductIds,
-                  is_active: true,
-                },
-                attributes: ["id"],
+            if (boms && boms.length > 0) {
+              // Extract all raw product IDs from BOM inputs
+              const rawProductIds = [];
+              boms.forEach((bom) => {
+                bom.inputs.forEach((input) => {
+                  if (
+                    input.raw_product_id &&
+                    !rawProductIds.includes(input.raw_product_id)
+                  ) {
+                    rawProductIds.push(input.raw_product_id);
+                  }
+                });
               });
 
-              if (rawProcProducts && rawProcProducts.length > 0) {
-                procProductIds = rawProcProducts.map((p) => p.id);
+              // Get procurement products for these raw materials
+              if (rawProductIds.length > 0) {
+                const rawProcProducts =
+                  await models.ProcurementProducts.findAll({
+                    where: {
+                      product_master_id: rawProductIds,
+                      is_active: true,
+                    },
+                    attributes: ["id"],
+                  });
+
+                if (rawProcProducts && rawProcProducts.length > 0) {
+                  procProductIds = rawProcProducts.map((p) => p.id);
+                }
               }
             }
           }
