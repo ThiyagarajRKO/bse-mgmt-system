@@ -3365,21 +3365,38 @@
                   product?.product_master_id ||
                   product?.Packing?.pd?.pp?.ProductMaster?.id;
 
-                // Extract species_master_id from the product
-                // First try the enriched species_id directly added by API
-                // Then try ProductMaster association, then nested Packing structure
-                speciesMasterId =
-                  product?.species_id ||
-                  product?.ProductMaster?.ProductCategoryMaster
-                    ?.species_master_id ||
-                  product?.Packing?.pd?.pp?.ProductMaster?.ProductCategoryMaster
-                    ?.species_master_id ||
-                  null;
+                console.log(
+                  `[Order View] Fetching product master ${productMasterId} to get species info`
+                );
+
+                // Fetch the full product master with category and species
+                $.ajax({
+                  url: `/api/master/product/${productMasterId}`,
+                  method: "GET",
+                  dataType: "json",
+                  async: false,
+                  success: function (prodResponse) {
+                    if (prodResponse?.data) {
+                      const fullProduct = prodResponse.data;
+                      speciesMasterId =
+                        fullProduct?.ProductCategoryMaster?.species_master_id ||
+                        null;
+                      console.log(
+                        `[Order View] Retrieved species ID: ${speciesMasterId}`
+                      );
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(
+                      `Error fetching product master ${productMasterId}:`,
+                      error
+                    );
+                  },
+                });
 
                 console.log(
                   `[Order View] Product: ${productName}, Species ID: ${speciesMasterId}`
                 );
-
                 // Fetch inventory for this product
                 if (productMasterId) {
                   $.ajax({
@@ -3387,8 +3404,15 @@
                     method: "GET",
                     dataType: "json",
                     success: function (invResponse) {
+                      console.log(
+                        `[Order View] Purchase inventory response:`,
+                        invResponse
+                      );
                       purchaseInventory =
                         invResponse?.data?.available_quantity || 0;
+                      console.log(
+                        `[Order View] Purchase inventory: ${purchaseInventory}`
+                      );
 
                       // Now fetch sales inventory for the same product
                       $.ajax({
@@ -3397,6 +3421,10 @@
                         dataType: "json",
                         async: false,
                         success: function (salesResponse) {
+                          console.log(
+                            `[Order View] Sales inventory response:`,
+                            salesResponse
+                          );
                           if (salesResponse?.data) {
                             if (Array.isArray(salesResponse.data)) {
                               salesInventory = salesResponse.data.reduce(
@@ -3411,8 +3439,16 @@
                               salesInventory = salesResponse.data.quantity || 0;
                             }
                           }
+                          console.log(
+                            `[Order View] Sales inventory: ${salesInventory}`
+                          );
                         },
-                        error: function () {
+                        error: function (xhr, status, error) {
+                          console.error(
+                            `[Order View] Error fetching sales inventory:`,
+                            status,
+                            error
+                          );
                           salesInventory = 0;
                         },
                       });
@@ -3421,6 +3457,9 @@
                       netInventory = Math.max(
                         0,
                         purchaseInventory - salesInventory
+                      );
+                      console.log(
+                        `[Order View] Net inventory: ${netInventory}`
                       );
 
                       showOrderViewModal(
@@ -3434,7 +3473,12 @@
                         netInventory
                       );
                     },
-                    error: function () {
+                    error: function (xhr, status, error) {
+                      console.error(
+                        `[Order View] Error fetching purchase inventory:`,
+                        status,
+                        error
+                      );
                       showOrderViewModal(
                         order,
                         productName,
@@ -3525,8 +3569,8 @@
                       <div style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="padding: 8px; background: #f5f5f5; border-radius: 3px; border-left: 3px solid #627293;">
                           <small style="color: #666;">
-                            <div><strong>Purchase Inventory:</strong> ${purchaseInventory} units</div>
-                            <div><strong>Sales Inventory:</strong> ${salesInventory} units</div>
+                            <div><strong>Raw Materials in Stock:</strong> ${purchaseInventory} units</div>
+                            <div><strong>Finished Goods:</strong> ${salesInventory} units</div>
                           </small>
                         </div>
                         <p>
@@ -3536,7 +3580,7 @@
                               ? "badge-success"
                               : "badge-danger"
                           }" style="font-size: 1em; padding: 8px 12px;">
-                            Current: ${netInventory} units
+                            Total Available: ${netInventory} units
                           </span>
                         </p>
                       </div>
@@ -3963,145 +4007,83 @@
                   ? ` - ${material.SupplierMaster.supplier_name}`
                   : "";
 
-              let purchaseInventory = 0;
-              let salesInventory = 0;
-              let productionInventory = 0;
-              let rawMaterialInventory = 0;
+              // Initialize inventory variables
+              let rawMaterialInventory = 0; // Purchase inventory (raw materials)
+              let producedInventory = 0; // Sales inventory (finished goods)
               let netInventory = 0;
 
               const productMasterId = material.product_master_id;
 
-              // Fetch purchase inventory
+              // Debug: Log what we're searching for
+              console.log(
+                `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`
+              );
+              console.log(`[DEBUG] Material data:`, material);
+
+              // Fetch raw material inventory (purchase inventory) for this specific material
               $.ajax({
-                url: `/api/inventory/purchase/all?procurement_product_id=${material.id}`,
+                url: `/api/inventory/purchase/all?procurement_product_id=${material.procurement_product_id}`,
                 method: "GET",
                 dataType: "json",
                 timeout: 5000,
                 async: false,
                 success: function (inventoryResponse) {
+                  console.log(
+                    `[DEBUG] API Response for procurement_product_id ${material.procurement_product_id}:`,
+                    inventoryResponse
+                  );
+
                   if (inventoryResponse?.data) {
                     if (Array.isArray(inventoryResponse.data)) {
-                      purchaseInventory = inventoryResponse.data.reduce(
+                      console.log(
+                        `[DEBUG] Response is array with ${inventoryResponse.data.length} items`
+                      );
+                      rawMaterialInventory = inventoryResponse.data.reduce(
                         (sum, inv) => {
+                          console.log(
+                            `[DEBUG] Item:`,
+                            inv,
+                            `Quantity: ${inv.quantity}`
+                          );
                           return sum + (inv.quantity || 0);
                         },
                         0
                       );
                     } else if (inventoryResponse.data.quantity !== undefined) {
-                      purchaseInventory = inventoryResponse.data.quantity || 0;
-                    }
-                  }
-                },
-                error: function (xhr, status, error) {
-                  console.error(
-                    `Error fetching purchase inventory for material ${material.id}:`,
-                    status,
-                    error
-                  );
-                  purchaseInventory = 0;
-                },
-              });
-
-              if (productMasterId) {
-                $.ajax({
-                  url: `/api/inventory/sales/all?search=${productMasterId}`,
-                  method: "GET",
-                  dataType: "json",
-                  timeout: 5000,
-                  async: false,
-                  success: function (salesResponse) {
-                    if (salesResponse?.data) {
-                      if (Array.isArray(salesResponse.data)) {
-                        salesInventory = salesResponse.data.reduce(
-                          (sum, inv) => {
-                            return sum + (inv.quantity || 0);
-                          },
-                          0
-                        );
-                      } else if (salesResponse.data.quantity !== undefined) {
-                        salesInventory = salesResponse.data.quantity || 0;
-                      }
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.error(
-                      `Error fetching sales inventory for product ${productMasterId}:`,
-                      status,
-                      error
-                    );
-                    salesInventory = 0;
-                  },
-                });
-              }
-
-              if (productMasterId) {
-                $.ajax({
-                  url: `/api/inventory/sales/all?search=${productMasterId}`,
-                  method: "GET",
-                  dataType: "json",
-                  timeout: 5000,
-                  async: false,
-                  success: function (prodResponse) {
-                    if (prodResponse?.data) {
-                      if (Array.isArray(prodResponse.data)) {
-                        productionInventory = prodResponse.data.reduce(
-                          (sum, inv) => {
-                            return sum + (inv.quantity || 0);
-                          },
-                          0
-                        );
-                      } else if (prodResponse.data.quantity !== undefined) {
-                        productionInventory = prodResponse.data.quantity || 0;
-                      }
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.error(
-                      `Error fetching production inventory for product ${productMasterId}:`,
-                      status,
-                      error
-                    );
-                    productionInventory = 0;
-                  },
-                });
-              }
-
-              $.ajax({
-                url: `/api/inventory/purchase/all?procurement_product_id=${material.id}`,
-                method: "GET",
-                dataType: "json",
-                timeout: 5000,
-                async: false,
-                success: function (rmResponse) {
-                  if (rmResponse?.data) {
-                    if (Array.isArray(rmResponse.data)) {
-                      rawMaterialInventory = rmResponse.data.reduce(
-                        (sum, inv) => {
-                          return sum + (inv.quantity || 0);
-                        },
-                        0
+                      console.log(
+                        `[DEBUG] Response is object with quantity:`,
+                        inventoryResponse.data.quantity
                       );
-                    } else if (rmResponse.data.quantity !== undefined) {
-                      rawMaterialInventory = rmResponse.data.quantity || 0;
+                      rawMaterialInventory =
+                        inventoryResponse.data.quantity || 0;
+                    } else {
+                      console.log(
+                        `[DEBUG] Response data is not array or has quantity:`,
+                        inventoryResponse.data
+                      );
                     }
+                  } else {
+                    console.log(`[DEBUG] No data in response`);
                   }
                 },
                 error: function (xhr, status, error) {
                   console.error(
-                    `Error fetching raw material inventory for product ${material.id}:`,
+                    `Error fetching raw material inventory for ${material.procurement_product_id}:`,
                     status,
-                    error
+                    error,
+                    xhr.responseText
                   );
                   rawMaterialInventory = 0;
                 },
               });
 
-              const totalAvailable =
-                purchaseInventory + productionInventory + rawMaterialInventory;
-              netInventory = Math.max(0, totalAvailable - salesInventory);
+              // Net inventory is just the raw material inventory available for this material
+              netInventory = rawMaterialInventory;
 
               console.log(
-                `Material: ${materialName}, Purchase: ${purchaseInventory}, Production: ${productionInventory}, Raw Material: ${rawMaterialInventory}, Sales: ${salesInventory}, Net: ${netInventory}`
+                `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
+                  netInventory > 0 ? "Available" : "Out of Stock"
+                }`
               );
 
               const statusColor = netInventory > 0 ? "#4caf50" : "#d32f2f";
@@ -4135,34 +4117,22 @@
                       <div style="background: rgba(98, 114, 147, 0.1); padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid rgba(98, 114, 147, 0.3);">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                           <div>
-                            <span style="color: #999;">Purchase:</span>
-                            <strong style="color: #e3e3e3; display: block;">${purchaseInventory} units</strong>
-                          </div>
-                          <div>
-                            <span style="color: #999;">Production:</span>
-                            <strong style="color: #e3e3e3; display: block;">${productionInventory} units</strong>
-                          </div>
-                          <div>
-                            <span style="color: #999;">Raw Material:</span>
+                            <span style="color: #999;">Current in Stock:</span>
                             <strong style="color: #e3e3e3; display: block;">${rawMaterialInventory} units</strong>
                           </div>
                           <div>
-                            <span style="color: #999;">Sales Allocated:</span>
-                            <strong style="color: #e3e3e3; display: block;">${salesInventory} units</strong>
+                            <span style="color: #999;">Price per Unit:</span>
+                            <strong style="color: #e3e3e3; display: block;">₹${
+                              material.procurement_price || 0
+                            }</strong>
                           </div>
                         </div>
                       </div>
 
                       <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
-                          <span style="color: #999; font-size: 12px;">Available:</span>
+                          <span style="color: #999; font-size: 12px;">Available in Stock:</span>
                           <strong style="color: ${statusColor}; display: block; font-size: 14px;">${netInventory} units</strong>
-                        </div>
-                        <div style="text-align: right; margin-left: 10px;">
-                          <small style="color: #999;">Price</small>
-                          <div style="color: #f7f9fc; font-weight: bold; font-size: 14px;">₹${
-                            material.procurement_price || 0
-                          }</div>
                         </div>
                       </div>
                     </div>
