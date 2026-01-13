@@ -149,21 +149,23 @@ export const GetNames = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("GetNames called - procurement_lot_id:", procurement_lot_id);
+      console.log("GetNames called with:", {
+        procurement_lot_id,
+        peeled_dispatch_id,
+      });
 
-      // First get all peeling products with product master info
+      // Simple approach: Get peeling products with ProductMaster
       const peelings = await models.PeelingProducts.findAll({
         attributes: [
           "id",
           "product_master_id",
           "peeling_id",
-          "created_at",
           "yield_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id and ${
+              `(SELECT COALESCE(SUM(peeled_dispatch_quantity), 0) FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id AND ${
                 peeled_dispatch_id != "null" && peeled_dispatch_id != undefined
-                  ? "pd.id != '" + peeled_dispatch_id + "' and"
+                  ? `pd.id != '${peeled_dispatch_id}' AND`
                   : ""
               } pd.is_active = true)`
             ),
@@ -175,101 +177,72 @@ export const GetNames = ({
             model: models.ProductMaster,
             as: "ProductMaster",
             attributes: ["id", "product_name"],
-            where: {
-              is_active: true,
-            },
+            required: true,
           },
         ],
         where: {
           is_active: true,
         },
-        raw: false,
-        subQuery: false,
         order: [["created_at", "desc"]],
+        subQuery: false,
         distinct: true,
       });
 
-      console.log("GetNames - All peeling products found:", peelings?.length);
+      console.log("Found peeling products:", peelings.length);
 
-      // If no procurement_lot_id provided, return all
+      // If no procurement lot filter, return all with their peeling info
       if (!procurement_lot_id) {
-        console.log("No lot filter, returning all peeling products");
-        peelings?.forEach((p) => {
-          console.log(
-            "  - PeelingProduct ID:",
-            p.id,
-            "Product:",
-            p.ProductMaster?.product_name,
-            "Yield:",
-            p.yield_quantity
-          );
-        });
+        console.log("No lot filter - returning all products");
         return resolve(peelings);
       }
 
-      // Otherwise filter by procurement_lot_id
-      const filteredPeelings = [];
+      // Filter by procurement lot via peeling → dispatch → procurement_product
+      console.log("Filtering by procurement_lot_id:", procurement_lot_id);
 
+      const filtered = [];
       for (const peeling of peelings) {
         try {
-          // Get the peeling's dispatch info to check lot
+          // Get the peeling record to find dispatch
           const peelingRecord = await models.Peeling.findOne({
             where: { id: peeling.peeling_id, is_active: true },
-            attributes: ["id", "dispatch_id"],
-            include: [
-              {
-                model: models.Dispatches,
-                as: "dis",
-                attributes: ["id", "procurement_product_id"],
-                where: { is_active: true },
-                raw: true,
-              },
-            ],
+            attributes: ["dispatch_id"],
             raw: true,
           });
 
-          if (peelingRecord?.dis?.procurement_product_id) {
-            // Get the procurement product to check lot
-            const procProduct = await models.ProcurementProducts.findOne({
-              where: {
-                id: peelingRecord.dis.procurement_product_id,
-                is_active: true,
-              },
-              attributes: ["procurement_lot_id"],
-              raw: true,
-            });
+          if (!peelingRecord) continue;
 
-            if (procProduct?.procurement_lot_id === procurement_lot_id) {
-              filteredPeelings.push(peeling);
-              console.log(
-                "  ✓ Matched:",
-                peeling.id,
-                "Product:",
-                peeling.ProductMaster?.product_name
-              );
-            }
+          // Get the dispatch to find procurement_product
+          const dispatch = await models.Dispatches.findOne({
+            where: { id: peelingRecord.dispatch_id, is_active: true },
+            attributes: ["procurement_product_id"],
+            raw: true,
+          });
+
+          if (!dispatch) continue;
+
+          // Get the procurement product to check the lot
+          const procProduct = await models.ProcurementProducts.findOne({
+            where: { id: dispatch.procurement_product_id, is_active: true },
+            attributes: ["procurement_lot_id"],
+            raw: true,
+          });
+
+          if (procProduct?.procurement_lot_id === procurement_lot_id) {
+            filtered.push(peeling);
+            console.log(
+              "  ✓ Added:",
+              peeling.id,
+              "Product:",
+              peeling.ProductMaster?.product_name
+            );
           }
         } catch (e) {
-          console.log("  ✗ Error filtering peeling:", peeling.id, e.message);
+          console.log("  Error checking peeling:", peeling.id, e.message);
         }
       }
 
-      console.log(
-        "GetNames - Filtered peeling products:",
-        filteredPeelings?.length
-      );
-      filteredPeelings?.forEach((p) => {
-        console.log(
-          "  - PeelingProduct ID:",
-          p.id,
-          "Product:",
-          p.ProductMaster?.product_name,
-          "Yield:",
-          p.yield_quantity
-        );
-      });
-
-      resolve(filteredPeelings);
+      console.log("Filtered results:", filtered.length, "products");
+      resolve(filtered);
     } catch (err) {
       console.error("GetNames error:", err.message || err);
       reject(err);

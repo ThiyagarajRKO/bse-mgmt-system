@@ -226,6 +226,11 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/peeling/product",
   });
 
+  // Peeled Dispatch Routes
+  fastify.register(peeledDispatchRoute, {
+    prefix: "/peeled/dispatch",
+  });
+
   // Packing Routes
   fastify.register(packingRoute, {
     prefix: "/packing",
