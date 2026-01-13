@@ -2733,67 +2733,182 @@
         $("#orderModal").modal("show");
 
         loadOrdersProductTableData(view_order_id);
+
+        // Get product details from the first product in the order for stock checking
+        // We'll set these after the table loads
+        setTimeout(() => {
+          const tableApi = $("#orderProductTable").DataTable();
+          if (tableApi && tableApi.rows().data().length > 0) {
+            const firstProduct = tableApi.rows().data()[0];
+            const product_master_id =
+              firstProduct?.product_master_id ||
+              firstProduct?.ProductMaster?.id;
+            const quantity_required_kg = firstProduct?.quantity || 0;
+
+            // Store in view_order_no attributes for use in confirm button
+            if (product_master_id) {
+              $("#view_order_no").attr("product_master_id", product_master_id);
+              $("#view_order_no").attr(
+                "quantity_required_kg",
+                quantity_required_kg
+              );
+            }
+          }
+        }, 500);
       });
 
       $(document).on("click", "#confirmOrderModalBtn", function () {
         const order_id = $("#view_order_no").attr("order_id");
         const order_no = $("#view_order_no").text();
+        const product_master_id = $("#view_order_no").attr("product_master_id");
+        const quantity_required_kg = $("#view_order_no").attr(
+          "quantity_required_kg"
+        );
 
         if (!order_id) {
           toastr.error("Order ID not found", "Error");
           return;
         }
 
-        $.confirm({
-          title: "Confirm Order?",
-          content: `Are you sure you want to confirm order <strong>${order_no}</strong>? This will move the order to the allocation workflow.`,
-          backgroundDismiss: false,
-          backgroundDismissAnimation: "glow",
-          type: "red",
-          closeIcon: true,
-          closeIconClass: "fa fa-close",
-          typeAnimated: true,
-          boxWidth: "30%",
-          useBootstrap: false,
-          autoClose: "no|5000",
-          buttons: {
-            confirm: {
-              text: "Confirm Order",
-              btnClass: "btn-red",
-              action: function () {
-                $.ajax({
-                  url: "/api/order/confirm",
-                  method: "POST",
-                  data: JSON.stringify({
-                    order_id: order_id,
-                  }),
-                  contentType: "application/json",
-                })
-                  .done(function (response) {
-                    // Close the modal
-                    $("#orderModal").modal("hide");
+        // First, check if we have stock for this product
+        $.ajax({
+          url: "/api/order/check-stock",
+          method: "POST",
+          data: JSON.stringify({
+            product_master_id: product_master_id,
+            quantity_required_kg: parseFloat(quantity_required_kg),
+          }),
+          contentType: "application/json",
+        })
+          .done(function (stockResponse) {
+            const canBeginProduct = stockResponse?.data?.canBeginProduct;
+            const suggestProcurement = stockResponse?.data?.suggestProcurement;
+            const stockMessage = stockResponse?.message;
 
-                    // Reload the table data
-                    loadOrdersTableData();
+            if (canBeginProduct) {
+              // Stock is sufficient - show confirmation dialog and then confirm order
+              $.confirm({
+                title: "Confirm Order?",
+                content: `<p>Are you sure you want to confirm order <strong>${order_no}</strong>?</p>
+                          <p style="color: green; font-size: 14px;"><i class="fa-solid fa-check-circle"></i> Stock is sufficient for production</p>
+                          <p>This will move the order to the allocation workflow.</p>`,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: "glow",
+                type: "green",
+                closeIcon: true,
+                closeIconClass: "fa fa-close",
+                typeAnimated: true,
+                boxWidth: "30%",
+                useBootstrap: false,
+                autoClose: "no|5000",
+                buttons: {
+                  confirm: {
+                    text: "Confirm Order",
+                    btnClass: "btn-green",
+                    action: function () {
+                      $.ajax({
+                        url: "/api/order/confirm",
+                        method: "POST",
+                        data: JSON.stringify({
+                          order_id: order_id,
+                        }),
+                        contentType: "application/json",
+                      })
+                        .done(function (response) {
+                          // Close the modal
+                          $("#orderModal").modal("hide");
 
-                    toastr.success(
-                      "Order confirmed successfully and moved to allocation workflow",
-                      "Order Confirmed"
-                    );
-                  })
-                  .fail(function (xhr) {
-                    const errorMessage =
-                      xhr?.responseJSON?.message ||
-                      "Order confirmation failed!";
-                    toastr.error(errorMessage, "Error");
-                  });
+                          // Reload the table data
+                          loadOrdersTableData();
+
+                          toastr.success(
+                            "Order confirmed successfully and moved to allocation workflow",
+                            "Order Confirmed"
+                          );
+                        })
+                        .fail(function (xhr) {
+                          const errorMessage =
+                            xhr?.responseJSON?.message ||
+                            "Order confirmation failed!";
+                          toastr.error(errorMessage, "Error");
+                        });
+                    },
+                  },
+                  cancel: function () {
+                    toastr.info("Order confirmation cancelled", "Info");
+                  },
+                },
+              });
+            } else if (suggestProcurement) {
+              // Insufficient stock - redirect to purchase request
+              $.confirm({
+                title: "Insufficient Raw Material Stock",
+                content: `<p><strong>Order ${order_no}</strong> cannot be fulfilled with current stock.</p>
+                          <p style="color: #ff6b6b; font-size: 14px;"><i class="fa-solid fa-exclamation-circle"></i> ${stockMessage}</p>
+                          <p>You need to raise a purchase request for raw materials first.</p>
+                          <p>Would you like to proceed to raise a purchase request?</p>`,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: "glow",
+                type: "orange",
+                closeIcon: true,
+                closeIconClass: "fa fa-close",
+                typeAnimated: true,
+                boxWidth: "30%",
+                useBootstrap: false,
+                buttons: {
+                  raisePR: {
+                    text: "Raise Purchase Request",
+                    btnClass: "btn-orange",
+                    action: function () {
+                      // Redirect to purchase request page
+                      window.location.href = "/purchase-request";
+                    },
+                  },
+                  cancel: function () {
+                    toastr.info("Action cancelled", "Info");
+                  },
+                },
+              });
+            } else {
+              toastr.warning(
+                stockMessage || "Unable to determine stock status",
+                "Stock Check"
+              );
+            }
+          })
+          .fail(function (xhr) {
+            // Default to requiring procurement on error
+            const errorMessage =
+              xhr?.responseJSON?.message ||
+              "Unable to check stock availability";
+
+            $.confirm({
+              title: "Stock Check Failed",
+              content: `<p>Error checking raw material availability.</p>
+                        <p style="color: #ff6b6b; font-size: 14px;">${errorMessage}</p>
+                        <p>Please raise a purchase request before proceeding.</p>`,
+              backgroundDismiss: false,
+              backgroundDismissAnimation: "glow",
+              type: "orange",
+              closeIcon: true,
+              closeIconClass: "fa fa-close",
+              typeAnimated: true,
+              boxWidth: "30%",
+              useBootstrap: false,
+              buttons: {
+                raisePR: {
+                  text: "Raise Purchase Request",
+                  btnClass: "btn-orange",
+                  action: function () {
+                    window.location.href = "/purchase-request";
+                  },
+                },
+                cancel: function () {
+                  toastr.info("Action cancelled", "Info");
+                },
               },
-            },
-            cancel: function () {
-              toastr.info("Order confirmation cancelled", "Info");
-            },
-          },
-        });
+            });
+          });
       });
 
       function loadOrdersProductTableData(order_id) {
@@ -3519,113 +3634,6 @@
       );
 
       // Display order view modal with real data
-      // BOM Explosion Viewer for Allocate Orders Modal - GLOBAL SCOPE
-      async function loadAllocateBOMList(button, modal) {
-        try {
-          const targetModal =
-            modal ||
-            (button ? $(button).closest(".modal") : $("#allocationViewModal"));
-          const speciesId = targetModal.data("species-id");
-
-          // Build the query to filter by species if available
-          let url = "/api/production/orders?page=1&limit=100";
-          if (speciesId) {
-            url += `&species_id=${speciesId}`;
-          }
-
-          const response = await fetch(url);
-          if (!response.ok) throw new Error("Failed to load orders");
-          const data = await response.json();
-
-          const orderSelect = targetModal.find(".allocBomSelect");
-          orderSelect.html('<option value="">-- Select an order --</option>');
-
-          (data.data || []).forEach((order) => {
-            orderSelect.append(
-              `<option value="${order.id}">${order.order_number} (${order.input_species_id})</option>`
-            );
-          });
-
-          if ((data.data || []).length === 0) {
-            console.warn("No production orders found for this species");
-          }
-        } catch (error) {
-          console.error("Error loading orders:", error);
-          toastr.error("Error loading BOM orders");
-        }
-      }
-
-      async function loadAllocateBOM(select) {
-        const orderId = $(select).val();
-        const modal = $(select).closest(".modal");
-
-        if (!orderId) {
-          modal.find(".allocBomContent").hide();
-          modal.find(".allocBomEmpty").show();
-          return;
-        }
-
-        try {
-          const response = await fetch(`/api/production/orders/${orderId}`);
-          if (!response.ok) throw new Error("Failed to load BOM");
-          const order = await response.json();
-
-          displayAllocateBOM(modal, order);
-          modal.find(".allocBomContent").show();
-          modal.find(".allocBomEmpty").hide();
-        } catch (error) {
-          console.error("Error loading BOM:", error);
-          toastr.error("Error loading BOM data");
-        }
-      }
-
-      function displayAllocateBOM(modal, order) {
-        const bomData = order.bom || {};
-
-        // Input Materials
-        const inputs = bomData.inputs || [];
-        const inputsHtml =
-          inputs.length > 0
-            ? inputs
-                .map(
-                  (input) => `
-              <div style="padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                <small>${
-                  input.material_name || input.product_id || "Unknown"
-                }</small>
-                <small style="color: #667eea; font-weight: 500;">${(
-                  input.quantity || 0
-                ).toLocaleString()} kg</small>
-              </div>
-            `
-                )
-                .join("")
-            : '<small class="text-muted" style="padding: 8px;">No inputs</small>';
-
-        modal.find(".allocBomInputs").html(inputsHtml);
-
-        // Output Products
-        const outputs = (bomData.outputs || []).filter((o) => !o.is_byproduct);
-        const outputsHtml =
-          outputs.length > 0
-            ? outputs
-                .map(
-                  (output) => `
-              <div style="padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                <small>${
-                  output.product_name || output.product_id || "Unknown"
-                }</small>
-                <small style="color: #28a745; font-weight: 500;">${(
-                  output.quantity || 0
-                ).toLocaleString()} kg</small>
-              </div>
-            `
-                )
-                .join("")
-            : '<small class="text-muted" style="padding: 8px;">No outputs</small>';
-
-        modal.find(".allocBomOutputs").html(outputsHtml);
-      }
 
       function showOrderViewModal(
         order,
@@ -3702,63 +3710,24 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row mb-3">
-                    <div class="col-md-12">
-                      <fieldset class="form-group border p-3" style="border-color: rgba(129, 145, 179, 0.6) !important;">
-                        <legend class="w-auto px-2">
-                          <i class="fas fa-cube" style="color: #667eea;"></i> BOM Explosion
-                        </legend>
-                        
-                        <!-- Order Selection -->
-                        <div class="form-group mb-3">
-                          <label class="fw-bold">Select Production Order</label>
-                          <div class="input-group">
-                            <select class="form-control allocBomSelect" onchange="loadAllocateBOM(this)">
-                              <option value="">-- Select an order --</option>
-                            </select>
-                            <button class="btn btn-primary" onclick="loadAllocateBOMList(this)" type="button">
-                              <i class="fas fa-sync-alt"></i>
-                            </button>
-                          </div>
-                        </div>
-
-                        <!-- Empty State -->
-                        <div class="allocBomEmpty text-center" style="padding: 20px; color: #999;">
-                          <small>Select a production order to view BOM</small>
-                        </div>
-
-                        <!-- BOM Content -->
-                        <div class="allocBomContent" style="display: none; font-size: 0.9em;">
-                          <!-- Input Materials -->
-                          <div class="mb-3">
-                            <label class="fw-bold" style="color: #667eea;">
-                              <i class="fas fa-arrow-right"></i> Input Materials
-                            </label>
-                            <div class="allocBomInputs" style="border: 1px solid #ddd; border-radius: 4px; max-height: 150px; overflow-y: auto;"></div>
-                          </div>
-
-                          <!-- Output Products -->
-                          <div>
-                            <label class="fw-bold" style="color: #667eea;">
-                              <i class="fas fa-cubes"></i> Output Products
-                            </label>
-                            <div class="allocBomOutputs" style="border: 1px solid #ddd; border-radius: 4px; max-height: 150px; overflow-y: auto;"></div>
-                          </div>
-                        </div>
-                      </fieldset>
-                    </div>
-                  </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
-                    order.id
-                  }" data-product-id="${productMasterId}" data-species-id="${
-          speciesMasterId || ""
-        }" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
-          order.order_no
-        }">
-                    <i class="fa-solid fa-plus"></i> Raise Purchase Request
-                  </button>
+                  ${
+                    parseFloat(purchaseInventory) >=
+                    parseFloat(quantityRequired)
+                      ? `<button type="button" class="btn btn-danger" id="beginProductionBtn" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}">
+                          <i class="fa-solid fa-industry"></i> Begin Production
+                        </button>`
+                      : `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
+                          order.id
+                        }" data-product-id="${productMasterId}" data-species-id="${
+                          speciesMasterId || ""
+                        }" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
+                          order.order_no
+                        }">
+                          <i class="fa-solid fa-plus"></i> Raise Purchase Request
+                        </button>`
+                  }
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
@@ -3777,25 +3746,42 @@
           $(this).remove();
         });
 
-        // Load BOM orders when modal opens
-        $("#allocationViewModal").on("shown.bs.modal", function () {
-          const modal = $(this);
-          const orderId = modal.data("order-id");
-          loadAllocateBOMList(null, modal);
-
-          // Auto-select and load the order's BOM if we have an order ID from production
-          // This allows showing the BOM for the order being viewed
-          setTimeout(() => {
-            if (orderId) {
-              modal.find(".allocBomSelect").val(orderId);
-              loadAllocateBOM(modal.find(".allocBomSelect")[0]);
-            }
-          }, 500);
-        });
-
         // Show modal
         $("#allocationViewModal").modal("show");
       }
+
+      // Begin Production Button Handler
+      $(document).on("click", "#beginProductionBtn", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log("Begin Production button clicked");
+
+        // Close the modal first
+        $("#allocationViewModal").modal("hide");
+
+        const orderId = $(this).data("order-id");
+        const productId = $(this).data("product-id");
+        const orderNo = $(this).data("order-no");
+
+        console.log("Begin Production data:", {
+          orderId,
+          productId,
+          orderNo,
+        });
+
+        // Validate data
+        if (!orderId || orderId === "null" || orderId === null) {
+          toastr.error("Order ID not found. Cannot begin production.", "Error");
+          return;
+        }
+
+        // Small delay to ensure modal is closed before redirecting
+        setTimeout(() => {
+          // Redirect to production page with order ID
+          window.location.href = `/Production?order_id=${orderId}`;
+        }, 300);
+      });
 
       // Raise Purchase Request Button Handler
       $(document).on("click", "#raisePurchaseRequestBtn", function (e) {

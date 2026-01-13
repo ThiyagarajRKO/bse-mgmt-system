@@ -49,6 +49,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      Orders.hasMany(models.production_orders, {
+        foreignKey: "order_id",
+        as: "production_orders",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
     }
   }
   Orders.init(

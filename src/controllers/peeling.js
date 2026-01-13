@@ -4,6 +4,10 @@ import models, { sequelize } from "../../models";
 export const Insert = async (profile_id, peeling_data, is_product_included) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("=== Peeling.Insert called ===");
+      console.log("is_product_included:", is_product_included);
+      console.log("peeling_data:", JSON.stringify(peeling_data, null, 2));
+
       if (!profile_id) {
         return reject({
           statusCode: 420,
@@ -25,23 +29,67 @@ export const Insert = async (profile_id, peeling_data, is_product_included) => {
         });
       }
 
-      let options = {};
-      if (is_product_included) {
-        options = {
-          include: [
-            {
-              profile_id,
-              model: models.PeelingProducts,
-            },
-          ],
-        };
+      // Separate PeelingProducts from peeling_data
+      const { PeelingProducts, ...peelingDataOnly } = peeling_data;
+
+      console.log(
+        "PeelingProducts array:",
+        JSON.stringify(PeelingProducts, null, 2)
+      );
+      console.log("peelingDataOnly:", JSON.stringify(peelingDataOnly, null, 2));
+
+      // Create the Peeling record
+      const peeling = await models.Peeling.create(peelingDataOnly, {
+        profile_id,
+      });
+
+      console.log("Peeling created with ID:", peeling?.id);
+
+      // Create PeelingProducts if provided
+      if (
+        is_product_included &&
+        Array.isArray(PeelingProducts) &&
+        PeelingProducts.length > 0
+      ) {
+        console.log(
+          "Creating PeelingProducts:",
+          PeelingProducts.length,
+          "products"
+        );
+
+        for (const product of PeelingProducts) {
+          try {
+            const peelingProduct = await models.PeelingProducts.create(
+              {
+                peeling_id: peeling.id,
+                product_master_id: product.product_master_id,
+                yield_quantity: product.yield_quantity,
+                peeling_notes: product.peeling_notes,
+                is_active: true,
+              },
+              { profile_id }
+            );
+            console.log(
+              "  ✓ Created PeelingProduct:",
+              peelingProduct.id,
+              "Product:",
+              product.product_master_id
+            );
+          } catch (err) {
+            console.log("  ✗ Error creating PeelingProduct:", err.message);
+            throw err;
+          }
+        }
+      } else {
+        console.log(
+          "Skipping PeelingProducts creation - is_product_included:",
+          is_product_included,
+          "PeelingProducts.length:",
+          PeelingProducts?.length
+        );
       }
 
-      const result = await models.Peeling.create(peeling_data, {
-        profile_id,
-        ...options,
-      });
-      resolve(result);
+      resolve(peeling);
     } catch (err) {
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({
@@ -228,6 +276,7 @@ export const GetAll = ({
                   },
                   {
                     attributes: [],
+                    as: "ProductMaster",
                     model: models.ProductMaster,
                     where: {
                       is_active: true,
@@ -294,6 +343,7 @@ export const GetAll = ({
                   },
                   {
                     attributes: ["product_name"],
+                    as: "ProductMaster",
                     model: models.ProductMaster,
                     where: {
                       is_active: true,

@@ -244,12 +244,18 @@ export const GetAll = ({ start, length, search }) => {
           "temperature",
           "delivery_notes",
           "delivery_status",
-          // [
-          //   sequelize.literal(
-          //     `(SELECT CASE WHEN SUM(yield_quantity) IS NULL THEN 0 ELSE SUM(yield_quantity) END FROM peeling_products WHERE id = "PeeledDispatches".peeled_product_id and is_active = true)`
-          //   ),
-          //   "total_yield_quantity",
-          // ],
+          [
+            sequelize.literal(
+              `(SELECT procurement_lot FROM procurement_lots WHERE id = (SELECT procurement_lot_id FROM procurement_products WHERE id = (SELECT dispatch_id FROM "peeling" WHERE id = (SELECT peeling_id FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true) AND is_active = true) AND is_active = true) AND is_active = true LIMIT 1)`
+            ),
+            "procurement_lot",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT SUM(yield_quantity) FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true)`
+            ),
+            "total_yield_quantity",
+          ],
         ],
         include: [
           {

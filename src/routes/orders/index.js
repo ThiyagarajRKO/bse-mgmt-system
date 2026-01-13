@@ -9,6 +9,7 @@ import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
 import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
 import { DeleteEmpty } from "./handlers/delete_empty";
+import CheckStockForProduct from "./handlers/check_stock_for_product";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -221,6 +222,29 @@ export const ordersRoute = (fastify, opts, done) => {
       }
     }
   );
+
+  // Check if sufficient raw material stock is available for a product based on yield
+  fastify.post("/check-stock", async (req, reply) => {
+    try {
+      const params = {
+        product_master_id: req?.body?.product_master_id,
+        quantity_required_kg: req?.body?.quantity_required_kg,
+      };
+
+      const result = await CheckStockForProduct(params, req?.session, fastify);
+
+      return reply.code(result.success ? 200 : 400).send(result);
+    } catch (err) {
+      console.error("Error in check-stock endpoint:", err);
+      return reply.code(500).send({
+        success: false,
+        message: "Error checking stock",
+        error: err.message,
+        canBeginProduct: false,
+        suggestProcurement: true,
+      });
+    }
+  });
 
   // Delete empty orders (orders without any products)
   fastify.delete("/empty", async (req, reply) => {

@@ -149,21 +149,14 @@ export const GetNames = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
+      console.log("GetNames called - procurement_lot_id:", procurement_lot_id);
 
-      let procurementLotsWhere = {
-        is_active: true,
-      };
-
-      if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
-      }
-
+      // First get all peeling products with product master info
       const peelings = await models.PeelingProducts.findAll({
         attributes: [
           "id",
+          "product_master_id",
+          "peeling_id",
           "created_at",
           "yield_quantity",
           [
@@ -179,58 +172,106 @@ export const GetNames = ({
         ],
         include: [
           {
-            attributes: [],
-            as: "pln",
-            model: models.Peeling,
-            where: {
-              is_active: true,
-            },
-            include: [
-              {
-                attributes: [],
-                as: "dis",
-                model: models.Dispatches,
-                where: {
-                  is_active: true,
-                },
-                include: [
-                  {
-                    attributes: [],
-                    as: "pp",
-                    model: models.ProcurementProducts,
-                    where: {
-                      is_active: true,
-                    },
-                    include: [
-                      {
-                        attributes: [],
-                        as: "pl",
-                        model: models.ProcurementLots,
-                        where: procurementLotsWhere,
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
             model: models.ProductMaster,
+            as: "ProductMaster",
             attributes: ["id", "product_name"],
             where: {
               is_active: true,
             },
           },
         ],
-        where,
-        offset: start,
-        limit: length,
+        where: {
+          is_active: true,
+        },
+        raw: false,
+        subQuery: false,
         order: [["created_at", "desc"]],
-        group: ["PeelingProducts.id", "pln.id", "ProductMaster.id"],
+        distinct: true,
       });
 
-      resolve(peelings);
+      console.log("GetNames - All peeling products found:", peelings?.length);
+
+      // If no procurement_lot_id provided, return all
+      if (!procurement_lot_id) {
+        console.log("No lot filter, returning all peeling products");
+        peelings?.forEach((p) => {
+          console.log(
+            "  - PeelingProduct ID:",
+            p.id,
+            "Product:",
+            p.ProductMaster?.product_name,
+            "Yield:",
+            p.yield_quantity
+          );
+        });
+        return resolve(peelings);
+      }
+
+      // Otherwise filter by procurement_lot_id
+      const filteredPeelings = [];
+
+      for (const peeling of peelings) {
+        try {
+          // Get the peeling's dispatch info to check lot
+          const peelingRecord = await models.Peeling.findOne({
+            where: { id: peeling.peeling_id, is_active: true },
+            attributes: ["id", "dispatch_id"],
+            include: [
+              {
+                model: models.Dispatches,
+                as: "dis",
+                attributes: ["id", "procurement_product_id"],
+                where: { is_active: true },
+                raw: true,
+              },
+            ],
+            raw: true,
+          });
+
+          if (peelingRecord?.dis?.procurement_product_id) {
+            // Get the procurement product to check lot
+            const procProduct = await models.ProcurementProducts.findOne({
+              where: {
+                id: peelingRecord.dis.procurement_product_id,
+                is_active: true,
+              },
+              attributes: ["procurement_lot_id"],
+              raw: true,
+            });
+
+            if (procProduct?.procurement_lot_id === procurement_lot_id) {
+              filteredPeelings.push(peeling);
+              console.log(
+                "  ✓ Matched:",
+                peeling.id,
+                "Product:",
+                peeling.ProductMaster?.product_name
+              );
+            }
+          }
+        } catch (e) {
+          console.log("  ✗ Error filtering peeling:", peeling.id, e.message);
+        }
+      }
+
+      console.log(
+        "GetNames - Filtered peeling products:",
+        filteredPeelings?.length
+      );
+      filteredPeelings?.forEach((p) => {
+        console.log(
+          "  - PeelingProduct ID:",
+          p.id,
+          "Product:",
+          p.ProductMaster?.product_name,
+          "Yield:",
+          p.yield_quantity
+        );
+      });
+
+      resolve(filteredPeelings);
     } catch (err) {
+      console.error("GetNames error:", err.message || err);
       reject(err);
     }
   });

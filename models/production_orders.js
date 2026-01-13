@@ -23,6 +23,12 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(20),
         allowNull: false,
       },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to the sales order this production order is created from",
+      },
       input_species_id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -76,6 +82,11 @@ module.exports = (sequelize) => {
   );
 
   ProductionOrder.associate = (models) => {
+    ProductionOrder.belongsTo(models.Orders, {
+      foreignKey: "order_id",
+      as: "sales_order",
+      onDelete: "SET NULL",
+    });
     ProductionOrder.belongsTo(models.species_master, {
       foreignKey: "input_species_id",
       as: "input_species",

@@ -265,6 +265,7 @@ export const GetAll = ({
   species_master_name,
   product_category_name,
   product_size,
+  derivative_master_id,
   start,
   length,
   search,
@@ -277,6 +278,11 @@ export const GetAll = ({
 
       if (product_name) {
         where.product_name = { [Op.iLike]: `%${product_name}%` };
+      }
+
+      // Add filter for derivative_master_id
+      if (derivative_master_id) {
+        where.derivative_master_id = derivative_master_id;
       }
 
       let speciesWhere = {

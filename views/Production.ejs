@@ -3667,42 +3667,81 @@
         $(".peelingProductNames").empty();
         productNamesArray = [];
 
-        if (!species_id) {
-          toastr["warning"]("Product data must not be empty");
+        const dispatch_id = $("#rawMaterials").val();
+
+        if (!dispatch_id) {
+          console.log("No dispatch selected");
+          $(".peelingProductNames").select2({
+            placeholder: "Select product",
+            allowClear: true,
+            data: [],
+          });
+          return;
         }
 
+        console.log("=== loadPeelingProducts ===");
+        console.log("Loading ordered products for dispatch_id:", dispatch_id);
+
+        // Fetch dispatch to get ordered products
         $.ajax({
-          url: "/api/master/product?species_id=" + species_id,
+          url: `/api/dispatch/${dispatch_id}`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: false,
-          success: (data) => {
+          success: (response) => {
             productNamesArray = [];
+            console.log("Dispatch response:", response);
 
-            data?.data?.rows.forEach((item) => {
-              productNamesArray.push({
-                id: item.id,
-                text: item.product_name,
-              });
-            });
+            if (response?.success && response?.data) {
+              const dispatch = response.data;
 
+              // Get ordered products from dispatch data
+              const orderedProducts = dispatch?.ordered_products || [];
+              console.log("Ordered products array:", orderedProducts);
+
+              // Add each ordered product to the dropdown
+              if (orderedProducts && orderedProducts.length > 0) {
+                orderedProducts.forEach((op) => {
+                  if (op?.ProductMaster?.id && op?.ProductMaster?.product_name) {
+                    console.log(`✓ Adding ordered product: ${op.ProductMaster.product_name} (ID: ${op.ProductMaster.id})`);
+
+                    productNamesArray.push({
+                      id: op.ProductMaster.id,
+                      text: op.ProductMaster.product_name,
+                    });
+                  }
+                });
+              } else {
+                console.warn("No ordered products found in dispatch response");
+              }
+            } else {
+              console.warn("Invalid response structure:", response);
+            }
+
+            console.log("Final productNamesArray:", productNamesArray);
+
+            // Populate Select2 dropdowns with ordered products
             $(".peelingProductNames").select2({
-              placeholder: "Choose a product",
-              allowClear: "true",
+              placeholder: "Select product",
+              allowClear: true,
               data: productNamesArray,
             });
 
-            if (!is_updated_data)
+            if (!is_updated_data) {
               $(".peelingProductNames").val(null).trigger("change");
+            }
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
-            }
+            console.error("Error fetching dispatch:", textStatus, errorThrown);
+            toastr["error"]("Failed to load ordered products from dispatch");
+
+            $(".peelingProductNames").select2({
+              placeholder: "Error loading products",
+              allowClear: true,
+              data: [],
+            });
           },
         });
       }

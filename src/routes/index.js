@@ -211,6 +211,21 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/sales/payment",
   });
 
+  // Dispatch Routes
+  fastify.register(dispatchRoute, {
+    prefix: "/dispatch",
+  });
+
+  // Peeling Routes
+  fastify.register(peelingRoute, {
+    prefix: "/peeling",
+  });
+
+  // Peeling Products Routes
+  fastify.register(peelingProductRoute, {
+    prefix: "/peeling/product",
+  });
+
   // Packing Routes
   fastify.register(packingRoute, {
     prefix: "/packing",

@@ -106,9 +106,61 @@ export const Get = ({ id }) => {
           id,
           is_active: true,
         },
+        include: [
+          {
+            model: models.ProcurementProducts,
+            as: "pp",
+            attributes: ["id", "product_master_id"],
+            where: {
+              is_active: true,
+            },
+            include: [
+              {
+                model: models.ProductMaster,
+                as: "ProductMaster",
+                attributes: ["id", "product_name"],
+                where: {
+                  is_active: true,
+                },
+              },
+            ],
+          },
+        ],
       });
 
-      resolve(dispatch);
+      // Get ordered products that match the dispatch's raw material species/category
+      let orderedProducts = [];
+      if (dispatch?.pp?.ProductMaster?.product_name) {
+        // Extract species info from procurement product name
+        // Product names format: SPECIES_NAME-CATEGORY-GRADE-SIZE
+        const procurementProductName = dispatch.pp.ProductMaster.product_name;
+
+        // Find all OrderProducts that might be finished products derived from this raw material
+        // Match by product category - look for ordered products with similar species
+        orderedProducts = await models.OrderProducts.findAll({
+          attributes: ["id", "product_master_id"],
+          include: [
+            {
+              model: models.ProductMaster,
+              as: "ProductMaster",
+              attributes: ["id", "product_name"],
+              where: {
+                is_active: true,
+              },
+            },
+          ],
+          where: {
+            is_active: true,
+          },
+          raw: false,
+        });
+      }
+
+      // Attach ordered products to dispatch response
+      const dispatchData = dispatch.toJSON();
+      dispatchData.ordered_products = orderedProducts;
+
+      resolve(dispatchData);
     } catch (err) {
       reject(err);
     }
@@ -400,19 +452,10 @@ export const GetProductNames = ({
                 where: procurementLotsWhere,
               },
               {
-                requried: true,
+                required: true,
                 attributes: ["id", "product_name"],
+                as: "ProductMaster",
                 model: models.ProductMaster,
-                include: [
-                  {
-                    required: true,
-                    // attributes: ["id", "species_master_id"],
-                    model: models.ProductCategoryMaster,
-                    where: {
-                      is_active: true,
-                    },
-                  },
-                ],
                 where: {
                   is_active: true,
                 },
@@ -444,8 +487,6 @@ export const GetProductNames = ({
           "Dispatches.id",
           "pp.id",
           "pp->ProductMaster.id",
-          "pp->ProductMaster->ProductCategoryMaster.id",
-          // "pp->ProductMaster->ProductCategoryMaster->SpeciesMaster.id",
           "pp->SupplierMaster.id",
         ],
       });

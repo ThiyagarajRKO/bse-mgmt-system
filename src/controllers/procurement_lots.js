@@ -965,6 +965,19 @@ export const GetPeeledDispatchStats = ({
           "procurement_lot",
           [
             sequelize.literal(
+              `(SELECT order_no FROM orders o WHERE id IN (
+                SELECT DISTINCT order_id FROM order_products op 
+                JOIN product_master pm ON pm.id = op.product_master_id
+                WHERE pm.id IN (
+                  SELECT DISTINCT product_master_id FROM procurement_products 
+                  WHERE procurement_lot_id = "ProcurementLots".id
+                )
+              ) LIMIT 1)`
+            ),
+            "order_no",
+          ],
+          [
+            sequelize.literal(
               `(SELECT 
                   sum(p.peeling_quantity) FROM peeling p
 	              JOIN 

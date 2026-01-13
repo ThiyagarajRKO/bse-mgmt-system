@@ -79,6 +79,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
         include: [
           {
             attributes: ["id", "product_name", "product_category_master_id"],
+            as: "ProductMaster",
             model: models.ProductMaster,
             required: false,
           },

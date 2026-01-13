@@ -1,16 +1,11 @@
-import createRoute from "./create";
-import getAllRoute from "./getAll";
-import getRoute from "./get";
-import updateRoute from "./update";
 import workflowRoute from "./workflow";
+import linkOrdersRoute from "./link_orders";
 
 export default async (fastify) => {
-  // Register all CRUD routes for production
-  fastify.register(createRoute);
-  fastify.register(getAllRoute);
-  fastify.register(getRoute);
-  fastify.register(updateRoute);
-
-  // Register workflow routes (BOM operations, inventory)
+  // Register workflow routes (Production orders with BOM operations, inventory)
+  // Production.ejs page uses /api/dispatch and /api/peeling endpoints directly
   fastify.register(workflowRoute);
+
+  // Register order linking routes (connect orders to production)
+  fastify.register(linkOrdersRoute);
 };

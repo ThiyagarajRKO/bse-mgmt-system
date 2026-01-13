@@ -168,11 +168,6 @@ export const GetAll = ({ start, length, search }) => {
               [Op.iLike]: `%${search}%`,
             },
           },
-          {
-            "$OrderProducts.ProductMaster.product_name$": {
-              [Op.iLike]: `%${search}%`,
-            },
-          },
         ];
       }
 
@@ -245,6 +240,7 @@ export const GetAll = ({ start, length, search }) => {
             include: [
               {
                 attributes: ["id", "product_name"],
+                as: "ProductMaster",
                 model: models.ProductMaster,
                 required: false,
               },

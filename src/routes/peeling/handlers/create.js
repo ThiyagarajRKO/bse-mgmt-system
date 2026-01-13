@@ -14,6 +14,14 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("=== Peeling Create Handler ===");
+      console.log(
+        "PeelingProducts received:",
+        JSON.stringify(PeelingProducts, null, 2)
+      );
+      console.log("Is array?", Array.isArray(PeelingProducts));
+      console.log("Length?", PeelingProducts?.length);
+
       const { dispatch_quantity } = await Dispatches.GetQuantity({
         id: dispatch_id,
       });
