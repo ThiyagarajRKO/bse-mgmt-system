@@ -28,16 +28,8 @@ export const Create = async (
             include: [
               {
                 model: models.ProductMaster,
-                include: [
-                  {
-                    model: models.GradeMaster,
-                    attributes: ["id"],
-                  },
-                  {
-                    model: models.SizeMaster,
-                    attributes: ["id"],
-                  },
-                ],
+                as: "ProductMaster",
+                attributes: ["id", "grade_master_id", "size_master_id"],
               },
             ],
           },
@@ -53,9 +45,9 @@ export const Create = async (
 
       // Derive grade and size from product if not provided
       const derivedGradeId =
-        grade_master_id || peeledDispatch.pp.ProductMaster?.GradeMaster?.id;
+        grade_master_id || peeledDispatch.pp?.ProductMaster?.grade_master_id;
       const derivedSizeId =
-        size_master_id || peeledDispatch.pp.ProductMaster?.SizeMaster?.id;
+        size_master_id || peeledDispatch.pp?.ProductMaster?.size_master_id;
 
       if (!derivedGradeId || !derivedSizeId) {
         return reject({

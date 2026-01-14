@@ -58,6 +58,143 @@ export const Update = async (profile_id, id, packing_data) => {
         });
       }
 
+      // If trying to mark as "Ready for Sales", validate that expiry_date is set
+      if (packing_data?.packing_status === "Ready for Sales") {
+        // Get current packing record to check expiry_date and get product info
+        const currentPacking = await models.Packing.findOne({
+          where: {
+            id,
+            is_active: true,
+          },
+          attributes: ["expiry_date", "packing_quantity", "packing_status"],
+          include: [
+            {
+              as: "pd",
+              model: models.PeeledDispatches,
+              attributes: ["id"],
+              include: [
+                {
+                  as: "pp",
+                  model: models.PeelingProducts,
+                  attributes: ["id"],
+                  include: [
+                    {
+                      as: "pln",
+                      model: models.Peeling,
+                      attributes: ["id"],
+                      include: [
+                        {
+                          as: "dis",
+                          model: models.Dispatches,
+                          attributes: ["id"],
+                          include: [
+                            {
+                              as: "pp",
+                              model: models.ProcurementProducts,
+                              attributes: ["id"],
+                              include: [
+                                {
+                                  model: models.ProductMaster,
+                                  attributes: ["id"],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+
+        const expiryDate =
+          packing_data?.expiry_date || currentPacking?.expiry_date;
+
+        if (!expiryDate) {
+          return reject({
+            statusCode: 420,
+            message:
+              "Cannot mark as 'Ready for Sales': Expiry date must be set first!",
+          });
+        }
+
+        // If status is changing from "In Progress" to "Ready for Sales", create sales inventory record
+        if (
+          currentPacking?.packing_status !== "Ready for Sales" &&
+          packing_data?.packing_status === "Ready for Sales"
+        ) {
+          try {
+            // Get product master ID from packing data
+            const packingDetail = await models.Packing.findOne({
+              where: { id, is_active: true },
+              attributes: ["id", "packing_quantity"],
+              include: [
+                {
+                  as: "pd",
+                  model: models.PeeledDispatches,
+                  attributes: ["id"],
+                  include: [
+                    {
+                      as: "pp",
+                      model: models.PeelingProducts,
+                      attributes: ["id"],
+                      include: [
+                        {
+                          as: "pln",
+                          model: models.Peeling,
+                          attributes: ["id"],
+                          include: [
+                            {
+                              as: "dis",
+                              model: models.Dispatches,
+                              attributes: ["id"],
+                              include: [
+                                {
+                                  as: "pp",
+                                  model: models.ProcurementProducts,
+                                  attributes: ["product_master_id"],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            });
+
+            if (packingDetail?.pd?.pp?.pln?.dis?.pp?.product_master_id) {
+              const productMasterId =
+                packingDetail.pd.pp.pln.dis.pp.product_master_id;
+
+              // Create sales inventory record
+              await models.SalesInventory.create(
+                {
+                  packing_id: id,
+                  product_master_id: productMasterId,
+                  quantity: packingDetail.packing_quantity || 0,
+                  is_active: true,
+                },
+                { profile_id }
+              );
+
+              console.log(`✅ Sales inventory created for packing ${id}`);
+            }
+          } catch (err) {
+            console.warn(
+              "Warning: Could not create sales inventory record:",
+              err.message
+            );
+            // Don't reject - continue with status update even if sales inventory creation fails
+          }
+        }
+      }
+
       const result = await models.Packing.update(packing_data, {
         where: {
           id,
@@ -604,6 +741,192 @@ export const LockPackingCalculations = ({ packing_calculation_id }) => {
 
       resolve(result);
     } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * AI-Based Packing Container Recommendation
+ * Recommends optimal packaging containers based on product characteristics and quantity
+ */
+export const RecommendPackingContainers = ({
+  product_id,
+  quantity_kg,
+  market,
+  grade,
+  size,
+  product_category,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!product_id || !quantity_kg) {
+        return reject({
+          statusCode: 420,
+          message: "Product ID and quantity are required",
+        });
+      }
+
+      // Get available packaging options
+      const packagingOptions = await models.PackagingMaster.findAll({
+        attributes: [
+          "id",
+          "packaging_code",
+          "packaging_type",
+          "packaging_weight",
+          "packaging_height",
+          "packaging_width",
+          "packaging_length",
+        ],
+        where: {
+          is_active: true,
+        },
+        order: [["packaging_weight", "ASC"]],
+      });
+
+      if (!packagingOptions || packagingOptions.length === 0) {
+        return reject({
+          statusCode: 404,
+          message: "No packaging options available",
+        });
+      }
+
+      // AI Logic: Calculate optimal containers based on characteristics
+      const recommendations = packagingOptions.map((pkg) => {
+        // Get capacity - use packaging_weight as container capacity in kg
+        const containerCapacity = pkg.packaging_weight || 1;
+
+        // Calculate number of containers needed
+        const containersNeeded = Math.ceil(quantity_kg / containerCapacity);
+
+        // Calculate utilization factor
+        const utilizationRate =
+          (quantity_kg / (containersNeeded * containerCapacity)) * 100;
+
+        // Score based on utilization (prefer 80-95% utilization)
+        let score = 50;
+        if (utilizationRate >= 80 && utilizationRate <= 95) {
+          score = 100; // Ideal utilization
+        } else if (utilizationRate >= 70 && utilizationRate < 80) {
+          score = 85;
+        } else if (utilizationRate > 95 && utilizationRate <= 100) {
+          score = 90; // Nearly full
+        } else if (utilizationRate >= 50 && utilizationRate < 70) {
+          score = 60;
+        } else if (utilizationRate < 50) {
+          score = 30; // Too much waste
+        }
+
+        // Market-based adjustments
+        if (market === "EXPORT" && pkg.packaging_type === "Master Carton") {
+          score += 15; // Export markets prefer master cartons
+        }
+        if (market === "DOMESTIC" && pkg.packaging_type === "Pouch") {
+          score += 10; // Domestic markets prefer pouches
+        }
+
+        // Premium products get better packaging (Master Carton preferred)
+        if (grade === "PREMIUM") {
+          if (
+            pkg.packaging_type === "Master Carton" ||
+            pkg.packaging_type === "Duplex Carton"
+          ) {
+            score += 20;
+          }
+        }
+
+        // Small orders prefer smaller containers
+        if (quantity_kg < 10 && containerCapacity <= 5) {
+          score += 15;
+        }
+
+        // Large orders prefer larger containers
+        if (quantity_kg > 100 && containerCapacity >= 10) {
+          score += 10;
+        }
+
+        // Calculate cost estimate (assuming cost per kg of packaging)
+        const costPerKgPackaging = 2; // Default cost per kg
+        const totalEstimatedCost = (
+          containersNeeded *
+          containerCapacity *
+          costPerKgPackaging
+        ).toFixed(2);
+
+        // Calculate volume in liters (assuming packaging dimensions)
+        let volume = "N/A";
+        if (
+          pkg.packaging_height &&
+          pkg.packaging_width &&
+          pkg.packaging_length
+        ) {
+          volume = (
+            (pkg.packaging_height *
+              pkg.packaging_width *
+              pkg.packaging_length) /
+            1000
+          ).toFixed(2);
+        }
+
+        return {
+          packaging_id: pkg.id,
+          packaging_code: pkg.packaging_code,
+          packaging_type: pkg.packaging_type,
+          capacity_kg: containerCapacity,
+          volume_liters: volume,
+          dimensions: {
+            height_cm: pkg.packaging_height,
+            width_cm: pkg.packaging_width,
+            length_cm: pkg.packaging_length,
+          },
+          containers_needed: containersNeeded,
+          total_weight_kg: (containersNeeded * containerCapacity).toFixed(2),
+          utilization_rate: utilizationRate.toFixed(2),
+          ai_score: score,
+          estimated_cost: totalEstimatedCost,
+          cost_per_unit: (totalEstimatedCost / containersNeeded).toFixed(2),
+          efficiency_rating:
+            score >= 90
+              ? "OPTIMAL"
+              : score >= 70
+              ? "GOOD"
+              : score >= 50
+              ? "ACCEPTABLE"
+              : "POOR",
+        };
+      });
+
+      // Sort by AI score (descending) and then by cost (ascending)
+      const sortedRecommendations = recommendations.sort((a, b) => {
+        if (b.ai_score !== a.ai_score) {
+          return b.ai_score - a.ai_score; // Higher score first
+        }
+        return parseFloat(a.estimated_cost) - parseFloat(b.estimated_cost); // Lower cost second
+      });
+
+      // Return top 3 recommendations
+      const topRecommendations = sortedRecommendations.slice(0, 3);
+
+      resolve({
+        product_id,
+        quantity_kg,
+        market,
+        grade,
+        size,
+        recommendation_summary: {
+          total_options: sortedRecommendations.length,
+          best_option_index: 0,
+          total_containers_recommended:
+            topRecommendations[0]?.containers_needed || 0,
+          estimated_total_cost: topRecommendations[0]?.estimated_cost || 0,
+          efficiency: topRecommendations[0]?.efficiency_rating || "N/A",
+        },
+        all_recommendations: sortedRecommendations,
+        top_recommendations: topRecommendations,
+        best_option: topRecommendations[0],
+      });
+    } catch (err) {
+      console.error("Error in RecommendPackingContainers:", err);
       reject(err);
     }
   });

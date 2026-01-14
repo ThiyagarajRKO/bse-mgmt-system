@@ -11,6 +11,7 @@ import { LockCalculations } from "./handlers/lock_calculations";
 import { CalculateCartonCostHandler } from "./handlers/calculate_carton_cost";
 import { CalculatePalletCostHandler } from "./handlers/calculate_pallet_cost";
 import { CalculateCompletePackagingCostHandler } from "./handlers/calculate_complete_cost";
+import aiContainersHandler from "./handlers/ai_containers";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -306,6 +307,9 @@ export const packingRoute = (fastify, opts, done) => {
       }
     }
   );
+
+  // Register AI containers handler
+  fastify.register(aiContainersHandler);
 
   done();
 };

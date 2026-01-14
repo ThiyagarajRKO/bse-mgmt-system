@@ -49,28 +49,37 @@ export const Update = (
       }
 
       if (!packing_data?.packing_quantity) {
-        if (!packing_data?.peeled_dispatch_id) {
+        // Only validate peeled_dispatch_id if we're not just updating status
+        if (
+          !packing_data?.packing_status &&
+          !packing_data?.peeled_dispatch_id
+        ) {
           return reject({
             statusCode: 420,
             message: "Packed product id must not be empty",
           });
         }
-        const { peeled_dispatch_quantity } = await PeeledDispatches.GetQuantity(
-          {
-            id: packing_data?.peeled_dispatch_id,
-          }
-        );
 
-        if (!peeled_dispatch_quantity) {
-          return reject({
-            statusCode: 420,
-            message: "Invalid product quantity",
-          });
-        } else if (peeled_dispatch_quantity < packing_data?.packing_quantity) {
-          return reject({
-            statusCode: 420,
-            message: "Packed quantity is greater than Dispatched quantity",
-          });
+        // Only do quantity checks if peeled_dispatch_id exists
+        if (packing_data?.peeled_dispatch_id) {
+          const { peeled_dispatch_quantity } =
+            await PeeledDispatches.GetQuantity({
+              id: packing_data?.peeled_dispatch_id,
+            });
+
+          if (!peeled_dispatch_quantity) {
+            return reject({
+              statusCode: 420,
+              message: "Invalid product quantity",
+            });
+          } else if (
+            peeled_dispatch_quantity < packing_data?.packing_quantity
+          ) {
+            return reject({
+              statusCode: 420,
+              message: "Packed quantity is greater than Dispatched quantity",
+            });
+          }
         }
       }
 

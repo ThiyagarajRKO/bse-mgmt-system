@@ -1586,15 +1586,6 @@
                 </div>
 
                 <div class="form-group mt-4">
-                  <label for="packingPackage">Packing Container</label>
-                  <select
-                    class="form-control input-dropdown w-100"
-                    id="packingPackage"
-                    name="packingPackage"
-                  ></select>
-                </div>
-
-                <div class="form-group mt-4">
                   <label for="packing_quantity">Quantity</label>
                   <input
                     id="packing_quantity"
@@ -1608,6 +1599,40 @@
                     >Balance Packed Quantity :
                     <span class="fw-bold" id="balance_packed_quantity"></span
                   ></span>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="packingPackage">Packing Container</label>
+                  <select
+                    class="form-control input-dropdown w-100"
+                    id="packingPackage"
+                    name="packingPackage"
+                  ></select>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="aiRecommendBtn" class="fw-bold"
+                    >AI Container Recommendation</label
+                  >
+                  <button
+                    type="button"
+                    id="aiRecommendBtn"
+                    class="btn btn-info w-100"
+                    style="margin-bottom: 10px"
+                  >
+                    <i class="fa-solid fa-sparkles"></i> Get AI Recommendations
+                  </button>
+                  <div
+                    id="aiRecommendationsPanel"
+                    class="d-none mt-2 p-3 border rounded"
+                    style="
+                      background-color: #f8f9fa;
+                      max-height: 300px;
+                      overflow-y: auto;
+                    "
+                  >
+                    <div id="aiRecommendationsContent"></div>
+                  </div>
                 </div>
 
                 <div class="form-group mt-4">
@@ -1749,6 +1774,7 @@
                       <th class="fw-bold"><span>Packing Status</span></th>
                       <th class="fw-bold"><span>Packed Date</span></th>
                       <th class="fw-bold"><span>Expiry Date</span></th>
+                      <th class="fw-bold"><span>Actions</span></th>
                     </tr>
                   </thead>
                 </table>
@@ -4975,6 +5001,7 @@
             { data: "packing_status" },
             { data: "created_at" },
             { data: "expiry_date" },
+            { data: null },
           ],
           columnDefs: [
             {
@@ -4988,9 +5015,9 @@
             {
               targets: [1],
               className: "text-left",
+              width: "200px",
               render: function (data, type, row) {
-                return `<span peeled_product_id='${row?.pd?.id}'>${data}</i>`;
-                /*-${row?.["PeeledDispatches"]?.peeled_dispatch_quantity}</i>;*/
+                return `<span peeled_product_id='${row?.pd?.id}' style="word-wrap: break-word; white-space: normal; display: block; max-width: 200px;">${data}</span>`;
               },
             },
             {
@@ -5100,6 +5127,25 @@
                 );
               },
             },
+            {
+              targets: [12],
+              className: "text-center",
+              render: function (data, type, row) {
+                const isReady = row.packing_status === "Ready for Sales";
+                const buttonClass = isReady ? "btn-success" : "btn-danger";
+                const buttonText = isReady ? "Ready ✓" : "Mark Ready";
+                const buttonTitle = isReady ? "Already marked ready for sales" : "Mark this packing as ready for sales";
+
+                return `<button class="btn btn-sm ${buttonClass} updatePackingStatus"
+                          packing_id="${row.id}"
+                          packing_status="${row.packing_status}"
+                          expiry_date="${row.expiry_date}"
+                          title="${buttonTitle}"
+                          ${isReady ? 'disabled' : ''}>
+                          ${buttonText}
+                        </button>`;
+              },
+            },
           ],
           drawCallback: () => { },
         });
@@ -5171,6 +5217,60 @@
 
         $("#packingModal").modal("hide");
       });
+
+      // Handle packing status update
+      $(document).on("click", ".updatePackingStatus", (e) => {
+        e.preventDefault();
+
+        const packingId = $(e.target).attr("packing_id");
+        const currentStatus = $(e.target).attr("packing_status");
+        const expiryDate = $(e.target).attr("expiry_date");
+
+        // Validation: Check if expiry date is set
+        if (!expiryDate || expiryDate === "null" || expiryDate === "") {
+          toastr["warning"]("Cannot mark as ready: Expiry date must be set first!");
+          return;
+        }
+
+        // Check if already ready
+        if (currentStatus === "Ready for Sales") {
+          toastr["info"]("This packing is already marked as ready for sales");
+          return;
+        }
+
+        // Confirm action
+        if (confirm("Mark this packing as 'Ready for Sales'? This product will be available for sales inventory.")) {
+          updatePackingStatusAPI(packingId, "Ready for Sales");
+        }
+      });
+
+      function updatePackingStatusAPI(packingId, newStatus) {
+        $.ajax({
+          url: `/api/packing`,
+          method: "PUT",
+          dataType: "json",
+          contentType: "application/json",
+          data: JSON.stringify({
+            packing_id: packingId,
+            packing_data: {
+              packing_status: newStatus
+            }
+          }),
+          success: (data) => {
+            toastr["success"]("Packing status updated to: " + newStatus);
+            loadPackingProductTableData($("#view_packing_lot_no").attr("procurement_lot_id"));
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            if (jqXhr["status"] == 420) {
+              toastr["warning"](jqXhr["responseJSON"]["message"]);
+            } else {
+              toastr["error"](
+                jqXhr["responseJSON"]?.message || "Error updating packing status"
+              );
+            }
+          }
+        });
+      }
 
       function loadPackingLotNumber() {
         $.ajax({
@@ -5365,6 +5465,12 @@
         } else {
           $("#balance_packed_quantity").css({ color: "red" });
         }
+
+        // Auto-trigger AI recommendations when quantity is entered
+        if (currentPackingQuantity > 0 && globalPackagingData.length > 0) {
+          console.log("Quantity entered, loading AI recommendations");
+          loadAndMergeAIRecommendations();
+        }
       });
 
       function loadPackingUnits(procurement_lot_id) {
@@ -5415,56 +5521,197 @@
         });
       }
 
+      let globalPackagingData = []; // Store packaging data globally
+
       function loadPackingPackage(productId = null, market = "RETAIL") {
-        // Load packaging options from the packing API
+        console.log("=== loadPackingPackage called ===");
+        // Load packaging options from the packaging master API
         $.ajax({
-          url: `/api/packing`,
+          url: `/api/master/packaging`,
           method: "GET",
           dataType: "json",
           contentType: "application/json",
           crossDomain: true,
           processData: true,
           success: (response) => {
+            console.log("Packaging master response received, count:", response?.data?.count);
             let packagingData = [];
 
-            if (response?.data && Array.isArray(response.data)) {
-              // Transform packing data to select2 format
-              packagingData = response.data.map(packing => ({
-                id: packing.id,
-                text: packing.packing_name || packing.name || 'Unknown',
-                package_type: packing.package_type,
-                dimensions_cm: packing.dimensions_cm
+            if (response?.data?.rows && Array.isArray(response.data.rows)) {
+              // Transform packaging master data to select2 format
+              packagingData = response.data.rows.map(pkg => ({
+                id: pkg.id,
+                text: pkg.packaging_code || pkg.packaging_name || 'Unknown',
+                packaging_type: pkg.packaging_type,
+                packaging_weight: pkg.packaging_weight,
+                dimensions: {
+                  height: pkg.packaging_height,
+                  width: pkg.packaging_width,
+                  length: pkg.packaging_length
+                },
+                is_ai_recommended: false,
+                ai_score: null
               }));
             }
 
-            $("#packingPackage").select2({
-              placeholder: "Select packaging for product",
-              allowClear: true,
-              data: packagingData,
-              templateResult: function (item) {
-                if (!item.id) return item.text;
-                let dimensionsText = item.dimensions_cm ? ` [${item.dimensions_cm.length}x${item.dimensions_cm.width}x${item.dimensions_cm.height}cm]` : '';
-                return $(`<span>${item.text}${dimensionsText}</span>`);
-              }
-            });
+            // Store globally
+            globalPackagingData = packagingData;
+            console.log("Stored packaging data, length:", globalPackagingData.length);
+
+            // Initialize select2 with all packaging options
+            initializePackagingSelect2(packagingData);
+            console.log("Initialized select2 with packaging data");
+
+            // Check if we have quantity - if yes, load AI recommendations and merge
+            const quantity = $("#packing_quantity").val();
+            console.log("Current quantity:", quantity);
+            if (quantity && parseFloat(quantity) > 0) {
+              console.log("Quantity exists, calling loadAndMergeAIRecommendations");
+              loadAndMergeAIRecommendations();
+            }
 
             $("#packingPackage").val(null).trigger("change");
           },
           error: (jqXhr, textStatus, errorThrown) => {
+            console.error("Packaging Master API Error:", jqXhr);
             if (jqXhr.status == 420) {
-              toastr["warning"](jqXhr.responseJSON?.message || "Warning loading packing options");
-            } else {
-              console.error("Packing API Error:", jqXhr);
+              toastr["warning"](jqXhr.responseJSON?.message || "Warning loading packaging options");
             }
 
             // Fallback: still initialize select2 even if API fails
-            $("#packingPackage").select2({
-              placeholder: "Select packaging for product",
-              allowClear: true,
-              data: []
-            });
+            initializePackagingSelect2([]);
           },
         });
+      }
+
+      function initializePackagingSelect2(packagingData) {
+        console.log("Initializing select2 with", packagingData.length, "items");
+
+        try {
+          // Try to destroy existing select2 instance if it exists
+          if ($("#packingPackage").data("select2")) {
+            $("#packingPackage").select2("destroy");
+          }
+        } catch (e) {
+          console.log("No existing select2 instance to destroy");
+        }
+
+        // Clear the select element
+        $("#packingPackage").empty();
+
+        // Add placeholder option
+        $("#packingPackage").append('<option></option>');
+
+        // Sort packaging data: AI-recommended first (by AI score descending), then rest
+        const sortedData = [...packagingData].sort((a, b) => {
+          // If both are AI recommended, sort by score descending
+          if (a.is_ai_recommended && b.is_ai_recommended) {
+            return (b.ai_score || 0) - (a.ai_score || 0);
+          }
+          // AI recommended items come first
+          if (a.is_ai_recommended) return -1;
+          if (b.is_ai_recommended) return 1;
+          // Rest remain in original order
+          return 0;
+        });
+
+        // Add all packaging options (sorted)
+        sortedData.forEach(item => {
+          const optionText = item.text + (item.dimensions?.length ? ` [${item.dimensions.length}x${item.dimensions.width}x${item.dimensions.height}cm]` : '');
+          const $option = $('<option></option>')
+            .val(item.id)
+            .text(optionText)
+            .data('packaging', item);
+
+          $("#packingPackage").append($option);
+        });
+
+        // Initialize select2
+        $("#packingPackage").select2({
+          placeholder: "Select packaging for product",
+          allowClear: true,
+          templateResult: function (item) {
+            if (!item.id) return item.text;
+
+            const data = item.element ? $(item.element).data('packaging') : null;
+            if (!data) return item.text;
+
+            let badge = '';
+            if (data.is_ai_recommended) {
+              const badgeColor = data.ai_score >= 100 ? 'success' : 'info';
+              badge = `<span class="badge badge-${badgeColor}" style="margin-left: 8px;">⭐ AI (${data.ai_score})</span>`;
+            }
+
+            return $(`<span>${item.text}${badge}</span>`);
+          },
+          templateSelection: function (item) {
+            if (!item.id) return item.text;
+            const data = item.element ? $(item.element).data('packaging') : null;
+            let badge = data?.is_ai_recommended ? ' ⭐ AI' : '';
+            return item.text + badge;
+          }
+        });
+
+        console.log("Select2 initialized successfully");
+      }
+
+      async function loadAndMergeAIRecommendations() {
+        const quantity = $("#packing_quantity").val();
+
+        if (!quantity || quantity <= 0) {
+          console.log("Quantity not valid for AI recommendations");
+          return;
+        }
+
+        console.log(`Loading AI recommendations for quantity: ${quantity}kg`);
+
+        try {
+          const response = await $.ajax({
+            url: "/api/packing/ai-containers",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({
+              product_id: "1",
+              quantity_kg: parseFloat(quantity),
+              market: "EXPORT",
+              grade: "PREMIUM",
+              size: "MEDIUM"
+            })
+          });
+
+          console.log("AI Response:", response);
+
+          if (response.statusCode === 200 && response.data.top_recommendations) {
+            console.log("Found AI recommendations, updating dropdown");
+
+            // Mark AI-recommended packages in the global data
+            response.data.top_recommendations.forEach(rec => {
+              const pkgIndex = globalPackagingData.findIndex(p => p.id === rec.packaging_id);
+              if (pkgIndex >= 0) {
+                globalPackagingData[pkgIndex].is_ai_recommended = true;
+                globalPackagingData[pkgIndex].ai_score = rec.ai_score;
+                globalPackagingData[pkgIndex].efficiency = rec.efficiency_rating;
+                console.log(`Marked package ${rec.packaging_code} as AI recommended with score ${rec.ai_score}`);
+              }
+            });
+
+            // Re-initialize select2 with updated data
+            initializePackagingSelect2(globalPackagingData);
+
+            // Auto-select the best option
+            if (response.data.best_option) {
+              console.log(`Auto-selecting best option: ${response.data.best_option.packaging_id}`);
+              setTimeout(() => {
+                $("#packingPackage").val(response.data.best_option.packaging_id).trigger("change");
+              }, 100);
+            }
+          } else {
+            console.log("No recommendations received");
+          }
+        } catch (error) {
+          console.error("Error loading AI recommendations:", error);
+        }
       }
 
 
@@ -5536,6 +5783,175 @@
 
       $("#resetPackingDataBtn").on("click", resetAllInputs);
       <!--End of Packing Container-->
+
+      // AI Packing Container Recommendation Function
+      $("#aiRecommendBtn").on("click", async function () {
+        triggerAIRecommendations();
+      });
+
+      async function triggerAIRecommendations() {
+        const quantity = $("#packing_quantity").val();
+        const productName = $("#packingProductNames").text();
+
+        if (!quantity || quantity <= 0) {
+          toastr["warning"]("Please enter a quantity first");
+          return;
+        }
+
+        // Show loading state
+        $("#aiRecommendBtn").prop("disabled", true);
+        $("#aiRecommendBtn").html('<i class="fa-solid fa-spinner fa-spin"></i> Loading...');
+
+        try {
+          const response = await $.ajax({
+            url: "/api/packing/ai-containers",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({
+              product_id: "1",
+              quantity_kg: parseFloat(quantity),
+              market: "EXPORT",
+              grade: "PREMIUM",
+              size: "MEDIUM"
+            })
+          });
+
+          if (response.statusCode === 200 && response.data.top_recommendations) {
+            displayAIRecommendations(response.data.top_recommendations);
+            // Auto-select the best option
+            if (response.data.best_option) {
+              selectAIContainer(response.data.best_option.packaging_id, response.data.best_option.packaging_code, response.data.best_option.ai_score, true);
+            }
+          } else {
+            toastr["error"]("Failed to get recommendations");
+          }
+        } catch (error) {
+          console.error("Error fetching recommendations:", error);
+          toastr["error"](error.responseJSON?.message || "Error fetching AI recommendations");
+        } finally {
+          $("#aiRecommendBtn").prop("disabled", false);
+          $("#aiRecommendBtn").html('<i class="fa-solid fa-sparkles"></i> Get AI Recommendations');
+        }
+      }
+
+      function displayAIRecommendations(recommendations) {
+        let html = '<div class="text-center mb-3"><strong>Top 3 AI Recommended Containers</strong></div>';
+
+        recommendations.forEach((rec, index) => {
+          const badge = index === 0 ? '<span class="badge badge-success me-2">BEST</span>' : '';
+          html += `
+            <div class="mb-3 p-2 border rounded" style="background-color: white; cursor: pointer;"
+                 data-packaging-id="${rec.packaging_id}"
+                 data-packaging-code="${rec.packaging_code}"
+                 data-ai-score="${rec.ai_score}"
+                 class="ai-recommendation-item">
+              ${badge}
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                  <strong>${rec.packaging_code}</strong><br>
+                  <small class="text-muted">
+                    ${rec.containers_needed} containers |
+                    ${rec.utilization_rate}% utilized |
+                    Score: ${rec.ai_score}
+                  </small>
+                </div>
+                <div class="text-right">
+                  <span class="badge badge-${rec.efficiency_rating === 'OPTIMAL' ? 'success' : rec.efficiency_rating === 'GOOD' ? 'info' : 'warning'}">
+                    ${rec.efficiency_rating}
+                  </span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        $("#aiRecommendationsContent").html(html);
+        $("#aiRecommendationsPanel").removeClass("d-none");
+
+        // Attach click handlers to recommendation items using event delegation
+        $(document).off("click", ".ai-recommendation-item").on("click", ".ai-recommendation-item", function() {
+          const packagingId = $(this).data("packaging-id");
+          const packagingCode = $(this).data("packaging-code");
+          const aiScore = $(this).data("ai-score");
+          selectAIContainer(packagingId, packagingCode, aiScore, false);
+        });
+      }
+
+      function selectAIContainer(packagingId, packagingCode, score, autoSelect = false) {
+        // First, ensure the packaging dropdown has the option available
+        // If not, we need to add it or load it from the database
+        let option = $("#packingPackage option").filter(function() {
+          return $(this).val() === packagingId;
+        });
+
+        if (option.length > 0) {
+          // Option exists, select it
+          $("#packingPackage").val(packagingId).trigger("change");
+
+          if (!autoSelect) {
+            toastr["success"](`Selected: ${packagingCode} (AI Score: ${score})`);
+            // Hide recommendations panel only if manually selected
+            $("#aiRecommendationsPanel").addClass("d-none");
+          } else {
+            // Auto-selected, show a subtle info message
+            console.log(`Auto-selected: ${packagingCode} (AI Score: ${score})`);
+          }
+        } else {
+          // Option not found in current list, need to load all packages or search for it
+          console.warn(`Packaging ${packagingId} not found in dropdown, attempting to reload packages...`);
+
+          // Reload packaging options from packaging master and try again
+          $.ajax({
+            url: `/api/master/packaging`,
+            method: "GET",
+            dataType: "json",
+            success: (response) => {
+              // Rebuild the packaging dropdown with fresh data
+              rebuildPackagingDropdown(response.data?.rows || []);
+
+              // Try selecting again
+              const retryOption = $("#packingPackage option").filter(function() {
+                return $(this).val() === packagingId;
+              });
+
+              if (retryOption.length > 0) {
+                $("#packingPackage").val(packagingId).trigger("change");
+                if (!autoSelect) {
+                  toastr["success"](`Selected: ${packagingCode} (AI Score: ${score})`);
+                }
+              } else {
+                toastr["warning"](`Container ${packagingCode} not available in dropdown`);
+              }
+            },
+            error: () => {
+              toastr["error"]("Failed to load packaging options");
+            }
+          });
+        }
+      }
+
+      function rebuildPackagingDropdown(packagingData) {
+        // Transform packaging master data to select2 format
+        const options = packagingData.map(pkg => ({
+          id: pkg.id,
+          text: pkg.packaging_code || pkg.packaging_name || 'Unknown'
+        }));
+
+        // Clear and rebuild the select
+        $("#packingPackage").empty();
+        options.forEach(opt => {
+          $("#packingPackage").append(
+            $('<option></option>').attr('value', opt.id).text(opt.text)
+          );
+        });
+
+        $("#packingPackage").select2({
+          placeholder: "Choose a packaging",
+          allowClear: true,
+          data: options
+        });
+      }
 
       function changePercentage(
         main_id,
