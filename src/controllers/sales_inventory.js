@@ -1,6 +1,62 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
 
+export const Insert = async (profile_id, inventory_data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!profile_id) {
+        return reject({
+          statusCode: 420,
+          message: "user id must not be empty!",
+        });
+      }
+
+      if (!inventory_data?.packing_id) {
+        return reject({
+          statusCode: 420,
+          message: "Packing id must not be empty!",
+        });
+      }
+
+      if (!inventory_data?.product_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Product master id must not be empty!",
+        });
+      }
+
+      // Check if this packing is already in sales inventory
+      const existingInventory = await models.SalesInventory.findOne({
+        where: {
+          packing_id: inventory_data.packing_id,
+          is_active: true,
+        },
+      });
+
+      if (existingInventory) {
+        return reject({
+          statusCode: 420,
+          message: "This packing is already added to sales inventory",
+        });
+      }
+
+      const result = await models.SalesInventory.create(inventory_data, {
+        profile_id,
+      });
+
+      resolve(result);
+    } catch (err) {
+      if (err?.name == "SequelizeUniqueConstraintError") {
+        return reject({
+          statusCode: 420,
+          message: "This packing is already in sales inventory!",
+        });
+      }
+      reject(err);
+    }
+  });
+};
+
 export const Get = ({ id }) => {
   return new Promise(async (resolve, reject) => {
     try {

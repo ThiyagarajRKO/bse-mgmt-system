@@ -36,6 +36,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       });
+
+      SalesInventory.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
     }
   }
   SalesInventory.init(
@@ -44,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
       },
       quantity: {
         type: DataTypes.FLOAT,

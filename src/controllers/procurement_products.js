@@ -672,13 +672,13 @@ export const GetSalesInventoryProducts = ({
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(unit) FROM order_products op WHERE op.packing_id = "Packing".id and op.is_active = true)`
+              `(SELECT SUM(quantity) FROM sales_inventory WHERE packing_id = "Packing".id AND is_active = true)`
             ),
             "sold_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT COUNT(o.id) FROM orders o JOIN order_products op ON o.id = op.order_id and op.is_active = true WHERE op.packing_id = "Packing".id and op.is_active = true)`
+              `(SELECT STRING_AGG(DISTINCT o.order_no::text, ', ') FROM sales_inventory si LEFT JOIN orders o ON si.order_id = o.id WHERE si.packing_id = "Packing".id AND si.is_active = true)`
             ),
             "total_sales_orders",
           ],

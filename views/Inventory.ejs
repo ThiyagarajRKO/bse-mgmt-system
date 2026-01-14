@@ -1439,6 +1439,14 @@
           ],
           columnDefs: [
             {
+              targets: [0],
+              className: "text-left",
+              width: "250px",
+              render: function (data, type, row) {
+                return `<span style="word-wrap: break-word; white-space: normal; display: block; max-width: 250px;">${data}</span>`;
+              },
+            },
+            {
               targets: [7],
               className: "text-left",
               render: function (data, type, row) {

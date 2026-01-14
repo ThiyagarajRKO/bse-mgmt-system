@@ -56,6 +56,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      Packing.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
       //hsa Many
       Packing.hasMany(models.OrderProducts, {
         foreignKey: "packing_id",
@@ -70,6 +76,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
       },
       packing_quantity: {
         type: DataTypes.FLOAT,
@@ -220,6 +230,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
         packing_id: data?.id,
         product_master_id,
         quantity: finalQuantity,
+        order_id: data?.order_id,
         is_active: true,
         created_by: options?.profile_id,
       }).catch(console.log);
