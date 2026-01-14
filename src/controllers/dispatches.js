@@ -254,6 +254,15 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
       }
 
       const dispatchs = await models.Dispatches.findAndCountAll({
+        attributes: [
+          "id",
+          "procurement_product_id",
+          "dispatch_quantity",
+          "temperature",
+          "delivery_notes",
+          "delivery_status",
+          "created_at",
+        ],
         include: [
           {
             attributes: [
@@ -261,6 +270,12 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
               "procurement_quantity",
               "adjusted_quantity",
               "procurement_product_type",
+              [
+                sequelize.literal(
+                  `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "pp".id and is_active = true)`
+                ),
+                "total_dispatched_quantity",
+              ],
             ],
             as: "pp",
             model: models.ProcurementProducts,
@@ -273,6 +288,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
               },
               {
                 attributes: ["id", "product_name"],
+                as: "ProductMaster",
                 model: models.ProductMaster,
                 where: {
                   is_active: true,
@@ -305,7 +321,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             },
           },
           {
-            attributes: ["id", "driver_name"],
+            attributes: ["id", "driver_name", "phone"],
             model: models.DriverMaster,
             where: {
               is_active: true,
@@ -318,7 +334,24 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
         order: [["created_at", "desc"]],
       });
 
-      resolve(dispatchs);
+      // Debug: Log what we're returning
+      if (dispatchs.rows && dispatchs.rows.length > 0) {
+        console.log("=== DISPATCH DATA ===");
+        console.log(
+          "First row keys:",
+          Object.keys(dispatchs.rows[0].dataValues || dispatchs.rows[0])
+        );
+        console.log(
+          "First row:",
+          JSON.stringify(dispatchs.rows[0], null, 2).substring(0, 500)
+        );
+      }
+
+      // Return in same format as peeling
+      resolve({
+        count: dispatchs.count,
+        rows: dispatchs.rows,
+      });
     } catch (err) {
       reject(err);
     }

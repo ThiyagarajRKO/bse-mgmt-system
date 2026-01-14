@@ -94,7 +94,7 @@ export const dispatchRoute = (fastify, opts, done) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
-      const result = await GetProductNames(params, req?.session, fastify);
+      const result = await GetAll(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,

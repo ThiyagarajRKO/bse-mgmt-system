@@ -2318,25 +2318,29 @@
               }
             },
             dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+              // Handle both array and object responses
+              const data = Array.isArray(json.data) ? json.data : (json.data?.rows || []);
+              const count = Array.isArray(json.data) ? json.data.length : (json.data?.count || 0);
+
+              json.iTotalRecords = count;
+              json.iTotalDisplayRecords = count;
 
               // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+              return data;
             },
           },
           columns: [
             { data: null },
             { data: null },
-            { data: "pp.procurement_quantity" },
-            { data: "dispatch_quantity" },
-            { data: "temperature" },
-            { data: "UnitMaster.unit_code" },
-            { data: "VehicleMaster.vehicle_number" },
-            { data: "DriverMaster.driver_name" },
-            { data: "delivery_notes" },
-            { data: "delivery_status" },
-            { data: "created_at" },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
           ],
           columnDefs: [
             {
@@ -2351,26 +2355,53 @@
             {
               targets: [1],
               className: "text-left",
+              width: "200px",
               render: function (data, type, row) {
                 return `<span procurement_product_id='${row["pp"]?.id
-                  }'>${row["pp"]?.["ProductMaster"]?.product_name
+                  }' style="word-wrap: break-word; white-space: normal; display: block;">${row["pp"]?.["ProductMaster"]?.product_name
                   }-${row["pp"]?.procurement_product_type}-${row[
                     "pp"
-                  ]?.["SupplierMaster"]?.supplier_name?.replaceAll(" ", "")}</i>`;
+                  ]?.["SupplierMaster"]?.supplier_name?.replaceAll(" ", "")}</span>`;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-left",
+              render: function (data, type, row) {
+                // Show adjusted quantity if available, otherwise procurement quantity
+                const quantity = row["pp"]?.adjusted_quantity || row["pp"]?.procurement_quantity || 0;
+                return parseFloat(quantity).toFixed(2);
+              },
+            },
+            {
+              targets: [3],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.dispatch_quantity || 0;
+              },
+            },
+            {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                if (row?.temperature !== null && row?.temperature !== undefined && row.temperature !== "") {
+                  return parseFloat(row.temperature).toFixed(2);
+                }
+                return "-";
               },
             },
             {
               targets: [5],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${row["UnitMaster"]?.unit_code || "-"}</i>`;
               },
             },
             {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${data}</i>`;
+                return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${row["VehicleMaster"]?.vehicle_number || "-"}</i>`;
               },
             },
             {
@@ -2382,15 +2413,23 @@
                   : row["DriverMaster"]?.phone?.startsWith("+91")
                     ? row["DriverMaster"]?.phone
                     : `+91${row["DriverMaster"]?.phone}`
-                  }" driver_master_id='${row["DriverMaster"]?.id}'>${data}</i>`;
+                  }" driver_master_id='${row["DriverMaster"]?.id}'>${row["DriverMaster"]?.driver_name || "-"}</i>`;
+              },
+            },
+            {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.delivery_notes || "-";
               },
             },
             {
               targets: [9],
               className: "text-left",
               render: (data, type, row) => {
-                return `<span class=${data == "In Transit" ? "text-warning" : "text-success"
-                  }>${data} <i class="fa-solid ${data == "In Transit"
+                const status = row?.delivery_status || "Pending";
+                return `<span class=${status == "In Transit" ? "text-warning" : "text-success"
+                  }>${status} <i class="fa-solid ${status == "In Transit"
                     ? "fa-truck-fast fa-fade"
                     : "fa-circle-check"
                   }"></i></span>`;
@@ -3197,25 +3236,29 @@
               }
             },
             dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
+              // Handle both array and object responses
+              const data = Array.isArray(json.data) ? json.data : (json.data?.rows || []);
+              const count = Array.isArray(json.data) ? json.data.length : (json.data?.count || 0);
+
+              json.iTotalRecords = count;
+              json.iTotalDisplayRecords = count;
 
               // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
+              return data;
             },
           },
           columns: [
             { data: null },
             { data: null },
-            { data: "PeelingProducts" },
             { data: null },
-            { data: "dis.dispatch_quantity" },
-            { data: "peeling_quantity" },
-            { data: "total_yield_quantity" },
             { data: null },
-            { data: "peeling_method" },
-            { data: "UnitMaster.unit_code" },
-            { data: "created_at" },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
           ],
           columnDefs: [
             {
@@ -3229,8 +3272,9 @@
             {
               targets: [1],
               className: "text-left",
+              width: "200px",
               render: function (data, type, row) {
-                return `<span dispatch_id='${row["dis"]?.id}'>${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["SupplierMaster"]?.supplier_name}-${row?.["dis"]?.dispatch_quantity}</i>`;
+                return `<span dispatch_id='${row["dis"]?.id}' style="word-wrap: break-word; white-space: normal; display: block;">${row?.["dis"]?.["pp"]?.["ProductMaster"]?.product_name}-${row?.["dis"]?.["pp"]?.procurement_product_type}-${row?.["dis"]?.["pp"]?.["SupplierMaster"]?.supplier_name}-${row?.["dis"]?.dispatch_quantity}</span>`;
               },
             },
             {
@@ -3250,10 +3294,24 @@
               },
             },
             {
+              targets: [4],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.["dis"]?.dispatch_quantity || 0;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.peeling_quantity || 0;
+              },
+            },
+            {
               targets: [6],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
+                return row?.total_yield_quantity || 0;
               },
             },
             {
@@ -3284,10 +3342,17 @@
             //   },
             // },
             {
+              targets: [8],
+              className: "text-left",
+              render: function (data, type, row) {
+                return row?.peeling_method || "-";
+              },
+            },
+            {
               targets: [9],
               className: "text-left",
               render: function (data, type, row) {
-                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${data}</i>`;
+                return `<span unit_master_id='${row["UnitMaster"]?.id}'>${row["UnitMaster"]?.unit_code || "-"}</i>`;
               },
             },
             {
