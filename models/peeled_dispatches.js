@@ -50,6 +50,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      PeeledDispatches.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
       // Has Many
       PeeledDispatches.hasMany(models.Packing, {
         foreignKey: "peeled_dispatch_id",
@@ -76,6 +82,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       delivery_notes: {
         type: DataTypes.TEXT,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to the sales order for which this peeled dispatch is made",
       },
       is_active: {
         type: DataTypes.BOOLEAN,

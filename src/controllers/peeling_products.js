@@ -163,11 +163,11 @@ export const GetNames = ({
           "yield_quantity",
           [
             sequelize.literal(
-              `(SELECT COALESCE(SUM(peeled_dispatch_quantity), 0) FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id AND ${
+              `COALESCE("PeelingProducts"."yield_quantity", 0) - COALESCE((SELECT SUM(peeled_dispatch_quantity) FROM peeled_dispatches pd WHERE pd.peeled_product_id = "PeelingProducts".id AND ${
                 peeled_dispatch_id != "null" && peeled_dispatch_id != undefined
                   ? `pd.id != '${peeled_dispatch_id}' AND`
                   : ""
-              } pd.is_active = true)`
+              } pd.is_active = true), 0)`
             ),
             "peeled_quantity",
           ],
