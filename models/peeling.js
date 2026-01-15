@@ -38,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      Peeling.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
       Peeling.hasMany(models.PeelingProducts, {
         foreignKey: "peeling_id",
         onUpdate: "CASCADE",
@@ -57,6 +63,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       peeling_method: {
         type: DataTypes.STRING,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment: "Reference to the sales order for which this peeling is done",
       },
       is_active: {
         type: DataTypes.BOOLEAN,

@@ -331,7 +331,11 @@ export const GetAll = ({
             model: models.Dispatches,
             include: [
               {
-                attributes: ["id", "procurement_product_type"],
+                attributes: [
+                  "id",
+                  "procurement_product_type",
+                  "procurement_quantity",
+                ],
                 as: "pp",
                 model: models.ProcurementProducts,
                 include: [
