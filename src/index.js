@@ -56,7 +56,7 @@ const start = async () => {
       fastify.log.info("Database connection verified");
     }
 
-    await fastify.listen({ port: process.env.PORT, host: "localhost" });
+    await fastify.listen({ port: process.env.PORT, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);
     // ensure we surface the error and exit so systemd / process managers can restart if needed
