@@ -39,6 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      ProcurementProducts.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
       // has Many
       ProcurementProducts.hasMany(models.Dispatches, {
         foreignKey: "procurement_product_id",
@@ -80,6 +86,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       procurement_purchaser: {
         type: DataTypes.STRING,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to the sales order for which this procurement product is allocated",
       },
       is_active: {
         type: DataTypes.BOOLEAN,
