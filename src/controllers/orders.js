@@ -125,12 +125,24 @@ export const Get = ({ id }) => {
       }
 
       const species = await models.Orders.findOne({
-        includes: [
+        include: [
           {
-            models: models.ProductCategoryMaster,
+            model: models.ProductCategoryMaster,
             where: {
               is_active: true,
             },
+            required: false,
+          },
+          {
+            model: models.OrderProducts,
+            include: [
+              {
+                model: models.ProductMaster,
+              },
+            ],
+          },
+          {
+            model: models.CustomerMaster,
           },
         ],
         where: {
@@ -140,6 +152,369 @@ export const Get = ({ id }) => {
       });
 
       resolve(species);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetWithTracking = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Orders ID field must not be empty!",
+        });
+      }
+
+      if (!isValidUuid(id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Order ID format. Expected valid UUID.",
+        });
+      }
+
+      const order = await models.Orders.findOne({
+        where: {
+          id,
+          is_active: true,
+        },
+        include: [
+          {
+            model: models.CustomerMaster,
+            attributes: ["customer_name", "customer_email", "customer_phone"],
+          },
+        ],
+      });
+
+      if (!order) {
+        return reject({
+          statusCode: 404,
+          message: "Order not found",
+        });
+      }
+
+      // Get sales inventory tracking for this order
+      const salesTracking = await sequelize.query(
+        `
+        SELECT 
+          si.id as sales_inventory_id,
+          si.packing_id,
+          si.quantity as sold_quantity,
+          pm.product_name,
+          sm.size as size_name,
+          gm.grade_name,
+          pacm.packaging_code,
+          p.expiry_date,
+          COUNT(DISTINCT si.id) as total_sales_items
+        FROM sales_inventory si
+        LEFT JOIN packing p ON si.packing_id = p.id
+        LEFT JOIN product_master pm ON si.product_master_id = pm.id
+        LEFT JOIN size_master sm ON p.size_master_id = sm.id
+        LEFT JOIN grade_master gm ON p.grade_master_id = gm.id
+        LEFT JOIN packaging_master pacm ON p.packaging_master_id = pacm.id
+        WHERE si.order_id = :orderId AND si.is_active = true
+        GROUP BY si.id, si.packing_id, si.quantity, pm.product_name, sm.size, gm.grade_name, pacm.packaging_code, p.expiry_date
+      `,
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+      );
+
+      // Calculate totals
+      const totals = await sequelize.query(
+        `
+        SELECT 
+          COUNT(DISTINCT si.id) as total_items,
+          SUM(si.quantity) as total_quantity,
+          COUNT(DISTINCT p.id) as total_packings
+        FROM sales_inventory si
+        LEFT JOIN packing p ON si.packing_id = p.id
+        WHERE si.order_id = :orderId AND si.is_active = true
+      `,
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+      );
+
+      resolve({
+        order: order.dataValues,
+        sales_tracking: salesTracking,
+        sales_totals: totals[0] || {
+          total_items: 0,
+          total_quantity: 0,
+          total_packings: 0,
+        },
+        production_tracking: {
+          procurement: [],
+          dispatches: [],
+          peeling: [],
+          peeled_dispatches: [],
+          production_orders: [],
+        },
+        summary: {
+          total_procurement_lots: 0,
+          total_dispatches: 0,
+          total_peeling_records: 0,
+          total_peeled_dispatches: 0,
+          total_production_orders: 0,
+          total_dispatched_quantity: 0,
+          total_peeled_quantity: 0,
+          total_peeled_dispatched_quantity: 0,
+        },
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// Enhanced GetWithTracking with full production pipeline
+export const GetWithProductionTracking = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Orders ID field must not be empty!",
+        });
+      }
+
+      if (!isValidUuid(id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid Order ID format. Expected valid UUID.",
+        });
+      }
+
+      const order = await models.Orders.findOne({
+        where: {
+          id,
+          is_active: true,
+        },
+        include: [
+          {
+            model: models.CustomerMaster,
+            attributes: ["customer_name", "customer_email", "customer_phone"],
+          },
+        ],
+      });
+
+      if (!order) {
+        return reject({
+          statusCode: 404,
+          message: "Order not found",
+        });
+      }
+
+      // Get sales inventory tracking for this order
+      const salesTracking = await sequelize.query(
+        `
+        SELECT 
+          si.id as sales_inventory_id,
+          si.packing_id,
+          si.quantity as sold_quantity,
+          pm.product_name,
+          sm.size as size_name,
+          gm.grade_name,
+          pacm.packaging_code,
+          p.expiry_date,
+          COUNT(DISTINCT si.id) as total_sales_items
+        FROM sales_inventory si
+        LEFT JOIN packing p ON si.packing_id = p.id
+        LEFT JOIN product_master pm ON si.product_master_id = pm.id
+        LEFT JOIN size_master sm ON p.size_master_id = sm.id
+        LEFT JOIN grade_master gm ON p.grade_master_id = gm.id
+        LEFT JOIN packaging_master pacm ON p.packaging_master_id = pacm.id
+        WHERE si.order_id = :orderId AND si.is_active = true
+        GROUP BY si.id, si.packing_id, si.quantity, pm.product_name, sm.size, gm.grade_name, pacm.packaging_code, p.expiry_date
+      `,
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+      );
+
+      // Calculate sales totals
+      const salesTotals = await sequelize.query(
+        `
+        SELECT 
+          COUNT(DISTINCT si.id) as total_items,
+          SUM(si.quantity) as total_quantity,
+          COUNT(DISTINCT p.id) as total_packings
+        FROM sales_inventory si
+        LEFT JOIN packing p ON si.packing_id = p.id
+        WHERE si.order_id = :orderId AND si.is_active = true
+      `,
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+      );
+
+      // Get procurement tracking for this order
+      const procurementTracking = await models.ProcurementLots.findAll({
+        where: {
+          order_id: id,
+          is_active: true,
+        },
+        attributes: ["id", "procurement_lot", "procurement_date", "created_at"],
+        include: [
+          {
+            model: models.ProcurementProducts,
+            attributes: [
+              "id",
+              "procurement_quantity",
+              "adjusted_quantity",
+              "procurement_product_type",
+            ],
+            where: { is_active: true },
+            required: false,
+            include: [
+              {
+                model: models.ProductMaster,
+                as: "ProductMaster",
+                attributes: ["product_name"],
+                required: false,
+              },
+            ],
+          },
+        ],
+      });
+
+      // Get dispatch tracking for this order
+      const dispatchTracking = await models.Dispatches.findAll({
+        where: {
+          order_id: id,
+          is_active: true,
+        },
+        attributes: [
+          "id",
+          "dispatch_quantity",
+          "temperature",
+          "delivery_status",
+          "created_at",
+        ],
+        include: [
+          {
+            model: models.ProcurementProducts,
+            as: "pp",
+            attributes: ["procurement_quantity"],
+            include: [
+              {
+                model: models.ProductMaster,
+                as: "ProductMaster",
+                attributes: ["product_name"],
+              },
+            ],
+          },
+          {
+            model: models.VehicleMaster,
+            attributes: ["vehicle_number"],
+          },
+          {
+            model: models.DriverMaster,
+            attributes: ["driver_name", "phone"],
+          },
+        ],
+      });
+
+      // Get peeling tracking for this order
+      const peelingTracking = await models.Peeling.findAll({
+        where: {
+          order_id: id,
+          is_active: true,
+        },
+        attributes: ["id", "peeling_quantity", "peeling_method", "created_at"],
+        include: [
+          {
+            model: models.Dispatches,
+            as: "dis",
+            attributes: ["dispatch_quantity"],
+            include: [
+              {
+                model: models.ProcurementProducts,
+                as: "pp",
+                attributes: ["procurement_quantity"],
+                include: [
+                  {
+                    model: models.ProductMaster,
+                    as: "ProductMaster",
+                    attributes: ["product_name"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      // Get peeled dispatch tracking for this order
+      const peeledDispatchTracking = await models.PeeledDispatches.findAll({
+        where: {
+          order_id: id,
+          is_active: true,
+        },
+        attributes: [
+          "id",
+          "peeled_dispatch_quantity",
+          "temperature",
+          "delivery_status",
+          "created_at",
+        ],
+        include: [
+          {
+            model: models.VehicleMaster,
+            attributes: ["vehicle_number"],
+          },
+          {
+            model: models.DriverMaster,
+            attributes: ["driver_name", "phone"],
+          },
+        ],
+      });
+
+      // Get production orders for this sales order
+      const productionOrders = await models.production_orders.findAll({
+        where: {
+          order_id: id,
+        },
+        attributes: [
+          "id",
+          "order_number",
+          "status",
+          "planned_quantity_kg",
+          "produced_quantity_kg",
+          "created_at",
+        ],
+      });
+
+      resolve({
+        order: order.dataValues,
+        sales_tracking: salesTracking,
+        sales_totals: salesTotals[0] || {
+          total_items: 0,
+          total_quantity: 0,
+          total_packings: 0,
+        },
+        production_tracking: {
+          procurement: procurementTracking,
+          dispatches: dispatchTracking,
+          peeling: peelingTracking,
+          peeled_dispatches: peeledDispatchTracking,
+          production_orders: productionOrders,
+        },
+        summary: {
+          total_procurement_lots: procurementTracking.length,
+          total_dispatches: dispatchTracking.length,
+          total_peeling_records: peelingTracking.length,
+          total_peeled_dispatches: peeledDispatchTracking.length,
+          total_production_orders: productionOrders.length,
+          total_dispatched_quantity: dispatchTracking.reduce(
+            (sum, d) => sum + (d.dispatch_quantity || 0),
+            0
+          ),
+          total_peeled_quantity: peelingTracking.reduce(
+            (sum, p) => sum + (p.peeling_quantity || 0),
+            0
+          ),
+          total_peeled_dispatched_quantity: peeledDispatchTracking.reduce(
+            (sum, pd) => sum + (pd.peeled_dispatch_quantity || 0),
+            0
+          ),
+        },
+      });
     } catch (err) {
       reject(err);
     }
@@ -224,7 +599,7 @@ export const GetAll = ({ start, length, search }) => {
           {
             attributes: [
               "id",
-              "unit",
+              "quantity",
               "price",
               "discount",
               "description",
@@ -470,7 +845,7 @@ export const GetAllocationData = ({ start, length, search }) => {
             {
               attributes: [
                 "id",
-                "unit",
+                "quantity",
                 "price",
                 "discount",
                 "description",
@@ -490,6 +865,7 @@ export const GetAllocationData = ({ start, length, search }) => {
                     "product_name",
                     "product_category_master_id",
                   ],
+                  as: "ProductMaster",
                   model: models.ProductMaster,
                   required: false,
                   include: [
@@ -583,7 +959,7 @@ export const GetAllocationData = ({ start, length, search }) => {
             {
               attributes: [
                 "id",
-                "unit",
+                "quantity",
                 "price",
                 "discount",
                 "description",
@@ -603,6 +979,7 @@ export const GetAllocationData = ({ start, length, search }) => {
                     "product_name",
                     "product_category_master_id",
                   ],
+                  as: "ProductMaster",
                   model: models.ProductMaster,
                   required: false,
                 },

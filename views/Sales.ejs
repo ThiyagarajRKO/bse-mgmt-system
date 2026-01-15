@@ -435,6 +435,30 @@
         font-size: 14px;
         /* font-weight: 600; */
       }
+
+      /* Timeline Animation */
+      @keyframes pulse-animation {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.7;
+          transform: scale(1.1);
+        }
+      }
+
+      .order-tracking-timeline {
+        position: relative;
+        padding: 20px 0;
+        padding-left: 30px;
+      }
+
+      .timeline-item {
+        margin-bottom: 35px;
+        position: relative;
+      }
     </style>
   </head>
 
@@ -682,13 +706,13 @@
                           </div>
 
                           <div class="form-group mt-2">
-                            <label for="product_unit">Quantity</label>
+                            <label for="product_quantity">Quantity</label>
                             <input
                               current_index="1"
-                              class="form-control product_unit product_unit_1"
+                              class="form-control product_quantity product_quantity_1"
                               type="number"
                               placeholder="eg. 10"
-                              name="product_unit"
+                              name="product_quantity"
                               required
                             />
                             <span style="font-size: 12px"
@@ -1051,9 +1075,14 @@
                               border-color: rgba(129, 145, 179, 0.6) !important;
                             "
                           >
-                            <legend class="w-auto px-2">Order Tracking</legend>
+                            <legend class="w-auto px-2">
+                              <i class="fa-solid fa-timeline"></i> Order
+                              Tracking Timeline
+                            </legend>
 
-                            <!-- Order Tracking -->
+                            <!-- Order Tracking Timeline -->
+                            <%- include('./components/order-tracking-timeline')
+                            %>
                           </fieldset>
                         </div>
                         <!-- Shipping Container -->
@@ -2256,6 +2285,11 @@
       $("#closeOrdersPanelBtn").click(function () {
         closeSlidePanel("orderSlideInPanel");
 
+        // Stop real-time tracking updates when panel closes
+        if (window.stopTrackingRealTimeUpdates) {
+          window.stopTrackingRealTimeUpdates();
+        }
+
         view_order_center_id = "";
         view_raw_material_id = "";
       });
@@ -2387,7 +2421,7 @@
         );
       });
 
-      $(document).on("keyup", ".product_unit", (e) => {
+      $(document).on("keyup", ".product_quantity", (e) => {
         const current_index = $(e.target).attr("current_index");
 
         calculatePrice(current_index);
@@ -2416,10 +2450,10 @@
       });
 
       function calculatePrice(current_index) {
-        const current_unit = $(".product_unit_" + current_index).val();
+        const current_quantity = $(".product_quantity_" + current_index).val();
         const current_price = $(".product_price_" + current_index).val();
         const total_price =
-          parseFloat(current_unit) * parseFloat(current_price);
+          parseFloat(current_quantity) * parseFloat(current_price);
 
         $(".total_price_" + current_index)
           .text(!isNaN(total_price) ? total_price : "0.00")
@@ -2484,13 +2518,13 @@
                                   </div>
 
                                   <div class="form-group mt-2">
-                                    <label for="product_unit">Quantity</label>
+                                    <label for="product_quantity">Quantity</label>
                                     <input
                                       current_index="${index}"
-                                      class="form-control product_unit product_unit_${index}"
+                                      class="form-control product_quantity product_quantity_${index}"
                                       type="number"
                                       placeholder="eg. 10"
-                                      name="product_unit"
+                                      name="product_quantity"
                                       required
                                     />
                                     <span style="font-size: 12px">Total Quantity :
@@ -2538,7 +2572,7 @@
           .val(packing_id || null)
           .trigger("change");
 
-        $(`.product_unit_${index}`).val(product_unit || "");
+        $(`.product_quantity_${index}`).val(product_unit || "");
 
         $(`.product_price_${index}`).val(product_price || "");
 
@@ -2668,6 +2702,9 @@
       }
 
       $(document).on("click", ".viewOrders", (e) => {
+        console.log("=== viewOrders click handler fired ===");
+        console.log("Event target:", e.target);
+
         // Changing panel input fields data
         $("#closeOrdersPanelBtn").click();
 
@@ -2733,6 +2770,44 @@
         $("#orderModal").modal("show");
 
         loadOrdersProductTableData(view_order_id);
+
+        // Load order tracking data for timeline
+        console.log("Loading tracking data for order:", view_order_id);
+
+        // Fetch tracking data from API
+        $.ajax({
+          url: `/api/order/${view_order_id}/tracking`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            if (response.success && response.data) {
+              // Show the timeline container
+              const timelineContainer = document.getElementById(
+                "orderTrackingTimeline"
+              );
+              if (timelineContainer) {
+                timelineContainer.style.display = "block";
+              }
+
+              // Update timeline with data
+              if (window.updateOrderTrackingTimeline) {
+                window.updateOrderTrackingTimeline(response.data);
+              }
+
+              // Start real-time updates
+              if (window.startTrackingRealTimeUpdates) {
+                window.startTrackingRealTimeUpdates(view_order_id);
+              }
+
+              console.log("Order tracking timeline updated:", response.data);
+            } else {
+              console.warn("No tracking data available for this order");
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("Error loading order tracking:", error);
+          },
+        });
 
         // Get product details from the first product in the order for stock checking
         // We'll set these after the table loads
@@ -2955,7 +3030,7 @@
             { data: null },
             { data: null },
             { data: null }, // Will be rendered in columnDefs
-            { data: "unit" },
+            { data: "quantity" },
             { data: "price" },
             { data: "total_price" },
           ],
@@ -3645,6 +3720,7 @@
         salesInventory,
         netInventory
       ) {
+        console.log("showOrderViewModal called with order:", order);
         const allocationStatus = order.allocation_status;
 
         // Create a simple modal for viewing order details
@@ -3735,19 +3811,29 @@
           </div>
         `;
 
+        console.log("About to append modal to body");
+
         // Remove any existing modal
         $("#allocationViewModal").remove();
 
         // Add new modal to body
         $("body").append(modalHtml);
 
-        // Bind hidden event before showing modal
-        $("#allocationViewModal").on("hidden.bs.modal", function () {
+        console.log("Modal appended to body");
+
+        // Get the modal element for event binding
+        const $modal = $("#allocationViewModal");
+        console.log("Modal jQuery object created:", $modal.length > 0);
+
+        // Bind hidden event
+        $modal.on("hidden.bs.modal", function () {
           $(this).remove();
         });
 
-        // Show modal
-        $("#allocationViewModal").modal("show");
+        // Show modal AFTER binding all events
+        console.log("Calling .modal('show')...");
+        $modal.modal("show");
+        console.log("Modal show() called");
       }
 
       // Begin Production Button Handler
@@ -5389,13 +5475,13 @@
             .find(`.orderProductNames_${i + 1}`)
             .val();
 
-          let product_unit = $(obj)
-            .find(`.product_unit_${i + 1}`)
+          let product_quantity = $(obj)
+            .find(`.product_quantity_${i + 1}`)
             .val();
 
-          product_unit = isNaN(parseFloat(product_unit))
+          product_quantity = isNaN(parseFloat(product_quantity))
             ? 0
-            : parseFloat(product_unit);
+            : parseFloat(product_quantity);
 
           let product_price = $(obj)
             .find(`.product_price_${i + 1}`)
@@ -5414,7 +5500,7 @@
               order_id,
               product_master_id,
               packing_id: null, // Allow null packing_id when using direct product selection
-              unit: product_unit,
+              quantity: product_quantity,
               price: product_price,
               description: product_desc,
             };
@@ -6745,5 +6831,22 @@
 
       $("#resetPaymentDataBtn").on("click", resetAllInputs);
     });
+  </script>
+
+  <!-- Include Order Tracking Component -->
+  <%- include('./components/order-tracking.ejs') %>
+
+  <script>
+    // Verify order tracking component loaded
+    console.log("Order Tracking Component Status:");
+    console.log("✓ Sales page loaded");
+    console.log(
+      "✓ loadOrderTracking function available:",
+      typeof window.loadOrderTracking
+    );
+    console.log(
+      "✓ orderTrackingTemplate exists:",
+      !!document.querySelector("#orderTrackingTemplate")
+    );
   </script>
 </html>

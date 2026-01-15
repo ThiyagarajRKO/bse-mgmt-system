@@ -60,8 +60,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: true,
       },
-      unit: {
+      quantity: {
         type: DataTypes.FLOAT,
+        comment: "Quantity of products ordered",
       },
       price: {
         type: DataTypes.FLOAT,
@@ -109,7 +110,7 @@ module.exports = (sequelize, DataTypes) => {
         item.is_active = true;
 
         const total_price =
-          parseFloat(item?.price) * parseFloat(item?.unit) -
+          parseFloat(item?.price) * parseFloat(item?.quantity) -
           (parseFloat(data.discount) || 0);
 
         item.total_price = isNaN(total_price) ? 0 : total_price;
@@ -142,7 +143,7 @@ module.exports = (sequelize, DataTypes) => {
   OrderProducts.beforeCreate(async (data, options) => {
     try {
       const total_price =
-        parseFloat(data?.price) * parseFloat(data?.unit) -
+        parseFloat(data?.price) * parseFloat(data?.quantity) -
         (parseFloat(data.discount) || 0);
 
       data.total_price = isNaN(total_price) ? 0 : total_price;

@@ -22,6 +22,105 @@ const VALID_TRANSITIONS = {
 };
 
 /**
+ * Create new sales order (DRAFT status)
+ * Creates order and associated order products
+ */
+export const Create = async (order_data, profile_id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { customer_id, order_items, shipping_address } = order_data;
+
+      // Validate customer_id
+      if (!isValidUuid(customer_id)) {
+        return reject({
+          statusCode: 422,
+          message: "Invalid customer_id format",
+        });
+      }
+
+      // Check customer exists
+      const customer = await models.CustomerMaster.findOne({
+        where: { id: customer_id, is_active: true },
+      });
+
+      if (!customer) {
+        return reject({
+          statusCode: 404,
+          message: "Customer not found",
+        });
+      }
+
+      // Validate and prepare order products
+      const products = [];
+      for (let item of order_items) {
+        // Support both product_id and packing_id for backward compatibility
+        const productId = item.product_id || item.packing_id;
+
+        if (!isValidUuid(productId)) {
+          return reject({
+            statusCode: 422,
+            message: "Invalid product_id or packing_id format in order_items",
+          });
+        }
+
+        if (!item.quantity || item.quantity <= 0) {
+          return reject({
+            statusCode: 422,
+            message: "quantity must be a positive number",
+          });
+        }
+
+        // Validate product exists
+        const product = await models.ProductMaster.findOne({
+          where: { id: productId, is_active: true },
+        });
+
+        if (!product) {
+          return reject({
+            statusCode: 404,
+            message: `Product ${productId} not found`,
+          });
+        }
+
+        products.push({
+          product_master_id: productId,
+          packing_id: item.packing_id || null,
+          quantity: item.quantity,
+          unit: item.unit || "KG",
+          price: item.price || 0,
+          total_price: (item.price || 0) * item.quantity,
+          description: item.description || "",
+        });
+      }
+
+      // Create order with products
+      const order = await models.Orders.create(
+        {
+          customer_master_id: customer_id,
+          shipping_address: shipping_address || customer.address,
+          order_status: "DRAFT",
+          delivery_status: "PENDING",
+          is_active: true,
+          created_by: profile_id,
+        },
+        {
+          profile_id,
+          OrderProducts: products, // Pass products through options for afterCreate hook
+        }
+      );
+
+      resolve({
+        statusCode: 201,
+        message: "Order created successfully",
+        data: order,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
  * Confirm sales order
  * Transition: DRAFT -> CONFIRMED
  * Triggers: Validate order items, reserve inventory
@@ -408,6 +507,7 @@ export const GetOrderWithHistory = async (order_id) => {
 };
 
 export default {
+  Create,
   ConfirmOrder,
   AllocateInventory,
   StartProduction,

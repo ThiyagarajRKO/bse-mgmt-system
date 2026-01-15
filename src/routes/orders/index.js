@@ -9,6 +9,7 @@ import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
 import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
 import { DeleteEmpty } from "./handlers/delete_empty";
+import { GetTracking } from "./handlers/get_tracking";
 import CheckStockForProduct from "./handlers/check_stock_for_product";
 
 // Schema
@@ -18,6 +19,7 @@ import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getOrderNumbersSchema } from "./schema/get_order_no";
+import { getTrackingSchema } from "./schema/get_tracking";
 
 export const ordersRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -59,25 +61,6 @@ export const ordersRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.get("/:order_id", getSchema, async (req, reply) => {
-    try {
-      const params = { profile_id: req?.token_profile_id, ...req.params };
-
-      const result = await Get(params, req?.session, fastify);
-
-      return reply.code(result.statusCode || 200).send({
-        success: true,
-        message: result.message,
-        data: result?.data,
-      });
-    } catch (err) {
-      return reply.code(err?.statusCode || 400).send({
-        success: false,
-        message: err?.message || err,
-      });
-    }
-  });
-
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
@@ -102,6 +85,50 @@ export const ordersRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.query };
 
       const result = await GetOrderNumbers(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  // Get order with sales inventory tracking - MUST be before /:order_id route
+  fastify.get(
+    "/:order_id/tracking",
+    { schema: getTrackingSchema.schema },
+    async (req, reply) => {
+      try {
+        const params = { profile_id: req?.token_profile_id, ...req.params };
+
+        const result = await GetTracking(params, req?.session, fastify);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    }
+  );
+
+  // Get single order by ID - MUST come after /:order_id/tracking
+  fastify.get("/:order_id", getSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.params };
+
+      const result = await Get(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,
@@ -260,6 +287,31 @@ export const ordersRoute = (fastify, opts, done) => {
       });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  // DEBUG: Test order creation with user_id from user_profiles
+  fastify.post("/debug/create-with-user", async (req, reply) => {
+    try {
+      // Use hardcoded BSE Admin user_id from user_profiles
+      const params = {
+        profile_id: "87ffbaff-b7e9-4198-90d2-0fa12d85ef82",
+        ...req.body,
+      };
+
+      const result = await Create(params, req?.session, fastify);
+
+      return reply.code(200).send({
+        success: true,
+        message: "Order created successfully",
+        data: result?.data,
+      });
+    } catch (err) {
+      fastify.log.error(err);
+      return reply.code(err?.statusCode || 500).send({
         success: false,
         message: err?.message || err,
       });

@@ -8,6 +8,7 @@ export const getAllSchema = {
         length: { type: "number" },
         "search[value]": { type: "string" },
       },
+      additionalProperties: true,
     },
   },
 };

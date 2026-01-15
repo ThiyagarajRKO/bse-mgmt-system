@@ -21,6 +21,21 @@ export const createSchema = {
         shipping_method: { type: "string" },
         shipping_address: { type: "string" },
         expected_delivery_date: { type: "string" },
+        OrderProducts: {
+          type: "array",
+          items: {
+            type: "object",
+            required: ["product_master_id", "quantity"],
+            properties: {
+              product_master_id: { type: "string" },
+              packing_id: { type: "string" },
+              quantity: { type: "number" },
+              price: { type: "number" },
+              total_price: { type: "number" },
+              description: { type: "string" },
+            },
+          },
+        },
       },
     },
   },

@@ -56,6 +56,41 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "SET NULL",
       });
+
+      Orders.hasMany(models.Dispatches, {
+        foreignKey: "order_id",
+        as: "dispatches",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      Orders.hasMany(models.ProcurementLots, {
+        foreignKey: "order_id",
+        as: "procurement_lots",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      Orders.hasMany(models.ProcurementProducts, {
+        foreignKey: "order_id",
+        as: "procurement_products",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      Orders.hasMany(models.Peeling, {
+        foreignKey: "order_id",
+        as: "peeling_records",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      Orders.hasMany(models.PeeledDispatches, {
+        foreignKey: "order_id",
+        as: "peeled_dispatches",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
     }
   }
   Orders.init(
@@ -135,45 +170,72 @@ module.exports = (sequelize, DataTypes) => {
   // Create Order Products after order is created
   Orders.afterCreate(async (data, options) => {
     try {
+      console.log(`[Orders] afterCreate hook fired for order ${data.id}`);
+      console.log(`[Orders] options.OrderProducts:`, options?.OrderProducts);
+      console.log(`[Orders] Is array:`, Array.isArray(options?.OrderProducts));
+
       if (options?.OrderProducts && Array.isArray(options.OrderProducts)) {
-        const productsData = options.OrderProducts.map((product) => ({
-          ...product,
-          order_id: data.id,
-          is_active: true,
-          created_by: options.profile_id,
-        }));
+        try {
+          console.log(
+            `[Orders] Creating ${options.OrderProducts.length} products...`
+          );
 
-        const createdOrderProducts =
-          await sequelize.models.OrderProducts.bulkCreate(productsData, {
-            profile_id: options.profile_id,
-          });
+          const productsData = options.OrderProducts.map((product) => ({
+            ...product,
+            order_id: data.id,
+            is_active: true,
+            created_by: options.profile_id,
+          }));
 
-        // Route each order product to production or procurement based on inventory
-        // This will be handled by a separate fulfillment service
-        // For now, we'll log the created products for fulfillment routing
-        console.log(
-          `[Orders] Created ${createdOrderProducts.length} order products for order ${data.id}`
-        );
+          console.log(
+            `[Orders] Products data to create:`,
+            JSON.stringify(productsData, null, 2)
+          );
 
-        // Trigger fulfillment routing for each product
-        // This can be queued for async processing
-        if (createdOrderProducts && createdOrderProducts.length > 0) {
-          for (const orderProduct of createdOrderProducts) {
-            try {
-              // Import and call fulfillment service
-              // This will determine if raw material is available for production
-              // or if we need to route to procurement
-              console.log(
-                `[Orders] Routing order product ${orderProduct.id} for product ${orderProduct.product_master_id}`
-              );
+          const createdOrderProducts =
+            await sequelize.models.OrderProducts.bulkCreate(productsData, {
+              profile_id: options.profile_id,
+            });
 
-              // The actual fulfillment routing will be handled by a separate service
-              // that can be called asynchronously to avoid blocking order creation
-            } catch (routingErr) {
-              console.error("Error routing order product:", routingErr);
-            }
-          }
+          console.log(
+            `[Orders] ✓ Created ${createdOrderProducts.length} order products for order ${data.id}`
+          );
+        } catch (bulkCreateErr) {
+          console.error(
+            `[Orders] Error creating order products:`,
+            bulkCreateErr.message || bulkCreateErr
+          );
         }
+      } else {
+        console.log(
+          `[Orders] No OrderProducts to create (undefined, null, or not an array)`
+        );
+      }
+
+      // Automatically create order tracking pipeline (production, dispatch, peeling)
+      try {
+        const {
+          createOrderTrackingPipeline,
+        } = require("../src/services/order-tracking-service.js");
+
+        // Call tracking pipeline asynchronously to avoid blocking order creation
+        createOrderTrackingPipeline(data, options)
+          .then(() => {
+            console.log(
+              `[Orders] Order tracking pipeline completed for order ${data.id}`
+            );
+          })
+          .catch((trackingErr) => {
+            console.error(
+              `[Orders] Order tracking pipeline failed for order ${data.id}:`,
+              trackingErr.message
+            );
+          });
+      } catch (trackingErr) {
+        console.error(
+          "Error initializing order tracking service:",
+          trackingErr
+        );
       }
     } catch (err) {
       console.log("Error while creating order products", err?.message || err);

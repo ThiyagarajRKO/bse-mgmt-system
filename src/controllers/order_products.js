@@ -27,7 +27,7 @@ export const BulkUpsert = async (profile_id, order_products_data) => {
         {
           updateOnDuplicate: [
             "product_master_id",
-            "unit",
+            "quantity",
             "price",
             "discount",
             "description",
@@ -69,7 +69,7 @@ export const GetAll = ({ order_id, start, length, search }) => {
           "order_id",
           "product_master_id",
           "packing_id",
-          "unit",
+          "quantity",
           "price",
           "total_price",
           "discount",
@@ -148,7 +148,7 @@ export const GetMatchingRawMaterials = ({
           "id",
           "order_id",
           "product_master_id",
-          "unit",
+          "quantity",
           "price",
           "total_price",
         ],
@@ -377,7 +377,7 @@ export const GetPaymentItems = ({
         subQuery: false,
         attributes: [
           "id",
-          "unit",
+          "quantity",
           "discount",
           "price",
           "total_price",
