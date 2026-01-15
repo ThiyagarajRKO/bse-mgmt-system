@@ -27,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      ProcurementLots.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
       ProcurementLots.hasOne(models.ProcurementProducts, {
         foreignKey: "procurement_lot_id",
         onUpdate: "CASCADE",
@@ -52,6 +58,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       procurement_lot: {
         type: DataTypes.STRING,
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to the sales order for which this procurement is made",
       },
       is_active: {
         type: DataTypes.BOOLEAN,
