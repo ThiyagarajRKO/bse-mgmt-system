@@ -2,335 +2,354 @@
 
 const { v4: uuidv4 } = require("uuid");
 
-const derivativeMappings = [
-  // UNPROCESSED - Whole/As-Received
-  {
-    derivative_code: "WR",
-    derivative_name: "Whole (Round)",
-    processing_type: "UNPROCESSED",
-  },
-  {
-    derivative_code: "WIS",
-    derivative_name: "Whole (In Shell)",
-    processing_type: "UNPROCESSED",
-  },
-  {
-    derivative_code: "WHSO",
-    derivative_name: "Whole (Head-on Shell-on)",
-    processing_type: "UNPROCESSED",
-  },
-  {
-    derivative_code: "WHST",
-    derivative_name: "Whole (Head-on Shell-off)",
-    processing_type: "UNPROCESSED",
-  },
-
-  // PROCESSED_UNCOOKED - Market Forms (Cut/Prepared but Uncooked)
-  // Fish
-  {
-    derivative_code: "G",
-    derivative_name: "Gutted",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "GG",
-    derivative_name: "GG (Gutted & Gilled)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "HG",
-    derivative_name: "H&G (Headed & Gutted)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "HO",
-    derivative_name: "Headed",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "FIL",
-    derivative_name: "Fillets",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "FIL_SK",
-    derivative_name: "Fillets (Skin-on)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "FIL_SF",
-    derivative_name: "Fillets (Skin-off)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "FL",
-    derivative_name: "Flaps",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "LN",
-    derivative_name: "Loins",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "POR",
-    derivative_name: "Portions",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "STK",
-    derivative_name: "Steaks",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "JAW",
-    derivative_name: "Jawbones",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "COL",
-    derivative_name: "Collars",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-
-  // Shrimp
-  {
-    derivative_code: "SHRIMP_HDO",
-    derivative_name: "Shrimp (Head-on)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_HDO_SHELL",
-    derivative_name: "Shrimp (Head-on Shell-on)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_HDO_NO_SHELL",
-    derivative_name: "Shrimp (Head-on Shell-off)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_HDOF",
-    derivative_name: "Shrimp (Head-off)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_HDOF_SHELL",
-    derivative_name: "Shrimp (Head-off Shell-on)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_HDOF_NO_SHELL",
-    derivative_name: "Shrimp (Head-off Shell-off / Peeled)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_TAILLESS",
-    derivative_name: "Shrimp (Tailless)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SHRIMP_SPLIT",
-    derivative_name: "Shrimp (Split)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-
-  // Cephalopod (Squid/Cuttlefish/Octopus)
-  {
-    derivative_code: "ML",
-    derivative_name: "Mantles (Squid/Cuttlefish)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "ARM",
-    derivative_name: "Arms (Squid/Cuttlefish/Octopus)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "TEN",
-    derivative_name: "Tentacles (Squid/Octopus)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "TUB",
-    derivative_name: "Tubes (Squid/Cuttlefish)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "TEN_W_ARM",
-    derivative_name: "Tentacles with Arms",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "WHOLE_CLEAN",
-    derivative_name: "Whole Cleaned (Squid/Cuttlefish)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-
-  // Bivalve (Clams/Mussels/Scallops/Oysters)
-  {
-    derivative_code: "HS",
-    derivative_name: "Half-Shell (Bivalves)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "SM",
-    derivative_name: "Shucked Meat (Bivalves)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "MEAT_ONLY",
-    derivative_name: "Meat Only",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-  {
-    derivative_code: "MEAT_IQF",
-    derivative_name: "Meat (IQF - Individually Quick Frozen)",
-    processing_type: "PROCESSED_UNCOOKED",
-  },
-
-  // COOKED - Ready-to-Cook, Cooked, Processed
-  {
-    derivative_code: "STEAMED",
-    derivative_name: "Steamed",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "BOILED",
-    derivative_name: "Boiled",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "SMOKED",
-    derivative_name: "Smoked",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "BREADED",
-    derivative_name: "Breaded",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "BATTERED",
-    derivative_name: "Battered",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "MARINATED",
-    derivative_name: "Marinated",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "CANNED",
-    derivative_name: "Canned/Retort",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "MINCED",
-    derivative_name: "Minced/Ground",
-    processing_type: "COOKED",
-  },
-  {
-    derivative_code: "SURIMI",
-    derivative_name: "Surimi",
-    processing_type: "COOKED",
-  },
-];
-
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    try {
-      // Get all species from database for relationship
-      const species = await queryInterface.sequelize.query(
-        `SELECT id, species_name FROM species_master LIMIT 1`,
-        { type: queryInterface.sequelize.QueryTypes.SELECT },
-      );
+  async up(queryInterface) {
+    const now = new Date();
 
-      const defaultSpeciesId =
-        species && species.length > 0 ? species[0].id : 1;
+    const rows = [
+      // ======================================================
+      // UNPROCESSED (RAW in your ERP)
+      // ======================================================
+      {
+        id: uuidv4(),
+        derivative_code: "UNP_WHOLE_ROUND",
+        derivative_name: "Whole (Round / As Received)",
+        processing_type: "UNPROCESSED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "UNP_INSHELL",
+        derivative_name: "Whole (In Shell)",
+        processing_type: "UNPROCESSED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "UNP_HEADON_SHELLON",
+        derivative_name: "Whole (Head-on Shell-on)",
+        processing_type: "UNPROCESSED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
 
-      for (const mapping of derivativeMappings) {
-        // Check if derivative with this code already exists
-        const [existing] = await queryInterface.sequelize.query(
-          `SELECT id FROM derivative_master WHERE derivative_code = :code`,
-          {
-            replacements: { code: mapping.derivative_code },
-            type: queryInterface.sequelize.QueryTypes.SELECT,
-          },
-        );
+      // ======================================================
+      // PROCESSED_UNCOOKED (Primary Processing)
+      // ======================================================
+      // ---- Finfish common ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_GUTTED",
+        derivative_name: "Gutted",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_GG",
+        derivative_name: "Gilled & Gutted (GG)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_HEADED",
+        derivative_name: "Headed",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_HG",
+        derivative_name: "Headed & Gutted (H&G)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_DRESSED",
+        derivative_name: "Dressed",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
 
-        if (existing) {
-          // Update existing derivative
-          await queryInterface.sequelize.query(
-            `UPDATE derivative_master 
-             SET derivative_name = :name, 
-                 processing_type = :processing_type,
-                 updated_at = NOW()
-             WHERE derivative_code = :code`,
-            {
-              replacements: {
-                name: mapping.derivative_name,
-                processing_type: mapping.processing_type,
-                code: mapping.derivative_code,
-              },
-            },
-          );
-          console.log(`Updated derivative: ${mapping.derivative_code}`);
-        } else {
-          // Insert new derivative with UUID
-          await queryInterface.sequelize.query(
-            `INSERT INTO derivative_master (
-              id,
-              derivative_code, 
-              derivative_name, 
-              processing_type,
-              processing_level,
-              created_at, 
-              updated_at
-            ) VALUES (
-              :id,
-              :code,
-              :name,
-              :processing_type,
-              :processing_level,
-              NOW(),
-              NOW()
-            )`,
-            {
-              replacements: {
-                id: uuidv4(),
-                code: mapping.derivative_code,
-                name: mapping.derivative_name,
-                processing_type: mapping.processing_type,
-                processing_level: "Raw", // Keep legacy field populated
-              },
-            },
-          );
-          console.log(`Created derivative: ${mapping.derivative_code}`);
-        }
-      }
+      // ---- Fillet / cuts ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_FILLET_SKINON",
+        derivative_name: "Fillet (Skin-on)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_FILLET_SKINLESS",
+        derivative_name: "Fillet (Skinless)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_LOIN",
+        derivative_name: "Loin",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_PORTION",
+        derivative_name: "Portion",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_STEAKS_SLICES",
+        derivative_name: "Steaks / Slices",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
 
-      console.log("Derivative seeding completed successfully");
-    } catch (error) {
-      console.error("Error during derivative seeding:", error);
-      throw error;
-    }
+      // ---- Shrimp / prawn processing ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_HEADLESS",
+        derivative_name: "Headless",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_TAILS",
+        derivative_name: "Tails (Shrimp/Lobster)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_PUD",
+        derivative_name: "Peeled Undeveined (PUD)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_PD",
+        derivative_name: "Peeled Deveined (PD)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_PTO",
+        derivative_name: "Peeled Tail-on (PTO / PDTO)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_EZPEEL",
+        derivative_name: "EZ Peel",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // ---- Crab / lobster processing ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_CLAWS_KNUCKLES",
+        derivative_name: "Claws / Knuckles (Crab/Lobster)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // ---- Cephalopods processing ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_TUBES",
+        derivative_name: "Tubes (Squid/Cuttlefish)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_TENTACLES",
+        derivative_name: "Tentacles (Squid/Octopus)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_RINGS",
+        derivative_name: "Rings (Squid/Cuttlefish)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // ---- Bivalves / Shellfish processing ----
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_HALF_SHELL",
+        derivative_name: "Half-Shell (Bivalves)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "PRC_SHUCKED_MEAT",
+        derivative_name: "Shucked Meat (Bivalves)",
+        processing_type: "PROCESSED_UNCOOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // ======================================================
+      // COOKED / VALUE-ADDED
+      // ======================================================
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_FISH_COOKED",
+        derivative_name: "Cooked Fish (Steamed/Grilled/Smoked)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_SHRIMP_BOILED",
+        derivative_name: "Cooked Shrimp/Prawn (Boiled/Steamed)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_CRAB_MEAT",
+        derivative_name: "Cooked Crab Meat (Pasteurized)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_LOBSTER_MEAT",
+        derivative_name: "Cooked Lobster Meat",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_SQUID_COOKED",
+        derivative_name: "Cooked Squid / Cuttlefish (Boiled/Steamed)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_OCTOPUS_COOKED",
+        derivative_name: "Cooked Octopus (Boiled/Steamed)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_BIVALVE_MEAT",
+        derivative_name: "Cooked Bivalve Meat (Mussel/Oyster/Clam)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_BREADED_BATTERED",
+        derivative_name: "Breaded / Battered Seafood (Value-added)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_MARINATED_RTE",
+        derivative_name: "Marinated / Ready-to-Eat Seafood",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: uuidv4(),
+        derivative_code: "CKD_CANNED_RETORT",
+        derivative_name: "Canned / Retort Seafood (Shelf-stable)",
+        processing_type: "COOKED",
+        is_active: true,
+        created_at: now,
+        updated_at: now,
+      },
+    ];
+
+    await queryInterface.bulkInsert("derivative_master", rows, {});
   },
 
-  down: async (queryInterface, Sequelize) => {
-    try {
-      const codes = derivativeMappings.map((m) => m.derivative_code);
-      await queryInterface.sequelize.query(
-        `DELETE FROM derivative_master WHERE derivative_code IN (:codes)`,
-        {
-          replacements: { codes },
-          type: queryInterface.sequelize.QueryTypes.DELETE,
-        },
-      );
-      console.log("Reverted derivative seeding");
-    } catch (error) {
-      console.error("Error reverting seeding:", error);
-      throw error;
-    }
+  async down(queryInterface) {
+    await queryInterface.bulkDelete("derivative_master", null, {});
   },
 };
