@@ -2,10 +2,10 @@
 
 /**
  * Migration: Create species_derivative_mapping table
- * 
+ *
  * This table stores the allowed/blocked derivatives for each species type.
  * It provides a database-backed validation layer for the species-derivative matrix.
- * 
+ *
  * Tables:
  * - species_derivative_mapping: Maps species types to allowed derivatives
  * - species_derivative_blocked: Tracks blocked derivatives for each species
