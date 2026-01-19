@@ -424,7 +424,10 @@
         /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
         text-decoration: none;
         color: #333;
-        transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
       }
 
       .icon-button i {
@@ -2227,7 +2230,7 @@
         panelHeadingId,
         panelType,
         panelSubmitButton,
-        panelBtnAttrName
+        panelBtnAttrName,
       ) {
         // Opening Slide Panel
         $(`#${panelId}`).css("right", "0");
@@ -2275,7 +2278,7 @@
           "orderPanelHeading",
           "Orders",
           "submitOrders",
-          "order_id"
+          "order_id",
         );
 
         $("#customer_country").text("").css({ color: "white" });
@@ -2307,7 +2310,7 @@
       $("#purchaseRequestCreateBtn").click(function () {
         const selectedMaterial = $('input[name="rawMaterial"]:checked').val();
         const selectedMaterialName = $(
-          'input[name="rawMaterial"]:checked'
+          'input[name="rawMaterial"]:checked',
         ).data("material-name");
         const quantityToOrder = parseFloat($("#purchaseRequestQuantity").val());
 
@@ -2336,7 +2339,7 @@
           req.orderNo,
           null,
           null,
-          [materialData]
+          [materialData],
         );
 
         // Close the panel after successful creation
@@ -2386,7 +2389,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#orderModal").modal("hide");
-        }
+        },
       );
 
       $(document).on("hide.bs.modal", "#orderModal", function () {
@@ -2405,7 +2408,7 @@
           $(`.total_price_${last_fieldset_index}`).text() == "0.00"
         ) {
           toastr["warning"](
-            "Please fill all the required values in the above output to create a new output"
+            "Please fill all the required values in the above output to create a new output",
           );
           return;
         }
@@ -2417,7 +2420,7 @@
         const current_index = $(e.target).attr("current_index");
 
         $(".total_quantity_" + current_index).text(
-          $(e.target).select2("data")?.[0]?.quantity || ""
+          $(e.target).select2("data")?.[0]?.quantity || "",
         );
       });
 
@@ -2477,7 +2480,7 @@
             $("#submitOrders").addClass("col-lg-5");
             $("#resetOrdersDataBtn").addClass("col-lg-5");
           }
-        }
+        },
       );
 
       function loadOrdersDropdowns() {
@@ -2495,11 +2498,10 @@
         packing_id,
         product_unit,
         product_price,
-        product_desc
+        product_desc,
       ) {
-        $(
-          "#orderProductContainer"
-        ).append(`<div class="vl-top vl-top-${index}"></div><fieldset
+        $("#orderProductContainer")
+          .append(`<div class="vl-top vl-top-${index}"></div><fieldset
                                   class="form-group border p-3 mt-3 orderProduct orderProduct_${index}"
                                   style="
                                     border-color: rgba(129, 145, 179, 0.6) !important;
@@ -2712,14 +2714,14 @@
         const view_order_id = $(e.target).attr("order_id");
 
         $("#view_order_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(2).text(),
         );
 
         // Top Header
         $("#view_order_no").attr("order_id", view_order_id);
 
         $("#view_order_date").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         $("#view_payment_terms").text($(e.target).attr("payment_terms"));
@@ -2729,14 +2731,14 @@
         $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
 
         $("#view_delivery_status").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(6).text(),
         );
 
         $("#view_customer_name").text($(e.target).attr("customer_name"));
 
         $("#view_customer_name").attr(
           "customer_master_id",
-          $(e.target).attr("customer_master_id")
+          $(e.target).attr("customer_master_id"),
         );
 
         $("#view_customer_country").text($(e.target).attr("customer_country"));
@@ -2747,23 +2749,23 @@
 
         // Shipping
         $("#view_shipping_date").text(
-          formatDate(new Date($(e.target).attr("shipping_date")))
+          formatDate(new Date($(e.target).attr("shipping_date"))),
         );
 
         $("#view_shipping_carrier").text(
-          $(e.target).attr("shipping_carrier_name")
+          $(e.target).attr("shipping_carrier_name"),
         );
 
         $("#view_shipping_source").text($(e.target).attr("shipping_source"));
 
         $("#view_shipping_destination").text(
-          $(e.target).attr("shipping_destination")
+          $(e.target).attr("shipping_destination"),
         );
 
         $("#view_shipping_method").text($(e.target).attr("shipping_method"));
 
         $("#view_expected_delivery").text(
-          formatDate(new Date($(e.target).attr("expected_delivery")))
+          formatDate(new Date($(e.target).attr("expected_delivery"))),
         );
 
         // Opening Slied Panel
@@ -2783,7 +2785,7 @@
             if (response.success && response.data) {
               // Show the timeline container
               const timelineContainer = document.getElementById(
-                "orderTrackingTimeline"
+                "orderTrackingTimeline",
               );
               if (timelineContainer) {
                 timelineContainer.style.display = "block";
@@ -2825,7 +2827,7 @@
               $("#view_order_no").attr("product_master_id", product_master_id);
               $("#view_order_no").attr(
                 "quantity_required_kg",
-                quantity_required_kg
+                quantity_required_kg,
               );
             }
           }
@@ -2837,7 +2839,7 @@
         const order_no = $("#view_order_no").text();
         const product_master_id = $("#view_order_no").attr("product_master_id");
         const quantity_required_kg = $("#view_order_no").attr(
-          "quantity_required_kg"
+          "quantity_required_kg",
         );
 
         if (!order_id) {
@@ -2898,7 +2900,7 @@
 
                           toastr.success(
                             "Order confirmed successfully and moved to allocation workflow",
-                            "Order Confirmed"
+                            "Order Confirmed",
                           );
                         })
                         .fail(function (xhr) {
@@ -2947,7 +2949,7 @@
             } else {
               toastr.warning(
                 stockMessage || "Unable to determine stock status",
-                "Stock Check"
+                "Stock Check",
               );
             }
           })
@@ -3095,7 +3097,7 @@
           .attr("unit_master_id");
 
         $("#order_quantity").val(
-          $(e.target).closest("tr").children("td").eq(5).text()
+          $(e.target).closest("tr").children("td").eq(5).text(),
         );
 
         $("#orderMethods")
@@ -3250,7 +3252,7 @@
               toastr["warning"](jqXhr["responseJSON"]["message"]);
             } else {
               toastr["error"](
-                jqXhr["responseJSON"]["message"] || "Failed to load products"
+                jqXhr["responseJSON"]["message"] || "Failed to load products",
               );
             }
           },
@@ -3495,13 +3497,13 @@
                     const quantityText =
                       quantity > 0 ? quantity : "Out of Stock";
                     $element.html(
-                      `<span class="badge ${badgeClass}">${quantityText}</span>`
+                      `<span class="badge ${badgeClass}">${quantityText}</span>`,
                     );
                   },
                   error: function (xhr) {
                     console.error("Inventory fetch error:", xhr);
                     $element.html(
-                      `<span class="badge bg-secondary">Error</span>`
+                      `<span class="badge bg-secondary">Error</span>`,
                     );
                   },
                 });
@@ -3560,7 +3562,7 @@
                   product?.Packing?.pd?.pp?.ProductMaster?.id;
 
                 console.log(
-                  `[Order View] Fetching product master ${productMasterId} to get species info`
+                  `[Order View] Fetching product master ${productMasterId} to get species info`,
                 );
 
                 // Fetch the full product master with category and species
@@ -3576,20 +3578,20 @@
                         fullProduct?.ProductCategoryMaster?.species_master_id ||
                         null;
                       console.log(
-                        `[Order View] Retrieved species ID: ${speciesMasterId}`
+                        `[Order View] Retrieved species ID: ${speciesMasterId}`,
                       );
                     }
                   },
                   error: function (xhr, status, error) {
                     console.error(
                       `Error fetching product master ${productMasterId}:`,
-                      error
+                      error,
                     );
                   },
                 });
 
                 console.log(
-                  `[Order View] Product: ${productName}, Species ID: ${speciesMasterId}`
+                  `[Order View] Product: ${productName}, Species ID: ${speciesMasterId}`,
                 );
                 // Fetch inventory for this product
                 if (productMasterId) {
@@ -3600,12 +3602,12 @@
                     success: function (invResponse) {
                       console.log(
                         `[Order View] Purchase inventory response:`,
-                        invResponse
+                        invResponse,
                       );
                       purchaseInventory =
                         invResponse?.data?.available_quantity || 0;
                       console.log(
-                        `[Order View] Purchase inventory: ${purchaseInventory}`
+                        `[Order View] Purchase inventory: ${purchaseInventory}`,
                       );
 
                       // Now fetch sales inventory for the same product
@@ -3617,7 +3619,7 @@
                         success: function (salesResponse) {
                           console.log(
                             `[Order View] Sales inventory response:`,
-                            salesResponse
+                            salesResponse,
                           );
                           if (salesResponse?.data) {
                             if (Array.isArray(salesResponse.data)) {
@@ -3625,7 +3627,7 @@
                                 (sum, inv) => {
                                   return sum + (inv.quantity || 0);
                                 },
-                                0
+                                0,
                               );
                             } else if (
                               salesResponse.data.quantity !== undefined
@@ -3634,14 +3636,14 @@
                             }
                           }
                           console.log(
-                            `[Order View] Sales inventory: ${salesInventory}`
+                            `[Order View] Sales inventory: ${salesInventory}`,
                           );
                         },
                         error: function (xhr, status, error) {
                           console.error(
                             `[Order View] Error fetching sales inventory:`,
                             status,
-                            error
+                            error,
                           );
                           salesInventory = 0;
                         },
@@ -3650,10 +3652,10 @@
                       // Calculate net inventory
                       netInventory = Math.max(
                         0,
-                        purchaseInventory - salesInventory
+                        purchaseInventory - salesInventory,
                       );
                       console.log(
-                        `[Order View] Net inventory: ${netInventory}`
+                        `[Order View] Net inventory: ${netInventory}`,
                       );
 
                       showOrderViewModal(
@@ -3664,14 +3666,14 @@
                         quantityRequired,
                         purchaseInventory,
                         salesInventory,
-                        netInventory
+                        netInventory,
                       );
                     },
                     error: function (xhr, status, error) {
                       console.error(
                         `[Order View] Error fetching purchase inventory:`,
                         status,
-                        error
+                        error,
                       );
                       showOrderViewModal(
                         order,
@@ -3681,7 +3683,7 @@
                         quantityRequired,
                         purchaseInventory,
                         salesInventory,
-                        netInventory
+                        netInventory,
                       );
                     },
                   });
@@ -3694,7 +3696,7 @@
                     quantityRequired,
                     purchaseInventory,
                     salesInventory,
-                    netInventory
+                    netInventory,
                   );
                 }
               } else {
@@ -3705,7 +3707,7 @@
               toastr.error("Failed to load order details!", "Error");
             },
           });
-        }
+        },
       );
 
       // Display order view modal with real data
@@ -3718,7 +3720,7 @@
         quantityRequired,
         purchaseInventory,
         salesInventory,
-        netInventory
+        netInventory,
       ) {
         console.log("showOrderViewModal called with order:", order);
         const allocationStatus = order.allocation_status;
@@ -3728,8 +3730,8 @@
           <div class="modal fade" id="allocationViewModal" tabindex="-1" role="dialog" aria-labelledby="allocationViewModalLabel" aria-hidden="true" data-order-id="${
             order.id
           }" data-product-id="${productMasterId}" data-species-id="${
-          speciesMasterId || ""
-        }">
+            speciesMasterId || ""
+          }">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -3899,7 +3901,7 @@
         if (!productId || productId === "null" || productId === null) {
           toastr.error(
             "Product ID not found. Cannot raise purchase request.",
-            "Error"
+            "Error",
           );
           console.error("Invalid productId:", productId);
           return;
@@ -3908,7 +3910,7 @@
         if (!quantityRequired || quantityRequired <= 0) {
           toastr.error(
             "Invalid quantity. Please check the order details.",
-            "Error"
+            "Error",
           );
           return;
         }
@@ -3922,7 +3924,7 @@
             speciesId,
             productName,
             quantityRequired,
-            orderNo
+            orderNo,
           );
         }, 300);
       });
@@ -3934,11 +3936,11 @@
         speciesId,
         productName,
         quantityRequired,
-        orderNo
+        orderNo,
       ) {
         console.log(
           "Checking existing purchase request for productId:",
-          productId
+          productId,
         );
 
         $.ajax({
@@ -3953,7 +3955,7 @@
             const autoGenerated = products.some(
               (prod) =>
                 prod.procurement_purchaser &&
-                prod.procurement_purchaser.includes("System Auto-Generated")
+                prod.procurement_purchaser.includes("System Auto-Generated"),
             );
 
             if (autoGenerated) {
@@ -3980,7 +3982,7 @@
                 speciesId,
                 productName,
                 quantityRequired,
-                orderNo
+                orderNo,
               );
             }
           },
@@ -3994,7 +3996,7 @@
               speciesId,
               productName,
               quantityRequired,
-              orderNo
+              orderNo,
             );
           },
         });
@@ -4007,7 +4009,7 @@
         speciesId,
         productName,
         quantityRequired,
-        orderNo
+        orderNo,
       ) {
         console.log("showRaisePurchaseRequestDialog called with:", {
           orderId,
@@ -4042,17 +4044,17 @@
         const quantityWithBuffer = Math.ceil(quantityRequired * 1.2);
         $("#purchaseRequestQuantity").val(quantityWithBuffer);
         $("#purchaseRequestQuantityHint").text(
-          `Recommended: ${quantityWithBuffer} units (includes 20% buffer)`
+          `Recommended: ${quantityWithBuffer} units (includes 20% buffer)`,
         );
 
         // Load raw materials
         $("#purchaseRequestRawMaterials").html(
-          '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+          '<p style="color: #999; text-align: center;">Loading raw materials...</p>',
         );
         loadRawMaterialsForPurchaseRequest(
           productId,
           quantityRequired,
-          speciesId
+          speciesId,
         );
 
         console.log("About to show side panel");
@@ -4065,7 +4067,7 @@
       function loadRawMaterialsForPurchaseRequest(
         productId,
         quantityRequired,
-        speciesId = null
+        speciesId = null,
       ) {
         console.log(
           "Loading raw materials for product:",
@@ -4073,7 +4075,7 @@
           "quantity:",
           quantityRequired,
           "speciesId:",
-          speciesId
+          speciesId,
         );
 
         // First, calculate AI-powered requirements
@@ -4101,13 +4103,13 @@
 
             // Clear any existing content first
             container.html(
-              '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+              '<p style="color: #999; text-align: center;">Loading raw materials...</p>',
             );
 
             if (!product) {
               console.warn("Product not found in response");
               container.html(
-                '<p style="color: #d32f2f; text-align: center;">Product not found</p>'
+                '<p style="color: #d32f2f; text-align: center;">Product not found</p>',
               );
               return;
             }
@@ -4117,11 +4119,11 @@
             console.log("Full product object:", product);
             console.log(
               "product.ProductCategoryMaster:",
-              product.ProductCategoryMaster
+              product.ProductCategoryMaster,
             );
             console.log(
               "product.product_category_master_id:",
-              product.product_category_master_id
+              product.product_category_master_id,
             );
 
             // Get the species_master_id from the product's category
@@ -4130,11 +4132,11 @@
             console.log("[SPECIES EXTRACTION] Checking for species...");
             console.log(
               "[SPECIES EXTRACTION] ProductCategoryMaster exists?",
-              !!product.ProductCategoryMaster
+              !!product.ProductCategoryMaster,
             );
             console.log(
               "[SPECIES EXTRACTION] ProductCategoryMaster.species_master_id:",
-              product.ProductCategoryMaster?.species_master_id
+              product.ProductCategoryMaster?.species_master_id,
             );
 
             if (
@@ -4145,20 +4147,20 @@
               console.log("✓ Product species ID found:", speciesMasterId);
             } else {
               console.warn(
-                "✗ BUG: ProductCategoryMaster or species_master_id is missing!"
+                "✗ BUG: ProductCategoryMaster or species_master_id is missing!",
               );
               if (product.ProductCategoryMaster) {
                 console.warn(
                   "ProductCategoryMaster exists but species_master_id is:",
-                  product.ProductCategoryMaster.species_master_id
+                  product.ProductCategoryMaster.species_master_id,
                 );
                 console.warn(
                   "ProductCategoryMaster contents:",
-                  product.ProductCategoryMaster
+                  product.ProductCategoryMaster,
                 );
               } else {
                 console.error(
-                  "✗ CRITICAL: ProductCategoryMaster is NULL/UNDEFINED - This is why filtering doesn't work!"
+                  "✗ CRITICAL: ProductCategoryMaster is NULL/UNDEFINED - This is why filtering doesn't work!",
                 );
               }
             }
@@ -4167,7 +4169,7 @@
             loadRawMaterialsBySpecies(
               speciesMasterId,
               quantityRequired,
-              container
+              container,
             );
           },
           error: function (xhr, status, error) {
@@ -4176,7 +4178,7 @@
             container.html(
               '<p style="color: #d32f2f; text-align: center;">Error loading product details: ' +
                 error +
-                "</p>"
+                "</p>",
             );
           },
         });
@@ -4186,10 +4188,10 @@
       function loadRawMaterialsBySpecies(
         speciesMasterId,
         quantityRequired,
-        container
+        container,
       ) {
         console.log(
-          `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}`
+          `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}`,
         );
 
         let apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
@@ -4198,12 +4200,12 @@
         if (speciesMasterId) {
           console.log(
             "✓ Using new species-filtered endpoint. Fetching raw materials with URL:",
-            apiUrl
+            apiUrl,
           );
         } else {
           console.warn("⚠ No species ID provided. Cannot fetch materials.");
           container.html(
-            '<p style="color: #d32f2f; text-align: center;">Species information not available</p>'
+            '<p style="color: #d32f2f; text-align: center;">Species information not available</p>',
           );
           return;
         }
@@ -4229,17 +4231,17 @@
 
             if (speciesMasterId) {
               console.log(
-                `✓ Species-filtered raw materials found: ${rawMaterials.length} (for species ${speciesMasterId})`
+                `✓ Species-filtered raw materials found: ${rawMaterials.length} (for species ${speciesMasterId})`,
               );
             } else {
               console.warn(
-                `⚠ NO FILTER - ALL raw materials returned: ${rawMaterials.length}`
+                `⚠ NO FILTER - ALL raw materials returned: ${rawMaterials.length}`,
               );
             }
 
             if (rawMaterials.length === 0) {
               container.html(
-                '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>'
+                '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>',
               );
               return;
             }
@@ -4266,7 +4268,7 @@
 
               // Debug: Log what we're searching for
               console.log(
-                `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`
+                `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`,
               );
               console.log(`[DEBUG] Material data:`, material);
 
@@ -4280,36 +4282,36 @@
                 success: function (inventoryResponse) {
                   console.log(
                     `[DEBUG] API Response for procurement_product_id ${material.procurement_product_id}:`,
-                    inventoryResponse
+                    inventoryResponse,
                   );
 
                   if (inventoryResponse?.data) {
                     if (Array.isArray(inventoryResponse.data)) {
                       console.log(
-                        `[DEBUG] Response is array with ${inventoryResponse.data.length} items`
+                        `[DEBUG] Response is array with ${inventoryResponse.data.length} items`,
                       );
                       rawMaterialInventory = inventoryResponse.data.reduce(
                         (sum, inv) => {
                           console.log(
                             `[DEBUG] Item:`,
                             inv,
-                            `Quantity: ${inv.quantity}`
+                            `Quantity: ${inv.quantity}`,
                           );
                           return sum + (inv.quantity || 0);
                         },
-                        0
+                        0,
                       );
                     } else if (inventoryResponse.data.quantity !== undefined) {
                       console.log(
                         `[DEBUG] Response is object with quantity:`,
-                        inventoryResponse.data.quantity
+                        inventoryResponse.data.quantity,
                       );
                       rawMaterialInventory =
                         inventoryResponse.data.quantity || 0;
                     } else {
                       console.log(
                         `[DEBUG] Response data is not array or has quantity:`,
-                        inventoryResponse.data
+                        inventoryResponse.data,
                       );
                     }
                   } else {
@@ -4321,7 +4323,7 @@
                     `Error fetching raw material inventory for ${material.procurement_product_id}:`,
                     status,
                     error,
-                    xhr.responseText
+                    xhr.responseText,
                   );
                   rawMaterialInventory = 0;
                 },
@@ -4333,7 +4335,7 @@
               console.log(
                 `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
                   netInventory > 0 ? "Available" : "Out of Stock"
-                }`
+                }`,
               );
 
               const statusColor = netInventory > 0 ? "#4caf50" : "#d32f2f";
@@ -4403,19 +4405,19 @@
 
             container.html(materialsHtml);
             console.log(
-              "Raw materials HTML rendered with net inventory (purchase - sales)"
+              "Raw materials HTML rendered with net inventory (purchase - sales)",
             );
           },
           error: function (xhr, status, error) {
             console.error(
               "Error fetching procurement products:",
               status,
-              error
+              error,
             );
             container.html(
               '<p style="color: #d32f2f; text-align: center;">Error loading raw materials: ' +
                 error +
-                "</p>"
+                "</p>",
             );
           },
         });
@@ -4423,7 +4425,7 @@
 
       function loadAICalculatedRequirementsForPanel(
         productId,
-        quantityRequired
+        quantityRequired,
       ) {
         console.log("Loading AI calculation for panel:", {
           productId,
@@ -4486,11 +4488,11 @@
                 insights.urgency === "HIGH"
                   ? "#dc3545"
                   : insights.urgency === "MEDIUM"
-                  ? "#ffc107"
-                  : "#28a745"
+                    ? "#ffc107"
+                    : "#28a745"
               }; font-weight: bold;">${
-          insights.urgency || "NORMAL"
-        }</span></span>
+                insights.urgency || "NORMAL"
+              }</span></span>
             </div>
             <div style="padding: 10px; background: #fff; border-radius: 3px; margin-bottom: 10px;">
               <strong>Quick Facts:</strong>
@@ -4500,10 +4502,10 @@
                 }</li>
                 <li>Yield: ${calculation.yieldPercentage || "N/A"}</li>
                 <li>Recommended Order: <strong>${Math.ceil(
-                  calculation.recommendedOrderQuantity || 0
+                  calculation.recommendedOrderQuantity || 0,
                 )} units</strong></li>
                 <li>Current Inventory: ${Math.floor(
-                  calculation.currentInventory || 0
+                  calculation.currentInventory || 0,
                 )} units</li>
               </ul>
             </div>
@@ -4531,11 +4533,11 @@
         // Also update the quantity hint
         $("#purchaseRequestQuantityHint").html(
           `<strong>AI Recommended:</strong> ${Math.ceil(
-            calculation.recommendedOrderQuantity
+            calculation.recommendedOrderQuantity,
           )} units | 
            <strong>Current Stock:</strong> ${Math.floor(
-             calculation.currentInventory
-           )} units`
+             calculation.currentInventory,
+           )} units`,
         );
       }
 
@@ -4591,8 +4593,8 @@
                 insights.urgency === "HIGH"
                   ? "#dc3545"
                   : insights.urgency === "MEDIUM"
-                  ? "#ffc107"
-                  : "#28a745"
+                    ? "#ffc107"
+                    : "#28a745"
               };">${insights.urgency}</span>
             </div>
             <div style="margin-bottom: 8px; padding: 8px; background: #fff; border-radius: 3px;">
@@ -4600,13 +4602,13 @@
               <ul style="margin: 5px 0; padding-left: 20px; font-size: 0.9em;">
                 <li>Conversion Ratio: ${calculation.conversionRatio}</li>
                 <li>Yield: ${calculation.yieldPercentage} (${
-          calculation.productForm
-        })</li>
+                  calculation.productForm
+                })</li>
                 <li>Recommended Order: <strong style="color: #0066cc;">${Math.ceil(
-                  calculation.recommendedOrderQuantity
+                  calculation.recommendedOrderQuantity,
                 )} units</strong></li>
                 <li>Current Inventory: ${Math.floor(
-                  calculation.currentInventory
+                  calculation.currentInventory,
                 )} units</li>
               </ul>
             </div>
@@ -4652,7 +4654,7 @@
 
             // Clear any existing content first
             container.html(
-              '<p style="color: #999; text-align: center;">Loading raw materials...</p>'
+              '<p style="color: #999; text-align: center;">Loading raw materials...</p>',
             );
 
             // Get species info from product
@@ -4673,7 +4675,7 @@
               productName,
               container,
               productId,
-              quantityRequired
+              quantityRequired,
             );
           },
           error: function (xhr) {
@@ -4691,7 +4693,7 @@
         productName,
         container,
         productId,
-        quantityRequired
+        quantityRequired,
       ) {
         // Strategy: Query procurement products for the specific product_master_id
         // Display the FIRST material with auto-calculated quantity (20% buffer)
@@ -4709,7 +4711,7 @@
 
             console.log(
               "DEBUG: Product-specific materials found:",
-              productSpecificMaterials
+              productSpecificMaterials,
             );
 
             if (
@@ -4718,13 +4720,13 @@
             ) {
               // Filter to only UNPROCESSED materials
               const unprocessedMaterials = productSpecificMaterials.filter(
-                (mat) => mat.procurement_product_type === "UNPROCESSED"
+                (mat) => mat.procurement_product_type === "UNPROCESSED",
               );
 
               if (unprocessedMaterials.length > 0) {
                 console.log(
                   "Found product-specific UNPROCESSED materials:",
-                  unprocessedMaterials
+                  unprocessedMaterials,
                 );
 
                 // Use ONLY the first material
@@ -4751,7 +4753,7 @@
                     const materialInventory = inventories.find(
                       (inv) =>
                         inv.procurement_product_id === material.id &&
-                        inv.is_active === true
+                        inv.is_active === true,
                     );
                     const availableStock = materialInventory?.quantity || 0;
 
@@ -4765,7 +4767,7 @@
                       displayName,
                       quantityRequired,
                       container,
-                      availableStock
+                      availableStock,
                     );
                   },
                   error: function (xhr) {
@@ -4776,7 +4778,7 @@
                       displayName,
                       quantityRequired,
                       container,
-                      0
+                      0,
                     );
                   },
                 });
@@ -4786,7 +4788,7 @@
 
             // If no product-specific materials, fall back to all UNPROCESSED
             console.log(
-              "No product-specific materials found, trying all UNPROCESSED materials"
+              "No product-specific materials found, trying all UNPROCESSED materials",
             );
             loadUnprocessedMaterials(container, quantityRequired);
           },
@@ -4831,7 +4833,7 @@
                   const materialInventory = inventories.find(
                     (inv) =>
                       inv.procurement_product_id === material.id &&
-                      inv.is_active === true
+                      inv.is_active === true,
                   );
                   const availableStock = materialInventory?.quantity || 0;
 
@@ -4845,7 +4847,7 @@
                     displayName,
                     quantityRequired,
                     container,
-                    availableStock
+                    availableStock,
                   );
                 },
                 error: function (xhr) {
@@ -4856,13 +4858,13 @@
                     displayName,
                     quantityRequired,
                     container,
-                    0
+                    0,
                   );
                 },
               });
             } else {
               console.log(
-                "No unprocessed materials found, showing fallback materials"
+                "No unprocessed materials found, showing fallback materials",
               );
               showFallbackMaterial(container, quantityRequired);
             }
@@ -4880,7 +4882,7 @@
         materialName,
         quantityRequired,
         container,
-        availableStock = 0
+        availableStock = 0,
       ) {
         // Calculate quantity with 20% buffer
         const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
@@ -4892,7 +4894,7 @@
         // Calculate quantity to purchase after deducting available stock
         const quantityToPurchase = Math.max(
           0,
-          roundedQuantity - availableStock
+          roundedQuantity - availableStock,
         );
 
         const html = `
@@ -4982,12 +4984,12 @@
               }));
               console.log(
                 "Loaded generic materials from database:",
-                materialsList
+                materialsList,
               );
               renderRawMaterials(materialsList, container);
             } else {
               console.log(
-                "No materials found in database, showing fallback materials"
+                "No materials found in database, showing fallback materials",
               );
               showFallbackMaterials(container);
             }
@@ -5049,7 +5051,7 @@
         const materialName = $("#single-raw-material-name").val();
         const quantity = $("#single-raw-material-qty").val();
         const availableStock = parseFloat(
-          $("#single-raw-material-available-stock").val() || 0
+          $("#single-raw-material-available-stock").val() || 0,
         );
 
         if (materialId && quantity) {
@@ -5156,7 +5158,7 @@
         orderNo,
         supplierId,
         unitId,
-        rawMaterials = []
+        rawMaterials = [],
       ) {
         // Show loading toast
         toastr.info("Generating purchase request...", "Please Wait");
@@ -5195,7 +5197,7 @@
                     quantityRequired,
                     orderNo,
                     defaultSupplierId,
-                    defaultUnitId
+                    defaultUnitId,
                   );
                 },
                 error: function () {
@@ -5215,7 +5217,7 @@
             quantityRequired,
             orderNo,
             defaultSupplierId,
-            defaultUnitId
+            defaultUnitId,
           );
         }
       }
@@ -5227,7 +5229,7 @@
         quantityRequired,
         orderNo,
         supplierId,
-        unitId
+        unitId,
       ) {
         const procurementDate = new Date().toISOString().split("T")[0];
         let successCount = 0;
@@ -5255,7 +5257,7 @@
 
             console.log(
               "Creating procurement request with data:",
-              procurementData
+              procurementData,
             );
 
             $.ajax({
@@ -5267,7 +5269,7 @@
                 successCount++;
 
                 console.log(
-                  `Purchase request created for material ${material.id}: ${materialRounded} units`
+                  `Purchase request created for material ${material.id}: ${materialRounded} units`,
                 );
 
                 if (successCount === totalCount) {
@@ -5279,10 +5281,10 @@
                         (m) =>
                           `${m.procurement_product_name}: ${
                             m.quantity
-                          } → ${Math.ceil(m.quantity * 1.2)}`
+                          } → ${Math.ceil(m.quantity * 1.2)}`,
                       )
                       .join("<br>")}</strong>`,
-                    "Success"
+                    "Success",
                   );
 
                   setTimeout(() => {
@@ -5297,7 +5299,7 @@
                 }
                 toastr.error(
                   `${material.procurement_product_name}: ${errorMsg}`,
-                  "Error"
+                  "Error",
                 );
               },
             });
@@ -5336,7 +5338,7 @@
 
                     toastr.success(
                       "Order has been deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (xhr) {
@@ -5391,7 +5393,7 @@
 
                     toastr.success(
                       "Order confirmed successfully and moved to allocation workflow",
-                      "Order Confirmed"
+                      "Order Confirmed",
                     );
                   })
                   .fail(function (xhr) {
@@ -5441,13 +5443,13 @@
 
                     toastr.success(
                       "Ordered product has been deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function () {
                     toastr.error(
                       "Ordered Product details failed to delete!",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -5599,7 +5601,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#customerOrdersModal").modal("hide");
-        }
+        },
       );
 
       function loadCustomersTableData() {
@@ -5883,14 +5885,14 @@
         const view_order_id = $(e.target).attr("order_id");
 
         $("#view_order_no").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(2).text(),
         );
 
         // Top Header
         $("#view_order_no").attr("order_id", view_order_id);
 
         $("#view_order_date").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         $("#view_payment_terms").text($(e.target).attr("payment_terms"));
@@ -5900,14 +5902,14 @@
         $("#view_total_price").text($(e.target).attr("total_price") || 0.0);
 
         $("#view_delivery_status").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(6).text(),
         );
 
         $("#view_customer_name").text($(e.target).attr("customer_name"));
 
         $("#view_customer_name").attr(
           "customer_master_id",
-          $(e.target).attr("customer_master_id")
+          $(e.target).attr("customer_master_id"),
         );
 
         $("#view_customer_country").text($(e.target).attr("customer_country"));
@@ -5918,23 +5920,23 @@
 
         // Shipping
         $("#view_shipping_date").text(
-          formatDate(new Date($(e.target).attr("shipping_date")))
+          formatDate(new Date($(e.target).attr("shipping_date"))),
         );
 
         $("#view_shipping_carrier").text(
-          $(e.target).attr("shipping_carrier_name")
+          $(e.target).attr("shipping_carrier_name"),
         );
 
         $("#view_shipping_source").text($(e.target).attr("shipping_source"));
 
         $("#view_shipping_destination").text(
-          $(e.target).attr("shipping_destination")
+          $(e.target).attr("shipping_destination"),
         );
 
         $("#view_shipping_method").text($(e.target).attr("shipping_method"));
 
         $("#view_expected_delivery").text(
-          formatDate(new Date($(e.target).attr("expected_delivery")))
+          formatDate(new Date($(e.target).attr("expected_delivery"))),
         );
 
         // Opening Slied Panel
@@ -5972,7 +5974,7 @@
           "paymentPanelHeading",
           "Payment",
           "submitPayment",
-          "payment_product_id"
+          "payment_product_id",
         );
       });
 
@@ -6007,7 +6009,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#paymentProductModal").modal("hide");
-        }
+        },
       );
 
       $("#submitPayment").click(function () {
@@ -6181,7 +6183,7 @@
         $("#view_payment_customer_master_id").text(customer_master_id);
 
         $("#view_payment_customer_name").text(
-          $(e.target).closest("tr").children("td").eq(5).text()
+          $(e.target).closest("tr").children("td").eq(5).text(),
         );
 
         $("#view_payment_customer_email").text(
@@ -6190,7 +6192,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("customer_email")
+            .attr("customer_email"),
         );
 
         $("#view_payment_customer_phone").text(
@@ -6199,7 +6201,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("customer_phone")
+            .attr("customer_phone"),
         );
 
         $("#view_payment_customer_address").text(
@@ -6208,7 +6210,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("customer_address")
+            .attr("customer_address"),
         );
 
         // Sales Order
@@ -6218,15 +6220,15 @@
             .children("td")
             .eq(6)
             .find("span")
-            .attr("order_id")
+            .attr("order_id"),
         );
 
         $("#view_payment_order_no").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(6).text(),
         );
 
         $("#view_payment_total_products").text(
-          $(e.target).closest("tr").children("td").eq(7).text()
+          $(e.target).closest("tr").children("td").eq(7).text(),
         );
 
         $("#view_total_amount").text(
@@ -6236,8 +6238,8 @@
               .children("td")
               .eq(0)
               .find("i")
-              .attr("total_amount")
-          ).toFixed(2)
+              .attr("total_amount"),
+          ).toFixed(2),
         );
 
         $("#view_total_quantity").text(
@@ -6247,8 +6249,8 @@
               .children("td")
               .eq(0)
               .find("i")
-              .attr("total_quantity")
-          ).toFixed(2)
+              .attr("total_quantity"),
+          ).toFixed(2),
         );
 
         $("#view_payment_sales_date").text(
@@ -6259,48 +6261,48 @@
                 .children("td")
                 .eq(6)
                 .find("span")
-                .attr("created_at")
-            )
-          )
+                .attr("created_at"),
+            ),
+          ),
         );
 
         // Payment Information
         $("#view_customer_payment_id").text(sales_payment_id);
 
         $("#view_transaction_id").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         $("#view_payment_date").text(
-          $(e.target).closest("tr").children("td").eq(4).text()
+          $(e.target).closest("tr").children("td").eq(4).text(),
         );
 
         $("#view_payment_method").text(
-          $(e.target).closest("tr").children("td").eq(8).text()
+          $(e.target).closest("tr").children("td").eq(8).text(),
         );
 
         $("#view_total_paid").text(
-          $(e.target).closest("tr").children("td").eq(10).text()
+          $(e.target).closest("tr").children("td").eq(10).text(),
         );
 
         $("#view_due_amount").text(
-          $(e.target).closest("tr").children("td").eq(11).text()
+          $(e.target).closest("tr").children("td").eq(11).text(),
         );
 
         $("#view_discount").text(
-          $(e.target).closest("tr").children("td").eq(12).text()
+          $(e.target).closest("tr").children("td").eq(12).text(),
         );
 
         $("#view_penalty").text(
-          $(e.target).closest("tr").children("td").eq(13).text()
+          $(e.target).closest("tr").children("td").eq(13).text(),
         );
 
         $("#view_tax_paid").text(
-          $(e.target).closest("tr").children("td").eq(14).text()
+          $(e.target).closest("tr").children("td").eq(14).text(),
         );
 
         $("#view_net_amount").text(
-          $(e.target).closest("tr").children("td").eq(15).text()
+          $(e.target).closest("tr").children("td").eq(15).text(),
         );
 
         $("#view_payment_date").text(
@@ -6311,9 +6313,9 @@
                 .children("td")
                 .eq(4)
                 .find("span")
-                .attr("payment_date")
-            )
-          )
+                .attr("payment_date"),
+            ),
+          ),
         );
 
         // Opening Slied Panel
@@ -6324,7 +6326,7 @@
 
       $(document).on("click", ".editPayment", (e) => {
         $("#transaction_id").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         const paidDateTime = $(e.target)
@@ -6335,7 +6337,7 @@
           .attr("payment_date");
 
         $("#payment_date").val(
-          paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
+          paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1],
         );
 
         view_payment_order_id = $(e.target)
@@ -6354,7 +6356,7 @@
               .children("td")
               .eq(5)
               .find("span")
-              .attr("customer_master_id")
+              .attr("customer_master_id"),
           )
           .trigger("change");
 
@@ -6363,19 +6365,19 @@
           .trigger("change");
 
         $("#total_paid").val(
-          $(e.target).closest("tr").children("td").eq(10).text()
+          $(e.target).closest("tr").children("td").eq(10).text(),
         );
 
         $("#payment_discount").val(
-          $(e.target).closest("tr").children("td").eq(12).text()
+          $(e.target).closest("tr").children("td").eq(12).text(),
         );
 
         $("#penalty").val(
-          $(e.target).closest("tr").children("td").eq(13).text()
+          $(e.target).closest("tr").children("td").eq(13).text(),
         );
 
         $("#tax_amount").val(
-          $(e.target).closest("tr").children("td").eq(14).text()
+          $(e.target).closest("tr").children("td").eq(14).text(),
         );
 
         // Opening Slied Panel
@@ -6424,7 +6426,7 @@
 
                     toastr.success(
                       "Payment detail deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function () {
@@ -6441,7 +6443,7 @@
 
       function loadPaymentProductTableData(
         sales_payment_id,
-        customer_master_id
+        customer_master_id,
       ) {
         if (!sales_payment_id) {
           return toastr["warning"]("Payment ID should not be empty!");
@@ -6631,7 +6633,7 @@
           const is_due = $(e.target).select2("data")?.[0]?.is_due;
 
           $("#total_amount_paid").text(
-            is_due ? "Total Due :" : "Total Amount :"
+            is_due ? "Total Due :" : "Total Amount :",
           );
           $("#total_payment_amount").text(total_amount || "0.00");
         }
@@ -6647,7 +6649,7 @@
           const is_due = $("#paymentOrderNo").select2("data")?.[0]?.is_due;
 
           $("#total_amount_paid").text(
-            is_due ? "Total Due :" : "Total Amount :"
+            is_due ? "Total Due :" : "Total Amount :",
           );
         }
 
@@ -6657,7 +6659,7 @@
               " (-" +
               discount +
               ") = " +
-              (total_amount - discount) || "0.00"
+              (total_amount - discount) || "0.00",
           );
         } else {
           $("#total_payment_amount").text(total_amount || "0.00");
@@ -6687,12 +6689,12 @@
       function calculateTotalPaid() {
         return new Promise((resolve, reject) => {
           const payment_discount = parseFloat(
-            $("#payment_discount").val() || 0
+            $("#payment_discount").val() || 0,
           );
 
           const total_amount = $("#paymentOrderNo").val()
             ? parseFloat(
-                $("#paymentOrderNo").select2("data")?.[0]?.total_amount
+                $("#paymentOrderNo").select2("data")?.[0]?.total_amount,
               ) - payment_discount
             : 0;
 
@@ -6713,7 +6715,7 @@
 
           if (due_amount < 0) {
             toastr["warning"](
-              "Paid amount should not be greater than the total amount"
+              "Paid amount should not be greater than the total amount",
             );
             return reject();
           }
@@ -6834,7 +6836,7 @@
   </script>
 
   <!-- Include Order Tracking Component -->
-  <%- include('./components/order-tracking.ejs') %>
+  <%- include('./components/order-tracking-timeline') %>
 
   <script>
     // Verify order tracking component loaded
@@ -6842,11 +6844,11 @@
     console.log("✓ Sales page loaded");
     console.log(
       "✓ loadOrderTracking function available:",
-      typeof window.loadOrderTracking
+      typeof window.loadOrderTracking,
     );
     console.log(
       "✓ orderTrackingTemplate exists:",
-      !!document.querySelector("#orderTrackingTemplate")
+      !!document.querySelector("#orderTrackingTemplate"),
     );
   </script>
 </html>

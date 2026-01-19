@@ -1,5 +1,7 @@
 "use strict";
 
+const { v4: uuidv4 } = require("uuid");
+
 const derivativeMappings = [
   // UNPROCESSED - Whole/As-Received
   {
@@ -240,7 +242,7 @@ module.exports = {
     try {
       // Get all species from database for relationship
       const species = await queryInterface.sequelize.query(
-        `SELECT id, name FROM species_masters LIMIT 1`,
+        `SELECT id, species_name FROM species_master LIMIT 1`,
         { type: queryInterface.sequelize.QueryTypes.SELECT },
       );
 
@@ -250,7 +252,7 @@ module.exports = {
       for (const mapping of derivativeMappings) {
         // Check if derivative with this code already exists
         const [existing] = await queryInterface.sequelize.query(
-          `SELECT id FROM derivative_masters WHERE derivative_code = :code`,
+          `SELECT id FROM derivative_master WHERE derivative_code = :code`,
           {
             replacements: { code: mapping.derivative_code },
             type: queryInterface.sequelize.QueryTypes.SELECT,
@@ -260,7 +262,7 @@ module.exports = {
         if (existing) {
           // Update existing derivative
           await queryInterface.sequelize.query(
-            `UPDATE derivative_masters 
+            `UPDATE derivative_master 
              SET derivative_name = :name, 
                  processing_type = :processing_type,
                  updated_at = NOW()
@@ -275,9 +277,10 @@ module.exports = {
           );
           console.log(`Updated derivative: ${mapping.derivative_code}`);
         } else {
-          // Insert new derivative
+          // Insert new derivative with UUID
           await queryInterface.sequelize.query(
-            `INSERT INTO derivative_masters (
+            `INSERT INTO derivative_master (
+              id,
               derivative_code, 
               derivative_name, 
               processing_type,
@@ -285,6 +288,7 @@ module.exports = {
               created_at, 
               updated_at
             ) VALUES (
+              :id,
               :code,
               :name,
               :processing_type,
@@ -294,6 +298,7 @@ module.exports = {
             )`,
             {
               replacements: {
+                id: uuidv4(),
                 code: mapping.derivative_code,
                 name: mapping.derivative_name,
                 processing_type: mapping.processing_type,
@@ -316,7 +321,7 @@ module.exports = {
     try {
       const codes = derivativeMappings.map((m) => m.derivative_code);
       await queryInterface.sequelize.query(
-        `DELETE FROM derivative_masters WHERE derivative_code IN (:codes)`,
+        `DELETE FROM derivative_master WHERE derivative_code IN (:codes)`,
         {
           replacements: { codes },
           type: queryInterface.sequelize.QueryTypes.DELETE,
