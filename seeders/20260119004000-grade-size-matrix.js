@@ -6,7 +6,7 @@ module.exports = {
     const now = new Date();
 
     const grades = await queryInterface.sequelize.query(
-      `SELECT id, grade FROM grade_master WHERE is_active = true`,
+      `SELECT id, grade_code FROM grade_master WHERE is_active = true`,
       { type: queryInterface.sequelize.QueryTypes.SELECT },
     );
 
@@ -15,7 +15,9 @@ module.exports = {
       { type: queryInterface.sequelize.QueryTypes.SELECT },
     );
 
-    const gradeMap = Object.fromEntries(grades.map((g) => [g.grade, g.id]));
+    const gradeMap = Object.fromEntries(
+      grades.map((g) => [g.grade_code, g.id]),
+    );
     const sizeMap = Object.fromEntries(sizes.map((s) => [s.size, s.id]));
 
     const rows = [];
@@ -28,15 +30,13 @@ module.exports = {
         id: uuidv4(),
         grade_id: gradeMap[gradeName],
         size_id: sizeMap[sizeName],
-        is_allowed: true,
-        is_active: true,
         created_at: now,
         updated_at: now,
       });
     };
 
     // ----------------------------
-    // Grade A
+    // Grade A (Premium Export)
     // ----------------------------
     [
       "500_1KG",
@@ -47,10 +47,10 @@ module.exports = {
       "16_20_COUNT",
       "300_500G",
       "200_300G",
-    ].forEach((s) => allow("GRADE_A", s));
+    ].forEach((s) => allow("A", s));
 
     // ----------------------------
-    // Grade B
+    // Grade B (Standard Export)
     // ----------------------------
     [
       "300_500G",
@@ -61,10 +61,10 @@ module.exports = {
       "30UP_CM",
       "16_20_COUNT",
       "21_25_COUNT",
-    ].forEach((s) => allow("GRADE_B", s));
+    ].forEach((s) => allow("B", s));
 
     // ----------------------------
-    // Grade C
+    // Grade C (Domestic / Processing)
     // ----------------------------
     [
       "200_300G",
@@ -75,12 +75,12 @@ module.exports = {
       "21_25_COUNT",
       "26_30_COUNT",
       "UNSIZED",
-    ].forEach((s) => allow("GRADE_C", s));
+    ].forEach((s) => allow("C", s));
 
     // ----------------------------
-    // Grade D (mince/value-added only)
+    // Grade D (Industrial - mince/value-added only)
     // ----------------------------
-    ["UNSIZED"].forEach((s) => allow("GRADE_D", s));
+    ["UNSIZED"].forEach((s) => allow("D", s));
 
     if (rows.length > 0) {
       await queryInterface.bulkInsert("grade_size_mapping", rows, {});
