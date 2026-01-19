@@ -28,13 +28,13 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
         attributes: [
           "id",
           "product_name",
-          "product_code",
           "derivative_master_id",
           "product_category_master_id",
         ],
         include: [
           {
             model: models.DerivativeMaster,
+            as: "Derivative",
             attributes: ["id", "derivative_code", "derivative_name"],
             required: false,
           },
@@ -50,30 +50,66 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
         });
       }
 
-      // Get the yield percentage for this product
-      // This would come from BOM or product specifications
-      const yieldData = await models.BOM_Output?.findOne?.({
-        where: { derivative_id: product.derivative_master_id },
-        attributes: ["base_yield_percent"],
-        raw: true,
+      // Get the yield percentage for this product using BOM (Bill of Materials)
+      // BOM Output contains the yield information for finished products
+      const yieldData = await models.BomOutput?.findOne?.({
+        where: { product_id: product.id },
+        attributes: ["id", "quantity_produced"],
+        include: [
+          {
+            model: models.BomMaster,
+            attributes: ["id"],
+            include: [
+              {
+                model: models.BomInput,
+                attributes: ["raw_product_id", "quantity_required"],
+              },
+            ],
+          },
+        ],
+        raw: false,
       }).catch(() => null);
 
-      const baseYieldPercent = yieldData?.base_yield_percent || 100; // Default to 100% if not found
+      // Calculate yield from BOM
+      // Yield % = Output Quantity / Input Quantity * 100
+      let baseYieldPercent = 100; // Default if no BOM found
+      if (yieldData?.BomMaster?.BomInputs?.length > 0) {
+        const totalInput = yieldData.BomMaster.BomInputs.reduce(
+          (sum, input) => sum + (input.quantity_required || 0),
+          0,
+        );
+        if (totalInput > 0) {
+          baseYieldPercent = (yieldData.quantity_produced / totalInput) * 100;
+        }
+      }
+
       const yieldRatio = baseYieldPercent / 100;
 
       // Calculate required raw material quantity
       // Raw material required = Final Product Quantity / Yield Ratio
       const requiredRawMaterialKg = quantity_required_kg / yieldRatio;
 
-      // Get available raw material stock for this product's species
-      const rawMaterialProduct = await models.ProductMaster.findOne({
-        where: {
-          product_category_master_id: product.product_category_master_id,
-          product_code: { [Op.iLike]: "RAW%" },
-          is_active: true,
-        },
-        attributes: ["id", "product_name"],
-      });
+      // Get raw material from BOM inputs for this product
+      let rawMaterialProduct = null;
+      if (yieldData?.BomMaster?.inputs?.length > 0) {
+        const firstInput = yieldData.BomMaster.inputs[0];
+        rawMaterialProduct = await models.ProductMaster.findOne({
+          where: { id: firstInput.raw_product_id },
+          attributes: ["id", "product_name"],
+        });
+      }
+
+      if (!rawMaterialProduct) {
+        // Fallback: Try to find any raw material for this category
+        rawMaterialProduct = await models.ProductMaster.findOne({
+          where: {
+            product_category_master_id: product.product_category_master_id,
+            is_active: true,
+          },
+          attributes: ["id", "product_name"],
+          order: [["created_at", "ASC"]],
+        });
+      }
 
       if (!rawMaterialProduct) {
         return resolve({
@@ -109,7 +145,6 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
         product: {
           id: product.id,
           name: product.product_name,
-          code: product.product_code,
         },
         orderQuantity: {
           required_kg: quantity_required_kg,
@@ -134,9 +169,9 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
         message: hassufficientStock
           ? "Sufficient raw material stock available - Ready to begin production"
           : `Insufficient stock. Need ${requiredRawMaterialKg.toFixed(
-              2
+              2,
             )} kg but only ${availableStockKg.toFixed(
-              2
+              2,
             )} kg available. Shortage: ${(
               requiredRawMaterialKg - availableStockKg
             ).toFixed(2)} kg`,
