@@ -2,6 +2,7 @@ import { Create } from "./handlers/create";
 import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
+import { GetDropdown } from "./handlers/get_dropdown";
 import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
 import { GetPaymentItems } from "./handlers/get_payment_products";
@@ -25,6 +26,7 @@ import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
+import { getDropdownSchema } from "./schema/get_dropdown";
 import { deleteSchema } from "./schema/delete";
 import { getNamesSchema } from "./schema/get_names";
 import { getPaymentItemsSchema } from "./schema/get_payment_products";
@@ -138,6 +140,26 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     }
   });
 
+  fastify.get("/dropdown", getDropdownSchema, async (req, reply) => {
+    try {
+      const params = req.query;
+
+      const result = await GetDropdown(params, req?.session, fastify);
+
+      return reply.code(200).send({
+        success: true,
+        message: "Raw materials list",
+        data: result?.data,
+      });
+    } catch (err) {
+      fastify.log.error("Dropdown error:", err);
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err?.toString?.(),
+      });
+    }
+  });
+
   fastify.get("/payment/items", getPaymentItemsSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
@@ -167,7 +189,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetPurchaseInventoryItems(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -181,7 +203,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -194,7 +216,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetSalesInventoryItems(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -208,7 +230,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   // fastify.get("/paid/status", getPaidStatusSchema, async (req, reply) => {
@@ -265,7 +287,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetProcurementSpendBySuppliers(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -279,7 +301,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -292,7 +314,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetProcurementSpendByProducts(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -306,7 +328,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -319,7 +341,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetProcurementSpendByDate(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -333,7 +355,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -346,7 +368,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetProcurementPerformanceBySuppliers(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -360,7 +382,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -373,7 +395,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetProcurementAgeByProducts(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -387,7 +409,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   // AI-Powered Raw Material Calculator Routes
@@ -401,7 +423,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await CalculateRequirements(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -415,7 +437,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get(
@@ -428,7 +450,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
         const result = await GetMultiCategoryRecommendations(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -442,7 +464,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   done();
