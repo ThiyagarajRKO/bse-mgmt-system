@@ -34,7 +34,7 @@ export const BulkUpsert = async (profile_id, order_products_data) => {
             "delivery_status",
           ],
           profile_id,
-        }
+        },
       );
       resolve(result);
     } catch (err) {
@@ -191,7 +191,7 @@ export const GetMatchingRawMaterials = ({
       }
 
       console.log(
-        `[GetMatchingRawMaterials] Order Product Species ID: ${species_id}`
+        `[GetMatchingRawMaterials] Order Product Species ID: ${species_id}`,
       );
 
       // Now fetch all raw materials and filter by species
@@ -270,7 +270,7 @@ export const GetMatchingRawMaterials = ({
                   : category;
                 plainRow.species_id = category.species_master_id;
                 console.log(
-                  `[GetMatchingRawMaterials] Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID: ${plainRow.species_id}`
+                  `[GetMatchingRawMaterials] Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID: ${plainRow.species_id}`,
                 );
               }
             } catch (err) {
@@ -295,22 +295,22 @@ export const GetMatchingRawMaterials = ({
           }
 
           return plainRow;
-        })
+        }),
       );
 
       // Filter to only include raw materials with matching species_id
       const matchingRawMaterials = enrichedRows.filter(
-        (row) => row.species_id === species_id
+        (row) => row.species_id === species_id,
       );
 
       console.log(
-        `[GetMatchingRawMaterials] Total raw materials: ${enrichedRows.length}, Matching species: ${matchingRawMaterials.length}`
+        `[GetMatchingRawMaterials] Total raw materials: ${enrichedRows.length}, Matching species: ${matchingRawMaterials.length}`,
       );
 
       // Apply pagination AFTER filtering by species
       const paginatedResults = matchingRawMaterials.slice(
         start || 0,
-        (start || 0) + (length || 10)
+        (start || 0) + (length || 10),
       );
 
       resolve({
@@ -327,7 +327,7 @@ export const GetMatchingRawMaterials = ({
           matchingRawMaterials.length
         } matching raw materials for this ordered product (${matchingRawMaterials.reduce(
           (sum, r) => sum + (r.quantity || 0),
-          0
+          0,
         )} units total)`,
       });
     } catch (err) {
@@ -363,7 +363,7 @@ export const GetPaymentItems = ({
             sequelize.cast(sequelize.col("Order.order_no"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$Packing.pd.pp.ProductMaster.product_name$": {
@@ -509,17 +509,18 @@ export const DeleteByOrderId = ({ profile_id, order_id }) => {
         });
       }
 
-      const species = await models.OrderProducts.destroy({
+      // Delete all order products for this order (regardless of creator)
+      // The order deletion will be gated by the order's created_by check
+      const deletedCount = await models.OrderProducts.destroy({
         where: {
           order_id,
           is_active: true,
-          created_by: profile_id,
         },
         individualHooks: true,
         profile_id,
       });
 
-      resolve(species);
+      resolve(deletedCount);
     } catch (err) {
       reject(err);
     }

@@ -217,7 +217,7 @@ export const GetWithTracking = ({ id }) => {
         WHERE si.order_id = :orderId AND si.is_active = true
         GROUP BY si.id, si.packing_id, si.quantity, pm.product_name, sm.size, gm.grade_name, pacm.packaging_code, p.expiry_date
       `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
       // Calculate totals
@@ -231,7 +231,7 @@ export const GetWithTracking = ({ id }) => {
         LEFT JOIN packing p ON si.packing_id = p.id
         WHERE si.order_id = :orderId AND si.is_active = true
       `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
       resolve({
@@ -326,7 +326,7 @@ export const GetWithProductionTracking = ({ id }) => {
         WHERE si.order_id = :orderId AND si.is_active = true
         GROUP BY si.id, si.packing_id, si.quantity, pm.product_name, sm.size, gm.grade_name, pacm.packaging_code, p.expiry_date
       `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
       // Calculate sales totals
@@ -340,7 +340,7 @@ export const GetWithProductionTracking = ({ id }) => {
         LEFT JOIN packing p ON si.packing_id = p.id
         WHERE si.order_id = :orderId AND si.is_active = true
       `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT }
+        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
       // Get procurement tracking for this order
@@ -503,15 +503,15 @@ export const GetWithProductionTracking = ({ id }) => {
           total_production_orders: productionOrders.length,
           total_dispatched_quantity: dispatchTracking.reduce(
             (sum, d) => sum + (d.dispatch_quantity || 0),
-            0
+            0,
           ),
           total_peeled_quantity: peelingTracking.reduce(
             (sum, p) => sum + (p.peeling_quantity || 0),
-            0
+            0,
           ),
           total_peeled_dispatched_quantity: peeledDispatchTracking.reduce(
             (sum, pd) => sum + (pd.peeled_dispatch_quantity || 0),
-            0
+            0,
           ),
         },
       });
@@ -534,7 +534,7 @@ export const GetAll = ({ start, length, search }) => {
             sequelize.cast(sequelize.col("order_no"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
           { "$ShippingMaster.shipping_source$": { [Op.iLike]: `%${search}%` } },
@@ -561,7 +561,7 @@ export const GetAll = ({ start, length, search }) => {
           "delivery_status",
           [
             sequelize.literal(
-              `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+              `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`,
             ),
             "total_products_price",
           ],
@@ -693,7 +693,7 @@ export const GetOrderNumbers = ({
             sequelize.cast(sequelize.col("order_no"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
         ];
       }
@@ -705,7 +705,7 @@ export const GetOrderNumbers = ({
           "order_no",
           [
             sequelize.literal(
-              `(SELECT SUM(op.total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+              `(SELECT SUM(op.total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`,
             ),
             "total_amount",
           ],
@@ -718,7 +718,7 @@ export const GetOrderNumbers = ({
                 sales_payment_id != ""
                   ? "AND sp.id != '" + sales_payment_id + "'"
                   : ""
-              } AND sp.is_active = true)`
+              } AND sp.is_active = true)`,
             ),
             "total_paid",
           ],
@@ -763,17 +763,49 @@ export const Delete = ({ profile_id, id }) => {
         });
       }
 
-      const species = await models.Orders.destroy({
-        where: {
-          id,
-          is_active: true,
-          created_by: profile_id,
+      // First, update is_active to false and set deleted_by
+      const updated = await models.Orders.update(
+        {
+          is_active: false,
+          deleted_by: profile_id,
+          deleted_at: new Date(),
         },
-        individualHooks: true,
-        profile_id,
-      });
+        {
+          where: {
+            id,
+            is_active: true,
+            created_by: profile_id,
+          },
+          individualHooks: true,
+          profile_id,
+        },
+      );
 
-      resolve(species);
+      // If update was successful (updated > 0), then destroy for paranoid soft delete
+      if (updated && updated[0] > 0) {
+        try {
+          await models.Orders.destroy({
+            where: {
+              id,
+              created_by: profile_id,
+            },
+            individualHooks: true,
+            profile_id,
+          });
+        } catch (destroyErr) {
+          // Log but don't fail on destroy - the update is what matters
+          console.log(
+            "Warning: destroy failed but update succeeded",
+            destroyErr?.message,
+          );
+        }
+        resolve(updated[0]);
+      } else {
+        resolve({
+          statusCode: 420,
+          message: "Order not found or already deleted",
+        });
+      }
     } catch (err) {
       reject(err);
     }
@@ -795,7 +827,7 @@ export const GetAllocationData = ({ start, length, search }) => {
             sequelize.cast(sequelize.col("order_no"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { "$CustomerMaster.customer_name$": { [Op.iLike]: `%${search}%` } },
           {
@@ -823,7 +855,7 @@ export const GetAllocationData = ({ start, length, search }) => {
             "delivery_status",
             [
               sequelize.literal(
-                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`,
               ),
               "total_products_price",
             ],
@@ -920,7 +952,7 @@ export const GetAllocationData = ({ start, length, search }) => {
         // If include fails, try without ProductCategoryMaster association
         console.warn(
           "Error with ProductCategoryMaster include, falling back to simpler query:",
-          includeError.message
+          includeError.message,
         );
         orders = await models.Orders.findAndCountAll({
           subQuery: false,
@@ -937,7 +969,7 @@ export const GetAllocationData = ({ start, length, search }) => {
             "delivery_status",
             [
               sequelize.literal(
-                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`
+                `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`,
               ),
               "total_products_price",
             ],
@@ -1042,7 +1074,7 @@ export const DeleteEmpty = ({ profile_id }) => {
 
       // Filter orders that have no products
       const ordersToDelete = emptyOrders.filter(
-        (order) => !order.OrderProducts || order.OrderProducts.length === 0
+        (order) => !order.OrderProducts || order.OrderProducts.length === 0,
       );
 
       if (ordersToDelete.length === 0) {

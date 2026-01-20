@@ -145,7 +145,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Create Hook
@@ -177,7 +177,7 @@ module.exports = (sequelize, DataTypes) => {
       if (options?.OrderProducts && Array.isArray(options.OrderProducts)) {
         try {
           console.log(
-            `[Orders] Creating ${options.OrderProducts.length} products...`
+            `[Orders] Creating ${options.OrderProducts.length} products...`,
           );
 
           const productsData = options.OrderProducts.map((product) => ({
@@ -189,7 +189,7 @@ module.exports = (sequelize, DataTypes) => {
 
           console.log(
             `[Orders] Products data to create:`,
-            JSON.stringify(productsData, null, 2)
+            JSON.stringify(productsData, null, 2),
           );
 
           const createdOrderProducts =
@@ -198,17 +198,17 @@ module.exports = (sequelize, DataTypes) => {
             });
 
           console.log(
-            `[Orders] ✓ Created ${createdOrderProducts.length} order products for order ${data.id}`
+            `[Orders] ✓ Created ${createdOrderProducts.length} order products for order ${data.id}`,
           );
         } catch (bulkCreateErr) {
           console.error(
             `[Orders] Error creating order products:`,
-            bulkCreateErr.message || bulkCreateErr
+            bulkCreateErr.message || bulkCreateErr,
           );
         }
       } else {
         console.log(
-          `[Orders] No OrderProducts to create (undefined, null, or not an array)`
+          `[Orders] No OrderProducts to create (undefined, null, or not an array)`,
         );
       }
 
@@ -222,19 +222,19 @@ module.exports = (sequelize, DataTypes) => {
         createOrderTrackingPipeline(data, options)
           .then(() => {
             console.log(
-              `[Orders] Order tracking pipeline completed for order ${data.id}`
+              `[Orders] Order tracking pipeline completed for order ${data.id}`,
             );
           })
           .catch((trackingErr) => {
             console.error(
               `[Orders] Order tracking pipeline failed for order ${data.id}:`,
-              trackingErr.message
+              trackingErr.message,
             );
           });
       } catch (trackingErr) {
         console.error(
           "Error initializing order tracking service:",
-          trackingErr
+          trackingErr,
         );
       }
     } catch (err) {
@@ -252,13 +252,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // Delete Hook
-  Orders.afterDestroy(async (data, options) => {
+  // Delete Hook - beforeDestroy to set is_active before deletion
+  Orders.beforeDestroy(async (data, options) => {
     try {
       data.deleted_by = options?.profile_id;
       data.is_active = false;
-
-      await data.save({ profile_id: options.profile_id });
+      data.deleted_at = new Date();
     } catch (err) {
       console.log("Error while deleting an Orders data", err?.message || err);
     }

@@ -100,7 +100,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Bulk Create Hook
@@ -109,6 +109,11 @@ module.exports = (sequelize, DataTypes) => {
       data?.map((item) => {
         item.is_active = true;
 
+        // Convert empty strings to null for UUID fields
+        if (item.packing_id === "" || item.packing_id === null) {
+          item.packing_id = null;
+        }
+
         const total_price =
           parseFloat(item?.price) * parseFloat(item?.quantity) -
           (parseFloat(data.discount) || 0);
@@ -116,11 +121,13 @@ module.exports = (sequelize, DataTypes) => {
         item.total_price = isNaN(total_price) ? 0 : total_price;
 
         item.created_by = options?.profile_id;
+        item.created_at = new Date();
+        item.updated_at = new Date();
       });
     } catch (err) {
       console.log(
         "Error while appending an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -134,7 +141,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while appending an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -142,6 +149,11 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   OrderProducts.beforeCreate(async (data, options) => {
     try {
+      // Convert empty strings to null for UUID fields
+      if (data.packing_id === "" || data.packing_id === null) {
+        data.packing_id = null;
+      }
+
       const total_price =
         parseFloat(data?.price) * parseFloat(data?.quantity) -
         (parseFloat(data.discount) || 0);
@@ -150,10 +162,12 @@ module.exports = (sequelize, DataTypes) => {
 
       data.is_active = true;
       data.created_by = options.profile_id;
+      data.created_at = new Date();
+      data.updated_at = new Date();
     } catch (err) {
       console.log(
         "Error while appending an OrderProducts data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -171,7 +185,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while updating an OrderProducts data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -191,7 +205,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while deleting an OrderProducts data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -239,7 +253,7 @@ const updateInventoryQuantity = async (sequelize, data, options) => {
         ],
         [
           sequelize.literal(
-            '(SELECT SUM(op.unit) FROM order_products op WHERE op.packing_id = "Packing".id)'
+            '(SELECT SUM(op.unit) FROM order_products op WHERE op.packing_id = "Packing".id)',
           ),
           "total_sold_quantity",
         ],
@@ -286,12 +300,12 @@ const updateInventoryQuantity = async (sequelize, data, options) => {
           product_master_id: packingData?.pd?.pp?.product_master_id,
           is_active: true,
         },
-      }
+      },
     ).catch(console.log);
   } catch (err) {
     console.log(
       "Error while inserting a sales order data",
-      err?.message || err
+      err?.message || err,
     );
   }
 };

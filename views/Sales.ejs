@@ -5467,35 +5467,41 @@
         let OrderProducts = [];
 
         $(".orderProduct").each((i, obj) => {
-          let id = $(obj)
-            .find(`.orderProductNames_${i + 1}`)
+          // Extract the actual index from the fieldset class (e.g., "orderProduct_1" -> "1")
+          const $fieldset = $(obj);
+          const fieldsetClasses = $fieldset.attr("class") || "";
+          const indexMatch = fieldsetClasses.match(/orderProduct_(\d+)/);
+          const index = indexMatch ? indexMatch[1] : i + 1;
+
+          let id = $fieldset
+            .find(`.orderProductNames_${index}`)
             .parent()
             .find("select")
             .attr("peeled_product_id");
 
-          let product_master_id = $(obj)
-            .find(`.orderProductNames_${i + 1}`)
+          let product_master_id = $fieldset
+            .find(`.orderProductNames_${index}`)
             .val();
 
-          let product_quantity = $(obj)
-            .find(`.product_quantity_${i + 1}`)
+          let product_quantity = $fieldset
+            .find(`.product_quantity_${index}`)
             .val();
 
           product_quantity = isNaN(parseFloat(product_quantity))
             ? 0
             : parseFloat(product_quantity);
 
-          let product_price = $(obj)
-            .find(`.product_price_${i + 1}`)
-            .val();
+          let product_price = $fieldset.find(`.product_price_${index}`).val();
 
           product_price = isNaN(parseFloat(product_price))
             ? 0
             : parseFloat(product_price);
 
-          let product_desc = $(obj)
-            .find(`.product_desc_${i + 1}`)
-            .val();
+          let product_desc = $fieldset.find(`.product_desc_${index}`).val();
+
+          console.log(
+            `[Order Products Collection] Index: ${index}, Product ID: ${product_master_id}, Quantity: ${product_quantity}, Price: ${product_price}`,
+          );
 
           if (product_master_id) {
             let outputObj = {
@@ -5514,6 +5520,11 @@
             OrderProducts.push(outputObj);
           }
         });
+
+        console.log(
+          `[Order Save] Total products to send: ${OrderProducts.length}`,
+          OrderProducts,
+        );
 
         let url = "/api/order";
         let method = "POST";
