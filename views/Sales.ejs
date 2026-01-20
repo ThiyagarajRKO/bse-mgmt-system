@@ -905,16 +905,13 @@
                 <div class="container-fluid">
                   <div class="row">
                     <!-- Panel 1 -->
-                    <div
-                      class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4 pe-3"
-                    >
+                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 pe-3">
                       <!-- Order Data Container -->
                       <div id="orderDataContainer">
                         <fieldset
-                          class="form-group border p-3"
+                          class="form-group border p-3 mt-4"
                           style="
                             border-color: rgba(129, 145, 179, 0.6) !important;
-                            padding-top: 1.5rem !important;
                           "
                         >
                           <legend class="w-auto px-2">Order Data</legend>
@@ -1022,42 +1019,39 @@
                           "
                         >
                           <legend class="w-auto px-2">Customer Info</legend>
-
-                          <!-- Customer Info -->
-                          <div class="d-flex justify-content-between">
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Name</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
+                          <div class="row">
+                            <div class="col-6 px-1">
+                              <div class="list-group list-group-flush">
+                                <div
+                                  class="list-group-item d-flex justify-content-between"
+                                >
+                                  <strong>Name:</strong>
                                   <span id="view_customer_name"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Country</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_customer_country"></span>
-                                </td>
-                              </tr>
-                            </table>
-
-                            <table class="col">
-                              <tr>
-                                <th class="align-top">Email</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
+                                </div>
+                                <div
+                                  class="list-group-item d-flex justify-content-between"
+                                >
+                                  <strong>Email:</strong>
                                   <span id="view_customer_email"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Phone</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6 px-1">
+                              <div class="list-group list-group-flush">
+                                <div
+                                  class="list-group-item d-flex justify-content-between"
+                                >
+                                  <strong>Country:</strong>
+                                  <span id="view_customer_country"></span>
+                                </div>
+                                <div
+                                  class="list-group-item d-flex justify-content-between"
+                                >
+                                  <strong>Phone:</strong>
                                   <span id="view_customer_phone"></span>
-                                </td>
-                              </tr>
-                            </table>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </fieldset>
                       </div>
@@ -1072,20 +1066,12 @@
                       <div id="orderTrackingWrapper" style="flex: 1">
                         <div id="orderTrackingContainer">
                           <fieldset
-                            class="form-group"
+                            class="form-group border py-3 px-2"
                             style="
-                              border: 1px solid rgba(129, 145, 179, 0.6) !important;
-                              border-bottom: 2px solid rgba(129, 145, 179, 0.6) !important;
-                              padding: 1rem 1rem 1rem 1rem !important;
-                              margin: 0 !important;
+                              border-color: rgba(129, 145, 179, 0.6) !important;
                             "
                           >
-                            <legend
-                              class="w-auto px-2"
-                              style="margin-left: -0.75rem; margin-top: -1.5rem"
-                            >
-                              Order Tracking
-                            </legend>
+                            <legend class="w-auto px-2">Order Tracking</legend>
 
                             <!-- Order Tracking Timeline -->
                             <%- include('./components/order-tracking-timeline')
@@ -1095,41 +1081,39 @@
                       </div>
 
                       <!-- Shipping Info Container -->
-                      <div
-                        id="shippingInfoContainer"
-                        style="margin-top: auto; padding-top: 1.5rem"
-                      >
+                      <div id="shippingInfoContainer">
                         <fieldset
-                          class="form-group border p-3"
+                          class="form-group border py-3 px-2"
                           style="
                             border-color: rgba(129, 145, 179, 0.6) !important;
-                            padding-top: 1.5rem !important;
                           "
                         >
                           <legend class="w-auto px-2">Shipping Info</legend>
-                          <div class="table-responsive">
-                            <table class="table table-sm">
-                              <thead>
-                                <tr>
-                                  <th>Shipping Date</th>
-                                  <th>Destination</th>
-                                  <th>Method</th>
-                                  <th>Expected Delivery</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td><span id="view_shipping_date"></span></td>
-                                  <td><span id="view_destination"></span></td>
-                                  <td>
-                                    <span id="view_shipping_method"></span>
-                                  </td>
-                                  <td>
-                                    <span id="view_expected_delivery"></span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                          <div class="list-group list-group-flush">
+                            <div
+                              class="list-group-item d-flex justify-content-between"
+                            >
+                              <strong>Shipping Date:</strong>
+                              <span id="view_shipping_date"></span>
+                            </div>
+                            <div
+                              class="list-group-item d-flex justify-content-between"
+                            >
+                              <strong>Destination:</strong>
+                              <span id="view_shipping_destination"></span>
+                            </div>
+                            <div
+                              class="list-group-item d-flex justify-content-between"
+                            >
+                              <strong>Method:</strong>
+                              <span id="view_shipping_method"></span>
+                            </div>
+                            <div
+                              class="list-group-item d-flex justify-content-between"
+                            >
+                              <strong>Expected Delivery:</strong>
+                              <span id="view_expected_delivery"></span>
+                            </div>
                           </div>
                         </fieldset>
                       </div>
