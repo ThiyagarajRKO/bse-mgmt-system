@@ -1068,25 +1068,24 @@
                       class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4 ps-3"
                       style="display: flex; flex-direction: column"
                     >
-                      <!-- Order Tracking Container (Scrollable) -->
-                      <div
-                        id="orderTrackingWrapper"
-                        style="
-                          overflow-y: auto;
-                          max-height: calc(90vh - 100px);
-                          flex: 1;
-                        "
-                      >
+                      <!-- Order Tracking Container -->
+                      <div id="orderTrackingWrapper" style="flex: 1">
                         <div id="orderTrackingContainer">
                           <fieldset
-                            class="form-group border p-3"
+                            class="form-group"
                             style="
-                              border-color: rgba(129, 145, 179, 0.6) !important;
-                              padding-top: 1.5rem !important;
-                              min-height: 800px;
+                              border: 1px solid rgba(129, 145, 179, 0.6) !important;
+                              border-bottom: 2px solid rgba(129, 145, 179, 0.6) !important;
+                              padding: 1rem 1rem 1rem 1rem !important;
+                              margin: 0 !important;
                             "
                           >
-                            <legend class="w-auto px-2">Order Tracking</legend>
+                            <legend
+                              class="w-auto px-2"
+                              style="margin-left: -0.75rem; margin-top: -1.5rem"
+                            >
+                              Order Tracking
+                            </legend>
 
                             <!-- Order Tracking Timeline -->
                             <%- include('./components/order-tracking-timeline')

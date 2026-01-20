@@ -10,10 +10,9 @@
     class="order-tracking-timeline"
     style="
       position: relative;
-      padding: 10px 0 5px 30px;
-      min-height: 250px;
-      flex: 1;
-      overflow: visible;
+      padding: 10px 0 0 40px;
+      padding-right: 0 !important;
+      margin-bottom: 0;
     "
   >
     <!-- Order Confirmed Stage -->
@@ -221,7 +220,10 @@
     </div>
 
     <!-- Invoice Stage -->
-    <div class="timeline-item" style="position: relative">
+    <div
+      class="timeline-item"
+      style="position: relative; margin-bottom: 0; padding-bottom: 0"
+    >
       <div
         style="
           position: absolute;
@@ -241,7 +243,15 @@
         <span style="font-size: 8px; color: #dee2e6">●</span>
       </div>
 
-      <h6 class="mb-0" style="font-weight: 600; color: #000; font-size: 14px">
+      <h6
+        class="mb-0"
+        style="
+          font-weight: 600;
+          color: #000;
+          font-size: 14px;
+          margin-bottom: 0 !important;
+        "
+      >
         ○ Invoice
       </h6>
     </div>
@@ -261,6 +271,14 @@
 
   .timeline-item {
     padding: 0 0 0 0;
+  }
+
+  .timeline-item:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .timeline-item:last-child h6 {
+    margin-bottom: 0 !important;
   }
 
   .order-tracking-timeline h6 {
