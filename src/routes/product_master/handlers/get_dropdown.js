@@ -1,5 +1,6 @@
 import { ProductMaster } from "../../../controllers";
 import models, { sequelize } from "../../../../models";
+import { Op } from "sequelize";
 
 /**
  * Get products as dropdown data
@@ -23,9 +24,7 @@ export const GetDropdown = async (params, session, fastify) => {
       };
 
       if (search) {
-        where[sequelize.Op.or] = [
-          { product_name: { [sequelize.Op.iLike]: `%${search}%` } },
-        ];
+        where[Op.or] = [{ product_name: { [Op.iLike]: `%${search}%` } }];
       }
 
       // Get products with proper filtering
@@ -104,7 +103,7 @@ export const GetDropdown = async (params, session, fastify) => {
           order: [
             [
               sequelize.literal(
-                `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
+                `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`,
               ),
               "ASC",
             ],
@@ -115,14 +114,14 @@ export const GetDropdown = async (params, session, fastify) => {
         // If includes fail, try with minimal includes
         console.warn(
           "Error with full includes, falling back to basic query:",
-          includeError.message
+          includeError.message,
         );
 
         // Fallback: query without any problematic includes
         const fallbackIncludes = includes.filter(
           (inc) =>
             inc.model.name !== "ProductCategoryMaster" &&
-            inc.model.name !== "PurchaseInventory"
+            inc.model.name !== "PurchaseInventory",
         );
 
         try {
@@ -138,7 +137,7 @@ export const GetDropdown = async (params, session, fastify) => {
             order: [
               [
                 sequelize.literal(
-                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`,
                 ),
                 "ASC",
               ],
@@ -149,7 +148,7 @@ export const GetDropdown = async (params, session, fastify) => {
           // If even fallback fails, return all active products
           console.warn(
             "Fallback also failed, returning all active products:",
-            fallbackError.message
+            fallbackError.message,
           );
           result = await models.ProductMaster.findAndCountAll({
             attributes: ["id", "product_name"],
@@ -161,7 +160,7 @@ export const GetDropdown = async (params, session, fastify) => {
             order: [
               [
                 sequelize.literal(
-                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`
+                  `CASE WHEN "is_raw" = true OR "processing_state" = 'RAW' THEN 1 ELSE 0 END`,
                 ),
                 "ASC",
               ],

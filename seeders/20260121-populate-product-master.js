@@ -20,8 +20,8 @@ module.exports = {
 
     console.log("\n📦 Populating product_master from mapping...\n");
 
-    // Fetch all mapping records with full details
-    const mappings = await queryInterface.sequelize.query(
+    // Fetch PROCESSED products: full detail (species + derivative + size + grade)
+    const processedMappings = await queryInterface.sequelize.query(
       `SELECT 
         sdsm.id as mapping_id,
         sdsm.species_master_id,
@@ -29,6 +29,7 @@ module.exports = {
         sdsm.size_master_id,
         sdsm.grade_master_id,
         s.species_code,
+        s.species_name,
         d.derivative_code,
         sz.size,
         g.grade_code,
@@ -43,11 +44,47 @@ module.exports = {
       JOIN size_master sz ON sdsm.size_master_id = sz.id
       JOIN grade_master g ON sdsm.grade_master_id = g.id
       WHERE sdsm.is_viable = true AND sdsm.is_active = true
+        AND d.processing_type != 'UNPROCESSED'
+        AND NOT (d.processing_type != 'UNPROCESSED' AND sz.size = 'UNSIZED')
       ORDER BY s.species_code, d.derivative_code, sz.size, g.grade_code`,
       { type: queryInterface.sequelize.QueryTypes.SELECT },
     );
 
-    console.log(`Found ${mappings.length} viable mappings\n`);
+    // Fetch RAW products: DISTINCT species + derivative only (no size/grade duplication)
+    const rawMappings = await queryInterface.sequelize.query(
+      `SELECT DISTINCT ON (s.species_name, d.derivative_code)
+        sdsm.id as mapping_id,
+        sdsm.species_master_id,
+        sdsm.derivative_master_id,
+        sdsm.size_master_id,
+        sdsm.grade_master_id,
+        s.species_code,
+        s.species_name,
+        d.derivative_code,
+        sz.size,
+        g.grade_code,
+        sdsm.market_segment,
+        sdsm.pricing_tier,
+        sdsm.expected_yield_percent,
+        sdsm.is_viable,
+        d.processing_type
+      FROM species_derivative_size_grade_mapping sdsm
+      JOIN species_master s ON sdsm.species_master_id = s.id
+      JOIN derivative_master d ON sdsm.derivative_master_id = d.id
+      JOIN size_master sz ON sdsm.size_master_id = sz.id
+      JOIN grade_master g ON sdsm.grade_master_id = g.id
+      WHERE sdsm.is_viable = true AND sdsm.is_active = true
+        AND d.processing_type = 'UNPROCESSED'
+      ORDER BY s.species_name, d.derivative_code`,
+      { type: queryInterface.sequelize.QueryTypes.SELECT },
+    );
+
+    const mappings = [...rawMappings, ...processedMappings];
+
+    console.log(
+      `Found ${rawMappings.length} RAW mappings (distinct species+derivative)`,
+    );
+    console.log(`Found ${processedMappings.length} PROCESSED mappings\n`);
 
     // Fetch supporting data
     const categories = await queryInterface.sequelize.query(
@@ -68,11 +105,18 @@ module.exports = {
     const defaultCategoryId = categories[0]?.id || uuidv4();
     const systemUserId = adminUser[0]?.id || uuidv4();
 
+    // Find UNSIZED size id to use for RAW products (raw materials should be UNSIZED & UNGRADED)
+    const unsizedRow = await queryInterface.sequelize.query(
+      `SELECT id FROM size_master WHERE size = 'UNSIZED' LIMIT 1`,
+      { type: queryInterface.sequelize.QueryTypes.SELECT },
+    );
+    const unsizedSizeId = unsizedRow[0]?.id || null;
+
     // Create product name mapping
-    function generateProductName(species, derivative, size, grade) {
+    function generateProductName(speciesName, derivative, size, grade) {
       const cleanDerivative = derivative.replace(/_/g, " ");
       const cleanSize = size.replace(/_/g, "-");
-      return `${species} | ${cleanDerivative} | ${cleanSize} | ${grade}`;
+      return `${speciesName} | ${cleanDerivative} | ${cleanSize} | ${grade}`;
     }
 
     // Determine product flags based on derivative
@@ -95,16 +139,26 @@ module.exports = {
     let count = 0;
 
     for (const mapping of mappings) {
-      const productName = generateProductName(
-        mapping.species_code,
-        mapping.derivative_code,
-        mapping.size,
-        mapping.grade_code,
-      );
-
-      const flags = getProductFlags(mapping.processing_type);
       const processingState =
         mapping.processing_type === "UNPROCESSED" ? "RAW" : "PROCESSED";
+
+      // RAW products: Species + Derivative + Size only (no grade)
+      // PROCESSED products: Species + Derivative + Size + Grade
+      let productName;
+      if (processingState === "RAW") {
+        const cleanDerivative = mapping.derivative_code.replace(/_/g, " ");
+        // RAW products are UNSIZED and UNGRADED. Use UNSIZED label for product name and size_master_id.
+        const unsizedLabel = "UNSIZED";
+        productName = `${mapping.species_name} | ${cleanDerivative} | ${unsizedLabel}`;
+      } else {
+        productName = generateProductName(
+          mapping.species_name,
+          mapping.derivative_code,
+          mapping.size,
+          mapping.grade_code,
+        );
+      }
+      const flags = getProductFlags(mapping.processing_type);
 
       rows.push({
         id: uuidv4(),
@@ -112,8 +166,10 @@ module.exports = {
         product_category_master_id: defaultCategoryId,
         species_derivative_size_grade_mapping_id: mapping.mapping_id,
         derivative_master_id: mapping.derivative_master_id,
-        size_master_id: mapping.size_master_id,
-        // RAW products cannot have a grade per constraint
+        // RAW products: set to UNSIZED size (if available) and no grade
+        // PROCESSED products: have both size and grade
+        size_master_id:
+          processingState === "RAW" ? unsizedSizeId : mapping.size_master_id,
         grade_master_id:
           processingState === "RAW" ? null : mapping.grade_master_id,
         packaging_master_id: selectPackaging(),
