@@ -45,7 +45,7 @@ import { GlAccountMasterRoute } from "./gl_account_master";
 import consolidatedGstMasterRoute from "./consolidated_gst_master";
 import { LedgerMasterRoute } from "./ledger_master";
 import { TaxCodeMasterRoute } from "./tax_code_master";
-// import { ProductGstMappingRoute } from "./product_gst_mapping";
+import { ProductGstMappingRoute } from "./product_gst_mapping";
 import { authRoutes } from "./auth";
 import { documentFlowRoutes } from "./document-flow";
 import { yieldTrackingRoutes } from "./yield-tracking";
@@ -191,6 +191,30 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/master/product",
   });
 
+  fastify.register(consolidatedGstMasterRoute, {
+    prefix: "/master/consolidated-gst-master",
+  });
+
+  fastify.register(GlAccountMasterRoute, {
+    prefix: "/master/gl-account",
+  });
+
+  fastify.register(ChartOfAccountsRoute, {
+    prefix: "/master/chart-of-accounts",
+  });
+
+  fastify.register(LedgerMasterRoute, {
+    prefix: "/master/ledger",
+  });
+
+  fastify.register(TaxCodeMasterRoute, {
+    prefix: "/master/tax-code",
+  });
+
+  fastify.register(ProductGstMappingRoute, {
+    prefix: "/master/product-gst-mapping",
+  });
+
   // Orders Routes
   fastify.register(ordersRoute, {
     prefix: "/order",
@@ -239,6 +263,27 @@ export const PrivateRouters = (fastify, opts, done) => {
   // Packing Rules Routes
   fastify.register(packingRulesRoute, {
     prefix: "/packing-rules",
+  });
+
+  // Additional Master Routes
+  fastify.register(pricingRoutes, {
+    prefix: "/pricing",
+  });
+
+  fastify.register(profitabilityRoutes, {
+    prefix: "/profitability",
+  });
+
+  fastify.register(documentFlowRoutes, {
+    prefix: "/document-flow",
+  });
+
+  fastify.register(yieldTrackingRoutes, {
+    prefix: "/yield-tracking",
+  });
+
+  fastify.register(marginVarianceRoutes, {
+    prefix: "/margin-variance",
   });
 
   // Sales Order Workflow Routes (NEW)
