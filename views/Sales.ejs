@@ -2749,24 +2749,47 @@
           },
         });
 
-        // Get product details from the first product in the order for stock checking
+        // Get all ordered products for stock checking
         // We'll set these after the table loads
         setTimeout(() => {
           const tableApi = $("#orderProductTable").DataTable();
-          if (tableApi && tableApi.rows().data().length > 0) {
-            const firstProduct = tableApi.rows().data()[0];
-            const product_master_id =
-              firstProduct?.product_master_id ||
-              firstProduct?.ProductMaster?.id;
-            const quantity_required_kg = firstProduct?.quantity || 0;
+          if (tableApi) {
+            const rowsData = tableApi.rows().data();
 
-            // Store in view_order_no attributes for use in confirm button
-            if (product_master_id) {
-              $("#view_order_no").attr("product_master_id", product_master_id);
-              $("#view_order_no").attr(
-                "quantity_required_kg",
-                quantity_required_kg,
-              );
+            // Convert DataTable API object to array
+            let allProducts = [];
+            if (rowsData && typeof rowsData === "object") {
+              // If it's a DataTable API object, iterate through it
+              for (let i = 0; i < rowsData.length; i++) {
+                allProducts.push(rowsData[i]);
+              }
+            }
+
+            if (allProducts.length > 0) {
+              const products = [];
+
+              // Collect all products with their quantities
+              allProducts.forEach((product) => {
+                const product_master_id =
+                  product?.product_master_id || product?.ProductMaster?.id;
+                const quantity_required_kg = product?.quantity || 0;
+
+                if (product_master_id && quantity_required_kg > 0) {
+                  products.push({
+                    product_master_id,
+                    quantity_required_kg,
+                  });
+                }
+              });
+
+              // Store all products in view_order_no attributes for use in confirm button
+              if (products.length > 0) {
+                $("#view_order_no").attr(
+                  "ordered_products",
+                  JSON.stringify(products),
+                );
+                $("#view_order_no").attr("product_count", products.length);
+              }
             }
           }
         }, 500);
@@ -2775,23 +2798,27 @@
       $(document).on("click", "#confirmOrderModalBtn", function () {
         const order_id = $("#view_order_no").attr("order_id");
         const order_no = $("#view_order_no").text();
-        const product_master_id = $("#view_order_no").attr("product_master_id");
-        const quantity_required_kg = $("#view_order_no").attr(
-          "quantity_required_kg",
-        );
+        const orderedProductsJson =
+          $("#view_order_no").attr("ordered_products");
 
         if (!order_id) {
           toastr.error("Order ID not found", "Error");
           return;
         }
 
-        // First, check if we have stock for this product
+        if (!orderedProductsJson) {
+          toastr.error("No products found in order", "Error");
+          return;
+        }
+
+        const orderedProducts = JSON.parse(orderedProductsJson);
+
+        // First, check if we have stock for all products
         $.ajax({
           url: "/api/order/check-stock",
           method: "POST",
           data: JSON.stringify({
-            product_master_id: product_master_id,
-            quantity_required_kg: parseFloat(quantity_required_kg),
+            ordered_products: orderedProducts,
           }),
           contentType: "application/json",
         })
@@ -6783,9 +6810,6 @@
       $("#resetPaymentDataBtn").on("click", resetAllInputs);
     });
   </script>
-
-  <!-- Include Order Tracking Component -->
-  <%- include('./components/order-tracking-timeline') %>
 
   <script>
     // Verify order tracking component loaded

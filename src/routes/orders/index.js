@@ -120,7 +120,7 @@ export const ordersRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   // Get single order by ID - MUST come after /:order_id/tracking
@@ -233,7 +233,7 @@ export const ordersRoute = (fastify, opts, done) => {
         const result = await CheckFulfillmentRoute(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -247,20 +247,60 @@ export const ordersRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
-  // Check if sufficient raw material stock is available for a product based on yield
+  // Check if sufficient raw material stock is available for products based on yield
   fastify.post("/check-stock", async (req, reply) => {
     try {
-      const params = {
-        product_master_id: req?.body?.product_master_id,
-        quantity_required_kg: req?.body?.quantity_required_kg,
-      };
+      const orderedProducts = req?.body?.ordered_products;
 
-      const result = await CheckStockForProduct(params, req?.session, fastify);
+      if (
+        !orderedProducts ||
+        !Array.isArray(orderedProducts) ||
+        orderedProducts.length === 0
+      ) {
+        return reply.code(400).send({
+          success: false,
+          message: "No products provided for stock check",
+          canBeginProduct: false,
+          suggestProcurement: true,
+        });
+      }
 
-      return reply.code(result.success ? 200 : 400).send(result);
+      // Check stock for all products
+      const results = [];
+      let allProductsHaveSufficientStock = true;
+
+      for (const product of orderedProducts) {
+        const params = {
+          product_master_id: product?.product_master_id,
+          quantity_required_kg: product?.quantity_required_kg,
+        };
+
+        const result = await CheckStockForProduct(
+          params,
+          req?.session,
+          fastify,
+        );
+        results.push(result);
+
+        if (!result?.canBeginProduct) {
+          allProductsHaveSufficientStock = false;
+        }
+      }
+
+      return reply.code(allProductsHaveSufficientStock ? 200 : 400).send({
+        success: allProductsHaveSufficientStock,
+        data: {
+          canBeginProduct: allProductsHaveSufficientStock,
+          suggestProcurement: !allProductsHaveSufficientStock,
+          productResults: results,
+        },
+        message: allProductsHaveSufficientStock
+          ? "All products have sufficient stock"
+          : "Some products have insufficient stock",
+      });
     } catch (err) {
       console.error("Error in check-stock endpoint:", err);
       return reply.code(500).send({

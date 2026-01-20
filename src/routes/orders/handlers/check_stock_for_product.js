@@ -54,40 +54,42 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
       // BOM Output contains the yield information for finished products
       const yieldData = await models.BomOutput?.findOne?.({
         where: { product_id: product.id },
-        attributes: ["id", "quantity_produced"],
+        attributes: ["id", "base_yield_percent"],
         include: [
           {
             model: models.BomMaster,
             attributes: ["id"],
+            required: true,
             include: [
               {
                 model: models.BomInput,
-                attributes: ["raw_product_id", "quantity_required"],
+                as: "inputs",
+                attributes: ["raw_product_id", "quantity"],
+                required: false,
               },
             ],
           },
         ],
         raw: false,
-      }).catch(() => null);
+      }).catch((err) => {
+        console.error("BomOutput query error:", err);
+        return null;
+      });
 
       // Calculate yield from BOM
-      // Yield % = Output Quantity / Input Quantity * 100
+      // Yield % = base_yield_percent from BOM Output
       let baseYieldPercent = 100; // Default if no BOM found
-      if (yieldData?.BomMaster?.BomInputs?.length > 0) {
-        const totalInput = yieldData.BomMaster.BomInputs.reduce(
-          (sum, input) => sum + (input.quantity_required || 0),
-          0,
-        );
-        if (totalInput > 0) {
-          baseYieldPercent = (yieldData.quantity_produced / totalInput) * 100;
-        }
+      if (yieldData?.BomMaster?.inputs?.length > 0) {
+        // Use the base_yield_percent directly from BomOutput
+        baseYieldPercent = yieldData.base_yield_percent || 100;
       }
 
       const yieldRatio = baseYieldPercent / 100;
 
       // Calculate required raw material quantity
-      // Raw material required = Final Product Quantity / Yield Ratio
-      const requiredRawMaterialKg = quantity_required_kg / yieldRatio;
+      // Raw material required = Final Product Quantity * Yield Percent
+      // (If 18% yield, then 1 KG finished needs 18% of input, not input/18%)
+      const requiredRawMaterialKg = quantity_required_kg * yieldRatio;
 
       // Get raw material from BOM inputs for this product
       let rawMaterialProduct = null;
@@ -100,21 +102,12 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
       }
 
       if (!rawMaterialProduct) {
-        // Fallback: Try to find any raw material for this category
-        rawMaterialProduct = await models.ProductMaster.findOne({
-          where: {
-            product_category_master_id: product.product_category_master_id,
-            is_active: true,
-          },
-          attributes: ["id", "product_name"],
-          order: [["created_at", "ASC"]],
-        });
-      }
-
-      if (!rawMaterialProduct) {
+        // No BOM found - cannot determine raw material product
+        // This product has no Bill of Materials configured
         return resolve({
           success: false,
-          message: "No raw material product found for this species",
+          message:
+            "No Bill of Materials (BOM) configured for this product. Cannot determine raw material requirements.",
           canBeginProduct: false,
           suggestProcurement: true,
         });
