@@ -402,7 +402,10 @@
         /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
         text-decoration: none;
         color: #333;
-        transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
       }
 
       .icon-button i {
@@ -1748,7 +1751,7 @@
       let view_purchase_payment_id = "";
 
       var tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        document.querySelectorAll('[data-bs-toggle="tooltip"]'),
       );
       var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -1911,7 +1914,7 @@
         panelHeadingId,
         panelType,
         panelSubmitButton,
-        panelBtnAttrName
+        panelBtnAttrName,
       ) {
         // Opening Slide Panel
         $(`#${panelId}`).css("right", "0");
@@ -1951,21 +1954,21 @@
       // Loading Charts
       loadProcurementSpendBySuppliersChart(
         "days",
-        $("#procurementSpendChartFilter").val()
+        $("#procurementSpendChartFilter").val(),
       );
       loadProcurementByDateChart(
         "days",
         $("#procurementAnalysisByDateChartFilter").val(),
         null,
         null,
-        "price"
+        "price",
       );
 
       loadProcurementAgeByProductsChart(
         "days",
         $("#procurementAgeByProductsFilter").val(),
         null,
-        null
+        null,
       );
 
       loadSupplierPerformanceScorecardChart(
@@ -1973,7 +1976,7 @@
         $("#supplierPerformanceScorecardChartFilter").val(),
         null,
         null,
-        "price"
+        "price",
       );
 
       // Chart Filters
@@ -1992,7 +1995,7 @@
             $(e.target).val(),
             null,
             null,
-            "price"
+            "price",
           );
         } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
           loadProcurementByDateChart(
@@ -2000,7 +2003,7 @@
             $(e.target).val(),
             null,
             null,
-            "quantity"
+            "quantity",
           );
         }
       });
@@ -2012,7 +2015,7 @@
             $(e.target).val(),
             null,
             null,
-            "price"
+            "price",
           );
         } else if ($(".quantityByDateFilter").hasClass("btn-danger")) {
           loadProcurementByDateChart(
@@ -2020,7 +2023,7 @@
             $(e.target).val(),
             null,
             null,
-            "quantity"
+            "quantity",
           );
         }
       });
@@ -2030,7 +2033,7 @@
           "days",
           $(e.target).val(),
           null,
-          null
+          null,
         );
       });
 
@@ -2044,7 +2047,7 @@
               $(e.target).val(),
               null,
               null,
-              "price"
+              "price",
             );
           } else if (
             $(".quantityWisePerformanceFilter").hasClass("btn-danger")
@@ -2054,10 +2057,10 @@
               $(e.target).val(),
               null,
               null,
-              "quantity"
+              "quantity",
             );
           }
-        }
+        },
       );
 
       // Button Click Events
@@ -2070,7 +2073,7 @@
 
         loadProcurementSpendBySuppliersChart(
           "days",
-          $("#procurementSpendChartFilter").val()
+          $("#procurementSpendChartFilter").val(),
         );
       });
 
@@ -2083,7 +2086,7 @@
 
         loadProcurementSpendByProductsChart(
           "days",
-          $("#procurementSpendChartFilter").val()
+          $("#procurementSpendChartFilter").val(),
         );
       });
 
@@ -2099,7 +2102,7 @@
           $("#procurementAnalysisByDateChartFilter").val(),
           null,
           null,
-          "price"
+          "price",
         );
       });
 
@@ -2115,7 +2118,7 @@
           $("#procurementAnalysisByDateChartFilter").val(),
           null,
           null,
-          "quantity"
+          "quantity",
         );
       });
 
@@ -2131,7 +2134,7 @@
           $("#supplierPerformanceScorecardChartFilter").val(),
           null,
           null,
-          "price"
+          "price",
         );
       });
 
@@ -2147,7 +2150,7 @@
           $("#supplierPerformanceScorecardChartFilter").val(),
           null,
           null,
-          "quantity"
+          "quantity",
         );
       });
 
@@ -2156,7 +2159,7 @@
         filter_type,
         filter_days,
         from_date,
-        to_date
+        to_date,
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -2231,7 +2234,7 @@
 
             new CanvasJS.Chart(
               "procurementSpend",
-              procurementSpendChartOptions
+              procurementSpendChartOptions,
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2248,7 +2251,7 @@
         filter_type,
         filter_days,
         from_date,
-        to_date
+        to_date,
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -2323,7 +2326,7 @@
 
             new CanvasJS.Chart(
               "procurementSpend",
-              procurementSpendChartOptions
+              procurementSpendChartOptions,
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2341,7 +2344,7 @@
         filter_days,
         from_date,
         to_date,
-        type
+        type,
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -2394,14 +2397,14 @@
                 x: new Date(
                   procurement_date.getFullYear(),
                   procurement_date.getMonth(),
-                  procurement_date.getDate()
+                  procurement_date.getDate(),
                 ),
                 y:
                   parseFloat(
                     type == "price"
                       ? item.total_amount
                       : item?.total_adjusted_quantity ||
-                          item?.total_procurement_quantity
+                          item?.total_procurement_quantity,
                   ) || 0,
               });
             });
@@ -2440,7 +2443,7 @@
 
             new CanvasJS.Chart(
               "procurementAnalysisByDateChart",
-              procurementAnalysisByDateChartOptions
+              procurementAnalysisByDateChartOptions,
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2457,7 +2460,7 @@
         filter_type,
         filter_days,
         from_date,
-        to_date
+        to_date,
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -2532,7 +2535,7 @@
 
             new CanvasJS.Chart(
               "procurementAgeByProductsChart",
-              procurementAgeByProductsChartOptions
+              procurementAgeByProductsChartOptions,
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2550,7 +2553,7 @@
         filter_days,
         from_date,
         to_date,
-        type
+        type,
       ) {
         if (filter_type == "days") {
           switch (filter_days) {
@@ -2602,7 +2605,7 @@
                   parseFloat(
                     type == "price"
                       ? item.total_procurement_price
-                      : item?.total_procurement_quantity
+                      : item?.total_procurement_quantity,
                   ) || 0,
                 indexLabel:
                   type == "price"
@@ -2610,8 +2613,8 @@
                       ? "₹ " + parseFloat(item?.total_procurement_price)
                       : ""
                     : parseFloat(item?.total_procurement_quantity) > 0
-                    ? parseFloat(item?.total_procurement_quantity) + " kg"
-                    : "",
+                      ? parseFloat(item?.total_procurement_quantity) + " kg"
+                      : "",
               });
 
               dataPointsAdjustment.push({
@@ -2620,7 +2623,7 @@
                   parseFloat(
                     type == "price"
                       ? item.total_adjusted_price
-                      : item?.total_adjusted_quantity
+                      : item?.total_adjusted_quantity,
                   ) || 0,
                 indexLabel:
                   type == "price"
@@ -2628,8 +2631,8 @@
                       ? "₹ " + parseFloat(item?.total_adjusted_price)
                       : ""
                     : parseFloat(item?.total_adjusted_quantity) > 0
-                    ? parseFloat(item?.total_adjusted_quantity) + " kg"
-                    : "",
+                      ? parseFloat(item?.total_adjusted_quantity) + " kg"
+                      : "",
               });
             });
 
@@ -2664,7 +2667,7 @@
 
             new CanvasJS.Chart(
               "supplierPerformanceScorecardChart",
-              supplierPerformanceScorecardChartOptions
+              supplierPerformanceScorecardChartOptions,
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
@@ -2701,7 +2704,7 @@
           "procurementPanelHeading",
           "Procurement",
           "submitPurchases",
-          "procurement_product_id"
+          "procurement_product_id",
         );
 
         // Changing panel save button attribute
@@ -2732,7 +2735,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#procurementProductModal").modal("hide");
-        }
+        },
       );
 
       $("#submitPurchases").click(function () {
@@ -2885,12 +2888,12 @@
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(2).text(),
         );
 
         $("#view_lot_no").attr(
           "procurement_date",
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(2).text(),
         );
 
         $("#view_total_products").text(view_total_products);
@@ -3029,7 +3032,7 @@
               width: "120px",
               render: function (data, type, row) {
                 return parseFloat(
-                  row["adjusted_quantity"] || row["procurement_quantity"] || 0
+                  row["adjusted_quantity"] || row["procurement_quantity"] || 0,
                 ).toFixed(2);
               },
             },
@@ -3039,7 +3042,7 @@
               width: "120px",
               render: function (data, type, row) {
                 return parseFloat(
-                  row["adjusted_price"] || row["procurement_price"] || 0
+                  row["adjusted_price"] || row["procurement_price"] || 0,
                 ).toFixed(2);
               },
             },
@@ -3104,18 +3107,18 @@
 
         let paidStatus = await getPaidStatus(
           $(e.target).attr("procurement_product_id"),
-          supplier_master_id
+          supplier_master_id,
         );
 
         if (paidStatus > 0) {
           return toastr.warning(
             "Unable to edit the paid product",
-            "Already Paid"
+            "Already Paid",
           );
         }
 
         $("#procurement_date").val(
-          formatDate(new Date($("#view_lot_no").attr("procurement_date")))
+          formatDate(new Date($("#view_lot_no").attr("procurement_date"))),
         );
 
         $("#procurement_unit")
@@ -3125,7 +3128,7 @@
               .children("td")
               .eq(0)
               .find("i")
-              .attr("unit_master_id")
+              .attr("unit_master_id"),
           )
           .trigger("change");
 
@@ -3136,7 +3139,7 @@
               .children("td")
               .eq(2)
               .find("span")
-              .attr("product_master_id")
+              .attr("product_master_id"),
           )
           .trigger("change");
 
@@ -3145,11 +3148,11 @@
           .trigger("change");
 
         $("#procurement_quantity").val(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(6).text(),
         );
 
         $("#procurement_price").val(
-          $(e.target).closest("tr").children("td").eq(7).text()
+          $(e.target).closest("tr").children("td").eq(7).text(),
         );
 
         $("#procurement_product_supplier")
@@ -3157,7 +3160,7 @@
           .trigger("change");
 
         $("#procurement_purchaser").val(
-          $(e.target).closest("tr").children("td").eq(10).text()
+          $(e.target).closest("tr").children("td").eq(10).text(),
         );
 
         // Opening Slied Panel
@@ -3172,12 +3175,12 @@
         // Changing panel button attribute
         $("#submitPurchases").attr(
           "procurement_product_id",
-          $(e.target).attr("procurement_product_id")
+          $(e.target).attr("procurement_product_id"),
         );
 
         $("#submitPurchases").attr(
           "procurement_lot_id",
-          $("#view_lot_no").attr("procurement_lot_id")
+          $("#view_lot_no").attr("procurement_lot_id"),
         );
 
         $("#procurementProductModal").modal("hide");
@@ -3186,7 +3189,7 @@
       $(document).on("click", ".delProcurementProduct", (e) => {
         const procurement_lot_id = $("#view_lot_no").attr("procurement_lot_id");
         const procurement_product_id = $(e.target).attr(
-          "procurement_product_id"
+          "procurement_product_id",
         );
         const supplier_master_id = $(e.target)
           .closest("tr")
@@ -3228,19 +3231,19 @@
 
                     toastr.success(
                       "Procurement product has been deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (response) {
                     if (response.status == 420) {
                       toastr.warning(
                         response?.responseJSON?.message,
-                        "Already Paid"
+                        "Already Paid",
                       );
                     } else {
                       toastr.error(
                         "Procurement product detail failed to delete!",
-                        "Error"
+                        "Error",
                       );
                     }
                   });
@@ -3257,7 +3260,7 @@
         return new Promise((resolve, reject) => {
           if (!procurement_product_id || !supplier_master_id) {
             return toastr["warning"](
-              "Product and supplier master id must not be empty"
+              "Product and supplier master id must not be empty",
             );
           }
           // Load Products
@@ -3354,7 +3357,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "/api/master/product/dropdown",
+            url: "/api/procurement/product/dropdown",
             type: "GET",
             dataType: "json",
             delay: 250,
@@ -3457,13 +3460,13 @@
 
             if (jqXhr.status == 420) {
               toastr.warning(
-                jqXhr.responseJSON?.message || "Error loading units"
+                jqXhr.responseJSON?.message || "Error loading units",
               );
             } else {
               toastr.error(
                 jqXhr.responseJSON?.message ||
                   errorThrown ||
-                  "Failed to load units"
+                  "Failed to load units",
               );
             }
           },
@@ -3509,7 +3512,7 @@
         const procurement_lot_id =
           $("#submitPurchases").attr("procurement_lot_id");
         const procurement_product_id = $("#submitPurchases").attr(
-          "procurement_product_id"
+          "procurement_product_id",
         );
 
         let url = "/api/procurement/product";
@@ -3586,7 +3589,7 @@
           "supplierPanelHeading",
           "Supplier",
           "submitPurchases",
-          "supplier_product_id"
+          "supplier_product_id",
         );
       });
 
@@ -3613,7 +3616,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#supplierProductModal").modal("hide");
-        }
+        },
       );
 
       function loadSupplierTableData() {
@@ -3747,19 +3750,19 @@
         $("#view_supplier_master_id").text(supplier_master_id);
 
         $("#view_supplier_name").text(
-          $(e.target).closest("tr").children("td").eq(1).text()
+          $(e.target).closest("tr").children("td").eq(1).text(),
         );
 
         $("#view_supplier_email").text(
-          $(e.target).closest("tr").children("td").eq(2).text()
+          $(e.target).closest("tr").children("td").eq(2).text(),
         );
 
         $("#view_supplier_phone").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         $("#view_supplier_address").text(
-          $(e.target).closest("tr").children("td").eq(4).text()
+          $(e.target).closest("tr").children("td").eq(4).text(),
         );
 
         // Opening Slied Panel
@@ -3856,7 +3859,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
-                  row["adjusted_quantity"] || row["procurement_quantity"] || 0
+                  row["adjusted_quantity"] || row["procurement_quantity"] || 0,
                 ).toFixed(2);
               },
             },
@@ -3865,7 +3868,7 @@
               className: "text-left",
               render: function (data, type, row) {
                 return parseFloat(
-                  row["adjusted_price"] || row["procurement_price"] || 0
+                  row["adjusted_price"] || row["procurement_price"] || 0,
                 ).toFixed(2);
               },
             },
@@ -4101,7 +4104,7 @@
               adjusted_quantity.val(),
               adjusted_price.val(),
               adjusted_reason.val(),
-              adjusted_surveyor.val()
+              adjusted_surveyor.val(),
             );
           }
         }
@@ -4112,7 +4115,7 @@
         adjusted_quantity,
         adjusted_price,
         adjusted_reason,
-        adjusted_surveyor
+        adjusted_surveyor,
       ) {
         if (!procurement_product_id) {
           toastr["warning"]("Procurement product id must not be empty");
@@ -4164,7 +4167,7 @@
           "paymentPanelHeading",
           "Payment",
           "submitPayment",
-          "payment_product_id"
+          "payment_product_id",
         );
       });
 
@@ -4199,7 +4202,7 @@
         ".modal-header .close, .modal-footer .close",
         () => {
           $("#paymentProductModal").modal("hide");
-        }
+        },
       );
 
       $("#submitPayment").click(function () {
@@ -4381,7 +4384,7 @@
         $("#view_payment_supplier_master_id").text(supplier_master_id);
 
         $("#view_payment_supplier_name").text(
-          $(e.target).closest("tr").children("td").eq(5).text()
+          $(e.target).closest("tr").children("td").eq(5).text(),
         );
 
         $("#view_payment_supplier_email").text(
@@ -4390,7 +4393,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("email")
+            .attr("email"),
         );
 
         $("#view_payment_supplier_phone").text(
@@ -4399,7 +4402,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("phone")
+            .attr("phone"),
         );
 
         $("#view_payment_supplier_address").text(
@@ -4408,7 +4411,7 @@
             .children("td")
             .eq(5)
             .find("span")
-            .attr("address")
+            .attr("address"),
         );
 
         // Purchase Order
@@ -4418,15 +4421,15 @@
             .children("td")
             .eq(6)
             .find("span")
-            .attr("procurement_lot_id")
+            .attr("procurement_lot_id"),
         );
 
         $("#view_payment_lot_no").text(
-          $(e.target).closest("tr").children("td").eq(6).text()
+          $(e.target).closest("tr").children("td").eq(6).text(),
         );
 
         $("#view_payment_total_products").text(
-          $(e.target).closest("tr").children("td").eq(7).text()
+          $(e.target).closest("tr").children("td").eq(7).text(),
         );
 
         $("#view_total_amount").text(
@@ -4436,8 +4439,8 @@
               .children("td")
               .eq(0)
               .find("i")
-              .attr("total_amount")
-          ).toFixed(2)
+              .attr("total_amount"),
+          ).toFixed(2),
         );
 
         $("#view_total_quantity").text(
@@ -4447,8 +4450,8 @@
               .children("td")
               .eq(0)
               .find("i")
-              .attr("total_quantity")
-          ).toFixed(2)
+              .attr("total_quantity"),
+          ).toFixed(2),
         );
 
         $("#view_payment_purchase_date").text(
@@ -4459,48 +4462,48 @@
                 .children("td")
                 .eq(6)
                 .find("span")
-                .attr("created_at")
-            )
-          )
+                .attr("created_at"),
+            ),
+          ),
         );
 
         // Payment Information
         $("#view_supplier_payment_id").text(purchase_payment_id);
 
         $("#view_transaction_id").text(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         $("#view_payment_date").text(
-          $(e.target).closest("tr").children("td").eq(4).text()
+          $(e.target).closest("tr").children("td").eq(4).text(),
         );
 
         $("#view_payment_method").text(
-          $(e.target).closest("tr").children("td").eq(8).text()
+          $(e.target).closest("tr").children("td").eq(8).text(),
         );
 
         $("#view_total_paid").text(
-          $(e.target).closest("tr").children("td").eq(10).text()
+          $(e.target).closest("tr").children("td").eq(10).text(),
         );
 
         $("#view_due_amount").text(
-          $(e.target).closest("tr").children("td").eq(11).text()
+          $(e.target).closest("tr").children("td").eq(11).text(),
         );
 
         $("#view_discount").text(
-          $(e.target).closest("tr").children("td").eq(12).text()
+          $(e.target).closest("tr").children("td").eq(12).text(),
         );
 
         $("#view_penalty").text(
-          $(e.target).closest("tr").children("td").eq(13).text()
+          $(e.target).closest("tr").children("td").eq(13).text(),
         );
 
         $("#view_tax_paid").text(
-          $(e.target).closest("tr").children("td").eq(14).text()
+          $(e.target).closest("tr").children("td").eq(14).text(),
         );
 
         $("#view_net_amount").text(
-          $(e.target).closest("tr").children("td").eq(15).text()
+          $(e.target).closest("tr").children("td").eq(15).text(),
         );
 
         $("#view_payment_date").text(
@@ -4511,9 +4514,9 @@
                 .children("td")
                 .eq(4)
                 .find("span")
-                .attr("payment_date")
-            )
-          )
+                .attr("payment_date"),
+            ),
+          ),
         );
 
         // Opening Slied Panel
@@ -4524,7 +4527,7 @@
 
       $(document).on("click", ".editPayment", (e) => {
         $("#transaction_id").val(
-          $(e.target).closest("tr").children("td").eq(3).text()
+          $(e.target).closest("tr").children("td").eq(3).text(),
         );
 
         const paidDateTime = $(e.target)
@@ -4535,7 +4538,7 @@
           .attr("payment_date");
 
         $("#payment_date").val(
-          paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1]
+          paidDateTime.split(":")[0] + ":" + paidDateTime.split(":")[1],
         );
 
         view_payment_lot_id = $(e.target)
@@ -4554,7 +4557,7 @@
               .children("td")
               .eq(5)
               .find("span")
-              .attr("supplier_master_id")
+              .attr("supplier_master_id"),
           )
           .trigger("change");
 
@@ -4563,19 +4566,19 @@
           .trigger("change");
 
         $("#total_paid").val(
-          $(e.target).closest("tr").children("td").eq(10).text()
+          $(e.target).closest("tr").children("td").eq(10).text(),
         );
 
         $("#payment_discount").val(
-          $(e.target).closest("tr").children("td").eq(12).text()
+          $(e.target).closest("tr").children("td").eq(12).text(),
         );
 
         $("#penalty").val(
-          $(e.target).closest("tr").children("td").eq(13).text()
+          $(e.target).closest("tr").children("td").eq(13).text(),
         );
 
         $("#tax_amount").val(
-          $(e.target).closest("tr").children("td").eq(14).text()
+          $(e.target).closest("tr").children("td").eq(14).text(),
         );
 
         // Opening Slied Panel
@@ -4590,7 +4593,7 @@
         // Changing panel button attribute
         $("#submitPayment").attr(
           "purchase_payment_id",
-          view_purchase_payment_id
+          view_purchase_payment_id,
         );
 
         $("#paymentProductModal").modal("hide");
@@ -4628,7 +4631,7 @@
 
                     toastr.success(
                       "Payment detail deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function () {
@@ -4674,14 +4677,14 @@
                     loadProcurementTableData();
                     toastr.success(
                       "Procurement lot deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (response) {
                     toastr.error(
                       response?.responseJSON?.message ||
                         "Failed to delete procurement lot",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -4722,25 +4725,25 @@
                 })
                   .done(function (response) {
                     const purchase_payment_id = $("#paymentProductTable").attr(
-                      "data-payment-id"
+                      "data-payment-id",
                     );
                     const supplier_master_id = $("#paymentProductTable").attr(
-                      "data-supplier-id"
+                      "data-supplier-id",
                     );
                     loadPaymentProductTableData(
                       purchase_payment_id,
-                      supplier_master_id
+                      supplier_master_id,
                     );
                     toastr.success(
                       "Payment product deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (response) {
                     toastr.error(
                       response?.responseJSON?.message ||
                         "Failed to delete payment product",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -4787,7 +4790,7 @@
                     toastr.error(
                       response?.responseJSON?.message ||
                         "Failed to delete supplier",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -4832,14 +4835,14 @@
                     loadPeelingProductTableData(procurement_lot_id);
                     toastr.success(
                       "Peeling product deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (response) {
                     toastr.error(
                       response?.responseJSON?.message ||
                         "Failed to delete peeling product",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -4884,14 +4887,14 @@
                     loadPeeledDispatchTableData(procurement_lot_id);
                     toastr.success(
                       "Peeled dispatch deleted successfully",
-                      "Deleted"
+                      "Deleted",
                     );
                   })
                   .fail(function (response) {
                     toastr.error(
                       response?.responseJSON?.message ||
                         "Failed to delete peeled dispatch",
-                      "Error"
+                      "Error",
                     );
                   });
               },
@@ -4905,7 +4908,7 @@
 
       function loadPaymentProductTableData(
         purchase_payment_id,
-        supplier_master_id
+        supplier_master_id,
       ) {
         if (!purchase_payment_id) {
           return toastr["warning"]("Payment ID should not be empty!");
@@ -5085,7 +5088,7 @@
           const is_due = $(e.target).select2("data")?.[0]?.is_due;
 
           $("#total_amount_paid").text(
-            is_due ? "Total Due :" : "Total Amount :"
+            is_due ? "Total Due :" : "Total Amount :",
           );
           $("#total_payment_amount").text(total_amount || "0.00");
         }
@@ -5101,7 +5104,7 @@
           const is_due = $("#paymentLotNo").select2("data")?.[0]?.is_due;
 
           $("#total_amount_paid").text(
-            is_due ? "Total Due :" : "Total Amount :"
+            is_due ? "Total Due :" : "Total Amount :",
           );
         }
 
@@ -5111,7 +5114,7 @@
               " (-" +
               discount +
               ") = " +
-              (total_amount - discount) || "0.00"
+              (total_amount - discount) || "0.00",
           );
         } else {
           $("#total_payment_amount").text(total_amount || "0.00");
@@ -5141,12 +5144,12 @@
       function calculateTotalPaid() {
         return new Promise((resolve, reject) => {
           const payment_discount = parseFloat(
-            $("#payment_discount").val() || 0
+            $("#payment_discount").val() || 0,
           );
 
           const total_amount = $("#paymentLotNo").val()
             ? parseFloat(
-                $("#paymentLotNo").select2("data")?.[0]?.total_amount
+                $("#paymentLotNo").select2("data")?.[0]?.total_amount,
               ) - payment_discount
             : 0;
 
@@ -5167,7 +5170,7 @@
 
           if (due_amount < 0) {
             toastr["warning"](
-              "Paid amount should not be greater than the total amount"
+              "Paid amount should not be greater than the total amount",
             );
             return reject();
           }
@@ -5221,7 +5224,7 @@
 
       async function savePayment() {
         const purchase_payment_id = $("#submitPayment").attr(
-          "purchase_payment_id"
+          "purchase_payment_id",
         );
 
         let { net_amount, due_amount } = await calculateTotalPaid();
