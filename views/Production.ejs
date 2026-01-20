@@ -446,7 +446,10 @@
         /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
         text-decoration: none;
         color: #333;
-        transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          box-shadow 0.3s;
       }
 
       .icon-button i {
@@ -4547,9 +4550,7 @@
               peeledProductNamesArray.push({
                 id: item.id,
                 product_master_id: item?.ProductMaster.id,
-                quantity:
-                  (parseFloat(item?.yield_quantity) || 0) -
-                  (parseFloat(item?.peeled_quantity) || 0),
+                quantity: parseFloat(item?.peeled_quantity) || 0,
                 text:
                   item?.ProductMaster.product_name + "-" + item.yield_quantity,
               });
