@@ -119,7 +119,9 @@ module.exports = {
       return `${speciesName} | ${cleanDerivative} | ${cleanSize} | ${grade}`;
     }
 
-    // Determine product flags based on derivative
+    // Determine product flags based on processing_type
+    // is_raw = true only for UNPROCESSED derivatives (raw materials)
+    // is_raw = false for all other processing types (processed products)
     function getProductFlags(processingType) {
       return {
         is_raw: processingType === "UNPROCESSED",
