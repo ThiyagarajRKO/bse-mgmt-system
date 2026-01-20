@@ -905,13 +905,16 @@
                 <div class="container-fluid">
                   <div class="row">
                     <!-- Panel 1 -->
-                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4">
+                    <div
+                      class="col-xs-12 col-sm-12 col-md-8 col-lg-9 mt-4 pe-3"
+                    >
                       <!-- Order Data Container -->
                       <div id="orderDataContainer">
                         <fieldset
                           class="form-group border p-3"
                           style="
                             border-color: rgba(129, 145, 179, 0.6) !important;
+                            padding-top: 1.5rem !important;
                           "
                         >
                           <legend class="w-auto px-2">Order Data</legend>
@@ -1061,123 +1064,75 @@
                     </div>
 
                     <!-- Panel 2 -->
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4">
+                    <div
+                      class="col-xs-12 col-sm-12 col-md-4 col-lg-3 mt-4 ps-3"
+                      style="display: flex; flex-direction: column"
+                    >
+                      <!-- Order Tracking Container (Scrollable) -->
                       <div
-                        class="d-flex flex-column justify-content-between"
+                        id="orderTrackingWrapper"
                         style="
-                          height: 100%;
                           overflow-y: auto;
-                          max-height: calc(90vh - 200px);
+                          max-height: calc(90vh - 100px);
+                          flex: 1;
                         "
                       >
-                        <!-- Order Tracking Container -->
                         <div id="orderTrackingContainer">
                           <fieldset
                             class="form-group border p-3"
                             style="
                               border-color: rgba(129, 145, 179, 0.6) !important;
+                              padding-top: 1.5rem !important;
+                              min-height: 800px;
                             "
                           >
-                            <legend class="w-auto px-2">
-                              <i class="fa-solid fa-timeline"></i> Order
-                              Tracking Timeline
-                            </legend>
+                            <legend class="w-auto px-2">Order Tracking</legend>
 
                             <!-- Order Tracking Timeline -->
                             <%- include('./components/order-tracking-timeline')
                             %>
                           </fieldset>
                         </div>
-                        <!-- Shipping Container -->
-                        <div id="shippingContainer">
-                          <fieldset
-                            class="form-group border p-3 mt-4"
-                            style="
-                              border-color: rgba(129, 145, 179, 0.6) !important;
-                            "
-                          >
-                            <legend class="w-auto px-2">Shipping Info</legend>
+                      </div>
 
-                            <!-- Shipping Info -->
-
-                            <table class="w-100">
-                              <tr>
-                                <th class="align-top">Shipping Date</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_date"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Destination</th>
-                                <td class="align-top">:</td>
-                                <td style="word-break: break-all">
-                                  <span id="view_shipping_destination"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Method</th>
-                                <td class="align-top">:</td>
-                                <td>
-                                  <span id="view_shipping_method"></span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th class="align-top">Expected Delivery</th>
-                                <td class="align-top">:</td>
-                                <td class="align-top">
-                                  <span id="view_expected_delivery"></span>
-                                </td>
-                              </tr>
+                      <!-- Shipping Info Container -->
+                      <div
+                        id="shippingInfoContainer"
+                        style="margin-top: auto; padding-top: 1.5rem"
+                      >
+                        <fieldset
+                          class="form-group border p-3"
+                          style="
+                            border-color: rgba(129, 145, 179, 0.6) !important;
+                            padding-top: 1.5rem !important;
+                          "
+                        >
+                          <legend class="w-auto px-2">Shipping Info</legend>
+                          <div class="table-responsive">
+                            <table class="table table-sm">
+                              <thead>
+                                <tr>
+                                  <th>Shipping Date</th>
+                                  <th>Destination</th>
+                                  <th>Method</th>
+                                  <th>Expected Delivery</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><span id="view_shipping_date"></span></td>
+                                  <td><span id="view_destination"></span></td>
+                                  <td>
+                                    <span id="view_shipping_method"></span>
+                                  </td>
+                                  <td>
+                                    <span id="view_expected_delivery"></span>
+                                  </td>
+                                </tr>
+                              </tbody>
                             </table>
-
-                            <!-- <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_date"
-                                >Shipping Date:</label
-                              >
-                              <span id="view_shipping_date"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_carrier"
-                                >Shipping Carrier:</label
-                              >
-                              <span id="view_shipping_carrier"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_source"
-                                >Shipping Source:</label
-                              >
-                              <span id="view_shipping_source"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label
-                                class="fw-bold"
-                                for="view_shipping_destination"
-                                >Shipping Destination:</label
-                              >
-                              <span id="view_shipping_destination"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label class="fw-bold" for="view_shipping_method"
-                                >Shipping Method:</label
-                              >
-                              <span id="view_shipping_method"></span>
-                            </div>
-
-                            <div class="form-group">
-                              <label
-                                class="fw-bold"
-                                for="view_expected_delivery"
-                                >Expected Delivery:</label
-                              >
-                              <span id="view_expected_delivery"></span>
-                            </div> -->
-                          </fieldset>
-                        </div>
+                          </div>
+                        </fieldset>
                       </div>
                     </div>
                   </div>
