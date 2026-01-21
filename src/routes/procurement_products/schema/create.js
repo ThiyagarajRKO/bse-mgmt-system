@@ -20,6 +20,7 @@ export const createSchema = {
         procurement_quantity: { type: "integer" },
         procurement_price: { type: "integer" },
         procurement_purchaser: { type: "string" },
+        order_id: { type: "string", format: "uuid" },
       },
     },
   },

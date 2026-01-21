@@ -1822,6 +1822,13 @@
         hideMethod: "fadeOut",
       };
 
+      // Check for order_id parameter in URL and load order for production
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('order_id');
+      if (orderId) {
+        loadOrderForProduction(orderId);
+      }
+
       $(function () {
         // SmartTab initialize
         $("#smarttab").smartTab({
@@ -6108,6 +6115,83 @@
           $(`#${hr_id}`).css({ opacity: "0.2" });
         }
       }
+
+      // Load specific order for production processing
+      async function loadOrderForProduction(orderId) {
+        try {
+          toastr.info('Loading order for production...');
+
+          // Fetch order details
+          const response = await fetch(`/api/order/${orderId}`);
+          if (!response.ok) {
+            throw new Error('Failed to load order');
+          }
+
+          const orderData = await response.json();
+          const order = orderData.data;
+
+          // Display order information and perform stock checking
+          displayOrderForProduction(order);
+
+          // Perform stock check for the order
+          await checkStockForProduction(order);
+
+          toastr.success(`Order ${order.order_no || order.id} loaded for production`);
+
+        } catch (error) {
+          console.error('Error loading order for production:', error);
+          toastr.error('Failed to load order for production');
+        }
+      }
+
+      // Display order information in production interface
+      function displayOrderForProduction(order) {
+        // You can add order display logic here
+        // For now, just log the order details
+        console.log('Order loaded for production:', order);
+
+        // Could add order info to a header or dedicated section
+        // For example: update page title or add order banner
+      }
+
+      // Check stock availability for production
+      async function checkStockForProduction(order) {
+        try {
+          // Prepare products array for stock check
+          const orderedProducts = order.order_products.map(product => ({
+            product_master_id: product.product_id,
+            quantity_required_kg: product.quantity
+          }));
+
+          // Check stock for all products in the order
+          const stockResponse = await fetch('/api/order/check-stock', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ordered_products: orderedProducts })
+          });
+
+          if (!stockResponse.ok) {
+            throw new Error('Stock check request failed');
+          }
+
+          const stockData = await stockResponse.json();
+          console.log('Stock check results:', stockData);
+
+          // Handle stock availability results
+          if (stockData.success) {
+            toastr.success('All products have sufficient stock for production');
+          } else {
+            toastr.warning('Some products have insufficient stock. Check procurement requirements.');
+          }
+
+        } catch (error) {
+          console.error('Error checking stock for production:', error);
+          toastr.error('Failed to check stock availability');
+        }
+      }
+
     });
   </script>
 </html>

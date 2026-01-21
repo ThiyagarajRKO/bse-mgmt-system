@@ -16,9 +16,10 @@ export const Create = (
     procurement_quantity,
     procurement_price,
     procurement_purchaser,
+    order_id,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -48,6 +49,7 @@ export const Create = (
         procurement_lot = await ProcurementLots.Insert(profile_id, {
           procurement_date,
           unit_master_id,
+          order_id,
           is_active: true,
         });
       }

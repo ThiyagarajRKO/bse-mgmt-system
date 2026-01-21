@@ -14,6 +14,7 @@ export const createSchema = {
         peeling_quantity: { type: "string" },
         peeling_method: { type: "string" },
         PeelingProducts: { type: "array" },
+        order_id: { type: "string", format: "uuid" },
       },
     },
   },

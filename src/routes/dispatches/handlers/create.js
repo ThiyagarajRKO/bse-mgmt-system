@@ -14,9 +14,10 @@ export const Create = (
     delivery_notes,
     vehicle_master_id,
     driver_master_id,
+    order_id,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -48,6 +49,7 @@ export const Create = (
         delivery_status: "In Transit",
         vehicle_master_id,
         driver_master_id,
+        order_id,
         is_active: true,
       });
 

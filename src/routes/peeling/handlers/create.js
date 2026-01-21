@@ -8,16 +8,17 @@ export const Create = (
     peeling_quantity,
     peeling_method,
     PeelingProducts,
+    order_id,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
       console.log("=== Peeling Create Handler ===");
       console.log(
         "PeelingProducts received:",
-        JSON.stringify(PeelingProducts, null, 2)
+        JSON.stringify(PeelingProducts, null, 2),
       );
       console.log("Is array?", Array.isArray(PeelingProducts));
       console.log("Length?", PeelingProducts?.length);
@@ -36,7 +37,7 @@ export const Create = (
       const { old_peeling_quantity } = await Peeling.GetSumQuantityByDispatchId(
         {
           dispatch_id,
-        }
+        },
       );
 
       const total_peeling_quantity =
@@ -57,11 +58,12 @@ export const Create = (
           peeling_quantity,
           peeling_method,
           PeelingProducts,
+          order_id,
           is_active: true,
         },
         Array.isArray(PeelingProducts) && PeelingProducts.length > 0
           ? true
-          : false
+          : false,
       );
 
       await Dispatches.Update(profile_id, dispatch_id, {

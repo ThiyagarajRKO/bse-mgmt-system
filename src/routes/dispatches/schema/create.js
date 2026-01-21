@@ -19,6 +19,7 @@ export const createSchema = {
         delivery_notes: { type: "string" },
         vehicle_master_id: { type: "string" },
         driver_master_id: { type: "string" },
+        order_id: { type: "string", format: "uuid" },
       },
     },
   },

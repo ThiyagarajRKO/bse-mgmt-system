@@ -1,9 +1,9 @@
 import { ProcurementLots, SupplierMaster } from "../../../controllers";
 
 export const Create = (
-  { profile_id, procurement_date, unit_master_id },
+  { profile_id, procurement_date, unit_master_id, order_id },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -21,6 +21,7 @@ export const Create = (
       const purchase = await ProcurementLots.Insert(profile_id, {
         procurement_date,
         unit_master_id,
+        order_id,
         is_active: true,
       });
 
