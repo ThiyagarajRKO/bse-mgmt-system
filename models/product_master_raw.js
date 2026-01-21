@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      product_code: {
+      product_id: {
         type: DataTypes.STRING(100),
         unique: true,
         allowNull: false,
@@ -200,7 +200,7 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: false,
       paranoid: false,
-    }
+    },
   );
 
   // ============================================================================
@@ -223,14 +223,14 @@ module.exports = (sequelize, DataTypes) => {
       // RAW products MUST NOT be producible
       if (product.is_producible === true) {
         throw new Error(
-          "RAW product cannot be producible (is_producible must be FALSE)."
+          "RAW product cannot be producible (is_producible must be FALSE).",
         );
       }
 
       // RAW products MUST have size_id
       if (!product.size_master_id) {
         throw new Error(
-          "RAW product must have a size_id (including UNSIZED bucket)."
+          "RAW product must have a size_id (including UNSIZED bucket).",
         );
       }
 
@@ -241,7 +241,7 @@ module.exports = (sequelize, DataTypes) => {
       // PROCESSED products MUST have derivative_id
       if (!product.derivative_master_id) {
         throw new Error(
-          "PROCESSED product must reference a derivative_master_id."
+          "PROCESSED product must reference a derivative_master_id.",
         );
       }
     }
@@ -260,13 +260,13 @@ module.exports = (sequelize, DataTypes) => {
         product.grade_master_id !== null
       ) {
         throw new Error(
-          "Cannot assign grade to RAW product. Grade must remain NULL."
+          "Cannot assign grade to RAW product. Grade must remain NULL.",
         );
       }
 
       if (product.changed("is_producible") && product.is_producible === true) {
         throw new Error(
-          "Cannot mark RAW product as producible. RAW materials are consumed, not produced."
+          "Cannot mark RAW product as producible. RAW materials are consumed, not produced.",
         );
       }
     }

@@ -75,6 +75,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      product_id: {
+        type: DataTypes.STRING(100),
+        unique: true,
+        allowNull: false,
+        comment: "System-generated SKU (e.g., SNP-WHL-RAW-1_2KG)",
+      },
       product_name: {
         type: DataTypes.TEXT,
       },
@@ -154,7 +160,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Create Hook
@@ -227,7 +233,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while inserting a product master details",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -250,7 +256,7 @@ module.exports = (sequelize, DataTypes) => {
         if (!categoryMasterId && options?.where?.id) {
           // Fetch existing product to get current category
           const existingProduct = await ProductMaster.findByPk(
-            options?.where?.id
+            options?.where?.id,
           );
           categoryMasterId = existingProduct?.product_category_master_id;
         }
@@ -376,21 +382,21 @@ module.exports = (sequelize, DataTypes) => {
         product.grade_master_id !== undefined
       ) {
         throw new Error(
-          "RAW products cannot have grade. Only PROCESSED products can have grade."
+          "RAW products cannot have grade. Only PROCESSED products can have grade.",
         );
       }
 
       // RAW products cannot be producible (they are inputs, not outputs)
       if (product.is_producible === true) {
         throw new Error(
-          "RAW products cannot be producible (is_producible must be FALSE)"
+          "RAW products cannot be producible (is_producible must be FALSE)",
         );
       }
 
       // RAW products must have size
       if (!product.size_master_id) {
         throw new Error(
-          "RAW products must have a size (e.g., UNSIZED, 1-2kg, etc.)"
+          "RAW products must have a size (e.g., UNSIZED, 1-2kg, etc.)",
         );
       }
 
