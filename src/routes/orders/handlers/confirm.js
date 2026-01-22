@@ -22,22 +22,22 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
       }
 
       // Check if order is already initiated/confirmed
-      if (order.delivery_status === "Initiated") {
+      if (order.order_status === "CONFIRMED") {
         const error = new Error("Order is already confirmed");
         error.statusCode = 400;
         throw error;
       }
 
-      // Update the order status to Initiated (confirmed state)
+      // Update the order status to CONFIRMED
       await models.Orders.update(
         {
-          delivery_status: "Initiated",
+          order_status: "CONFIRMED",
           is_active: true,
           confirmed_at: new Date(),
         },
         {
           where: { id: order_id },
-        }
+        },
       );
 
       // Log the status change in audit logs (if OrderStatusLog exists)
@@ -45,8 +45,8 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
         if (models.OrderStatusLog) {
           await models.OrderStatusLog.create({
             order_id: order_id,
-            old_status: order.delivery_status,
-            new_status: "Initiated",
+            old_status: order.order_status,
+            new_status: "CONFIRMED",
             changed_by: session?.user_id,
             profile_id: profile_id,
             remarks: "Order confirmed and moved to allocation workflow",
@@ -62,7 +62,7 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
         message: "Order confirmed successfully",
         data: {
           order_id: order_id,
-          status: "Initiated",
+          status: "CONFIRMED",
         },
       });
     } catch (err) {

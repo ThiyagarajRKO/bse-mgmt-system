@@ -103,6 +103,24 @@ module.exports = (sequelize, DataTypes) => {
       order_no: {
         type: DataTypes.BIGINT,
       },
+      order_status: {
+        type: DataTypes.ENUM(
+          "DRAFT",
+          "CONFIRMED",
+          "ALLOCATED",
+          "IN_PRODUCTION",
+          "READY_FOR_QA",
+          "QA_APPROVED",
+          "PACKED",
+          "READY_FOR_DISPATCH",
+          "DISPATCHED",
+          "INVOICED",
+          "CLOSED",
+          "CANCELLED",
+        ),
+        allowNull: true,
+        defaultValue: "DRAFT",
+      },
       payment_terms: {
         type: DataTypes.STRING,
       },

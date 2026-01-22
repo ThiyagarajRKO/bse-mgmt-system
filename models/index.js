@@ -15,7 +15,7 @@ let sequelize = new Sequelize(
   config.database,
   config.username,
   config.password,
-  config
+  config,
 );
 
 // Do not automatically authenticate when this module is required.
@@ -39,9 +39,39 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
-    const modelModule = require(path.join(__dirname, file));
-    const model = modelModule(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    console.log("Processing model file:", file);
+    try {
+      const modelModule = require(path.join(__dirname, file));
+      console.log("Required module for", file, ":", typeof modelModule);
+      const model = modelModule(sequelize, Sequelize.DataTypes);
+      console.log(
+        "Created model for",
+        file,
+        ":",
+        typeof model,
+        "name:",
+        model?.name,
+      );
+      if (model && model.name) {
+        db[model.name] = model;
+        console.log("Added model to db:", model.name);
+        if (file.includes("inventory_stock")) {
+          console.log("Successfully loaded inventory_stock as:", model.name);
+        }
+      } else {
+        console.log(
+          "Model creation failed for:",
+          file,
+          "model:",
+          typeof model,
+          "name:",
+          model?.name,
+        );
+      }
+    } catch (e) {
+      console.log("Error loading model", file, ":", e.message);
+      console.log("Stack:", e.stack);
+    }
   });
 
 Object.keys(db).forEach((modelName) => {
@@ -51,7 +81,7 @@ Object.keys(db).forEach((modelName) => {
     } catch (err) {
       // Skip associations for models with missing dependencies
       console.warn(
-        `⚠️  Skipping associations for ${modelName}: ${err.message}`
+        `⚠️  Skipping associations for ${modelName}: ${err.message}`,
       );
     }
   }
