@@ -8,6 +8,7 @@ import { Confirm } from "./handlers/confirm";
 import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
 import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
+import { AllocateStock } from "./handlers/allocate_stock";
 import { DeleteEmpty } from "./handlers/delete_empty";
 import { GetTracking } from "./handlers/get_tracking";
 import CheckStockForProduct from "./handlers/check_stock_for_product";
@@ -123,6 +124,53 @@ export const ordersRoute = (fastify, opts, done) => {
     },
   );
 
+  // TEMPORARY: Manually trigger order tracking pipeline
+  fastify.post("/:order_id/initiate-production", async (req, reply) => {
+    try {
+      const { order_id } = req.params;
+
+      const {
+        createOrderTrackingPipeline,
+      } = require("../../services/order-tracking-service");
+
+      // Get the order
+      const order = await models.Orders.findOne({
+        where: { id: order_id, is_active: true },
+        include: [
+          {
+            model: models.OrderProducts,
+            as: "OrderProducts",
+            where: { is_active: true },
+            required: false,
+          },
+        ],
+      });
+
+      if (!order) {
+        return reply.code(404).send({
+          success: false,
+          message: "Order not found",
+        });
+      }
+
+      // Trigger the pipeline
+      await createOrderTrackingPipeline(order, {
+        profile_id: req?.session?.pid || 1,
+      });
+
+      return reply.send({
+        success: true,
+        message: "Production pipeline initiated for order",
+      });
+    } catch (err) {
+      console.error("Error initiating production:", err);
+      return reply.code(500).send({
+        success: false,
+        message: err.message,
+      });
+    }
+  });
+
   // Get single order by ID - MUST come after /:order_id/tracking
   fastify.get("/:order_id", getSchema, async (req, reply) => {
     try {
@@ -204,9 +252,29 @@ export const ordersRoute = (fastify, opts, done) => {
     try {
       const params = {
         product_master_id: req?.params?.product_master_id,
+        order_id: req?.query?.order_id, // optional order filter
       };
 
       const result = await CheckInventory(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.post("/allocate-stock", async (req, reply) => {
+    try {
+      const params = req.body;
+
+      const result = await AllocateStock(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,
