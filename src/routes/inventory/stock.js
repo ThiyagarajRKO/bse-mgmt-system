@@ -73,17 +73,28 @@ export default async (fastify) => {
           });
         }
 
-        // Get stock by status
+        // Get stock by unit_id
         const raw = await InventoryStock.count({
-          where: { status: "RAW_INVENTORY" },
+          where: { unit_id: "RAW_INVENTORY" },
         });
 
         const wip = await InventoryStock.count({
-          where: { status: "WIP_RAW_CONSUMPTION" },
+          where: { unit_id: "WIP_RAW_CONSUMPTION" },
         });
 
         const fg = await InventoryStock.count({
-          where: { status: "FG_INVENTORY" },
+          include: [
+            {
+              model: models.UnitMaster,
+              as: "unit",
+              where: {
+                unit_code: {
+                  [models.Sequelize.Op.iLike]: "%cs%",
+                },
+              },
+              required: true,
+            },
+          ],
         });
 
         reply.send({

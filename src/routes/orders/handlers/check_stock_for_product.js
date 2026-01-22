@@ -50,6 +50,81 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
         });
       }
 
+      // Check if this is a processed product by looking for procurement products
+      const procurementProduct = await models.ProcurementProducts.findOne({
+        where: { product_master_id: product.id, is_active: true },
+        attributes: ["id", "procurement_product_type"],
+        limit: 1,
+      });
+
+      const isProcessedProduct =
+        procurementProduct?.procurement_product_type === "PROCESSED";
+
+      if (isProcessedProduct) {
+        // For processed products, check sales_inventory instead of purchase_inventory
+        const processedStockQuery = `
+          SELECT COALESCE(SUM(si.quantity), 0) as available_qty
+          FROM sales_inventory si
+          WHERE si.product_master_id = :product_id
+          AND si.is_active = true
+          AND si.quantity > 0
+        `;
+
+        const [processedStockResult] = await models.sequelize.query(
+          processedStockQuery,
+          {
+            replacements: { product_id: product.id },
+            type: models.sequelize.QueryTypes.SELECT,
+          },
+        );
+
+        const availableStockKg = processedStockResult?.available_qty || 0;
+
+        // For processed products, required quantity equals ordered quantity (no yield calculation needed)
+        const requiredQuantityKg = quantity_required_kg;
+
+        // Compare available stock vs required quantity
+        const hasSufficientStock = availableStockKg >= requiredQuantityKg;
+
+        return resolve({
+          success: true,
+          product: {
+            id: product.id,
+            name: product.product_name,
+          },
+          orderQuantity: {
+            required_kg: quantity_required_kg,
+            unit: "KG",
+          },
+          rawMaterial: {
+            isProcessedProduct: true,
+            requiredKg: requiredQuantityKg.toFixed(2),
+          },
+          inventory: {
+            productType: "PROCESSED",
+            availableStockKg: availableStockKg.toFixed(2),
+          },
+          stockCheckResult: {
+            isSufficient: hasSufficientStock,
+            shortageKg: hasSufficientStock
+              ? 0
+              : (requiredQuantityKg - availableStockKg).toFixed(2),
+          },
+          canBeginProduct: hasSufficientStock,
+          suggestProcurement: !hasSufficientStock,
+          message: hasSufficientStock
+            ? "Sufficient processed stock available"
+            : `Insufficient processed stock. Need ${requiredQuantityKg.toFixed(
+                2,
+              )} kg but only ${availableStockKg.toFixed(
+                2,
+              )} kg available. Shortage: ${(
+                requiredQuantityKg - availableStockKg
+              ).toFixed(2)} kg`,
+        });
+      }
+
+      // For unprocessed/raw material products, check BOM and purchase inventory
       // Get the yield percentage for this product using BOM (Bill of Materials)
       // BOM Output contains the yield information for finished products
       const yieldData = await models.BomOutput?.findOne?.({

@@ -12,7 +12,13 @@ export default async (fastify) => {
         return reply.redirect("/login");
       }
 
-      // Render the OrderWorkflow template
+      // Check if order_id parameter is present - redirect to Production
+      const orderId = request.query.order_id;
+      if (orderId) {
+        return reply.redirect(`/Production?order_id=${orderId}`);
+      }
+
+      // Render the OrderWorkflow template (for general workflow management)
       return reply.view("OrderWorkflow.ejs", {
         user: request.session,
         pageTitle: "Order Workflow Management",
@@ -81,7 +87,7 @@ export default async (fastify) => {
           error: error.message,
         });
       }
-    }
+    },
   );
 
   // API endpoint to get order timeline/history
@@ -199,6 +205,6 @@ export default async (fastify) => {
           error: error.message,
         });
       }
-    }
+    },
   );
 };

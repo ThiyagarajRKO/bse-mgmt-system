@@ -12,17 +12,18 @@ export default async (fastify) => {
     handler: async (request, reply) => {
       try {
         const {
-          order_number,
+          order_no,
           plant_id,
           input_species_id,
           planned_quantity_kg,
           initial_grade,
           size_code,
           remarks,
+          order_id,
         } = request.body;
 
         // Validate required fields
-        if (!order_number || !input_species_id || !planned_quantity_kg) {
+        if (!order_no || !input_species_id || !planned_quantity_kg) {
           return reply.code(400).send({
             statusCode: 400,
             message: "Missing required fields",
@@ -31,13 +32,14 @@ export default async (fastify) => {
 
         // Create production order with PLANNED status
         const productionOrder = await models.production_orders.create({
-          order_number,
+          order_no,
           plant_id,
           input_species_id,
           planned_quantity_kg,
           initial_grade,
           size_code,
           remarks,
+          order_id,
           status: "PLANNED",
           created_by: request.session.pid,
         });
@@ -240,7 +242,7 @@ export default async (fastify) => {
         // Create GL posting: DR WIP / CR RAW
         const totalCost = lot_allocations.reduce(
           (sum, a) => sum + a.quantity_kg * a.cost_per_unit,
-          0
+          0,
         );
 
         await GLPosting.create({
@@ -249,7 +251,7 @@ export default async (fastify) => {
           debit_account: "WIP_INVENTORY",
           credit_account: "RAW_INVENTORY",
           amount: totalCost,
-          description: `Raw material consumed for production order ${productionOrder.order_number}`,
+          description: `Raw material consumed for production order ${productionOrder.order_no}`,
         });
 
         reply.send({
@@ -316,7 +318,7 @@ export default async (fastify) => {
                 ((output.actual_quantity_kg -
                   (output.expected_quantity_kg || 0)) /
                   (output.expected_quantity_kg || 1)) *
-                  100
+                  100,
               ) > 5
                 ? "ABNORMAL"
                 : "NORMAL",
@@ -334,7 +336,7 @@ export default async (fastify) => {
               debit_account: "VARIANCE_LOSS",
               credit_account: "COGS",
               amount: Math.abs(variance.variance_quantity_kg * 100), // Estimate cost
-              description: `Abnormal variance for ${output.derivative_id} in production order ${productionOrder.order_number}`,
+              description: `Abnormal variance for ${output.derivative_id} in production order ${productionOrder.order_no}`,
             });
             glEntriesCount++;
           }
@@ -343,16 +345,16 @@ export default async (fastify) => {
         // Create GL posting: DR FG / CR WIP
         const totalOutputCost = varianceRecords.reduce(
           (sum, v) => sum + v.actual_quantity_kg * 100,
-          0
+          0,
         ); // Estimated
 
         await GLPosting.create({
           reference_type: "PRODUCTION_OUTPUT",
           reference_id: id,
-          debit_account: "FG_INVENTORY",
+          debit_account: "CS_INVENTORY",
           credit_account: "WIP_INVENTORY",
           amount: totalOutputCost,
-          description: `Production output recorded for order ${productionOrder.order_number}`,
+          description: `Production output recorded for order ${productionOrder.order_no}`,
         });
         glEntriesCount++;
 
@@ -449,10 +451,10 @@ export default async (fastify) => {
         });
 
         const normalCount = variances.filter(
-          (v) => v.variance_type === "NORMAL"
+          (v) => v.variance_type === "NORMAL",
         ).length;
         const abnormalCount = variances.filter(
-          (v) => v.variance_type === "ABNORMAL"
+          (v) => v.variance_type === "ABNORMAL",
         ).length;
 
         reply.send({
@@ -467,15 +469,15 @@ export default async (fastify) => {
             summary: {
               total_planned_kg: variances.reduce(
                 (sum, v) => sum + v.planned_quantity_kg,
-                0
+                0,
               ),
               total_actual_kg: variances.reduce(
                 (sum, v) => sum + v.actual_quantity_kg,
-                0
+                0,
               ),
               total_variance_kg: variances.reduce(
                 (sum, v) => sum + v.variance_quantity_kg,
-                0
+                0,
               ),
               overall_variance_percent:
                 variances.length > 0

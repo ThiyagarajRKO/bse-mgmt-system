@@ -14,8 +14,8 @@
         <div class="col-md-6 mb-3">
           <label class="form-label">Order Number</label>
           <input
-            id="order_number"
-            name="order_number"
+            id="order_no"
+            name="order_no"
             type="text"
             class="form-control"
             placeholder="e.g., PO-20260111-001"
@@ -194,7 +194,7 @@
 
     try {
       const formData = new FormData(
-        document.getElementById("productionOrderForm")
+        document.getElementById("productionOrderForm"),
       );
       const data = Object.fromEntries(formData);
 
@@ -212,7 +212,7 @@
 
       // Emit custom event for parent component
       window.dispatchEvent(
-        new CustomEvent("orderCreated", { detail: result.data })
+        new CustomEvent("orderCreated", { detail: result.data }),
       );
     } catch (error) {
       console.error("Error:", error);

@@ -35,13 +35,13 @@ export const AllocateStock = async (
           is_active: true,
           order_status: "ALLOCATED",
         },
-        attributes: ["id", "order_number", "order_status"],
+        attributes: ["id", "order_no", "order_status"],
       });
 
       if (existingOrder) {
         return reject({
           statusCode: 400,
-          message: `Order ${existingOrder.order_number} is already allocated and cannot be allocated again.`,
+          message: `Order ${existingOrder.order_no} is already allocated and cannot be allocated again.`,
         });
       }
 
@@ -49,11 +49,22 @@ export const AllocateStock = async (
       const fgInventory = await models.InventoryStock.findAll({
         where: {
           product_id: product_id,
-          warehouse_code: "FG_INVENTORY",
           available_qty: {
             [models.Sequelize.Op.gt]: 0,
           },
         },
+        include: [
+          {
+            model: models.UnitMaster,
+            as: "unit",
+            where: {
+              unit_code: {
+                [models.Sequelize.Op.iLike]: "%cs%",
+              },
+            },
+            required: true,
+          },
+        ],
         attributes: ["id", "available_qty", "lot_id"],
         order: [["created_at", "ASC"]], // FIFO allocation
       });
@@ -96,35 +107,37 @@ export const AllocateStock = async (
           // Create inventory transaction for allocation
           await models.InventoryTransaction.create(
             {
-              stock_id: inventory.id,
+              stock_id: inventory.id, // Use inventory.id, not inventory.stock_id
               product_id: product_id,
               transaction_type: "DISPATCH", // Using DISPATCH for allocation
               qty_change: -allocateQty, // Negative for outbound
+              uom: "KG", // Required field
               reference_type: "SALES_ORDER",
               reference_id: order_id,
-              warehouse_from: "FG_INVENTORY",
+              warehouse_from: "CS_UNIT",
               notes: `Allocated to order`,
-              created_by: session?.pid,
+              created_by: session?.pid || session?.user_id,
             },
             { transaction },
           );
 
           // Update inventory stock
-          await models.InventoryStock.update(
-            {
-              reserved_qty: models.sequelize.literal(
-                `reserved_qty + ${allocateQty}`,
-              ),
-              available_qty: models.sequelize.literal(
-                `available_qty - ${allocateQty}`,
-              ),
-              updated_at: new Date(),
-            },
-            {
-              where: { id: inventory.id },
-              transaction,
-            },
+          const currentStock = await models.InventoryStock.findByPk(
+            inventory.id,
+            { transaction },
           );
+          if (currentStock) {
+            await currentStock.update(
+              {
+                reserved_qty:
+                  parseFloat(currentStock.reserved_qty) + allocateQty,
+                available_qty:
+                  parseFloat(currentStock.available_qty) - allocateQty,
+                updated_at: new Date(),
+              },
+              { transaction },
+            );
+          }
 
           remainingQuantity -= allocateQty;
         }
@@ -156,6 +169,35 @@ export const AllocateStock = async (
             transaction,
           },
         );
+
+        // Find the order product to get order_product_id for allocation_master
+        const orderProduct = await models.OrderProducts.findOne({
+          where: {
+            order_id: order_id,
+            product_master_id: product_id,
+            is_active: true,
+          },
+          transaction,
+        });
+
+        // Create allocation_master record
+        if (orderProduct) {
+          const allocationNo = `ALLOC-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+          await models.AllocationMaster.create(
+            {
+              allocation_no: allocationNo,
+              order_id: order_id,
+              order_product_id: orderProduct.id,
+              packing_id: null, // null since we're allocating from inventory stock, not specific packing
+              allocated_quantity: quantity,
+              allocated_unit: "KG", // Assuming KG as default unit
+              allocation_date: new Date(),
+              status: "ALLOCATED",
+              created_by: session?.pid || session?.user_id,
+            },
+            { transaction },
+          );
+        }
 
         await transaction.commit();
 

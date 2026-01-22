@@ -1,9 +1,9 @@
 import models from "../../../../models";
 
 export const CheckInventory = async (
-  { product_master_id },
+  { product_master_id, order_id },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -14,10 +14,23 @@ export const CheckInventory = async (
         });
       }
 
-      // Step 1: Get the product and its species
+      // Get product details
       const product = await models.ProductMaster.findOne({
         where: { id: product_master_id, is_active: true },
-        attributes: ["id", "product_name"],
+        attributes: [
+          "id",
+          "product_name",
+          "derivative_master_id",
+          "product_category_master_id",
+        ],
+        include: [
+          {
+            model: models.DerivativeMaster,
+            as: "Derivative",
+            attributes: ["id", "derivative_code", "derivative_name"],
+            required: false,
+          },
+        ],
       });
 
       if (!product) {
@@ -28,148 +41,198 @@ export const CheckInventory = async (
             product_master_id,
             available_quantity: 0,
             has_stock: false,
+            inventory_type: "none",
           },
         });
       }
 
-      // Step 2: Get the species of the product via the species_derivative_size_grade_mapping
-      const productMapping = await models.sequelize.query(
-        `SELECT DISTINCT sm.id as species_id
-         FROM product_master pm
-         LEFT JOIN species_derivative_size_grade_mapping sdsgm ON pm.species_derivative_size_grade_mapping_id = sdsgm.id
-         LEFT JOIN species_master sm ON sdsgm.species_master_id = sm.id
-         WHERE pm.id = :product_id`,
-        {
-          replacements: { product_id: product_master_id },
-          type: models.sequelize.QueryTypes.SELECT,
-        }
-      );
+      // Check if this is a processed product by looking for procurement products
+      const procurementProduct = await models.ProcurementProducts.findOne({
+        where: { product_master_id: product.id, is_active: true },
+        attributes: ["id", "procurement_product_type"],
+        limit: 1,
+      });
 
-      if (
-        !productMapping ||
-        productMapping.length === 0 ||
-        !productMapping[0].species_id
-      ) {
+      const isProcessedProduct =
+        procurementProduct?.procurement_product_type === "PROCESSED";
+
+      // First, check if there's finished goods inventory available, regardless of processing status
+      const fgSumQuery = `
+        SELECT COALESCE(SUM(inv.available_qty), 0) as fg_available_qty
+        FROM inventory_stock inv
+        JOIN unit_master um ON inv.unit_id::uuid = um.id
+        WHERE inv.product_id = :product_id
+        AND um.unit_code ILIKE '%cs%'
+      `;
+
+      const [fgResult] = await models.sequelize.query(fgSumQuery, {
+        replacements: { product_id: product.id },
+        type: models.sequelize.QueryTypes.SELECT,
+      });
+
+      const totalFGInventory = parseFloat(fgResult?.fg_available_qty || 0);
+
+      // If we have finished goods inventory, treat as processed product
+      if (totalFGInventory > 0 || isProcessedProduct) {
+        // Fetch sales/allocated quantities - total and order-specific
+        let salesQuery = `
+          SELECT COALESCE(SUM(si.quantity), 0) as total_sales_inventory_qty
+          FROM sales_inventory si
+          WHERE si.product_master_id = :product_id
+          AND si.is_active = true
+        `;
+
+        let replacements = { product_id: product.id };
+
+        if (order_id) {
+          salesQuery += ` AND si.order_id != :order_id`;
+          replacements.order_id = order_id;
+        }
+
+        const [salesResult] = await models.sequelize.query(salesQuery, {
+          replacements,
+          type: models.sequelize.QueryTypes.SELECT,
+        });
+
+        const totalSalesAllocations = parseFloat(
+          salesResult?.total_sales_inventory_qty || 0,
+        );
+
+        // If order_id provided, also get allocations for this specific order
+        let orderSpecificAllocations = 0;
+        if (order_id) {
+          const orderQuery = `
+            SELECT COALESCE(SUM(si.quantity), 0) as order_sales_inventory_qty
+            FROM sales_inventory si
+            WHERE si.product_master_id = :product_id
+            AND si.order_id = :order_id
+            AND si.is_active = true
+          `;
+
+          const [orderResult] = await models.sequelize.query(orderQuery, {
+            replacements: { product_id: product.id, order_id },
+            type: models.sequelize.QueryTypes.SELECT,
+          });
+
+          orderSpecificAllocations = parseFloat(
+            orderResult?.order_sales_inventory_qty || 0,
+          );
+        }
+
+        // Return the actual available quantity from inventory_stock (already accounts for allocations)
         return resolve({
           statusCode: 200,
-          message: "Product species not found",
+          message: "Available inventory (unallocated stock only)",
           data: {
             product_master_id,
-            available_quantity: 0,
-            has_stock: false,
+            available_quantity: Number(totalFGInventory), // This is already the unallocated stock
+            has_stock: totalFGInventory > 0,
+            inventory_type: totalFGInventory > 0 ? "finished_goods" : "none",
+            breakdown: {
+              fg_inventory: Number(totalFGInventory),
+              total_allocations: Number(
+                totalSalesAllocations +
+                  (order_id ? orderSpecificAllocations : 0),
+              ),
+              order_allocations: order_id
+                ? Number(orderSpecificAllocations)
+                : undefined,
+              net_available: Number(totalFGInventory), // Same as available_quantity since FG inventory already excludes allocated stock
+            },
           },
         });
       }
 
-      const speciesId = productMapping[0].species_id;
-
-      // Step 3: Find BOMs for this species
-      const bomsForSpecies = await models.BomMaster.findAll({
-        where: {
-          species_id: speciesId,
-          is_active: true,
-        },
-        attributes: ["id"],
+      // For unprocessed/raw material products, check purchase_inventory through BOM
+      // Get the yield percentage for this product using BOM
+      const yieldData = await models.BomOutput?.findOne?.({
+        where: { product_id: product.id },
+        attributes: ["id", "base_yield_percent"],
         include: [
           {
-            model: models.BomInput,
-            as: "inputs",
-            attributes: ["raw_product_id"],
+            model: models.BomMaster,
+            attributes: ["id"],
             required: true,
+            include: [
+              {
+                model: models.BomInput,
+                as: "inputs",
+                attributes: ["raw_product_id", "quantity"],
+                required: false,
+              },
+            ],
           },
         ],
+        raw: false,
+      }).catch((err) => {
+        console.error("BomOutput query error:", err);
+        return null;
       });
 
-      if (!bomsForSpecies || bomsForSpecies.length === 0) {
+      if (!yieldData?.BomMaster?.inputs?.length) {
         return resolve({
           statusCode: 200,
-          message: "No BOMs found for this species",
+          message: "No Bill of Materials configured for this product",
           data: {
             product_master_id,
             available_quantity: 0,
             has_stock: false,
+            inventory_type: "none",
           },
         });
       }
 
-      // Step 4: Extract all raw product IDs from BOMs
-      const rawProductIds = [];
-      bomsForSpecies.forEach((bom) => {
-        if (bom.inputs && bom.inputs.length > 0) {
-          bom.inputs.forEach((input) => {
-            if (
-              input.raw_product_id &&
-              !rawProductIds.includes(input.raw_product_id)
-            ) {
-              rawProductIds.push(input.raw_product_id);
-            }
-          });
-        }
+      // Get raw material from BOM inputs
+      const firstInput = yieldData.BomMaster.inputs[0];
+      const rawMaterialProduct = await models.ProductMaster.findOne({
+        where: { id: firstInput.raw_product_id },
+        attributes: ["id", "product_name"],
       });
 
-      if (rawProductIds.length === 0) {
+      if (!rawMaterialProduct) {
         return resolve({
           statusCode: 200,
-          message: "No raw materials defined in BOMs",
+          message: "Raw material product not found",
           data: {
             product_master_id,
             available_quantity: 0,
             has_stock: false,
+            inventory_type: "none",
           },
         });
       }
 
-      // Step 5: Get procurement products for these raw materials
-      const rawProcProducts = await models.ProcurementProducts.findAll({
-        where: {
-          product_master_id: rawProductIds,
-          is_active: true,
-        },
-        attributes: ["id"],
+      // Calculate available stock from purchase_inventory
+      const inventoryQuery = `
+        SELECT COALESCE(SUM(pi.quantity), 0) as available_qty
+        FROM purchase_inventory pi
+        INNER JOIN procurement_products pp ON pi.procurement_product_id = pp.id
+        WHERE pp.product_master_id = :product_id
+        AND pi.is_active = true
+      `;
+
+      const [inventoryResult] = await models.sequelize.query(inventoryQuery, {
+        replacements: { product_id: rawMaterialProduct.id },
+        type: models.sequelize.QueryTypes.SELECT,
       });
 
-      if (!rawProcProducts || rawProcProducts.length === 0) {
-        return resolve({
-          statusCode: 200,
-          message: "No procurement products found for raw materials",
-          data: {
-            product_master_id,
-            available_quantity: 0,
-            has_stock: false,
-          },
-        });
-      }
-
-      const procProductIds = rawProcProducts.map((p) => p.id);
-
-      // Step 6: Sum inventory for the relevant raw materials only
-      let totalPurchaseInventory = 0;
-
-      if (procProductIds.length > 0) {
-        const purchaseInventories = await models.PurchaseInventory.findAll({
-          where: {
-            procurement_product_id: procProductIds,
-            is_active: true,
-          },
-          attributes: ["quantity"],
-        });
-
-        totalPurchaseInventory = purchaseInventories.reduce((sum, inv) => {
-          const qty = inv?.quantity;
-          if (qty !== null && qty !== undefined && !isNaN(qty)) {
-            return sum + qty;
-          }
-          return sum;
-        }, 0);
-      }
+      const availableStockKg = inventoryResult?.available_qty || 0;
 
       resolve({
         statusCode: 200,
-        message: "Inventory checked successfully",
+        message:
+          availableStockKg > 0
+            ? "Raw materials inventory available"
+            : "No raw materials available",
         data: {
           product_master_id,
-          available_quantity: totalPurchaseInventory,
-          has_stock: totalPurchaseInventory > 0,
+          available_quantity: availableStockKg,
+          has_stock: availableStockKg > 0,
+          inventory_type: availableStockKg > 0 ? "raw_materials" : "none",
+          raw_material_details: {
+            product_name: rawMaterialProduct.product_name,
+            yield_percent: yieldData.base_yield_percent,
+          },
         },
       });
     } catch (err) {
