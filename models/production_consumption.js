@@ -55,7 +55,7 @@ module.exports = (sequelize) => {
         allowNull: false,
         comment: "consumed_qty_kg × cost_per_unit",
       },
-      warehouse_code: {
+      unit_id: {
         type: DataTypes.STRING(50),
         allowNull: false,
         defaultValue: "RAW_INVENTORY",
@@ -86,7 +86,7 @@ module.exports = (sequelize) => {
         { fields: ["lot_id"] },
         { fields: ["cost_layer_id"] },
       ],
-    }
+    },
   );
 
   ProductionConsumption.associate = (models) => {

@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         allowNull: false,
         comment: "Product code: RAW_SPECIES or SPECIES_DERIVATIVE_GRADE_SIZE",
       },
-      warehouse_code: {
+      unit_id: {
         type: DataTypes.STRING(50),
         allowNull: false,
         comment: "RAW_INVENTORY, WIP_RAW_CONSUMPTION, FG_INVENTORY, etc",
@@ -75,26 +75,34 @@ module.exports = (sequelize) => {
       timestamps: false,
       underscored: true,
       indexes: [
-        { fields: ["product_id", "warehouse_code", "lot_id"], unique: true },
-        { fields: ["warehouse_code"] },
+        { fields: ["product_id", "unit_id", "lot_id"], unique: true },
+        { fields: ["unit_id"] },
         { fields: ["on_hand_qty"] },
       ],
-    }
+    },
   );
 
   InventoryStock.associate = (models) => {
-    InventoryStock.belongsTo(models.product_master, {
-      foreignKey: "product_id",
-    });
-    InventoryStock.belongsTo(models.inventory_lot, {
-      foreignKey: "lot_id",
-    });
-    InventoryStock.belongsTo(models.inventory_cost_layer, {
-      foreignKey: "cost_layer_id",
-    });
-    InventoryStock.hasMany(models.inventory_transaction, {
-      foreignKey: "stock_id",
-    });
+    if (models.ProductMaster) {
+      InventoryStock.belongsTo(models.ProductMaster, {
+        foreignKey: "product_id",
+      });
+    }
+    if (models.InventoryLot) {
+      InventoryStock.belongsTo(models.InventoryLot, {
+        foreignKey: "lot_id",
+      });
+    }
+    if (models.InventoryCostLayer) {
+      InventoryStock.belongsTo(models.InventoryCostLayer, {
+        foreignKey: "cost_layer_id",
+      });
+    }
+    if (models.InventoryTransaction) {
+      InventoryStock.hasMany(models.InventoryTransaction, {
+        foreignKey: "stock_id",
+      });
+    }
   };
 
   return InventoryStock;

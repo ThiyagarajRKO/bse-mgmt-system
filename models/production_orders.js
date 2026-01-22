@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      order_number: {
+      order_no: {
         type: DataTypes.STRING(50),
         unique: true,
         allowNull: false,
@@ -48,7 +48,7 @@ module.exports = (sequelize) => {
           "IN_PRODUCTION",
           "COMPLETED",
           "CLOSED",
-          "CANCELLED"
+          "CANCELLED",
         ),
         defaultValue: "PLANNED",
       },
@@ -78,7 +78,7 @@ module.exports = (sequelize) => {
       tableName: "production_orders",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   ProductionOrder.associate = (models) => {

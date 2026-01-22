@@ -165,7 +165,7 @@ module.exports = {
         allowNull: false,
         references: { model: "product_master", key: "id" },
       },
-      warehouse_code: {
+      unit_id: {
         type: Sequelize.STRING(50),
         allowNull: false,
         comment: "RAW_INVENTORY, WIP_RAW_CONSUMPTION, FG_INVENTORY, etc",
@@ -212,11 +212,11 @@ module.exports = {
 
     await queryInterface.addConstraint("inventory_stock", {
       type: "unique",
-      fields: ["product_id", "warehouse_code", "lot_id"],
+      fields: ["product_id", "unit_id", "lot_id"],
       name: "unique_inventory_stock_composite",
     });
 
-    await queryInterface.addIndex("inventory_stock", ["warehouse_code"]);
+    await queryInterface.addIndex("inventory_stock", ["unit_id"]);
     await queryInterface.addIndex("inventory_stock", ["on_hand_qty"]);
 
     // 4. inventory_transaction (audit trail)
@@ -245,7 +245,7 @@ module.exports = {
           "YIELD_VARIANCE",
           "ADJUSTMENT",
           "RETURN",
-          "PHYSICAL_COUNT"
+          "PHYSICAL_COUNT",
         ),
         allowNull: false,
       },

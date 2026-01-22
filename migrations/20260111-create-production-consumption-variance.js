@@ -58,7 +58,7 @@ module.exports = {
         allowNull: false,
         comment: "consumed_qty_kg × cost_per_unit",
       },
-      warehouse_code: {
+      unit_id: {
         type: Sequelize.STRING(50),
         allowNull: false,
         defaultValue: "RAW_INVENTORY",
@@ -129,7 +129,7 @@ module.exports = {
           "ABNORMAL_LOSS",
           "GRADE_VARIANCE",
           "SIZE_VARIANCE",
-          "QUALITY_LOSS"
+          "QUALITY_LOSS",
         ),
         allowNull: false,
         defaultValue: "NORMAL_LOSS",
