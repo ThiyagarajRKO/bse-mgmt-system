@@ -608,7 +608,7 @@ export const GetWithProductionTracking = ({ id }) => {
         },
         attributes: [
           "id",
-          "order_number",
+          "order_no",
           "status",
           "planned_quantity_kg",
           "produced_quantity_kg",
@@ -1178,11 +1178,39 @@ export const GetAllocationData = ({ start, length, search }) => {
         });
       }
 
-      // Add allocation_status to each order
-      const processedOrders = orders.rows.map((order) => ({
-        ...order.toJSON(),
-        allocation_status: "Pending",
-      }));
+      // Add allocation_status to each order based on OrderProducts delivery_status
+      const processedOrders = await Promise.all(
+        orders.rows.map(async (order) => {
+          const orderJson = order.toJSON();
+
+          // Get all products for this order
+          const orderProducts = await models.OrderProducts.findAll({
+            where: {
+              order_id: order.id,
+              is_active: true,
+            },
+            attributes: ["delivery_status"],
+          });
+
+          // Calculate allocation status
+          let allocation_status = "Pending";
+          if (orderProducts.length > 0) {
+            const allocatedCount = orderProducts.filter(
+              (p) => p.delivery_status === "ALLOCATED",
+            ).length;
+            if (allocatedCount === orderProducts.length) {
+              allocation_status = "Allocated";
+            } else if (allocatedCount > 0) {
+              allocation_status = "Partial";
+            }
+          }
+
+          return {
+            ...orderJson,
+            allocation_status,
+          };
+        }),
+      );
 
       resolve({
         rows: processedOrders,

@@ -1,6 +1,6 @@
-import models from "../../../../models";
+const models = require("../../../../models");
 
-export const CheckInventory = async (
+const CheckInventory = async (
   { product_master_id, order_id },
   session,
   fastify,
@@ -57,16 +57,31 @@ export const CheckInventory = async (
         procurementProduct?.procurement_product_type === "PROCESSED";
 
       // First, check if there's finished goods inventory available, regardless of processing status
+      // Get unit IDs for Collection Center and Cold Storage (same logic as auto_allocate_stock)
+      const allowedUnits = await models.UnitMaster.findAll({
+        where: {
+          unit_type: {
+            [models.Sequelize.Op.in]: ["Collection Center", "Cold Storage"],
+          },
+          is_active: true,
+        },
+        attributes: ["id"],
+      });
+
+      const allowedUnitIds = allowedUnits.map((unit) => unit.id);
+
       const fgSumQuery = `
         SELECT COALESCE(SUM(inv.available_qty), 0) as fg_available_qty
         FROM inventory_stock inv
-        JOIN unit_master um ON inv.unit_id::uuid = um.id
         WHERE inv.product_id = :product_id
-        AND um.unit_code ILIKE '%cs%'
+        AND inv.unit_id IN (:allowedUnitIds)
       `;
 
       const [fgResult] = await models.sequelize.query(fgSumQuery, {
-        replacements: { product_id: product.id },
+        replacements: {
+          product_id: product.id,
+          allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
+        },
         type: models.sequelize.QueryTypes.SELECT,
       });
 
@@ -119,25 +134,49 @@ export const CheckInventory = async (
           );
         }
 
+        // The inventory_stock.available_qty already accounts for allocations
+        // (auto-allocation reduces available_qty when stock is allocated)
+        // So we don't need to subtract sales_inventory again - that would double-count
+
+        // Get total FG inventory (without considering allocations for breakdown)
+        const totalFGQuery = `
+          SELECT COALESCE(SUM(inv.on_hand_qty), 0) as total_fg_quantity
+          FROM inventory_stock inv
+          WHERE inv.product_id = :product_id
+          AND inv.unit_id IN (:allowedUnitIds)
+        `;
+
+        const [totalFGResult] = await models.sequelize.query(totalFGQuery, {
+          replacements: {
+            product_id: product.id,
+            allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
+          },
+          type: models.sequelize.QueryTypes.SELECT,
+        });
+
+        const totalFGQuantity = parseFloat(
+          totalFGResult?.total_fg_quantity || 0,
+        );
+
         // Return the actual available quantity from inventory_stock (already accounts for allocations)
         return resolve({
           statusCode: 200,
           message: "Available inventory (unallocated stock only)",
           data: {
             product_master_id,
-            available_quantity: Number(totalFGInventory), // This is already the unallocated stock
+            available_quantity: Number(totalFGInventory), // This is already the available (unallocated) quantity
             has_stock: totalFGInventory > 0,
             inventory_type: totalFGInventory > 0 ? "finished_goods" : "none",
             breakdown: {
-              fg_inventory: Number(totalFGInventory),
+              total_inventory: Number(totalFGQuantity),
               total_allocations: Number(
                 totalSalesAllocations +
                   (order_id ? orderSpecificAllocations : 0),
               ),
+              available_stock: Number(totalFGInventory),
               order_allocations: order_id
                 ? Number(orderSpecificAllocations)
                 : undefined,
-              net_available: Number(totalFGInventory), // Same as available_quantity since FG inventory already excludes allocated stock
             },
           },
         });
@@ -245,3 +284,5 @@ export const CheckInventory = async (
     }
   });
 };
+
+module.exports = { CheckInventory };

@@ -2797,159 +2797,53 @@
 
       $(document).on("click", "#confirmOrderModalBtn", function () {
         const order_id = $("#view_order_no").attr("order_id");
-        const order_no = $("#view_order_no").text();
-        const orderedProductsJson =
-          $("#view_order_no").attr("ordered_products");
+        console.log("Confirm order button clicked, order_id:", order_id);
 
         if (!order_id) {
           toastr.error("Order ID not found", "Error");
           return;
         }
 
-        if (!orderedProductsJson) {
-          toastr.error("No products found in order", "Error");
-          return;
-        }
-
-        const orderedProducts = JSON.parse(orderedProductsJson);
-
-        // First, check if we have stock for all products
+        // First, try to confirm the order
         $.ajax({
-          url: "/api/order/check-stock",
+          url: "/api/order/confirm",
           method: "POST",
           data: JSON.stringify({
-            ordered_products: orderedProducts,
+            order_id: order_id,
           }),
           contentType: "application/json",
         })
-          .done(function (stockResponse) {
-            const canBeginProduct = stockResponse?.data?.canBeginProduct;
-            const suggestProcurement = stockResponse?.data?.suggestProcurement;
-            const stockMessage = stockResponse?.message;
-
-            if (canBeginProduct) {
-              // Stock is sufficient - show confirmation dialog and then confirm order
-              $.confirm({
-                title: "Confirm Order?",
-                content: `<p>Are you sure you want to confirm order <strong>${order_no}</strong>?</p>
-                          <p style="color: green; font-size: 14px;"><i class="fa-solid fa-check-circle"></i> Stock is sufficient for production</p>
-                          <p>This will move the order to the allocation workflow.</p>`,
-                backgroundDismiss: false,
-                backgroundDismissAnimation: "glow",
-                type: "green",
-                closeIcon: true,
-                closeIconClass: "fa fa-close",
-                typeAnimated: true,
-                boxWidth: "30%",
-                useBootstrap: false,
-                autoClose: "no|5000",
-                buttons: {
-                  confirm: {
-                    text: "Confirm Order",
-                    btnClass: "btn-green",
-                    action: function () {
-                      $.ajax({
-                        url: "/api/order/confirm",
-                        method: "POST",
-                        data: JSON.stringify({
-                          order_id: order_id,
-                        }),
-                        contentType: "application/json",
-                      })
-                        .done(function (response) {
-                          // Close the modal
-                          $("#orderModal").modal("hide");
-
-                          // Reload the table data
-                          loadOrdersTableData();
-
-                          toastr.success(
-                            "Order confirmed successfully and moved to allocation workflow",
-                            "Order Confirmed",
-                          );
-                        })
-                        .fail(function (xhr) {
-                          const errorMessage =
-                            xhr?.responseJSON?.message ||
-                            "Order confirmation failed!";
-                          toastr.error(errorMessage, "Error");
-                        });
-                    },
-                  },
-                  cancel: function () {
-                    toastr.info("Order confirmation cancelled", "Info");
-                  },
-                },
-              });
-            } else if (suggestProcurement) {
-              // Insufficient stock - redirect to purchase request
-              $.confirm({
-                title: "Insufficient Raw Material Stock",
-                content: `<p><strong>Order ${order_no}</strong> cannot be fulfilled with current stock.</p>
-                          <p style="color: #ff6b6b; font-size: 14px;"><i class="fa-solid fa-exclamation-circle"></i> ${stockMessage}</p>
-                          <p>You need to raise a purchase request for raw materials first.</p>
-                          <p>Would you like to proceed to raise a purchase request?</p>`,
-                backgroundDismiss: false,
-                backgroundDismissAnimation: "glow",
-                type: "orange",
-                closeIcon: true,
-                closeIconClass: "fa fa-close",
-                typeAnimated: true,
-                boxWidth: "30%",
-                useBootstrap: false,
-                buttons: {
-                  raisePR: {
-                    text: "Raise Purchase Request",
-                    btnClass: "btn-orange",
-                    action: function () {
-                      // Redirect to purchase request page
-                      window.location.href = "/purchase-request";
-                    },
-                  },
-                  cancel: function () {
-                    toastr.info("Action cancelled", "Info");
-                  },
-                },
-              });
+          .done(function (response) {
+            // Successfully confirmed or already confirmed
+            if (
+              response.message &&
+              response.message.includes("already confirmed")
+            ) {
+              toastr.info("Order is already confirmed", "Info");
             } else {
-              toastr.warning(
-                stockMessage || "Unable to determine stock status",
-                "Stock Check",
-              );
+              toastr.success("Order confirmed successfully", "Success");
             }
+
+            // Close the modal
+            $("#orderModal").modal("hide");
+
+            // Activate allocate orders tab
+            $(".topMenu-item").removeClass("topMenu-item-active");
+            $(".allocateOrdersMenu").addClass("topMenu-item-active");
+
+            // Show allocate orders container
+            $(".menu-container").addClass("d-none");
+            $(".allocateOrdersContainer").removeClass("d-none");
+            $(".allocateOrdersContainer").addClass("d-block");
+
+            loadAllocationTableData();
           })
           .fail(function (xhr) {
-            // Default to requiring procurement on error
-            const errorMessage =
-              xhr?.responseJSON?.message ||
-              "Unable to check stock availability";
-
-            $.confirm({
-              title: "Stock Check Failed",
-              content: `<p>Error checking raw material availability.</p>
-                        <p style="color: #ff6b6b; font-size: 14px;">${errorMessage}</p>
-                        <p>Please raise a purchase request before proceeding.</p>`,
-              backgroundDismiss: false,
-              backgroundDismissAnimation: "glow",
-              type: "orange",
-              closeIcon: true,
-              closeIconClass: "fa fa-close",
-              typeAnimated: true,
-              boxWidth: "30%",
-              useBootstrap: false,
-              buttons: {
-                raisePR: {
-                  text: "Raise Purchase Request",
-                  btnClass: "btn-orange",
-                  action: function () {
-                    window.location.href = "/purchase-request";
-                  },
-                },
-                cancel: function () {
-                  toastr.info("Action cancelled", "Info");
-                },
-              },
-            });
+            let errorMsg = "Failed to confirm order";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+              errorMsg = xhr.responseJSON.message;
+            }
+            toastr.error(errorMsg, "Error");
           });
       });
 
@@ -3351,7 +3245,7 @@
                       order_id: order.id,
                       order_no: order.order_no,
                       product_name: productName,
-                      quantity_required: product.unit,
+                      quantity_required: product.quantity,
                       allocation_status: order.allocation_status,
                       product_id: productId,
                     });
@@ -3420,10 +3314,10 @@
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
-                // Store product_id in data attribute for inventory lookup
+                // Store product_id and order_id in data attributes for inventory lookup
                 return `<span class="available-stock" data-product-id="${
                   data || ""
-                }" style="cursor:pointer">
+                }" data-order-id="${row?.id || ""}" style="cursor:pointer">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 </span>`;
               },
@@ -3432,48 +3326,97 @@
               targets: [5],
               className: "text-left",
               render: (data, type, row) => {
-                const statusColor =
-                  data === "Allocated" ? "text-success" : "text-danger";
-                const statusIcon =
-                  data === "Allocated"
-                    ? "fa-circle-check"
-                    : "fa-hourglass-half";
-                return `<span class="${statusColor}">${data} <i class="fa-solid ${statusIcon}"></i></span>`;
+                // Show "Allocated" or "Pending" based on allocation_status
+                const isAllocated =
+                  data === "Allocated" || data === "ALLOCATED";
+                const statusText = isAllocated ? "Allocated" : "Pending";
+                const statusColor = isAllocated
+                  ? 'style="color: #EA5455;"'
+                  : "text-warning";
+                const statusIcon = isAllocated
+                  ? "fa-circle-check"
+                  : "fa-hourglass-half";
+                return `<span ${statusColor}>${statusText} <i class="fa-solid ${statusIcon}"></i></span>`;
               },
             },
           ],
           drawCallback: () => {
             $('[data-toggle="tooltip"]').tooltip();
 
-            // Fetch inventory for each product
+            // Fetch inventory for each product and update stock display
             $(".available-stock").each(function () {
               const productId = $(this).data("product-id");
+              const orderId = $(this).data("order-id");
               const $element = $(this);
 
               if (productId) {
+                const url = orderId
+                  ? `/api/order/check-inventory/${productId}?order_id=${orderId}`
+                  : `/api/order/check-inventory/${productId}`;
+
                 $.ajax({
-                  url: `/api/order/check-inventory/${productId}`,
+                  url: url,
                   method: "GET",
                   dataType: "json",
+                  xhrFields: { withCredentials: true },
                   success: function (response) {
                     const quantity = response?.data?.available_quantity || 0;
-                    const badgeClass =
-                      quantity > 0 ? "bg-success" : "bg-danger";
-                    const quantityText =
-                      quantity > 0 ? quantity : "Out of Stock";
-                    $element.html(
-                      `<span class="badge ${badgeClass}">${quantityText}</span>`,
-                    );
+                    const inventoryType =
+                      response?.data?.inventory_type || "none";
+                    const breakdown = response?.data?.breakdown || {};
+                    const rawMaterialsBreakdown =
+                      response?.data?.raw_materials_breakdown || [];
+
+                    if ($element.hasClass("available-stock")) {
+                      // Update stock display with detailed information
+                      let stockText = "";
+                      let badgeClass = "bg-secondary";
+
+                      if (quantity > 0) {
+                        badgeClass =
+                          'style="background-color: #EA5455; color: white;"';
+                        if (inventoryType === "finished_goods") {
+                          stockText = `${quantity} kg (Finished Goods)`;
+                          if (breakdown.sales_inventory > 0) {
+                            stockText += ` - Sales: ${breakdown.sales_inventory}kg`;
+                          }
+                          if (breakdown.fg_inventory > 0) {
+                            stockText += ` - FG: ${breakdown.fg_inventory}kg`;
+                          }
+                        } else if (inventoryType === "raw_materials") {
+                          stockText = `${quantity} kg (Raw Materials)`;
+                          if (rawMaterialsBreakdown.length > 0) {
+                            const materialNames = rawMaterialsBreakdown
+                              .map((m) => m.product_name)
+                              .join(", ");
+                            stockText += ` - ${materialNames}`;
+                          }
+                        } else {
+                          stockText = `${quantity} kg`;
+                        }
+                      } else {
+                        stockText = "Out of Stock";
+                        badgeClass = "bg-danger";
+                      }
+
+                      $element.html(
+                        `<span class="badge" ${badgeClass} title="${stockText}">${stockText}</span>`,
+                      );
+                    }
                   },
                   error: function (xhr) {
                     console.error("Inventory fetch error:", xhr);
-                    $element.html(
-                      `<span class="badge bg-secondary">Error</span>`,
-                    );
+                    if ($element.hasClass("available-stock")) {
+                      $element.html(
+                        `<span class="badge bg-secondary">Error</span>`,
+                      );
+                    }
                   },
                 });
               } else {
-                $element.html(`<span class="badge bg-secondary">-</span>`);
+                if ($element.hasClass("available-stock")) {
+                  $element.html(`<span class="badge bg-secondary">-</span>`);
+                }
               }
             });
           },
@@ -3571,11 +3514,13 @@
                       );
                       purchaseInventory =
                         invResponse?.data?.available_quantity || 0;
+                      const inventoryType =
+                        invResponse?.data?.inventory_type || "none";
                       console.log(
-                        `[Order View] Purchase inventory: ${purchaseInventory}`,
+                        `[Order View] Purchase inventory: ${purchaseInventory}, Type: ${inventoryType}`,
                       );
 
-                      // Now fetch sales inventory for the same product
+                      // Now fetch sales inventory for the same product (for display purposes)
                       $.ajax({
                         url: `/api/inventory/sales/all?search=${productMasterId}`,
                         method: "GET",
@@ -3614,13 +3559,28 @@
                         },
                       });
 
-                      // Calculate net inventory
-                      netInventory = Math.max(
-                        0,
-                        purchaseInventory - salesInventory,
-                      );
+                      // Calculate net inventory based on inventory type
+                      if (inventoryType === "finished_goods") {
+                        // For processed products: available_quantity is already unallocated FG stock
+                        netInventory = purchaseInventory; // No subtraction needed
+                        // Display: Raw Materials = 0, Finished Goods = available stock
+                        const tempPurchase = purchaseInventory;
+                        purchaseInventory = 0; // Raw materials
+                        salesInventory = tempPurchase; // Finished goods
+                      } else if (inventoryType === "raw_materials") {
+                        // For raw materials: available_quantity is raw material stock
+                        netInventory = purchaseInventory; // No subtraction needed
+                        salesInventory = 0; // No finished goods for raw materials
+                      } else {
+                        // Fallback
+                        netInventory = Math.max(
+                          0,
+                          purchaseInventory - salesInventory,
+                        );
+                      }
+
                       console.log(
-                        `[Order View] Net inventory: ${netInventory}`,
+                        `[Order View] Final values - Raw Materials: ${purchaseInventory}, Finished Goods: ${salesInventory}, Net: ${netInventory}`,
                       );
 
                       showOrderViewModal(
@@ -3674,6 +3634,151 @@
           });
         },
       );
+
+      // Begin Production Button Handler
+      $(document).on("click", ".begin-production", function (e) {
+        e.preventDefault();
+        const orderId = $(this).data("order-id");
+        const productId = $(this).data("product-id");
+        const orderNo = $(this).data("order-no");
+
+        $.confirm({
+          title: "Begin Production?",
+          content: `Are you sure you want to begin production for order <strong>${orderNo}</strong>? This will redirect you to the production page.`,
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "blue",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "30%",
+          useBootstrap: false,
+          autoClose: "no|5000",
+          buttons: {
+            confirm: {
+              text: "Begin Production",
+              btnClass: "btn-blue",
+              action: function () {
+                // Redirect to production page with order context
+                window.location.href = `/production?order_id=${orderId}&product_id=${productId}`;
+              },
+            },
+            cancel: function () {
+              toastr.info("Production cancelled", "Info");
+            },
+          },
+        });
+      });
+
+      // Raise Purchase Request Button Handler
+      $(document).on("click", ".raise-purchase-request", function (e) {
+        e.preventDefault();
+        const orderId = $(this).data("order-id");
+        const productId = $(this).data("product-id");
+        const orderNo = $(this).data("order-no");
+        const quantity = $(this).data("quantity");
+
+        // Show purchase request modal
+        $.confirm({
+          title: "Raise Purchase Request",
+          content: `
+            <div class="form-group">
+              <label for="supplier">Select Supplier:</label>
+              <select class="form-control" id="purchaseSupplier">
+                <option value="">Loading suppliers...</option>
+              </select>
+            </div>
+            <div class="form-group mt-2">
+              <label for="purchaseQuantity">Quantity Required:</label>
+              <input type="number" class="form-control" id="purchaseQuantity" value="${quantity}" min="1">
+            </div>
+            <div class="form-group mt-2">
+              <label for="purchaseRemarks">Remarks:</label>
+              <textarea class="form-control" id="purchaseRemarks" rows="3" placeholder="Additional requirements or notes"></textarea>
+            </div>
+          `,
+          backgroundDismiss: false,
+          backgroundDismissAnimation: "glow",
+          type: "orange",
+          closeIcon: true,
+          closeIconClass: "fa fa-close",
+          typeAnimated: true,
+          boxWidth: "40%",
+          useBootstrap: false,
+          buttons: {
+            submit: {
+              text: "Raise Purchase Request",
+              btnClass: "btn-orange",
+              action: function () {
+                const supplierId = $("#purchaseSupplier").val();
+                const purchaseQuantity = $("#purchaseQuantity").val();
+                const remarks = $("#purchaseRemarks").val();
+
+                if (!supplierId) {
+                  toastr.error("Please select a supplier", "Error");
+                  return false;
+                }
+
+                if (!purchaseQuantity || purchaseQuantity <= 0) {
+                  toastr.error("Please enter a valid quantity", "Error");
+                  return false;
+                }
+
+                // Submit purchase request
+                $.ajax({
+                  url: "/api/procurement/request",
+                  method: "POST",
+                  data: JSON.stringify({
+                    order_id: orderId,
+                    product_id: productId,
+                    supplier_id: supplierId,
+                    quantity: purchaseQuantity,
+                    remarks: remarks,
+                  }),
+                  contentType: "application/json",
+                  success: function (response) {
+                    toastr.success(
+                      "Purchase request raised successfully",
+                      "Success",
+                    );
+                    // Refresh the allocation table
+                    loadAllocationTableData();
+                  },
+                  error: function (xhr) {
+                    const errorMessage =
+                      xhr?.responseJSON?.message ||
+                      "Failed to raise purchase request";
+                    toastr.error(errorMessage, "Error");
+                  },
+                });
+              },
+            },
+            cancel: function () {
+              toastr.info("Purchase request cancelled", "Info");
+            },
+          },
+          onContentReady: function () {
+            // Load suppliers when modal opens
+            $.ajax({
+              url: "/api/master/suppliers",
+              method: "GET",
+              success: function (response) {
+                const suppliers = response?.data || [];
+                let options = '<option value="">Select Supplier</option>';
+                suppliers.forEach((supplier) => {
+                  options += `<option value="${supplier.id}">${supplier.supplier_name}</option>`;
+                });
+                $("#purchaseSupplier").html(options);
+              },
+              error: function () {
+                $("#purchaseSupplier").html(
+                  '<option value="">Error loading suppliers</option>',
+                );
+              },
+            });
+          },
+        });
+      });
 
       // Display order view modal with real data
 
@@ -3756,19 +3861,26 @@
                 </div>
                 <div class="modal-footer">
                   ${
-                    parseFloat(purchaseInventory) >=
-                    parseFloat(quantityRequired)
-                      ? `<button type="button" class="btn btn-danger" id="beginProductionBtn" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}">
+                    allocationStatus === "Allocated"
+                      ? `<div class="alert alert-success w-100 mb-0">
+                          <i class="fa-solid fa-check-circle"></i> This order has already been allocated and is ready for production.
+                        </div>
+                        <button type="button" class="btn btn-success" onclick="window.location.href='/Production?order_id=${order.id}'">
+                          <i class="fa-solid fa-industry"></i> Go to Production
+                        </button>`
+                      : parseFloat(purchaseInventory) > 0 ||
+                          parseFloat(salesInventory) > 0
+                        ? `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-quantity="${quantityRequired}">
                           <i class="fa-solid fa-industry"></i> Begin Production
                         </button>`
-                      : `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
-                          order.id
-                        }" data-product-id="${productMasterId}" data-species-id="${
-                          speciesMasterId || ""
-                        }" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
-                          order.order_no
-                        }">
-                          <i class="fa-solid fa-plus"></i> Raise Purchase Request
+                        : `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
+                            order.id
+                          }" data-product-id="${productMasterId}" data-species-id="${
+                            speciesMasterId || ""
+                          }" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
+                            order.order_no
+                          }">
+                          <i class="fa-solid fa-plus"></i> Raise Purchase Order
                         </button>`
                   }
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -3810,30 +3922,62 @@
 
         console.log("Begin Production button clicked");
 
-        // Close the modal first
-        $("#allocationViewModal").modal("hide");
-
         const orderId = $(this).data("order-id");
         const productId = $(this).data("product-id");
         const orderNo = $(this).data("order-no");
+        const quantityRequired = $(this).data("quantity");
 
         console.log("Begin Production data:", {
           orderId,
           productId,
           orderNo,
+          quantityRequired,
         });
 
-        // Validate data
-        if (!orderId || orderId === "null" || orderId === null) {
-          toastr.error("Order ID not found. Cannot begin production.", "Error");
-          return;
-        }
+        // Show loading state
+        const $btn = $(this);
+        const originalText = $btn.html();
+        $btn
+          .prop("disabled", true)
+          .html('<i class="fa-solid fa-spinner fa-spin"></i> Allocating...');
 
-        // Small delay to ensure modal is closed before redirecting
-        setTimeout(() => {
-          // Redirect to production page with order ID
-          window.location.href = `/Production?order_id=${orderId}`;
-        }, 300);
+        // First, allocate stock automatically
+        $.ajax({
+          url: "/api/order/allocate-stock",
+          method: "POST",
+          data: JSON.stringify({
+            order_id: orderId,
+            product_id: productId,
+            quantity: quantityRequired,
+          }),
+          contentType: "application/json",
+          success: function (response) {
+            toastr.success(
+              "Stock allocated successfully. Redirecting to production...",
+              "Success",
+            );
+
+            // Close the modal
+            $("#allocationViewModal").modal("hide");
+
+            // Small delay to ensure modal is closed and toast is shown before redirecting
+            setTimeout(() => {
+              // Redirect to production page with order ID
+              window.location.href = `/Production?order_id=${orderId}`;
+            }, 1500);
+          },
+          error: function (xhr) {
+            // Reset button state
+            $btn.prop("disabled", false).html(originalText);
+
+            const errorMessage =
+              xhr?.responseJSON?.message || "Failed to allocate stock";
+            toastr.error(errorMessage, "Allocation Failed");
+
+            // Close the modal
+            $("#allocationViewModal").modal("hide");
+          },
+        });
       });
 
       // Raise Purchase Request Button Handler
@@ -5357,9 +5501,17 @@
                     loadOrdersTableData();
 
                     toastr.success(
-                      "Order confirmed successfully and moved to allocation workflow",
+                      "Order confirmed successfully. Redirecting to allocation...",
                       "Order Confirmed",
                     );
+
+                    // Switch to allocation view
+                    $(".menu-container").addClass("d-none");
+                    $(".allocateOrdersContainer").removeClass("d-none");
+                    $(".allocateOrdersContainer").addClass("d-block");
+
+                    // Load allocation table data
+                    loadAllocationTableData();
                   })
                   .fail(function (xhr) {
                     const errorMessage =
@@ -6812,6 +6964,11 @@
   </script>
 
   <script>
+    // Setup AJAX to send credentials with all requests
+    if (typeof $.ajaxSetup === "function") {
+      $.ajaxSetup({ xhrFields: { withCredentials: true } });
+    }
+
     // Verify order tracking component loaded
     console.log("Order Tracking Component Status:");
     console.log("✓ Sales page loaded");

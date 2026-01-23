@@ -1,7 +1,8 @@
-import { Orders } from "../../../controllers";
-import models from "../../../../models";
+const { Orders } = require("../../../controllers");
+const models = require("../../../../models");
+const AutoAllocateStock = require("./auto_allocate_stock");
 
-export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
+const Confirm = async ({ profile_id, order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!order_id) {
@@ -57,6 +58,68 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
         fastify.log.warn("Failed to create status log:", logErr);
       }
 
+      // Trigger auto-allocation for all products in the confirmed order
+      try {
+        // Get all products in this order
+        const orderProducts = await models.OrderProducts.findAll({
+          where: {
+            order_id: order_id,
+            is_active: true,
+          },
+          attributes: ["product_master_id"],
+        });
+
+        if (orderProducts && orderProducts.length > 0) {
+          // Get unique product IDs
+          const productIds = [
+            ...new Set(orderProducts.map((op) => op.product_master_id)),
+          ];
+
+          fastify.log.info(
+            `Triggering auto-allocation for ${productIds.length} products in order ${order.order_no}`,
+          );
+
+          // Trigger auto-allocation for each product
+          const allocationPromises = productIds.map(
+            (productId) =>
+              new Promise((resolveAlloc) => {
+                AutoAllocateStock({ product_id: productId }, session, fastify)
+                  .then((result) => {
+                    fastify.log.info(
+                      `Auto-allocation completed for product ${productId}:`,
+                      result.message,
+                    );
+                    resolveAlloc(result);
+                  })
+                  .catch((error) => {
+                    fastify.log.error(
+                      `Auto-allocation failed for product ${productId}:`,
+                      error.message,
+                    );
+                    // Don't fail the confirmation if allocation fails
+                    resolveAlloc({ error: error.message });
+                  });
+              }),
+          );
+
+          // Wait for all allocations to complete (but don't block confirmation)
+          Promise.allSettled(allocationPromises).then((results) => {
+            const successful = results.filter(
+              (r) => r.status === "fulfilled" && !r.value.error,
+            ).length;
+            const failed = results.filter(
+              (r) => r.status === "rejected" || r.value.error,
+            ).length;
+            fastify.log.info(
+              `Auto-allocation summary for order ${order.order_no}: ${successful} successful, ${failed} failed`,
+            );
+          });
+        }
+      } catch (allocErr) {
+        // Log allocation error but don't fail order confirmation
+        fastify.log.error("Failed to trigger auto-allocation:", allocErr);
+      }
+
       resolve({
         statusCode: 200,
         message: "Order confirmed successfully",
@@ -74,3 +137,5 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
     }
   });
 };
+
+module.exports = Confirm;
