@@ -288,6 +288,12 @@ export const GetWithProductionTracking = ({ id }) => {
             model: models.CustomerMaster,
             attributes: ["customer_name", "customer_email", "customer_phone"],
           },
+          {
+            model: models.OrderProducts,
+            attributes: ["id", "quantity", "product_master_id"],
+            where: { is_active: true },
+            required: false,
+          },
         ],
       });
 
@@ -555,49 +561,32 @@ export const GetWithProductionTracking = ({ id }) => {
 
       // Fallback: Try to get peeled_dispatches through peeling if not found
       if (allPeeledDispatchTracking.length === 0) {
-        const peeledByPeeling = await models.PeeledDispatches.findAll({
-          where: { is_active: true },
-          attributes: [
-            "id",
-            "peeled_dispatch_quantity",
-            "temperature",
-            "delivery_status",
-            "created_at",
-          ],
-          include: [
-            {
-              model: models.PeelingProducts,
-              as: "pp",
-              attributes: [],
-              include: [
-                {
-                  model: models.Peeling,
-                  as: "pln",
-                  attributes: [],
-                  include: [
-                    {
-                      model: models.Dispatches,
-                      as: "dis",
-                      attributes: [],
-                      where: { order_id: id, is_active: true },
-                      required: true,
-                    },
-                  ],
-                  required: true,
-                },
-              ],
-              required: true,
-            },
-            {
-              model: models.VehicleMaster,
-              attributes: ["vehicle_number"],
-            },
-            {
-              model: models.DriverMaster,
-              attributes: ["driver_name", "phone"],
-            },
-          ],
-        });
+        // Use a simpler approach: find peeled dispatches by joining through the relationship chain
+        const peeledByPeeling = await models.sequelize.query(
+          `
+          SELECT
+            pd.id,
+            pd.peeled_dispatch_quantity,
+            pd.temperature,
+            pd.delivery_status,
+            pd.created_at,
+            vm.vehicle_number,
+            dm.driver_name,
+            dm.phone
+          FROM peeled_dispatches pd
+          INNER JOIN peeling_products pp ON pd.peeled_product_id = pp.id AND pp.is_active = true
+          INNER JOIN peeling pl ON pp.peeling_id = pl.id AND pl.is_active = true
+          INNER JOIN dispatches d ON pl.dispatch_id = d.id AND d.order_id = :orderId AND d.is_active = true
+          LEFT JOIN vehicle_master vm ON pd.vehicle_master_id = vm.id
+          LEFT JOIN driver_master dm ON pd.driver_master_id = dm.id
+          WHERE pd.is_active = true
+        `,
+          {
+            replacements: { orderId: id },
+            type: models.sequelize.QueryTypes.SELECT,
+            model: models.PeeledDispatches,
+          },
+        );
         allPeeledDispatchTracking = peeledByPeeling;
       }
 
@@ -608,7 +597,6 @@ export const GetWithProductionTracking = ({ id }) => {
         },
         attributes: [
           "id",
-          "order_no",
           "status",
           "planned_quantity_kg",
           "produced_quantity_kg",

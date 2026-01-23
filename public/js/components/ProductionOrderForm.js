@@ -18,7 +18,7 @@ Vue.component("production-order-form", {
             <div class="col-md-6 mb-3">
               <label class="form-label">Order Number</label>
               <input 
-                v-model="form.order_number" 
+                v-model="form.order_no" 
                 type="text" 
                 class="form-control" 
                 placeholder="e.g., PO-20260111-001"
@@ -155,7 +155,7 @@ Vue.component("production-order-form", {
   data() {
     return {
       form: {
-        order_number: "",
+        order_no: "",
         plant_id: "PLANT_001",
         input_species_id: "",
         order_type: "PRIMARY",
@@ -181,7 +181,7 @@ Vue.component("production-order-form", {
     },
     onSpeciesChange() {
       this.selectedSpecies = this.species_list.find(
-        (s) => s.id === this.form.input_species_id
+        (s) => s.id === this.form.input_species_id,
       );
     },
     async submitForm() {
@@ -191,7 +191,7 @@ Vue.component("production-order-form", {
         alert(`Production Order created! ID: ${result.data.id}`);
         this.$emit("order-created", result.data);
         this.form = {
-          order_number: "",
+          order_no: "",
           plant_id: "PLANT_001",
           input_species_id: "",
           order_type: "PRIMARY",

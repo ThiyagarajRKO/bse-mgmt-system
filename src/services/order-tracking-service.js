@@ -23,7 +23,7 @@ export const createOrderTrackingPipeline = async (order, options) => {
 
     if (!orderProducts || orderProducts.length === 0) {
       console.warn(
-        `[OrderTracking] No products found for order ${order.id}. Skipping tracking pipeline.`
+        `[OrderTracking] No products found for order ${order.id}. Skipping tracking pipeline.`,
       );
       await transaction.rollback();
       return;
@@ -32,12 +32,12 @@ export const createOrderTrackingPipeline = async (order, options) => {
     // Calculate total quantity from order products
     const totalQuantity = orderProducts.reduce(
       (sum, product) => sum + (product.quantity || 0),
-      0
+      0,
     );
 
     if (totalQuantity === 0) {
       console.warn(
-        `[OrderTracking] Total quantity is 0 for order ${order.id}. Skipping tracking pipeline.`
+        `[OrderTracking] Total quantity is 0 for order ${order.id}. Skipping tracking pipeline.`,
       );
       await transaction.rollback();
       return;
@@ -52,11 +52,11 @@ export const createOrderTrackingPipeline = async (order, options) => {
       orderNumber,
       totalQuantity,
       userId,
-      transaction
+      transaction,
     );
 
     console.log(
-      `[OrderTracking] Created production order ${productionOrder.id}`
+      `[OrderTracking] Created production order ${productionOrder.id}`,
     );
 
     // Step 2: Create Dispatch Record
@@ -64,7 +64,7 @@ export const createOrderTrackingPipeline = async (order, options) => {
       order,
       totalQuantity,
       userId,
-      transaction
+      transaction,
     );
 
     console.log(`[OrderTracking] Created dispatch record ${dispatchRecord.id}`);
@@ -76,7 +76,7 @@ export const createOrderTrackingPipeline = async (order, options) => {
         dispatchRecord,
         totalQuantity * 0.95, // 95% yield after peeling
         userId,
-        transaction
+        transaction,
       );
 
       console.log(`[OrderTracking] Created peeling record ${peelingRecord.id}`);
@@ -86,11 +86,11 @@ export const createOrderTrackingPipeline = async (order, options) => {
         peelingRecord,
         orderProducts,
         userId,
-        transaction
+        transaction,
       );
 
       console.log(
-        `[OrderTracking] Created ${peelingProducts.length} peeling products`
+        `[OrderTracking] Created ${peelingProducts.length} peeling products`,
       );
 
       // Step 5: Create Peeled Dispatches from peeling products
@@ -98,22 +98,22 @@ export const createOrderTrackingPipeline = async (order, options) => {
         order,
         peelingProducts,
         userId,
-        transaction
+        transaction,
       );
 
       console.log(
-        `[OrderTracking] Created ${peeledDispatches.length} peeled dispatches`
+        `[OrderTracking] Created ${peeledDispatches.length} peeled dispatches`,
       );
 
       // Step 6: Create Packing records from peeled dispatches
       const packingRecords = await createPackingRecords(
         peeledDispatches,
         userId,
-        transaction
+        transaction,
       );
 
       console.log(
-        `[OrderTracking] Created ${packingRecords.length} packing records`
+        `[OrderTracking] Created ${packingRecords.length} packing records`,
       );
 
       // Step 7: Create Sales Inventory from packing records
@@ -122,17 +122,17 @@ export const createOrderTrackingPipeline = async (order, options) => {
         packingRecords,
         orderProducts,
         userId,
-        transaction
+        transaction,
       );
 
       console.log(
-        `[OrderTracking] Created ${salesInventory.length} sales inventory records`
+        `[OrderTracking] Created ${salesInventory.length} sales inventory records`,
       );
     }
 
     await transaction.commit();
     console.log(
-      `[OrderTracking] Completed pipeline for order ${order.id}. Tracking records created successfully.`
+      `[OrderTracking] Completed pipeline for order ${order.id}. Tracking records created successfully.`,
     );
 
     return {
@@ -144,7 +144,7 @@ export const createOrderTrackingPipeline = async (order, options) => {
     await transaction.rollback();
     console.error(
       `[OrderTracking] Error creating tracking pipeline for order ${order.id}:`,
-      error.message || error
+      error.message || error,
     );
     throw error;
   }
@@ -158,7 +158,7 @@ const createProductionOrder = async (
   orderNumber,
   totalQuantity,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     // Get a plant if available
@@ -188,7 +188,7 @@ const createProductionOrder = async (
       {
         id: uuidv4(),
         order_id: order.id,
-        order_number: orderNumber,
+        order_no: orderNumber,
         order_type: "SALES",
         plant_id: plantId,
         input_species_id: speciesId,
@@ -203,14 +203,14 @@ const createProductionOrder = async (
         created_by: userId,
         updated_by: userId,
       },
-      { transaction }
+      { transaction },
     );
 
     return productionOrder;
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating production order:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -223,7 +223,7 @@ const createDispatchRecord = async (
   order,
   totalQuantity,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     // Get unit master (default to first available)
@@ -266,14 +266,14 @@ const createDispatchRecord = async (
         created_by: userId,
         updated_by: userId,
       },
-      { transaction }
+      { transaction },
     );
 
     return dispatchRecord;
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating dispatch record:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -287,7 +287,7 @@ const createPeelingRecord = async (
   dispatchRecord,
   peelingQuantity,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     // Get unit master
@@ -310,14 +310,14 @@ const createPeelingRecord = async (
         created_by: userId,
         updated_by: userId,
       },
-      { transaction }
+      { transaction },
     );
 
     return peelingRecord;
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating peeling record:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -330,7 +330,7 @@ const createPeelingProducts = async (
   peelingRecord,
   orderProducts,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     const peelingProducts = [];
@@ -349,7 +349,7 @@ const createPeelingProducts = async (
           created_by: userId,
           updated_by: userId,
         },
-        { transaction }
+        { transaction },
       );
 
       peelingProducts.push(peelingProduct);
@@ -359,7 +359,7 @@ const createPeelingProducts = async (
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating peeling products:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -372,7 +372,7 @@ const createPeeledDispatches = async (
   order,
   peelingProducts,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     const peeledDispatches = [];
@@ -409,7 +409,7 @@ const createPeeledDispatches = async (
           created_by: userId,
           updated_by: userId,
         },
-        { transaction }
+        { transaction },
       );
 
       peeledDispatches.push(peeledDispatch);
@@ -419,7 +419,7 @@ const createPeeledDispatches = async (
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating peeled dispatches:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -436,7 +436,7 @@ const createPackingRecords = async (peeledDispatches, userId, transaction) => {
       // Get packing details from the peeled dispatch's product
       const peelingProduct = await models.PeelingProducts.findByPk(
         peeledDispatch.peeled_product_id,
-        { transaction }
+        { transaction },
       );
 
       // Get a grade and size for packaging
@@ -483,7 +483,7 @@ const createPackingRecords = async (peeledDispatches, userId, transaction) => {
           created_by: userId,
           updated_by: userId,
         },
-        { transaction }
+        { transaction },
       );
 
       packingRecords.push(packing);
@@ -493,7 +493,7 @@ const createPackingRecords = async (peeledDispatches, userId, transaction) => {
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating packing records:",
-      error.message
+      error.message,
     );
     throw error;
   }
@@ -507,7 +507,7 @@ const createSalesInventoryRecords = async (
   packingRecords,
   orderProducts,
   userId,
-  transaction
+  transaction,
 ) => {
   try {
     const salesInventoryRecords = [];
@@ -525,7 +525,7 @@ const createSalesInventoryRecords = async (
             },
           ],
           transaction,
-        }
+        },
       );
 
       const productMasterId =
@@ -543,7 +543,7 @@ const createSalesInventoryRecords = async (
           created_by: userId,
           updated_by: userId,
         },
-        { transaction }
+        { transaction },
       );
 
       salesInventoryRecords.push(salesInventory);
@@ -553,7 +553,7 @@ const createSalesInventoryRecords = async (
   } catch (error) {
     console.error(
       "[OrderTracking] Error creating sales inventory:",
-      error.message
+      error.message,
     );
     throw error;
   }

@@ -3,7 +3,7 @@
 
 <div
   id="orderTrackingTimeline"
-  style="display: none; padding: 0; overflow: visible"
+  style="display: block; padding: 0; overflow: visible"
 >
   <!-- Timeline Container -->
   <div
@@ -46,9 +46,7 @@
           background-color: #000000;
         "
       ></div>
-      <h6 class="mb-0" style="font-weight: 600; color: #000; font-size: 14px">
-        ● Order Confirmed
-      </h6>
+      <h6 class="mb-0"><strong>● Order Confirmed</strong></h6>
     </div>
 
     <!-- Production Stage -->
@@ -84,9 +82,7 @@
         "
       ></div>
 
-      <h6 class="mb-2" style="font-weight: 600; color: #000; font-size: 14px">
-        ● Production
-      </h6>
+      <h6 class="mb-2"><strong>● Production</strong></h6>
 
       <div style="margin-bottom: 8px">
         <div class="progress" style="height: 16px; background-color: #f0f0f0">
@@ -101,7 +97,7 @@
               justify-content: center;
             "
           >
-            <small style="font-size: 12px; color: #000; font-weight: 500"
+            <small style="font-size: 12px; color: #4f4f4f; font-weight: 500"
               >Waiting for production</small
             >
           </div>
@@ -143,9 +139,7 @@
         "
       ></div>
 
-      <h6 class="mb-2" style="font-weight: 600; color: #000; font-size: 14px">
-        ● Packing
-      </h6>
+      <h6 class="mb-2"><strong>● Packing</strong></h6>
 
       <div style="margin-bottom: 8px">
         <div class="progress" style="height: 16px; background-color: #f0f0f0">
@@ -160,7 +154,7 @@
               justify-content: center;
             "
           >
-            <small style="font-size: 12px; color: #000; font-weight: 500"
+            <small style="font-size: 12px; color: #4f4f4f; font-weight: 500"
               >Waiting for raw materials</small
             >
           </div>
@@ -202,9 +196,7 @@
         "
       ></div>
 
-      <h6 class="mb-2" style="font-weight: 600; color: #000; font-size: 14px">
-        ● Dispatch
-      </h6>
+      <h6 class="mb-2"><strong>● Dispatch</strong></h6>
 
       <div style="margin-bottom: 8px">
         <div class="progress" style="height: 16px; background-color: #f0f0f0">
@@ -219,7 +211,7 @@
               justify-content: center;
             "
           >
-            <small style="font-size: 12px; color: #000; font-weight: 500"
+            <small style="font-size: 12px; color: #4f4f4f; font-weight: 500"
               >Waiting for dispatch</small
             >
           </div>
@@ -252,16 +244,8 @@
         <span style="font-size: 8px; color: #dee2e6">●</span>
       </div>
 
-      <h6
-        class="mb-0"
-        style="
-          font-weight: 600;
-          color: #000;
-          font-size: 14px;
-          margin-bottom: 0 !important;
-        "
-      >
-        ○ Invoice
+      <h6 class="mb-0" style="margin-bottom: 0 !important">
+        <strong>○ Invoice</strong>
       </h6>
     </div>
 
@@ -275,12 +259,11 @@
         border-radius: 5px;
       "
     >
-      <small
-        id="trackingStatusMessage"
-        style="color: #6c757d; font-weight: 500"
-      >
-        Order confirmed. Waiting for production workflow to begin.
-      </small>
+      <h6 id="trackingStatusMessage" class="mb-0">
+        <strong
+          >Order confirmed. Waiting for production workflow to begin.</strong
+        >
+      </h6>
     </div>
   </div>
 </div>
@@ -309,9 +292,11 @@
   }
 
   .order-tracking-timeline h6 {
-    font-weight: 600;
-    color: #212529;
-    margin-bottom: 8px;
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4f4f4f;
+    margin-bottom: 0.5rem;
   }
 
   .progress {
@@ -438,12 +423,30 @@
     let packingPercent = 0;
     let isPacking = false;
 
-    if (peelingRecords.length > 0) {
-      packingPercent = 40;
+    // Calculate total ordered quantity from order products
+    const totalOrderedQuantity =
+      order?.OrderProducts?.reduce(
+        (sum, product) => sum + (product.quantity || 0),
+        0,
+      ) || 0;
+
+    // Calculate total peeled quantity
+    const totalPeeledQuantity = peelingRecords.reduce(
+      (sum, record) => sum + (record.peeling_quantity || 0),
+      0,
+    );
+
+    if (peelingRecords.length > 0 || procurementRecords.length > 0) {
       isPacking = true;
-    } else if (procurementRecords.length > 0) {
-      packingPercent = 20;
-      isPacking = true;
+      if (totalOrderedQuantity > 0) {
+        packingPercent = Math.min(
+          100,
+          Math.round((totalPeeledQuantity / totalOrderedQuantity) * 100),
+        );
+      } else {
+        // Fallback if no order quantity available
+        packingPercent = peelingRecords.length > 0 ? 40 : 20;
+      }
     }
 
     // Update Packing stage
@@ -467,12 +470,31 @@
     let dispatchPercent = 0;
     let isDispatching = false;
 
-    if (dispatchRecords.length > 0 || peeledDispatchRecords.length > 0) {
-      dispatchPercent = Math.min(
-        100,
-        (dispatchRecords.length + peeledDispatchRecords.length) * 25,
+    // Calculate total dispatched quantity
+    const totalDispatchedQuantity =
+      dispatchRecords.reduce(
+        (sum, record) => sum + (record.dispatch_quantity || 0),
+        0,
+      ) +
+      peeledDispatchRecords.reduce(
+        (sum, record) => sum + (record.peeled_dispatch_quantity || 0),
+        0,
       );
+
+    if (dispatchRecords.length > 0 || peeledDispatchRecords.length > 0) {
       isDispatching = true;
+      if (totalOrderedQuantity > 0) {
+        dispatchPercent = Math.min(
+          100,
+          Math.round((totalDispatchedQuantity / totalOrderedQuantity) * 100),
+        );
+      } else {
+        // Fallback if no order quantity available
+        dispatchPercent = Math.min(
+          100,
+          (dispatchRecords.length + peeledDispatchRecords.length) * 25,
+        );
+      }
     }
 
     // Update Dispatch stage
@@ -546,9 +568,6 @@
         statusMessage.textContent =
           "Production in progress. Tracking updates in real-time.";
         statusMessage.style.color = "#EA5455";
-      } else if (isPacking) {
-        statusMessage.textContent = "Processing and packing in progress.";
-        statusMessage.style.color = "#000000";
       } else if (isDispatching) {
         statusMessage.textContent = "Dispatch in progress.";
         statusMessage.style.color = "#000000";

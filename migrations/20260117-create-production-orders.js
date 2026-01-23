@@ -10,7 +10,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
       },
-      order_number: {
+      order_no: {
         type: Sequelize.STRING(50),
         unique: true,
         allowNull: false,
@@ -48,7 +48,7 @@ module.exports = {
           "IN_PRODUCTION",
           "COMPLETED",
           "CLOSED",
-          "CANCELLED"
+          "CANCELLED",
         ),
         defaultValue: "PLANNED",
       },
@@ -96,8 +96,8 @@ module.exports = {
     });
 
     // Add indexes
-    await queryInterface.addIndex("production_orders", ["order_number"], {
-      name: "idx_production_orders_order_number",
+    await queryInterface.addIndex("production_orders", ["order_no"], {
+      name: "idx_production_orders_order_no",
     });
     await queryInterface.addIndex("production_orders", ["status"], {
       name: "idx_production_orders_status",
