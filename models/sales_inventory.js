@@ -51,6 +51,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      product_master_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
+      packing_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
       order_id: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -80,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   return SalesInventory;

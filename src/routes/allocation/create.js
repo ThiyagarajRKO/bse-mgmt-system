@@ -1,7 +1,8 @@
 import AllocationMaster from "../../../models/allocation_master";
 import Orders from "../../../models/orders";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async (fastify) => {
   // Create new allocation
@@ -9,7 +10,13 @@ export default async (fastify) => {
     preHandler: [fastify.authenticate],
     handler: async (request, reply) => {
       try {
-        const { order_id, inventory_id, allocation_qty } = request.body;
+        const {
+          order_id,
+          inventory_id,
+          packing_id,
+          allocation_qty,
+          order_product_id,
+        } = request.body;
         const profile_id = request.token_profile_id;
 
         // Validate required fields
@@ -20,10 +27,14 @@ export default async (fastify) => {
           });
         }
 
-        if (!inventory_id || !UUID_PATTERN.test(inventory_id)) {
+        // Either inventory_id or packing_id must be provided
+        if (
+          (!inventory_id || !UUID_PATTERN.test(inventory_id)) &&
+          (!packing_id || !UUID_PATTERN.test(packing_id))
+        ) {
           return reply.code(400).send({
             statusCode: 400,
-            message: "Invalid or missing inventory_id",
+            message: "Either inventory_id or packing_id must be provided",
           });
         }
 
@@ -31,6 +42,13 @@ export default async (fastify) => {
           return reply.code(400).send({
             statusCode: 400,
             message: "allocation_qty must be a positive number",
+          });
+        }
+
+        if (!order_product_id || !UUID_PATTERN.test(order_product_id)) {
+          return reply.code(400).send({
+            statusCode: 400,
+            message: "Invalid or missing order_product_id",
           });
         }
 
@@ -51,10 +69,15 @@ export default async (fastify) => {
         }
 
         // Create allocation
+        const allocationNo = `ALLOC-${Date.now()}`;
         const allocation = await AllocationMaster.create({
+          allocation_no: allocationNo,
           order_id,
-          inventory_id,
-          allocation_qty,
+          order_product_id,
+          packing_id: packing_id || null, // null if allocating from inventory
+          allocated_quantity: allocation_qty,
+          allocated_unit: "KG", // Default unit
+          allocation_date: new Date(),
           status: "ALLOCATED",
           created_by: profile_id,
         });

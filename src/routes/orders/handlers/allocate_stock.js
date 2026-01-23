@@ -183,16 +183,30 @@ export const AllocateStock = async (
         // Create allocation_master record
         if (orderProduct) {
           const allocationNo = `ALLOC-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+
           await models.AllocationMaster.create(
             {
               allocation_no: allocationNo,
               order_id: order_id,
               order_product_id: orderProduct.id,
-              packing_id: null, // null since we're allocating from inventory stock, not specific packing
+              packing_id: null, // Allow null for inventory allocations
               allocated_quantity: quantity,
               allocated_unit: "KG", // Assuming KG as default unit
               allocation_date: new Date(),
               status: "ALLOCATED",
+              created_by: session?.pid || session?.user_id,
+            },
+            { transaction },
+          );
+
+          // Create sales_inventory record for this allocation
+          await models.SalesInventory.create(
+            {
+              product_master_id: product_id,
+              packing_id: null, // Allow null for inventory allocations
+              order_id: order_id,
+              quantity: quantity,
+              is_active: true,
               created_by: session?.pid || session?.user_id,
             },
             { transaction },

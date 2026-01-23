@@ -180,7 +180,7 @@ export const Update = async (profile_id, id, packing_data) => {
                   quantity: packingDetail.packing_quantity || 0,
                   is_active: true,
                 },
-                { profile_id }
+                { profile_id },
               );
 
               console.log(`✅ Sales inventory created for packing ${id}`);
@@ -188,7 +188,7 @@ export const Update = async (profile_id, id, packing_data) => {
           } catch (err) {
             console.warn(
               "Warning: Could not create sales inventory record:",
-              err.message
+              err.message,
             );
             // Don't reject - continue with status update even if sales inventory creation fails
           }
@@ -539,18 +539,18 @@ export const GetNames = ({ start, length }) => {
             } catch (err) {
               console.warn(
                 `Error enriching packing ${packing.id}:`,
-                err.message
+                err.message,
               );
               return packing;
             }
-          })
+          }),
         );
 
         resolve(enrichedPackings);
       } catch (err) {
         console.warn(
           "Error enriching packings, returning base data:",
-          err.message
+          err.message,
         );
         resolve(packings);
       }
@@ -736,7 +736,7 @@ export const LockPackingCalculations = ({ packing_calculation_id }) => {
       }
 
       const result = await PackingCalculationsService.lockPackingCalculations(
-        packing_calculation_id
+        packing_calculation_id,
       );
 
       resolve(result);
@@ -889,10 +889,10 @@ export const RecommendPackingContainers = ({
             score >= 90
               ? "OPTIMAL"
               : score >= 70
-              ? "GOOD"
-              : score >= 50
-              ? "ACCEPTABLE"
-              : "POOR",
+                ? "GOOD"
+                : score >= 50
+                  ? "ACCEPTABLE"
+                  : "POOR",
         };
       });
 

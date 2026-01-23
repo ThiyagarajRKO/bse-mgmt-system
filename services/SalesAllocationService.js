@@ -21,7 +21,7 @@ class SalesAllocationService {
       !allocated_by
     ) {
       throw new Error(
-        "Missing required fields: order_id, order_product_id, allocated_quantity, allocated_by"
+        "Missing required fields: order_id, order_product_id, allocated_quantity, allocated_by",
       );
     }
 
@@ -47,7 +47,7 @@ class SalesAllocationService {
     // Validate allocated quantity doesn't exceed order line quantity
     if (allocated_quantity > orderProduct.quantity) {
       throw new Error(
-        `Allocated quantity (${allocated_quantity}) exceeds order line quantity (${orderProduct.quantity})`
+        `Allocated quantity (${allocated_quantity}) exceeds order line quantity (${orderProduct.quantity})`,
       );
     }
 
@@ -62,7 +62,7 @@ class SalesAllocationService {
 
     if (existingAllocation) {
       throw new Error(
-        `Active allocation already exists for this order line. Current status: ${existingAllocation.allocation_status}`
+        `Active allocation already exists for this order line. Current status: ${existingAllocation.allocation_status}`,
       );
     }
 
@@ -96,13 +96,33 @@ class SalesAllocationService {
 
     if (allocation.allocation_status !== "PENDING") {
       throw new Error(
-        `Cannot confirm allocation in ${allocation.allocation_status} status`
+        `Cannot confirm allocation in ${allocation.allocation_status} status`,
       );
     }
 
     allocation.allocation_status = "ALLOCATED";
     allocation.allocated_by = allocated_by;
     await allocation.save();
+
+    // Check if all allocations for this order are now ALLOCATED
+    const allAllocations = await db.SalesAllocation.findAll({
+      where: { order_id: allocation.order_id },
+    });
+
+    const allAllocated = allAllocations.every(
+      (alloc) => alloc.allocation_status === "ALLOCATED",
+    );
+
+    // Update order status to ALLOCATED only if all allocations are confirmed
+    if (allAllocated) {
+      const order = await db.Order.findByPk(allocation.order_id);
+      if (order && order.order_status === "CONFIRMED") {
+        await order.update({
+          order_status: "ALLOCATED",
+          updated_by: allocated_by,
+        });
+      }
+    }
 
     return allocation;
   }
@@ -123,7 +143,7 @@ class SalesAllocationService {
 
     if (fulfilledQty < 0 || fulfilledQty > allocation.allocated_quantity) {
       throw new Error(
-        `Fulfilled quantity (${fulfilledQty}) must be between 0 and allocated quantity (${allocation.allocated_quantity})`
+        `Fulfilled quantity (${fulfilledQty}) must be between 0 and allocated quantity (${allocation.allocated_quantity})`,
       );
     }
 
@@ -157,7 +177,7 @@ class SalesAllocationService {
 
     if (allocation.fulfilled_quantity !== allocation.allocated_quantity) {
       throw new Error(
-        `Cannot complete allocation. Fulfilled (${allocation.fulfilled_quantity}) does not match allocated (${allocation.allocated_quantity})`
+        `Cannot complete allocation. Fulfilled (${allocation.fulfilled_quantity}) does not match allocated (${allocation.allocated_quantity})`,
       );
     }
 
@@ -178,7 +198,7 @@ class SalesAllocationService {
         {
           model: db.Order,
           as: "order",
-          attributes: ["id", "order_number", "order_date", "order_status"],
+          attributes: ["id", "order_no", "order_date", "order_status"],
         },
         {
           model: db.OrderProduct,
@@ -227,7 +247,7 @@ class SalesAllocationService {
         {
           model: db.Order,
           as: "order",
-          attributes: ["id", "order_number", "order_status"],
+          attributes: ["id", "order_no", "order_status"],
         },
         {
           model: db.OrderProduct,
@@ -268,11 +288,11 @@ class SalesAllocationService {
 
     const summary = {
       order_id: orderId,
-      order_number: order.order_number,
+      order_no: order.order_no,
       total_order_lines: order.orderProducts.length,
       total_order_quantity: order.orderProducts.reduce(
         (sum, op) => sum + parseFloat(op.quantity || 0),
-        0
+        0,
       ),
       allocations: {
         PENDING: 0,
@@ -289,10 +309,10 @@ class SalesAllocationService {
     allocations.forEach((alloc) => {
       summary.allocations[alloc.allocation_status]++;
       summary.total_allocated_quantity += parseFloat(
-        alloc.allocated_quantity || 0
+        alloc.allocated_quantity || 0,
       );
       summary.total_fulfilled_quantity += parseFloat(
-        alloc.fulfilled_quantity || 0
+        alloc.fulfilled_quantity || 0,
       );
     });
 
@@ -332,7 +352,7 @@ class SalesAllocationService {
 
     if (relatedDemands.length > 0) {
       throw new Error(
-        `Cannot cancel allocation with active production demands (${relatedDemands.length} found)`
+        `Cannot cancel allocation with active production demands (${relatedDemands.length} found)`,
       );
     }
 

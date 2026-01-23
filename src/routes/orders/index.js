@@ -9,6 +9,7 @@ import { GetAllocationData } from "./handlers/get_allocation_data";
 import { CheckInventory } from "./handlers/check_inventory";
 import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
 import { AllocateStock } from "./handlers/allocate_stock";
+import { AutoAllocateStock } from "./handlers/auto_allocate_stock";
 import { DeleteEmpty } from "./handlers/delete_empty";
 import { GetTracking } from "./handlers/get_tracking";
 import CheckStockForProduct from "./handlers/check_stock_for_product";
@@ -275,6 +276,25 @@ export const ordersRoute = (fastify, opts, done) => {
       const params = req.body;
 
       const result = await AllocateStock(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.post("/auto-allocate-stock", async (req, reply) => {
+    try {
+      const params = req.body;
+
+      const result = await AutoAllocateStock(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,

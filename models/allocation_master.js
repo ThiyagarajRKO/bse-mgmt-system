@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       packing_id: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
       },
       allocated_quantity: {
         type: DataTypes.DECIMAL(10, 2),
@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
           "CONFIRMED",
           "IN_PRODUCTION",
           "COMPLETED",
-          "CANCELLED"
+          "CANCELLED",
         ),
         defaultValue: "ALLOCATED",
       },
@@ -99,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
-    }
+    },
   );
 
   return AllocationMaster;
