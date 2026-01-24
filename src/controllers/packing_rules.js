@@ -54,6 +54,10 @@ export const GetPackagingSuggestions = async ({
       where: { id: product_id },
       include: [
         {
+          model: models.ProductCategoryMaster,
+          attributes: ["species_master_id"],
+        },
+        {
           model: GradeMaster,
           attributes: ["grade_name"],
         },
@@ -84,7 +88,7 @@ export const GetPackagingSuggestions = async ({
 
     // Get species information for parent_category_type
     const species = await models.SpeciesMaster.findOne({
-      where: { id: product.species_master_id },
+      where: { id: product.ProductCategoryMaster.species_master_id },
       attributes: ["parent_category_type"],
     });
 
@@ -233,7 +237,7 @@ export const ValidatePackingSelection = async ({
     const marketRules = ruleMap["market_rules"]?.[market] || {};
     if (marketRules.disallowed_package_types?.includes(pkg.packaging_type)) {
       errors.push(
-        `${pkg.packaging_type} packages are not allowed for ${market} market`
+        `${pkg.packaging_type} packages are not allowed for ${market} market`,
       );
     }
 
@@ -263,17 +267,17 @@ export const ValidatePackingSelection = async ({
       const maxDims = sizeRules.max_dimensions_cm;
       if (pkg.packaging_length > maxDims.length) {
         errors.push(
-          `Package length ${pkg.packaging_length}cm exceeds maximum ${maxDims.length}cm for ${size}`
+          `Package length ${pkg.packaging_length}cm exceeds maximum ${maxDims.length}cm for ${size}`,
         );
       }
       if (pkg.packaging_width > maxDims.width) {
         errors.push(
-          `Package width ${pkg.packaging_width}cm exceeds maximum ${maxDims.width}cm for ${size}`
+          `Package width ${pkg.packaging_width}cm exceeds maximum ${maxDims.width}cm for ${size}`,
         );
       }
       if (pkg.packaging_height > maxDims.height) {
         errors.push(
-          `Package height ${pkg.packaging_height}cm exceeds maximum ${maxDims.height}cm for ${size}`
+          `Package height ${pkg.packaging_height}cm exceeds maximum ${maxDims.height}cm for ${size}`,
         );
       }
     }
@@ -359,7 +363,7 @@ export const CreateMapping = async (profile_id, data) => {
         ...data,
         created_by: profile_id,
       },
-      { profile_id }
+      { profile_id },
     );
 
     return mapping;
