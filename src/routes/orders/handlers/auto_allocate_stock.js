@@ -1,6 +1,6 @@
 const models = require("../../../../models");
 
-const AutoAllocateStock = async ({ product_id }, session, fastify) => {
+export const AutoAllocateStock = async ({ product_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!product_id) {
@@ -660,5 +660,3 @@ const createPurchaseOrders = async (
     throw error;
   }
 };
-
-module.exports = AutoAllocateStock;

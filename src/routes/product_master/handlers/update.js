@@ -7,7 +7,7 @@ import {
 export const Update = (
   { profile_id, product_master_id, product_master_data },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -33,10 +33,6 @@ export const Update = (
           product_master_data.product_category_master_id;
       }
 
-      if (product_master_data.species_master_id) {
-        updateData.species_master_id = product_master_data.species_master_id;
-      }
-
       if (product_master_data.grade_master_id) {
         updateData.grade_master_id = product_master_data.grade_master_id;
       }
@@ -48,7 +44,7 @@ export const Update = (
       const updated_data = await ProductMaster.Update(
         profile_id,
         product_master_id,
-        updateData
+        updateData,
       );
 
       if (updated_data?.[0] > 0) {

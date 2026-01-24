@@ -2,7 +2,7 @@ const { Orders } = require("../../../controllers");
 const models = require("../../../../models");
 const AutoAllocateStock = require("./auto_allocate_stock");
 
-const Confirm = async ({ profile_id, order_id }, session, fastify) => {
+export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!order_id) {
@@ -137,5 +137,3 @@ const Confirm = async ({ profile_id, order_id }, session, fastify) => {
     }
   });
 };
-
-module.exports = Confirm;

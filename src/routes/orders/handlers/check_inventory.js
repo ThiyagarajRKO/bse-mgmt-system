@@ -1,6 +1,6 @@
 const models = require("../../../../models");
 
-const CheckInventory = async (
+export const CheckInventory = async (
   { product_master_id, order_id },
   session,
   fastify,
@@ -284,5 +284,3 @@ const CheckInventory = async (
     }
   });
 };
-
-module.exports = { CheckInventory };

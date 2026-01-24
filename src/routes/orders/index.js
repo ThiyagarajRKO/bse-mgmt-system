@@ -1,5 +1,6 @@
 import { Create } from "./handlers/create";
 import { Update } from "./handlers/update";
+import { UpdateStatus } from "./handlers/update_status";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
@@ -17,6 +18,7 @@ import CheckStockForProduct from "./handlers/check_stock_for_product";
 // Schema
 import { createSchema } from "./schema/create";
 import { updateSchema } from "./schema/update";
+import { updateStatusSchema } from "./schema/update_status";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
@@ -440,6 +442,30 @@ export const ordersRoute = (fastify, opts, done) => {
     } catch (err) {
       fastify.log.error(err);
       return reply.code(err?.statusCode || 500).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  // Update order status
+  fastify.put("/:order_id/status", updateStatusSchema, async (req, reply) => {
+    try {
+      const params = {
+        profile_id: req?.token_profile_id,
+        order_id: req?.params?.order_id,
+        ...req.body,
+      };
+
+      const result = await UpdateStatus(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
       });

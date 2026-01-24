@@ -46,14 +46,14 @@ export async function consumeRawMaterial(productionOrderId, db) {
 
     if (po.status !== "PLANNED") {
       throw new Error(
-        `Production Order must be in PLANNED status. Current: ${po.status}`
+        `Production Order must be in PLANNED status. Current: ${po.status}`,
       );
     }
 
     // Step 2: Get or create raw product for this species
     let rawProduct = await productMaster.findOne({
       where: {
-        product_code: { [Op.like]: `RAW_${po.species_master.species_code}%` },
+        product_id: { [Op.like]: `RAW_${po.species_master.species_code}%` },
         product_form: "WHOLE",
       },
       transaction,
@@ -63,14 +63,14 @@ export async function consumeRawMaterial(productionOrderId, db) {
       // Auto-create if doesn't exist
       rawProduct = await productMaster.create(
         {
-          product_code: `RAW_${po.species_master.species_code}_WHOLE`,
+          product_id: `RAW_${po.species_master.species_code}_WHOLE`,
           product_name: `Raw ${po.species_master.species_name} (Whole)`,
           product_category_master_id: null,
           product_form: "WHOLE",
           uom: "KG",
           is_active: true,
         },
-        { transaction }
+        { transaction },
       );
     }
 
@@ -78,7 +78,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
     const availableStock = await inventoryStock.findAll({
       where: {
         product_id: rawProduct.id,
-        warehouse_code: "RAW_INVENTORY",
+        unit_id: "RAW_INVENTORY",
         available_qty: { [Op.gt]: 0 },
       },
       include: [
@@ -99,7 +99,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
 
     if (availableStock.length === 0) {
       throw new Error(
-        `No available raw inventory for ${rawProduct.product_code}`
+        `No available raw inventory for ${rawProduct.product_id}`,
       );
     }
 
@@ -126,11 +126,11 @@ export async function consumeRawMaterial(productionOrderId, db) {
           consumed_qty_kg: consumeQty,
           cost_per_unit: costPerUnit,
           total_cost: consumptionCost,
-          warehouse_code: "RAW_INVENTORY",
+          unit_id: "RAW_INVENTORY",
           consumption_date: new Date(),
           status: "ISSUED",
         },
-        { transaction }
+        { transaction },
       );
 
       consumptionRecords.push(consumption);
@@ -145,7 +145,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
           total_consumed_cost:
             stock.cost_layer.total_consumed_cost + consumptionCost,
         },
-        { transaction }
+        { transaction },
       );
 
       // Create inventory transaction: CR RAW
@@ -166,7 +166,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
           total_cost: -consumptionCost,
           notes: `Consumed from lot ${stock.inventory_lot.lot_number}`,
         },
-        { transaction }
+        { transaction },
       );
 
       // Update inventory stock
@@ -176,7 +176,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
           available_qty: stock.available_qty - consumeQty,
           last_transaction_id: null,
         },
-        { transaction }
+        { transaction },
       );
 
       // Create WIP stock if doesn't exist
@@ -184,25 +184,25 @@ export async function consumeRawMaterial(productionOrderId, db) {
         {
           where: {
             product_id: rawProduct.id,
-            warehouse_code: "WIP_RAW_CONSUMPTION",
+            unit_id: "WIP_RAW_CONSUMPTION",
             lot_id: stock.lot_id,
           },
         },
-        { transaction }
+        { transaction },
       );
 
       if (!wipStock) {
         wipStock = await inventoryStock.create(
           {
             product_id: rawProduct.id,
-            warehouse_code: "WIP_RAW_CONSUMPTION",
+            unit_id: "WIP_RAW_CONSUMPTION",
             lot_id: stock.lot_id,
             cost_layer_id: stock.cost_layer.id,
             on_hand_qty: consumeQty,
             available_qty: consumeQty,
             uom: "KG",
           },
-          { transaction }
+          { transaction },
         );
       } else {
         await wipStock.update(
@@ -210,7 +210,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
             on_hand_qty: wipStock.on_hand_qty + consumeQty,
             available_qty: wipStock.available_qty + consumeQty,
           },
-          { transaction }
+          { transaction },
         );
       }
 
@@ -231,7 +231,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
           total_cost: consumptionCost,
           notes: `Moved to WIP from lot ${stock.inventory_lot.lot_number}`,
         },
-        { transaction }
+        { transaction },
       );
     }
 
@@ -240,7 +240,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
       throw new Error(
         `Insufficient inventory. Need ${po.planned_quantity_kg}, only found ${
           po.planned_quantity_kg - remainingQty
-        }`
+        }`,
       );
     }
 
@@ -250,7 +250,7 @@ export async function consumeRawMaterial(productionOrderId, db) {
         status: "RAW_ISSUED",
         issued_quantity_kg: po.planned_quantity_kg,
       },
-      { transaction }
+      { transaction },
     );
 
     await transaction.commit();

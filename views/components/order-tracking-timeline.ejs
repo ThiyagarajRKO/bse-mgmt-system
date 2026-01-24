@@ -162,6 +162,63 @@
       </div>
     </div>
 
+    <!-- QA Stage -->
+    <div class="timeline-item" style="margin-bottom: 20px; position: relative">
+      <div
+        class="qa-dot"
+        style="
+          position: absolute;
+          left: -30px;
+          top: 0;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background-color: #cccccc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10;
+          border: 2px solid white;
+          box-shadow: 0 0 0 1px #dee2e6;
+        "
+      >
+        <span style="font-size: 8px; color: white">●</span>
+      </div>
+      <div
+        class="qa-connector"
+        style="
+          position: absolute;
+          left: -20px;
+          top: 22px;
+          width: 2px;
+          height: 80px;
+          background-color: #dee2e6;
+        "
+      ></div>
+
+      <h6 class="mb-2"><strong>● QA</strong></h6>
+
+      <div style="margin-bottom: 8px">
+        <div class="progress" style="height: 16px; background-color: #f0f0f0">
+          <div
+            class="progress-bar"
+            id="qaBar"
+            style="
+              width: 0%;
+              background-color: #cccccc;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <small style="font-size: 12px; color: #4f4f4f; font-weight: 500"
+              >Waiting for QA</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Dispatch Stage -->
     <div class="timeline-item" style="margin-bottom: 20px; position: relative">
       <div
@@ -248,23 +305,6 @@
         <strong>○ Invoice</strong>
       </h6>
     </div>
-
-    <!-- Status Message -->
-    <div
-      style="
-        margin-top: 20px;
-        text-align: center;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-radius: 5px;
-      "
-    >
-      <h6 id="trackingStatusMessage" class="mb-0">
-        <strong
-          >Order confirmed. Waiting for production workflow to begin.</strong
-        >
-      </h6>
-    </div>
   </div>
 </div>
 
@@ -272,10 +312,10 @@
   @keyframes pulse-animation {
     0%,
     100% {
-      box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+      box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.7);
     }
     50% {
-      box-shadow: 0 0 0 6px rgba(255, 193, 7, 0);
+      box-shadow: 0 0 0 6px rgba(255, 159, 67, 0);
     }
   }
 
@@ -320,12 +360,26 @@
    * Update timeline with actual production data
    */
   window.updateOrderTrackingTimeline = function (trackingData) {
-    if (!trackingData) return;
+    console.log("🔄 updateOrderTrackingTimeline called with:", trackingData);
+    if (!trackingData) {
+      console.log("❌ No tracking data provided");
+      return;
+    }
 
     const { order, production_tracking, sales_tracking } = trackingData;
+    console.log("📊 Order:", order);
+    console.log("🏭 Production tracking:", production_tracking);
+
+    // Calculate total ordered quantity from order products (moved to top)
+    const totalOrderedQuantity =
+      order?.OrderProducts?.reduce(
+        (sum, product) => sum + (product.quantity || 0),
+        0,
+      ) || 0;
 
     // Determine order confirmation status
-    const orderStatus = order?.status || order?.delivery_status || "pending";
+    const orderStatus =
+      order?.order_status || order?.delivery_status || "pending";
     const isOrderConfirmed =
       orderStatus !== "pending" && orderStatus !== "cancelled";
 
@@ -367,21 +421,71 @@
     let productionPercent = 0;
     let yieldShortfall = false;
     let isProduction = false;
+    let totalProducedQuantity = 0;
 
     if (productionOrders.length > 0) {
-      const prodOrder = productionOrders[0];
-      isProduction =
-        prodOrder.status === "in_progress" || prodOrder.status === "completed";
-      const planned = parseFloat(prodOrder.planned_quantity_kg) || 0;
-      const produced = parseFloat(prodOrder.produced_quantity_kg) || 0;
-      productionPercent =
-        planned > 0 ? Math.round((produced / planned) * 100) : 0;
+      // Calculate total produced quantity across all production orders
+      totalProducedQuantity = productionOrders.reduce(
+        (sum, order) => sum + (parseFloat(order.produced_quantity_kg) || 0),
+        0,
+      );
+
+      // Check if any production order is in progress or completed
+      isProduction = productionOrders.some(
+        (order) =>
+          order.status === "in_progress" || order.status === "completed",
+      );
+
+      // Check if all production orders are completed
+      const allProductionCompleted =
+        productionOrders.length > 0 &&
+        productionOrders.every((order) => order.status === "completed");
+
+      // If produced quantity is 0 but we have production orders, use planned quantities as fallback
+      if (totalProducedQuantity === 0 && productionOrders.length > 0) {
+        totalProducedQuantity = productionOrders.reduce(
+          (sum, order) => sum + (parseFloat(order.planned_quantity_kg) || 0),
+          0,
+        );
+        // Reduce the percentage since this is planned, not actual
+        productionPercent = Math.min(
+          100,
+          Math.round((totalProducedQuantity / totalOrderedQuantity) * 100),
+        );
+      } else {
+        // Calculate production progress as percentage of total ordered quantity
+        if (totalOrderedQuantity > 0) {
+          productionPercent = Math.round(
+            (totalProducedQuantity / totalOrderedQuantity) * 100,
+          );
+        } else {
+          // Fallback: calculate based on planned quantities
+          const totalPlanned = productionOrders.reduce(
+            (sum, order) => sum + (parseFloat(order.planned_quantity_kg) || 0),
+            0,
+          );
+          productionPercent =
+            totalPlanned > 0
+              ? Math.round((totalProducedQuantity / totalPlanned) * 100)
+              : 0;
+        }
+      }
+
       yieldShortfall = productionPercent < 95;
     } else if (hasProductionData) {
       // If we have other production data but no production orders, show some progress
       productionPercent = 25;
       isProduction = true;
     }
+
+    console.log("📈 Production calculation:", {
+      totalProducedQuantity,
+      totalOrderedQuantity,
+      productionPercent,
+      hasProductionData,
+      isProduction,
+      productionOrdersLength: productionOrders.length,
+    });
 
     // Update Production stage visibility and styling
     const productionStage = document.querySelector(
@@ -393,27 +497,52 @@
         ".production-connector",
       );
 
+      // Production is completed if: production is done OR any later stage has started
+      const isProductionCompleted =
+        productionPercent >= 100 ||
+        allProductionCompleted ||
+        isPacking ||
+        isQA ||
+        isDispatching;
+
       if (isProduction) {
-        // Show as active (red with pulse)
-        if (prodDot) {
-          prodDot.style.backgroundColor = "#EA5455";
-          prodDot.style.animation = "pulse-animation 2s infinite";
+        // Show as active (red) or completed (black with checkmark)
+        if (isProductionCompleted) {
+          // Completed - black with white checkmark
+          if (prodDot) {
+            prodDot.style.backgroundColor = "#000000";
+            const icon = prodDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (prodConnector) prodConnector.style.backgroundColor = "#000000";
+        } else {
+          // Active - yellow
+          if (prodDot) prodDot.style.backgroundColor = "#FF9F43";
+          if (prodConnector) prodConnector.style.backgroundColor = "#fd7e14";
         }
-        if (prodConnector) prodConnector.style.backgroundColor = "#dc3545";
-      } else if (hasProductionData) {
-        // Show as partially active (orange)
-        if (prodDot) {
-          prodDot.style.backgroundColor = "#FF9F43";
-          prodDot.style.animation = "none";
-        }
-        if (prodConnector) prodConnector.style.backgroundColor = "#fd7e14";
       } else {
-        // Show as pending (gray, no pulse)
-        if (prodDot) {
-          prodDot.style.backgroundColor = "#cccccc";
-          prodDot.style.animation = "none";
+        // Show as completed if all production is done or later stages have started, otherwise pending (gray)
+        if (isProductionCompleted) {
+          // Completed - black with white checkmark
+          if (prodDot) {
+            prodDot.style.backgroundColor = "#000000";
+            const icon = prodDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (prodConnector) prodConnector.style.backgroundColor = "#000000";
+        } else {
+          // Show as pending (gray)
+          if (prodDot) prodDot.style.backgroundColor = "#cccccc";
+          if (prodConnector) prodConnector.style.backgroundColor = "#dee2e6";
         }
-        if (prodConnector) prodConnector.style.backgroundColor = "#dee2e6";
       }
     }
 
@@ -423,29 +552,45 @@
     let packingPercent = 0;
     let isPacking = false;
 
-    // Calculate total ordered quantity from order products
-    const totalOrderedQuantity =
-      order?.OrderProducts?.reduce(
-        (sum, product) => sum + (product.quantity || 0),
-        0,
-      ) || 0;
-
     // Calculate total peeled quantity
     const totalPeeledQuantity = peelingRecords.reduce(
       (sum, record) => sum + (record.peeling_quantity || 0),
       0,
     );
 
+    // Also check procurement products for packed quantities
+    const totalProcurementQuantity = procurementRecords.reduce(
+      (sum, record) =>
+        sum + (record.adjusted_quantity || record.procurement_quantity || 0),
+      0,
+    );
+
     if (peelingRecords.length > 0 || procurementRecords.length > 0) {
       isPacking = true;
       if (totalOrderedQuantity > 0) {
-        packingPercent = Math.min(
-          100,
-          Math.round((totalPeeledQuantity / totalOrderedQuantity) * 100),
+        // Packing progress should be based on how much has been processed (peeled/packed)
+        // Don't allow packing progress to exceed production progress
+        const processedQuantity = Math.max(
+          totalPeeledQuantity,
+          totalProcurementQuantity,
         );
+        const maxPackingPercent = productionPercent;
+        const actualPackingPercent = Math.min(
+          100,
+          Math.round((processedQuantity / totalOrderedQuantity) * 100),
+        );
+        packingPercent = Math.min(actualPackingPercent, maxPackingPercent);
       } else {
-        // Fallback if no order quantity available
-        packingPercent = peelingRecords.length > 0 ? 40 : 20;
+        // Fallback: calculate based on record counts if no quantities available
+        const totalRecords = peelingRecords.length + procurementRecords.length;
+        const fallbackPercent = Math.min(
+          totalRecords > 0 ? Math.min(100, totalRecords * 15) : 0,
+          productionPercent,
+        );
+        packingPercent = Math.max(
+          fallbackPercent,
+          totalPeeledQuantity > 0 || totalProcurementQuantity > 0 ? 25 : 0,
+        );
       }
     }
 
@@ -455,12 +600,113 @@
       const packDot = packingStage.querySelector(".packing-dot");
       const packConnector = packingStage.querySelector(".packing-connector");
 
+      // Packing is completed if: packing is done OR any later stage has started
+      const isPackingCompleted = packingPercent >= 100 || isQA || isDispatching;
+
       if (isPacking) {
-        if (packDot) packDot.style.backgroundColor = "#000000";
-        if (packConnector) packConnector.style.backgroundColor = "#000000";
+        // Show as active or completed
+        if (isPackingCompleted) {
+          // Completed - black with white checkmark
+          if (packDot) {
+            packDot.style.backgroundColor = "#000000";
+            const icon = packDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (packConnector) packConnector.style.backgroundColor = "#000000";
+        } else {
+          // Active - yellow
+          if (packDot) packDot.style.backgroundColor = "#FF9F43";
+          if (packConnector) packConnector.style.backgroundColor = "#fd7e14";
+        }
       } else {
-        if (packDot) packDot.style.backgroundColor = "#cccccc";
-        if (packConnector) packConnector.style.backgroundColor = "#dee2e6";
+        // Show as completed if packing is done or later stages have started, otherwise pending (gray)
+        if (isPackingCompleted) {
+          // Completed - black with white checkmark
+          if (packDot) {
+            packDot.style.backgroundColor = "#000000";
+            const icon = packDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (packConnector) packConnector.style.backgroundColor = "#000000";
+        } else {
+          // Show as pending (gray)
+          if (packDot) packDot.style.backgroundColor = "#cccccc";
+          if (packConnector) packConnector.style.backgroundColor = "#dee2e6";
+        }
+      }
+    }
+
+    // Calculate QA completion
+    // QA should be completed after packing but before dispatch
+    let qaPercent = 0;
+    let isQA = false;
+
+    // For now, QA is considered complete when packing is complete
+    // In a real implementation, this would check for QA records/approvals
+    if (packingPercent >= 100) {
+      qaPercent = 100;
+      isQA = true;
+    } else if (packingPercent > 0) {
+      // QA starts when packing begins
+      qaPercent = Math.min(50, packingPercent);
+      isQA = true;
+    }
+
+    // Update QA stage
+    const qaStage = document.querySelector(".timeline-item:nth-child(4)");
+    if (qaStage) {
+      const qaDot = qaStage.querySelector(".qa-dot");
+      const qaConnector = qaStage.querySelector(".qa-connector");
+
+      // QA is completed if: QA is done OR dispatch has started
+      const isQACompleted = qaPercent >= 100 || isDispatching;
+
+      if (isQA) {
+        // Show as active or completed
+        if (isQACompleted) {
+          // Completed - black with white checkmark
+          if (qaDot) {
+            qaDot.style.backgroundColor = "#000000";
+            const icon = qaDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (qaConnector) qaConnector.style.backgroundColor = "#000000";
+        } else {
+          // Active - yellow
+          if (qaDot) qaDot.style.backgroundColor = "#FF9F43";
+          if (qaConnector) qaConnector.style.backgroundColor = "#fd7e14";
+        }
+      } else {
+        // Show as completed if QA is done or dispatch has started, otherwise pending (gray)
+        if (isQACompleted) {
+          // Completed - black with white checkmark
+          if (qaDot) {
+            qaDot.style.backgroundColor = "#000000";
+            const icon = qaDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (qaConnector) qaConnector.style.backgroundColor = "#000000";
+        } else {
+          // Show as pending (gray)
+          if (qaDot) qaDot.style.backgroundColor = "#cccccc";
+          if (qaConnector) qaConnector.style.backgroundColor = "#dee2e6";
+        }
       }
     }
 
@@ -484,21 +730,31 @@
     if (dispatchRecords.length > 0 || peeledDispatchRecords.length > 0) {
       isDispatching = true;
       if (totalOrderedQuantity > 0) {
-        dispatchPercent = Math.min(
+        // Dispatch progress should be based on how much has been dispatched
+        // Don't allow dispatch progress to exceed QA progress
+        const maxDispatchPercent = qaPercent;
+        const actualDispatchPercent = Math.min(
           100,
           Math.round((totalDispatchedQuantity / totalOrderedQuantity) * 100),
         );
+        dispatchPercent = Math.min(actualDispatchPercent, maxDispatchPercent);
       } else {
-        // Fallback if no order quantity available
-        dispatchPercent = Math.min(
-          100,
-          (dispatchRecords.length + peeledDispatchRecords.length) * 25,
+        // Fallback: calculate based on record counts if no quantities available
+        const totalRecords =
+          dispatchRecords.length + peeledDispatchRecords.length;
+        const fallbackPercent = Math.min(
+          totalRecords > 0 ? Math.min(100, totalRecords * 20) : 0,
+          qaPercent,
+        );
+        dispatchPercent = Math.max(
+          fallbackPercent,
+          totalDispatchedQuantity > 0 ? 25 : 0,
         );
       }
     }
 
     // Update Dispatch stage
-    const dispatchStage = document.querySelector(".timeline-item:nth-child(4)");
+    const dispatchStage = document.querySelector(".timeline-item:nth-child(5)");
     if (dispatchStage) {
       const dispatchDot = dispatchStage.querySelector(".dispatch-dot");
       const dispatchConnector = dispatchStage.querySelector(
@@ -506,42 +762,145 @@
       );
 
       if (isDispatching) {
-        if (dispatchDot) dispatchDot.style.backgroundColor = "#000000";
-        if (dispatchConnector)
-          dispatchConnector.style.backgroundColor = "#000000";
+        // Show as active or completed
+        if (dispatchPercent >= 100) {
+          // Completed - black with white checkmark
+          if (dispatchDot) {
+            dispatchDot.style.backgroundColor = "#000000";
+            const icon = dispatchDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (dispatchConnector)
+            dispatchConnector.style.backgroundColor = "#000000";
+        } else {
+          // Active - yellow
+          if (dispatchDot) dispatchDot.style.backgroundColor = "#FF9F43";
+          if (dispatchConnector)
+            dispatchConnector.style.backgroundColor = "#fd7e14";
+        }
       } else {
-        if (dispatchDot) dispatchDot.style.backgroundColor = "#cccccc";
-        if (dispatchConnector)
-          dispatchConnector.style.backgroundColor = "#dee2e6";
+        // Show as completed only if dispatch is actually done, otherwise pending (gray)
+        if (dispatchPercent >= 100) {
+          // Completed - black with white checkmark
+          if (dispatchDot) {
+            dispatchDot.style.backgroundColor = "#000000";
+            const icon = dispatchDot.querySelector("span");
+            if (icon) {
+              icon.innerHTML = "✓";
+              icon.style.color = "white";
+              icon.style.fontSize = "10px";
+            }
+          }
+          if (dispatchConnector)
+            dispatchConnector.style.backgroundColor = "#000000";
+        } else {
+          // Show as pending (gray)
+          if (dispatchDot) dispatchDot.style.backgroundColor = "#cccccc";
+          if (dispatchConnector)
+            dispatchConnector.style.backgroundColor = "#dee2e6";
+        }
       }
     }
 
     // Update Invoice stage - show as pending until dispatch is complete
-    const invoiceStage = document.querySelector(".timeline-item:nth-child(5)");
+    const invoiceStage = document.querySelector(".timeline-item:nth-child(6)");
     if (invoiceStage) {
       const invoiceDot = invoiceStage.querySelector(".invoice-dot");
 
-      if (isDispatching && dispatchPercent >= 80) {
-        // Show invoice as ready (dark gray)
-        if (invoiceDot) invoiceDot.style.backgroundColor = "#6c757d";
+      if (
+        productionPercent >= 100 &&
+        packingPercent >= 100 &&
+        qaPercent >= 100 &&
+        dispatchPercent >= 100
+      ) {
+        // Show invoice as current/active when all processes are complete
+        if (invoiceDot) invoiceDot.style.backgroundColor = "#FF9F43";
+      } else if (isDispatching && dispatchPercent >= 80) {
+        // Show invoice as current/active - yellow when dispatch is nearly complete
+        if (invoiceDot) invoiceDot.style.backgroundColor = "#FF9F43";
       } else {
-        // Show as pending
-        if (invoiceDot) invoiceDot.style.backgroundColor = "#cccccc";
+        // Show as pending/yet to start (yellow)
+        if (invoiceDot) invoiceDot.style.backgroundColor = "#FF9F43";
       }
     }
 
+    // Apply pulse animation to the current active stage
+    // Reset all animations first
+    const allDots = document.querySelectorAll(
+      ".confirmed-dot, .production-dot, .packing-dot, .qa-dot, .dispatch-dot, .invoice-dot",
+    );
+    allDots.forEach((dot) => {
+      if (dot) dot.style.animation = "none";
+    });
+
+    // Determine current active stage and apply animation
+    let currentActiveDot = null;
+    if (
+      productionPercent >= 100 &&
+      packingPercent >= 100 &&
+      qaPercent >= 100 &&
+      dispatchPercent >= 100
+    ) {
+      // Invoice is current if all other processes are complete
+      currentActiveDot = document.querySelector(".invoice-dot");
+    } else if (isDispatching && dispatchPercent >= 80) {
+      // Invoice is current if dispatch is nearly complete
+      currentActiveDot = document.querySelector(".invoice-dot");
+    } else if (isDispatching) {
+      // Dispatch is current
+      currentActiveDot = document.querySelector(".dispatch-dot");
+    } else if (isQA && qaPercent < 100) {
+      // QA is current if active but not complete
+      currentActiveDot = document.querySelector(".qa-dot");
+    } else if (isPacking) {
+      // Packing is current
+      currentActiveDot = document.querySelector(".packing-dot");
+    } else if (isProduction) {
+      // Production is current
+      currentActiveDot = document.querySelector(".production-dot");
+    } else if (isOrderConfirmed) {
+      // Order confirmed is current if nothing else is active
+      currentActiveDot = document.querySelector(".confirmed-dot");
+    }
+
+    // Apply pulse animation to current active stage (except production)
+    if (
+      currentActiveDot &&
+      !currentActiveDot.classList.contains("production-dot")
+    ) {
+      currentActiveDot.style.animation = "pulse-animation 2s infinite";
+    }
+
     // Update progress bars
+    console.log("🎯 Updating progress bars:", {
+      productionPercent,
+      packingPercent,
+      qaPercent,
+      dispatchPercent,
+    });
+
     const prodBar = document.getElementById("prodBar");
     if (prodBar) {
+      console.log("📊 Setting prodBar width to:", productionPercent + "%");
       prodBar.style.width = productionPercent + "%";
+      prodBar.style.backgroundColor =
+        productionPercent > 0 ? "#EA5455" : "#cccccc";
       prodBar.textContent = hasProductionData
         ? productionPercent + "% complete"
         : "Waiting for production";
+    } else {
+      console.log("❌ prodBar element not found");
     }
 
     const packingBar = document.getElementById("packingBar");
     if (packingBar) {
       packingBar.style.width = packingPercent + "%";
+      packingBar.style.backgroundColor =
+        packingPercent > 0 ? "#EA5455" : "#cccccc";
       packingBar.textContent =
         packingPercent > 0
           ? packingPercent + "% complete"
@@ -551,10 +910,20 @@
     const dispatchBar = document.getElementById("dispatchBar");
     if (dispatchBar) {
       dispatchBar.style.width = dispatchPercent + "%";
+      dispatchBar.style.backgroundColor =
+        dispatchPercent > 0 ? "#EA5455" : "#cccccc";
       dispatchBar.textContent =
         dispatchPercent > 0
           ? dispatchPercent + "% complete"
           : "Waiting for dispatch";
+    }
+
+    const qaBar = document.getElementById("qaBar");
+    if (qaBar) {
+      qaBar.style.width = qaPercent + "%";
+      qaBar.style.backgroundColor = qaPercent > 0 ? "#EA5455" : "#cccccc";
+      qaBar.textContent =
+        qaPercent > 0 ? qaPercent + "% complete" : "Waiting for QA";
     }
 
     // Add status message
@@ -568,14 +937,40 @@
         statusMessage.textContent =
           "Production in progress. Tracking updates in real-time.";
         statusMessage.style.color = "#EA5455";
+      } else if (isQA && qaPercent < 100) {
+        statusMessage.textContent =
+          "Quality Assurance in progress. Tracking updates in real-time.";
+        statusMessage.style.color = "#FF9F43";
       } else if (isDispatching) {
         statusMessage.textContent = "";
         statusMessage.style.color = "#000000";
-      } else {
+      } else if (
+        productionPercent >= 100 &&
+        packingPercent >= 100 &&
+        qaPercent >= 100 &&
+        dispatchPercent >= 100
+      ) {
         statusMessage.textContent = "Order processing complete.";
         statusMessage.style.color = "#28a745";
+
+        // Sync order status when all processes are complete
+        syncOrderStatus(order.id, "INVOICED", "completed");
+      } else {
+        statusMessage.textContent =
+          "Order initiated. All processes complete except invoicing.";
+        statusMessage.style.color = "#FF9F43";
       }
     }
+
+    // Sync order status based on current tracking progress
+    syncOrderStatusWithTracking(order.id, {
+      productionPercent,
+      packingPercent,
+      qaPercent,
+      dispatchPercent,
+      hasProductionData,
+      isOrderConfirmed,
+    });
   };
 
   /**
@@ -621,4 +1016,94 @@
     }
     currentOrderId = null;
   };
+
+  /**
+   * Sync order status with tracking progress
+   */
+  function syncOrderStatusWithTracking(orderId, trackingState) {
+    if (!orderId) return;
+
+    const {
+      productionPercent,
+      packingPercent,
+      qaPercent,
+      dispatchPercent,
+      hasProductionData,
+      isOrderConfirmed,
+    } = trackingState;
+
+    let newOrderStatus = "DRAFT";
+    let newDeliveryStatus = "pending";
+
+    if (!isOrderConfirmed) {
+      newOrderStatus = "DRAFT";
+      newDeliveryStatus = "pending";
+    } else if (!hasProductionData) {
+      newOrderStatus = "CONFIRMED";
+      newDeliveryStatus = "confirmed";
+    } else if (productionPercent > 0 && productionPercent < 100) {
+      newOrderStatus = "IN_PRODUCTION";
+      newDeliveryStatus = "in_production";
+    } else if (productionPercent >= 100 && packingPercent < 100) {
+      newOrderStatus = "PACKED";
+      newDeliveryStatus = "packed";
+    } else if (packingPercent >= 100 && qaPercent < 100) {
+      newOrderStatus = "READY_FOR_QA";
+      newDeliveryStatus = "ready_for_qa";
+    } else if (qaPercent >= 100 && dispatchPercent < 100) {
+      newOrderStatus = "READY_FOR_DISPATCH";
+      newDeliveryStatus = "ready_for_dispatch";
+    } else if (dispatchPercent >= 100) {
+      newOrderStatus = "DISPATCHED";
+      newDeliveryStatus = "dispatched";
+    } else if (
+      productionPercent >= 100 &&
+      packingPercent >= 100 &&
+      qaPercent >= 100 &&
+      dispatchPercent >= 100
+    ) {
+      newOrderStatus = "INVOICED";
+      newDeliveryStatus = "completed";
+    }
+
+    // Update order status via API call
+    updateOrderStatus(orderId, newOrderStatus, newDeliveryStatus);
+  }
+
+  /**
+   * Update order status via API
+   */
+  function updateOrderStatus(orderId, orderStatus, deliveryStatus) {
+    if (!orderId) return;
+
+    $.ajax({
+      url: `/api/orders/${orderId}/status`,
+      method: "PUT",
+      contentType: "application/json",
+      data: JSON.stringify({
+        order_status: orderStatus,
+        delivery_status: deliveryStatus,
+      }),
+      success: function (response) {
+        if (response.success) {
+          console.log("✅ Order status updated:", {
+            orderStatus,
+            deliveryStatus,
+          });
+        } else {
+          console.warn("⚠️ Failed to update order status:", response.message);
+        }
+      },
+      error: function (err) {
+        console.error("❌ Error updating order status:", err);
+      },
+    });
+  }
+
+  /**
+   * Sync order status (legacy function for backward compatibility)
+   */
+  function syncOrderStatus(orderId, orderStatus, deliveryStatus) {
+    updateOrderStatus(orderId, orderStatus, deliveryStatus);
+  }
 </script>

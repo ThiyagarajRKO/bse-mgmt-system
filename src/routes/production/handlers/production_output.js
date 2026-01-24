@@ -34,7 +34,7 @@ const { Op } = sequelize;
 export async function receiveProductionOutput(
   productionOrderId,
   actualOutputs,
-  db
+  db,
 ) {
   const transaction = await db.sequelize.transaction();
 
@@ -56,20 +56,20 @@ export async function receiveProductionOutput(
 
     if (po.status !== "RAW_ISSUED") {
       throw new Error(
-        `Production Order must be RAW_ISSUED. Current: ${po.status}`
+        `Production Order must be RAW_ISSUED. Current: ${po.status}`,
       );
     }
 
     // Step 2: Calculate total raw cost
     const totalRawCost = po.production_consumptions.reduce(
       (sum, c) => sum + c.total_cost,
-      0
+      0,
     );
 
     // Step 3: Calculate total actual output
     const totalActualOutput = actualOutputs.reduce(
       (sum, o) => sum + o.actual_quantity_kg,
-      0
+      0,
     );
 
     // Step 4: Calculate waste
@@ -77,7 +77,7 @@ export async function receiveProductionOutput(
 
     if (totalWaste < 0) {
       throw new Error(
-        `Actual output exceeds input: ${totalActualOutput} > ${po.issued_quantity_kg}`
+        `Actual output exceeds input: ${totalActualOutput} > ${po.issued_quantity_kg}`,
       );
     }
 
@@ -98,7 +98,7 @@ export async function receiveProductionOutput(
 
       if (!prodOutput) {
         throw new Error(
-          `Production output record not found for derivative: ${output.derivative_id}`
+          `Production output record not found for derivative: ${output.derivative_id}`,
         );
       }
 
@@ -123,22 +123,22 @@ export async function receiveProductionOutput(
       const skuCode = `${po.input_species_id}-${output.derivative_id}-${output.actual_grade}-${output.size_code}`;
       let skuProduct = await productMaster.findOne(
         {
-          where: { product_code: skuCode },
+          where: { product_id: skuCode },
         },
-        { transaction }
+        { transaction },
       );
 
       if (!skuProduct) {
         skuProduct = await productMaster.create(
           {
-            product_code: skuCode,
+            product_id: skuCode,
             product_name: `${po.input_species_id} - ${output.derivative_id} - Grade ${output.actual_grade} - ${output.size_code}`,
             product_category_master_id: null,
             product_form: "DERIVATIVE",
             uom: "KG",
             is_active: true,
           },
-          { transaction }
+          { transaction },
         );
       }
 
@@ -147,23 +147,23 @@ export async function receiveProductionOutput(
         {
           where: {
             product_id: skuProduct.id,
-            warehouse_code: "FG_INVENTORY",
+            unit_id: "f78b9682-ab4c-4e68-bc0a-09468278b5a3", // CS unit
           },
         },
-        { transaction }
+        { transaction },
       );
 
       if (!fgStock) {
         fgStock = await inventoryStock.create(
           {
             product_id: skuProduct.id,
-            warehouse_code: "FG_INVENTORY",
+            unit_id: "f78b9682-ab4c-4e68-bc0a-09468278b5a3", // CS unit
             on_hand_qty: actualQty,
             available_qty: actualQty,
             uom: "KG",
             cost_layer_id: null,
           },
-          { transaction }
+          { transaction },
         );
       } else {
         await fgStock.update(
@@ -171,7 +171,7 @@ export async function receiveProductionOutput(
             on_hand_qty: fgStock.on_hand_qty + actualQty,
             available_qty: fgStock.available_qty + actualQty,
           },
-          { transaction }
+          { transaction },
         );
       }
 
@@ -184,14 +184,14 @@ export async function receiveProductionOutput(
           qty_change: actualQty,
           uom: "KG",
           warehouse_from: "WIP_RAW_CONSUMPTION",
-          warehouse_to: "FG_INVENTORY",
+          warehouse_to: "CS_UNIT",
           reference_id: productionOrderId,
           reference_type: "PRODUCTION_ORDER",
           cost_per_unit: allocatedCost / actualQty,
           total_cost: allocatedCost,
           notes: `Grade ${output.actual_grade}, Size ${output.size_code}`,
         },
-        { transaction }
+        { transaction },
       );
 
       // Update production_output record
@@ -205,7 +205,7 @@ export async function receiveProductionOutput(
           sku_code: skuCode,
           inventory_posted: true,
         },
-        { transaction }
+        { transaction },
       );
 
       // Record variance
@@ -223,7 +223,7 @@ export async function receiveProductionOutput(
             variance_cost: Math.abs(varianceQty) * (allocatedCost / actualQty),
             gl_posted: false,
           },
-          { transaction }
+          { transaction },
         );
         varianceRecords.push(var_record);
       }
@@ -255,7 +255,7 @@ export async function receiveProductionOutput(
           total_cost: -((totalRawCost * totalWaste) / po.issued_quantity_kg),
           notes: `Waste/loss from production`,
         },
-        { transaction }
+        { transaction },
       );
 
       // Record waste variance as NORMAL_LOSS
@@ -272,7 +272,7 @@ export async function receiveProductionOutput(
           variance_cost: (totalRawCost * totalWaste) / po.issued_quantity_kg,
           gl_posted: false,
         },
-        { transaction }
+        { transaction },
       );
     }
 
@@ -287,7 +287,7 @@ export async function receiveProductionOutput(
             po.planned_quantity_kg) *
           100,
       },
-      { transaction }
+      { transaction },
     );
 
     await transaction.commit();

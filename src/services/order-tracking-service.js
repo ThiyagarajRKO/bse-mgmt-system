@@ -176,13 +176,20 @@ const createProductionOrder = async (
         {
           model: models.ProductMaster,
           as: "product",
-          attributes: ["id", "species_master_id"],
+          attributes: ["id"],
+          include: [
+            {
+              model: models.ProductCategoryMaster,
+              attributes: ["species_master_id"],
+            },
+          ],
         },
       ],
       transaction,
     });
 
-    const speciesId = firstProduct?.product?.species_master_id || null;
+    const speciesId =
+      firstProduct?.product?.ProductCategoryMaster?.species_master_id || null;
 
     const productionOrder = await models.production_orders.create(
       {
@@ -196,9 +203,9 @@ const createProductionOrder = async (
         planned_start_date: new Date(),
         status: "PENDING",
         issued_quantity_kg: totalQuantity,
-        produced_quantity_kg: Math.floor(totalQuantity * 0.95), // 95% yield
-        wastage_quantity_kg: Math.ceil(totalQuantity * 0.05),
-        yield_variance_percent: 5,
+        produced_quantity_kg: 0, // Start with 0, will be updated when production completes
+        wastage_quantity_kg: 0,
+        yield_variance_percent: 0,
         is_active: true,
         created_by: userId,
         updated_by: userId,
@@ -257,7 +264,7 @@ const createDispatchRecord = async (
         order_id: order.id,
         procurement_product_id: procurementProduct?.id || null,
         unit_master_id: unitMasterId,
-        dispatch_quantity: totalQuantity * 0.95, // 95% after production
+        dispatch_quantity: 0, // Start with 0, will be updated when dispatch occurs
         temperature: 4, // Standard cold chain temp
         vehicle_master_id: vehicle?.id || null,
         driver_master_id: driver?.id || null,
@@ -303,7 +310,7 @@ const createPeelingRecord = async (
         id: uuidv4(),
         dispatch_id: dispatchRecord.id,
         unit_master_id: unitMasterId,
-        peeling_quantity: peelingQuantity,
+        peeling_quantity: 0, // Start with 0, will be updated when peeling occurs
         peeling_method: "Manual", // Default to Manual peeling
         is_active: true,
         order_id: order.id,
@@ -399,7 +406,7 @@ const createPeeledDispatches = async (
           id: uuidv4(),
           peeled_product_id: peelingProduct.id,
           unit_master_id: unitMaster?.id || null,
-          peeled_dispatch_quantity: peelingProduct.yield_quantity,
+          peeled_dispatch_quantity: 0, // Start with 0, will be updated when peeled dispatch occurs
           temperature: 4, // Cold chain
           vehicle_master_id: vehicle?.id || null,
           driver_master_id: driver?.id || null,
