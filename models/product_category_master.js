@@ -58,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
       product_category: {
         type: DataTypes.STRING,
       },
+      species_master_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "species_master",
+          key: "id",
+        },
+      },
       parent_category_type: {
         type: DataTypes.ENUM(
           "Bivalve",
@@ -65,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
           "Fish",
           "Crustacean",
           "Gastropod",
-          "Other"
+          "Other",
         ),
         allowNull: true,
         comment: "Parent category type inherited from species_master",
@@ -92,7 +100,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Create Hook - Populate parent_category_type from species_master
@@ -111,14 +119,14 @@ module.exports = (sequelize, DataTypes) => {
         if (species && species.parent_category_type) {
           data.parent_category_type = species.parent_category_type;
           console.log(
-            `[ProductCategoryMaster.beforeCreate] Mapped parent_category_type: ${species.parent_category_type}`
+            `[ProductCategoryMaster.beforeCreate] Mapped parent_category_type: ${species.parent_category_type}`,
           );
         }
       }
     } catch (err) {
       console.log(
         "Error while inserting a category details",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -140,7 +148,7 @@ module.exports = (sequelize, DataTypes) => {
         if (species && species.parent_category_type) {
           data.parent_category_type = species.parent_category_type;
           console.log(
-            `[ProductCategoryMaster.beforeUpdate] Updated parent_category_type: ${species.parent_category_type}`
+            `[ProductCategoryMaster.beforeUpdate] Updated parent_category_type: ${species.parent_category_type}`,
           );
         }
       }

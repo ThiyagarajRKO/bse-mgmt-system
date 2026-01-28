@@ -31,6 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      ProductMaster.belongsTo(models.SpeciesMaster, {
+        foreignKey: "species_master_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
       ProductMaster.belongsTo(models.SizeMaster, {
         foreignKey: "size_master_id",
         onUpdate: "CASCADE",
@@ -89,6 +95,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         comment:
           "HSN (Harmonized System of Nomenclature) code for GST classification",
+      },
+      species_master_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "species_master",
+          key: "id",
+        },
+        comment: "Direct species reference for raw products and quick lookups",
       },
       derivative_master_id: {
         type: DataTypes.UUID,
