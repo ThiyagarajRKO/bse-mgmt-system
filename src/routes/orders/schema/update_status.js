@@ -2,9 +2,7 @@ export const updateStatusSchema = {
   schema: {
     body: {
       type: "object",
-      required: ["order_id"],
       properties: {
-        order_id: { type: "string" },
         order_status: {
           type: "string",
           enum: [

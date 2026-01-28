@@ -422,6 +422,7 @@
     let yieldShortfall = false;
     let isProduction = false;
     let totalProducedQuantity = 0;
+    let allProductionCompleted = false;
 
     if (productionOrders.length > 0) {
       // Calculate total produced quantity across all production orders
@@ -437,7 +438,7 @@
       );
 
       // Check if all production orders are completed
-      const allProductionCompleted =
+      allProductionCompleted =
         productionOrders.length > 0 &&
         productionOrders.every((order) => order.status === "completed");
 
@@ -991,7 +992,7 @@
       if (!currentOrderId) return;
 
       $.ajax({
-        url: `/api/order/${currentOrderId}/tracking`,
+        url: `/api/orders/${currentOrderId}/tracking`,
         method: "GET",
         dataType: "json",
         success: function (response) {

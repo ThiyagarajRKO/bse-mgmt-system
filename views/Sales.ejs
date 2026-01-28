@@ -2544,7 +2544,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/order",
+            url: "/api/orders",
             error: function (xhr, error, code) {
               $("#orderTable").DataTable().destroy();
               $("#orderTable").DataTable({ scrollX: true, ordering: false });
@@ -2724,7 +2724,7 @@
 
         // Fetch tracking data from API
         $.ajax({
-          url: `/api/order/${view_order_id}/tracking`,
+          url: `/api/orders/${view_order_id}/tracking`,
           method: "GET",
           dataType: "json",
           success: function (response) {
@@ -2814,7 +2814,7 @@
 
         // First, try to confirm the order
         $.ajax({
-          url: "/api/order/confirm",
+          url: "/api/orders/confirm",
           method: "POST",
           data: JSON.stringify({
             order_id: order_id,
@@ -2873,7 +2873,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/order/product?order_id=${order_id}`,
+            url: `/api/orders/product?order_id=${order_id}`,
             error: function (xhr, error, code) {
               $("#orderProductTable").DataTable().destroy();
               $("#orderProductTable").DataTable({
@@ -3216,7 +3216,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/order/allocation",
+            url: "/api/orders/allocation",
             error: function (xhr, error, code) {
               console.error("❌ Allocation API error:", xhr);
               $("#allocationTable").DataTable().destroy();
@@ -3359,8 +3359,8 @@
 
               if (productId) {
                 const url = orderId
-                  ? `/api/order/check-inventory/${productId}?order_id=${orderId}`
-                  : `/api/order/check-inventory/${productId}`;
+                  ? `/api/orders/check-inventory/${productId}?order_id=${orderId}`
+                  : `/api/orders/check-inventory/${productId}`;
 
                 $.ajax({
                   url: url,
@@ -3444,10 +3444,19 @@
           const row = $(this).closest("tr");
           const orderNo = row.find("td").eq(1).text(); // order_no is now in column 1
           const quantityRequired = row.find("td").eq(3).text(); // quantity_required is now in column 3
+          const productId = row
+            .find("td")
+            .eq(4)
+            .find(".available-stock")
+            .data("product-id"); // product_id from data attribute
+
+          console.log(
+            `[Order View] Clicked row - orderNo: ${orderNo}, quantityRequired: ${quantityRequired}, productId: ${productId}`,
+          );
 
           // Fetch real order and product data from API
           $.ajax({
-            url: `/api/order/allocation`,
+            url: `/api/orders/allocation`,
             method: "GET",
             dataType: "json",
             success: function (response) {
@@ -3459,178 +3468,202 @@
                 return;
               }
 
-              // Get product from the order
+              // Get the specific product from the order that matches the clicked row
               let productName = "Unknown";
-              let productMasterId = null;
+              let productMasterId = productId; // Use the product_id from the clicked row
               let speciesMasterId = null;
               let purchaseInventory = 0;
               let salesInventory = 0;
               let netInventory = 0;
 
               if (order.OrderProducts && order.OrderProducts.length > 0) {
-                const product = order.OrderProducts[0];
-                productName =
-                  product?.ProductMaster?.product_name ||
-                  product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
-                  "Unknown";
-                productMasterId =
-                  product?.product_master_id ||
-                  product?.Packing?.pd?.pp?.ProductMaster?.id;
-
                 console.log(
-                  `[Order View] Fetching product master ${productMasterId} to get species info`,
+                  `[Order View] Order has ${order.OrderProducts.length} products:`,
+                  order.OrderProducts.map((p) => ({
+                    product_master_id: p?.product_master_id,
+                    packing_product_id: p?.Packing?.pd?.pp?.ProductMaster?.id,
+                    product_name:
+                      p?.ProductMaster?.product_name ||
+                      p?.Packing?.pd?.pp?.ProductMaster?.product_name,
+                  })),
                 );
 
-                // Fetch the full product master with category and species
-                $.ajax({
-                  url: `/api/master/product/${productMasterId}`,
-                  method: "GET",
-                  dataType: "json",
-                  async: false,
-                  success: function (prodResponse) {
-                    if (prodResponse?.data) {
-                      const fullProduct = prodResponse.data;
-                      speciesMasterId =
-                        fullProduct?.ProductCategoryMaster?.species_master_id ||
-                        null;
-                      console.log(
-                        `[Order View] Retrieved species ID: ${speciesMasterId}`,
-                      );
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.error(
-                      `Error fetching product master ${productMasterId}:`,
-                      error,
-                    );
-                  },
-                });
+                // Find the specific product in the order that matches the product_id
+                const product = order.OrderProducts?.find(
+                  (p) =>
+                    (p?.product_master_id ||
+                      p?.Packing?.pd?.pp?.ProductMaster?.id) === productId,
+                );
 
                 console.log(
-                  `[Order View] Product: ${productName}, Species ID: ${speciesMasterId}`,
+                  `[Order View] Looking for productId: ${productId}, found product:`,
+                  product,
                 );
-                // Fetch inventory for this product
-                if (productMasterId) {
+
+                if (product) {
+                  productName =
+                    product?.ProductMaster?.product_name ||
+                    product?.Packing?.pd?.pp?.ProductMaster?.product_name ||
+                    "Unknown";
+
+                  console.log(
+                    `[Order View] Fetching product master ${productMasterId} to get species info`,
+                  );
+
+                  // Fetch the full product master with category and species
                   $.ajax({
-                    url: `/api/order/check-inventory/${productMasterId}`,
+                    url: `/api/master/product/${productMasterId}`,
                     method: "GET",
                     dataType: "json",
-                    success: function (invResponse) {
-                      console.log(
-                        `[Order View] Purchase inventory response:`,
-                        invResponse,
-                      );
-                      purchaseInventory =
-                        invResponse?.data?.available_quantity || 0;
-                      const inventoryType =
-                        invResponse?.data?.inventory_type || "none";
-                      console.log(
-                        `[Order View] Purchase inventory: ${purchaseInventory}, Type: ${inventoryType}`,
-                      );
-
-                      // Now fetch sales inventory for the same product (for display purposes)
-                      $.ajax({
-                        url: `/api/inventory/sales/all?search=${productMasterId}`,
-                        method: "GET",
-                        dataType: "json",
-                        async: false,
-                        success: function (salesResponse) {
-                          console.log(
-                            `[Order View] Sales inventory response:`,
-                            salesResponse,
-                          );
-                          if (salesResponse?.data) {
-                            if (Array.isArray(salesResponse.data)) {
-                              salesInventory = salesResponse.data.reduce(
-                                (sum, inv) => {
-                                  return sum + (inv.quantity || 0);
-                                },
-                                0,
-                              );
-                            } else if (
-                              salesResponse.data.quantity !== undefined
-                            ) {
-                              salesInventory = salesResponse.data.quantity || 0;
-                            }
-                          }
-                          console.log(
-                            `[Order View] Sales inventory: ${salesInventory}`,
-                          );
-                        },
-                        error: function (xhr, status, error) {
-                          console.error(
-                            `[Order View] Error fetching sales inventory:`,
-                            status,
-                            error,
-                          );
-                          salesInventory = 0;
-                        },
-                      });
-
-                      // Calculate net inventory based on inventory type
-                      if (inventoryType === "finished_goods") {
-                        // For processed products: available_quantity is already unallocated FG stock
-                        netInventory = purchaseInventory; // No subtraction needed
-                        // Display: Raw Materials = 0, Finished Goods = available stock
-                        const tempPurchase = purchaseInventory;
-                        purchaseInventory = 0; // Raw materials
-                        salesInventory = tempPurchase; // Finished goods
-                      } else if (inventoryType === "raw_materials") {
-                        // For raw materials: available_quantity is raw material stock
-                        netInventory = purchaseInventory; // No subtraction needed
-                        salesInventory = 0; // No finished goods for raw materials
-                      } else {
-                        // Fallback
-                        netInventory = Math.max(
-                          0,
-                          purchaseInventory - salesInventory,
+                    async: false,
+                    success: function (prodResponse) {
+                      if (prodResponse?.data) {
+                        const fullProduct = prodResponse.data;
+                        speciesMasterId =
+                          fullProduct?.ProductCategoryMaster
+                            ?.species_master_id || null;
+                        console.log(
+                          `[Order View] Retrieved species ID: ${speciesMasterId}`,
                         );
                       }
-
-                      console.log(
-                        `[Order View] Final values - Raw Materials: ${purchaseInventory}, Finished Goods: ${salesInventory}, Net: ${netInventory}`,
-                      );
-
-                      showOrderViewModal(
-                        order,
-                        productName,
-                        productMasterId,
-                        speciesMasterId,
-                        quantityRequired,
-                        purchaseInventory,
-                        salesInventory,
-                        netInventory,
-                      );
                     },
                     error: function (xhr, status, error) {
                       console.error(
-                        `[Order View] Error fetching purchase inventory:`,
-                        status,
+                        `Error fetching product master ${productMasterId}:`,
                         error,
-                      );
-                      showOrderViewModal(
-                        order,
-                        productName,
-                        productMasterId,
-                        speciesMasterId,
-                        quantityRequired,
-                        purchaseInventory,
-                        salesInventory,
-                        netInventory,
                       );
                     },
                   });
-                } else {
-                  showOrderViewModal(
-                    order,
-                    productName,
-                    productMasterId,
-                    speciesMasterId,
-                    quantityRequired,
-                    purchaseInventory,
-                    salesInventory,
-                    netInventory,
+
+                  console.log(
+                    `[Order View] Product: ${productName}, Species ID: ${speciesMasterId}`,
                   );
+                  // Fetch inventory for this product
+                  if (productMasterId) {
+                    $.ajax({
+                      url: `/api/orders/check-inventory/${productMasterId}`,
+                      method: "GET",
+                      dataType: "json",
+                      success: function (invResponse) {
+                        console.log(
+                          `[Order View] Purchase inventory response:`,
+                          invResponse,
+                        );
+                        purchaseInventory =
+                          invResponse?.data?.available_quantity || 0;
+                        const inventoryType =
+                          invResponse?.data?.inventory_type || "none";
+                        console.log(
+                          `[Order View] Purchase inventory: ${purchaseInventory}, Type: ${inventoryType}`,
+                        );
+
+                        // Now fetch sales inventory for the same product (for display purposes)
+                        $.ajax({
+                          url: `/api/inventory/sales/all?search=${productMasterId}`,
+                          method: "GET",
+                          dataType: "json",
+                          async: false,
+                          success: function (salesResponse) {
+                            console.log(
+                              `[Order View] Sales inventory response:`,
+                              salesResponse,
+                            );
+                            if (salesResponse?.data) {
+                              if (Array.isArray(salesResponse.data)) {
+                                salesInventory = salesResponse.data.reduce(
+                                  (sum, inv) => {
+                                    return sum + (inv.quantity || 0);
+                                  },
+                                  0,
+                                );
+                              } else if (
+                                salesResponse.data.quantity !== undefined
+                              ) {
+                                salesInventory =
+                                  salesResponse.data.quantity || 0;
+                              }
+                            }
+                            console.log(
+                              `[Order View] Sales inventory: ${salesInventory}`,
+                            );
+                          },
+                          error: function (xhr, status, error) {
+                            console.error(
+                              `[Order View] Error fetching sales inventory:`,
+                              status,
+                              error,
+                            );
+                            salesInventory = 0;
+                          },
+                        });
+
+                        // Calculate net inventory based on inventory type
+                        if (inventoryType === "finished_goods") {
+                          // For processed products: available_quantity is already unallocated FG stock
+                          netInventory = purchaseInventory; // No subtraction needed
+                          // Display: Raw Materials = 0, Finished Goods = available stock
+                          const tempPurchase = purchaseInventory;
+                          purchaseInventory = 0; // Raw materials
+                          salesInventory = tempPurchase; // Finished goods
+                        } else if (inventoryType === "raw_materials") {
+                          // For raw materials: available_quantity is raw material stock
+                          netInventory = purchaseInventory; // No subtraction needed
+                          salesInventory = 0; // No finished goods for raw materials
+                        } else {
+                          // Fallback
+                          netInventory = Math.max(
+                            0,
+                            purchaseInventory - salesInventory,
+                          );
+                        }
+
+                        console.log(
+                          `[Order View] Final values - Raw Materials: ${purchaseInventory}, Finished Goods: ${salesInventory}, Net: ${netInventory}`,
+                        );
+
+                        showOrderViewModal(
+                          order,
+                          productName,
+                          productMasterId,
+                          speciesMasterId,
+                          quantityRequired,
+                          purchaseInventory,
+                          salesInventory,
+                          netInventory,
+                        );
+                      },
+                      error: function (xhr, status, error) {
+                        console.error(
+                          `[Order View] Error fetching purchase inventory:`,
+                          status,
+                          error,
+                        );
+                        showOrderViewModal(
+                          order,
+                          productName,
+                          productMasterId,
+                          speciesMasterId,
+                          quantityRequired,
+                          purchaseInventory,
+                          salesInventory,
+                          netInventory,
+                        );
+                      },
+                    });
+                  } else {
+                    showOrderViewModal(
+                      order,
+                      productName,
+                      productMasterId,
+                      speciesMasterId,
+                      quantityRequired,
+                      purchaseInventory,
+                      salesInventory,
+                      netInventory,
+                    );
+                  }
+                } else {
+                  toastr.warning("Product not found in this order!", "Warning");
                 }
               } else {
                 toastr.warning("No products found in this order!", "Warning");
@@ -3951,7 +3984,7 @@
 
         // First, allocate stock automatically
         $.ajax({
-          url: "/api/order/allocate-stock",
+          url: "/api/orders/allocate-stock",
           method: "POST",
           data: JSON.stringify({
             order_id: orderId,
@@ -5445,7 +5478,7 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/order?order_id=" + order_id,
+                  url: "/api/orders?order_id=" + order_id,
                   method: "DELETE",
                   contentType: "application/json",
                 })
@@ -5497,7 +5530,7 @@
               btnClass: "btn-red",
               action: function () {
                 $.ajax({
-                  url: "/api/order/confirm",
+                  url: "/api/orders/confirm",
                   method: "POST",
                   data: JSON.stringify({
                     order_id: order_id,
@@ -5559,7 +5592,7 @@
               action: function () {
                 $.ajax({
                   url:
-                    "/api/order/product?order_product_id=" + order_product_id,
+                    "/api/orders/product?order_product_id=" + order_product_id,
                   method: "delete",
                 })
                   .done(function (response) {
@@ -5651,7 +5684,7 @@
           OrderProducts,
         );
 
-        let url = "/api/order";
+        let url = "/api/orders";
         let method = "POST";
         let input_params = {
           order_date: $("#order_date").val(),
@@ -5667,7 +5700,7 @@
         };
 
         if (order_id && order_id != "null") {
-          url = "/api/order";
+          url = "/api/orders";
           method = "PUT";
 
           input_params = {
@@ -5916,7 +5949,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/order?customer_id=" + customer_id,
+            url: "/api/orders?customer_id=" + customer_id,
             error: function (xhr, error, code) {
               $("#customerOrdersTable").DataTable().destroy();
               $("#customerOrdersTable").DataTable({
@@ -6600,7 +6633,7 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: `/api/order/product/payment/items?sales_payment_id=${sales_payment_id}&customer_master_id=${customer_master_id}`,
+            url: `/api/orders/product/payment/items?sales_payment_id=${sales_payment_id}&customer_master_id=${customer_master_id}`,
             error: function (xhr, error, code) {
               $("#paymentProductTable").DataTable().destroy();
               $("#paymentProductTable").DataTable({
@@ -6714,7 +6747,7 @@
             placeholder: "Choose a order no",
             allowClear: true,
             ajax: {
-              url: `/api/order/numbers?customer_master_id=${customer_master_id}&sales_payment_id=${view_sales_payment_id}`,
+              url: `/api/orders/numbers?customer_master_id=${customer_master_id}&sales_payment_id=${view_sales_payment_id}`,
               data: (params) => {
                 params.page = params.page || 1;
                 params.length = 25;

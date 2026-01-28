@@ -1177,18 +1177,48 @@ export const GetAllocationData = ({ start, length, search }) => {
               order_id: order.id,
               is_active: true,
             },
-            attributes: ["delivery_status"],
+            attributes: ["id", "product_master_id", "quantity"],
           });
 
-          // Calculate allocation status
+          // Check for SalesAllocation records to determine allocation status
+          const salesAllocations = await models.SalesAllocation.findAll({
+            where: {
+              order_id: order.id,
+              is_active: true,
+            },
+            attributes: [
+              "allocation_status",
+              "allocated_quantity",
+              "order_product_id",
+            ],
+          });
+
+          // Calculate allocation status based on SalesAllocation records
           let allocation_status = "Pending";
-          if (orderProducts.length > 0) {
-            const allocatedCount = orderProducts.filter(
-              (p) => p.delivery_status === "ALLOCATED",
+          if (orderProducts.length > 0 && salesAllocations.length > 0) {
+            // Check if all order products have allocations
+            const productsWithAllocations = new Set(
+              salesAllocations.map((alloc) => alloc.order_product_id),
+            );
+
+            const allocatedProductCount = orderProducts.filter((product) =>
+              productsWithAllocations.has(product.id),
             ).length;
-            if (allocatedCount === orderProducts.length) {
-              allocation_status = "Allocated";
-            } else if (allocatedCount > 0) {
+
+            if (allocatedProductCount === orderProducts.length) {
+              // Check if all allocations are confirmed (ALLOCATED or COMPLETED)
+              const confirmedAllocations = salesAllocations.filter(
+                (alloc) =>
+                  alloc.allocation_status === "ALLOCATED" ||
+                  alloc.allocation_status === "COMPLETED",
+              ).length;
+
+              if (confirmedAllocations === salesAllocations.length) {
+                allocation_status = "Allocated";
+              } else {
+                allocation_status = "Partial";
+              }
+            } else if (allocatedProductCount > 0) {
               allocation_status = "Partial";
             }
           }

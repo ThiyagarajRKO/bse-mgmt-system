@@ -46,11 +46,22 @@ module.exports = (sequelize) => {
           "PLANNED",
           "RAW_ISSUED",
           "IN_PRODUCTION",
+          "READY_FOR_QA",
+          "QA_APPROVED",
           "COMPLETED",
           "CLOSED",
           "CANCELLED",
         ),
         defaultValue: "PLANNED",
+      },
+      delivery_status: {
+        type: DataTypes.ENUM(
+          "Initiated",
+          "In Transit",
+          "Delivered",
+          "dispatched",
+        ),
+        defaultValue: "Initiated",
       },
       issued_quantity_kg: {
         type: DataTypes.DECIMAL(10, 2),
