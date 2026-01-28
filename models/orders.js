@@ -1,5 +1,5 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, Op } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class Orders extends Model {
@@ -88,6 +88,13 @@ module.exports = (sequelize, DataTypes) => {
       Orders.hasMany(models.PeeledDispatches, {
         foreignKey: "order_id",
         as: "peeled_dispatches",
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      });
+
+      Orders.hasMany(models.SalesAllocation, {
+        foreignKey: "order_id",
+        as: "SalesAllocations",
         onUpdate: "CASCADE",
         onDelete: "SET NULL",
       });
@@ -265,6 +272,39 @@ module.exports = (sequelize, DataTypes) => {
     try {
       data.updated_at = new Date();
       data.updated_by = options.profile_id;
+
+      // Check if delivery_status is being changed to "dispatched"
+      const previousDeliveryStatus = data._previousDataValues?.delivery_status;
+      console.log(
+        `Order update: delivery_status changing from "${previousDeliveryStatus}" to "${data.delivery_status}"`,
+      );
+
+      if (
+        data.delivery_status === "dispatched" &&
+        previousDeliveryStatus !== "dispatched"
+      ) {
+        console.log(
+          `Updating allocation status for order ${data.id} to COMPLETED`,
+        );
+        // Update allocation status to COMPLETED when delivery_status becomes dispatched
+        const SalesAllocation = sequelize.models.SalesAllocation;
+        if (SalesAllocation) {
+          const [affectedRows] = await SalesAllocation.update(
+            { allocation_status: "COMPLETED" },
+            {
+              where: {
+                order_id: data.id,
+                allocation_status: {
+                  [Op.ne]: "CANCELLED", // Don't update cancelled allocations
+                },
+              },
+            },
+          );
+          console.log(`Updated ${affectedRows} allocation records`);
+        } else {
+          console.log("SalesAllocation model not found");
+        }
+      }
     } catch (err) {
       console.log("Error while updating an Orders data", err?.message || err);
     }

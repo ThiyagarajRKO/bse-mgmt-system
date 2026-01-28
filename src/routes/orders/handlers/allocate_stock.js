@@ -46,7 +46,7 @@ export const AllocateStock = async (
       }
 
       // Check if finished goods are available
-      const fgInventory = await models.InventoryStock.findAll({
+      const fgInventory = await models.inventory_stock.findAll({
         where: {
           product_id: product_id,
           available_qty: {
@@ -105,7 +105,7 @@ export const AllocateStock = async (
           );
 
           // Create inventory transaction for allocation
-          await models.InventoryTransaction.create(
+          await models.inventory_transaction.create(
             {
               stock_id: inventory.id, // Use inventory.id, not inventory.stock_id
               product_id: product_id,
@@ -122,7 +122,7 @@ export const AllocateStock = async (
           );
 
           // Update inventory stock
-          const currentStock = await models.InventoryStock.findByPk(
+          const currentStock = await models.inventory_stock.findByPk(
             inventory.id,
             { transaction },
           );

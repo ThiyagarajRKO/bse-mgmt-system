@@ -5,15 +5,15 @@ module.exports = (sequelize, DataTypes) => {
   class SalesAllocation extends Model {
     static associate(models) {
       // Belongs to Order and OrderProduct
-      if (models.Order) {
-        this.belongsTo(models.Order, {
+      if (models.Orders) {
+        this.belongsTo(models.Orders, {
           foreignKey: "order_id",
           as: "order",
         });
       }
 
-      if (models.OrderProduct) {
-        this.belongsTo(models.OrderProduct, {
+      if (models.OrderProducts) {
+        this.belongsTo(models.OrderProducts, {
           foreignKey: "order_product_id",
           as: "orderProduct",
         });
@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
           "PENDING",
           "ALLOCATED",
           "PRODUCTION_IN_PROGRESS",
-          "COMPLETED"
+          "COMPLETED",
         ),
         defaultValue: "PENDING",
         allowNull: false,
@@ -62,13 +62,33 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0,
       },
+      ordered_quantity: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
       allocation_date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
       },
       allocated_by: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.UUID,
         allowNull: false,
+        references: {
+          model: "user_profiles",
+          key: "id",
+        },
+      },
+      action_required: {
+        type: DataTypes.ENUM(
+          "DISPATCH",
+          "BEGIN_PRODUCTION",
+          "RAISE_PURCHASE_REQUEST",
+        ),
+        allowNull: true,
+      },
+      inventory_details: {
+        type: DataTypes.JSONB,
+        allowNull: true,
       },
       remarks: {
         type: DataTypes.TEXT,
@@ -80,7 +100,7 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "sales_allocations",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   return SalesAllocation;

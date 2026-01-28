@@ -1,6 +1,6 @@
 const models = require("../../../../models");
 
-export const CheckInventory = async (
+const CheckInventory = async (
   { product_master_id, order_id },
   session,
   fastify,
@@ -245,8 +245,7 @@ export const CheckInventory = async (
       const inventoryQuery = `
         SELECT COALESCE(SUM(pi.quantity), 0) as available_qty
         FROM purchase_inventory pi
-        INNER JOIN procurement_products pp ON pi.procurement_product_id = pp.id
-        WHERE pp.product_master_id = :product_id
+        WHERE pi.product_master_id = :product_id
         AND pi.is_active = true
       `;
 
@@ -284,3 +283,5 @@ export const CheckInventory = async (
     }
   });
 };
+
+module.exports = { CheckInventory };

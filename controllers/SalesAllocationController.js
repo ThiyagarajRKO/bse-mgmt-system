@@ -1,25 +1,21 @@
 "use strict";
 
 const SalesAllocationService = require("../../services/SalesAllocationService");
-const ProductionDemandService = require("../../services/ProductionDemandService");
 
 class SalesAllocationController {
   /**
-   * POST /sales/allocations
-   * Allocate an order line to production
+   * Allocate order line items to production
    */
   async allocateOrderLine(request, reply) {
     try {
-      const { order_id, order_product_id, allocated_quantity, remarks } =
+      const { order_id, order_product_id, allocated_quantity, allocated_by } =
         request.body;
-      const allocated_by = request.user?.username || "system";
 
       const allocation = await SalesAllocationService.allocateOrderLine({
         order_id,
         order_product_id,
         allocated_quantity,
         allocated_by,
-        remarks,
       });
 
       return reply.code(201).send({
@@ -28,7 +24,6 @@ class SalesAllocationController {
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -37,38 +32,25 @@ class SalesAllocationController {
   }
 
   /**
-   * GET /sales/allocations
    * List allocations with filters
    */
   async listAllocations(request, reply) {
     try {
-      const {
-        order_id,
-        allocation_status,
-        allocated_by,
-        limit = 20,
-        offset = 0,
-      } = request.query;
-
-      const filters = {};
-      if (order_id) filters.order_id = order_id;
-      if (allocation_status) filters.allocation_status = allocation_status;
-      if (allocated_by) filters.allocated_by = allocated_by;
+      const { order_id, allocation_status, allocated_by, limit, offset } =
+        request.query;
 
       const allocations = await SalesAllocationService.listAllocations(
-        filters,
-        parseInt(limit),
-        parseInt(offset),
+        { order_id, allocation_status, allocated_by },
+        parseInt(limit) || 20,
+        parseInt(offset) || 0,
       );
 
       return reply.send({
         success: true,
         data: allocations,
-        pagination: { limit, offset },
       });
     } catch (error) {
-      request.log.error(error);
-      return reply.code(400).send({
+      return reply.code(500).send({
         success: false,
         message: error.message,
       });
@@ -76,7 +58,6 @@ class SalesAllocationController {
   }
 
   /**
-   * GET /sales/allocations/:id
    * Get allocation details
    */
   async getAllocationDetails(request, reply) {
@@ -90,8 +71,7 @@ class SalesAllocationController {
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
-      return reply.code(400).send({
+      return reply.code(404).send({
         success: false,
         message: error.message,
       });
@@ -99,26 +79,24 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/confirm
-   * Confirm allocation (PENDING -> ALLOCATED)
+   * Confirm allocation
    */
   async confirmAllocation(request, reply) {
     try {
       const { id } = request.params;
-      const confirmed_by = request.user?.username || "system";
+      const { allocated_by } = request.body;
 
       const allocation = await SalesAllocationService.confirmAllocation(
         id,
-        confirmed_by,
+        allocated_by,
       );
 
       return reply.send({
         success: true,
-        message: "Allocation confirmed",
+        message: "Allocation confirmed successfully",
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -127,14 +105,12 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/fulfill
    * Update fulfillment progress
    */
   async updateFulfillment(request, reply) {
     try {
       const { id } = request.params;
-      const { fulfilled_quantity } = request.body;
-      const updated_by = request.user?.username || "system";
+      const { fulfilled_quantity, updated_by } = request.body;
 
       const allocation = await SalesAllocationService.updateFulfillment(
         id,
@@ -144,11 +120,10 @@ class SalesAllocationController {
 
       return reply.send({
         success: true,
-        message: "Fulfillment updated",
+        message: "Fulfillment updated successfully",
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -157,13 +132,12 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/complete
-   * Complete an allocation
+   * Complete allocation
    */
   async completeAllocation(request, reply) {
     try {
       const { id } = request.params;
-      const completed_by = request.user?.username || "system";
+      const { completed_by } = request.body;
 
       const allocation = await SalesAllocationService.completeAllocation(
         id,
@@ -172,11 +146,10 @@ class SalesAllocationController {
 
       return reply.send({
         success: true,
-        message: "Allocation completed",
+        message: "Allocation completed successfully",
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -185,14 +158,12 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/cancel
-   * Cancel an allocation
+   * Cancel allocation
    */
   async cancelAllocation(request, reply) {
     try {
       const { id } = request.params;
-      const { reason } = request.body;
-      const cancelled_by = request.user?.username || "system";
+      const { cancelled_by, reason } = request.body;
 
       const allocation = await SalesAllocationService.cancelAllocation(
         id,
@@ -202,11 +173,10 @@ class SalesAllocationController {
 
       return reply.send({
         success: true,
-        message: "Allocation cancelled",
+        message: "Allocation cancelled successfully",
         data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -215,34 +185,24 @@ class SalesAllocationController {
   }
 
   /**
-   * GET /sales/allocations/:id/create-demands
-   * Create production demands from allocation
+   * Create demands from allocation
    */
   async createDemandsFromAllocation(request, reply) {
     try {
       const { id } = request.params;
-      const { product_master_id, demanded_quantity, priority, required_date } =
-        request.body;
+      const { created_by } = request.body;
 
-      // Get allocation details
-      const allocation = await SalesAllocationService.getAllocationDetails(id);
+      const result = await SalesAllocationService.createDemandsFromAllocation(
+        id,
+        created_by,
+      );
 
-      // Create demand
-      const demand = await ProductionDemandService.createDemandFromAllocation({
-        sales_allocation_id: id,
-        product_master_id,
-        demanded_quantity,
-        priority,
-        required_date,
-      });
-
-      return reply.code(201).send({
+      return reply.send({
         success: true,
-        message: "Production demand created from allocation",
-        data: demand,
+        message: "Production demands created successfully",
+        data: result,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -251,8 +211,7 @@ class SalesAllocationController {
   }
 
   /**
-   * GET /sales/orders/:orderId/allocation-summary
-   * Get allocation summary for an order
+   * Get order allocation summary
    */
   async getOrderAllocationSummary(request, reply) {
     try {
@@ -266,8 +225,7 @@ class SalesAllocationController {
         data: summary,
       });
     } catch (error) {
-      request.log.error(error);
-      return reply.code(400).send({
+      return reply.code(404).send({
         success: false,
         message: error.message,
       });
@@ -275,28 +233,25 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/dispatch
-   * Dispatch an allocation (mark as ready for dispatch)
+   * Dispatch allocation
    */
   async dispatchAllocation(request, reply) {
     try {
       const { id } = request.params;
-      const { remarks } = request.body;
-      const userId = request.user?.id || request.user?.username;
+      const { dispatched_by, remarks } = request.body;
 
-      const result = await SalesAllocationService.dispatchAllocation(
+      const allocation = await SalesAllocationService.dispatchAllocation(
         id,
-        userId,
+        dispatched_by,
         remarks,
       );
 
       return reply.send({
         success: true,
         message: "Allocation dispatched successfully",
-        data: result,
+        data: allocation,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -305,19 +260,18 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/begin-production
-   * Begin production for an allocation
+   * Begin production for allocation
    */
   async beginProduction(request, reply) {
     try {
       const { id } = request.params;
-      const { production_notes, expected_yield } = request.body;
-      const userId = request.user?.id || request.user?.username;
+      const { started_by, production_data } = request.body;
 
-      const result = await SalesAllocationService.beginProduction(id, userId, {
-        production_notes,
-        expected_yield,
-      });
+      const result = await SalesAllocationService.beginProduction(
+        id,
+        started_by,
+        production_data,
+      );
 
       return reply.send({
         success: true,
@@ -325,7 +279,6 @@ class SalesAllocationController {
         data: result,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,
@@ -334,18 +287,16 @@ class SalesAllocationController {
   }
 
   /**
-   * PUT /sales/allocations/:id/raise-purchase-request
-   * Raise purchase request for an allocation
+   * Raise purchase request for allocation
    */
   async raisePurchaseRequest(request, reply) {
     try {
       const { id } = request.params;
-      const { remarks } = request.body;
-      const userId = request.user?.id || request.user?.username;
+      const { requested_by, remarks } = request.body;
 
       const result = await SalesAllocationService.raisePurchaseRequest(
         id,
-        userId,
+        requested_by,
         remarks,
       );
 
@@ -355,7 +306,6 @@ class SalesAllocationController {
         data: result,
       });
     } catch (error) {
-      request.log.error(error);
       return reply.code(400).send({
         success: false,
         message: error.message,

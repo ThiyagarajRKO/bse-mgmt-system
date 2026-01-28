@@ -30,12 +30,12 @@ class SalesAllocationService {
     }
 
     // Verify order and order_product exist
-    const order = await db.Order.findByPk(order_id);
+    const order = await db.Orders.findByPk(order_id);
     if (!order) {
       throw new Error(`Order not found: ${order_id}`);
     }
 
-    const orderProduct = await db.OrderProduct.findByPk(order_product_id);
+    const orderProduct = await db.OrderProducts.findByPk(order_product_id);
     if (!orderProduct) {
       throw new Error(`OrderProduct not found: ${order_product_id}`);
     }
@@ -72,6 +72,7 @@ class SalesAllocationService {
       order_id,
       order_product_id,
       allocated_quantity,
+      ordered_quantity: orderProduct.quantity, // Add ordered_quantity from order product
       fulfilled_quantity: 0,
       allocation_status: "PENDING",
       allocation_date: new Date(),
@@ -152,10 +153,13 @@ class SalesAllocationService {
     // Auto-update status based on fulfillment
     if (fulfilledQty === 0) {
       allocation.allocation_status = "ALLOCATED";
+      allocation.action_required = null;
     } else if (fulfilledQty < allocation.allocated_quantity) {
       allocation.allocation_status = "PRODUCTION_IN_PROGRESS";
+      allocation.action_required = null;
     } else if (fulfilledQty === allocation.allocated_quantity) {
       allocation.allocation_status = "COMPLETED";
+      allocation.action_required = "DISPATCH";
     }
 
     await allocation.save();
@@ -182,6 +186,7 @@ class SalesAllocationService {
     }
 
     allocation.allocation_status = "COMPLETED";
+    allocation.action_required = "DISPATCH";
     await allocation.save();
 
     return allocation;
@@ -361,6 +366,143 @@ class SalesAllocationService {
     await allocation.save();
 
     return allocation;
+  }
+
+  /**
+   * Dispatch an allocation
+   * @param {string} allocationId - Allocation ID
+   * @param {string} dispatchedBy - User who dispatched
+   * @param {string} remarks - Dispatch remarks
+   * @returns {Promise<Object>} Updated allocation
+   */
+  async dispatchAllocation(allocationId, dispatchedBy, remarks = "") {
+    const allocation = await db.SalesAllocation.findByPk(allocationId, {
+      include: [{ model: db.OrderProducts, as: "orderProduct" }],
+    });
+
+    if (!allocation) {
+      throw new Error(`Allocation not found: ${allocationId}`);
+    }
+
+    if (allocation.action_required !== "DISPATCH") {
+      throw new Error(`Allocation ${allocationId} is not ready for dispatch`);
+    }
+
+    // Get product master ID and quantity to dispatch
+    const productMasterId = allocation.orderProduct?.product_master_id;
+    const dispatchQuantity = allocation.allocated_quantity;
+
+    if (!productMasterId) {
+      throw new Error(
+        `Product master ID not found for allocation ${allocationId}`,
+      );
+    }
+
+    // Reduce sales inventory
+    const InventoryCheckService = require("./InventoryCheckService");
+    await InventoryCheckService.reduceSalesInventory(
+      productMasterId,
+      dispatchQuantity,
+      allocation.order_id,
+    );
+
+    // Update order delivery status to dispatched
+    await db.Orders.update(
+      { delivery_status: "DISPATCHED" },
+      { where: { id: allocation.order_id } },
+    );
+
+    allocation.allocation_status = "COMPLETED";
+    allocation.remarks = `Dispatched by ${dispatchedBy}. ${remarks}`.trim();
+    await allocation.save();
+
+    return allocation;
+  }
+
+  /**
+   * Begin production for an allocation
+   * @param {string} allocationId - Allocation ID
+   * @param {string} startedBy - User who started production
+   * @param {Object} productionData - Production details
+   * @returns {Promise<Object>} Updated allocation and production order
+   */
+  async beginProduction(allocationId, startedBy, productionData = {}) {
+    const allocation = await db.SalesAllocation.findByPk(allocationId, {
+      include: [
+        { model: db.Order, as: "order" },
+        { model: db.OrderProducts, as: "orderProduct" },
+      ],
+    });
+
+    if (!allocation) {
+      throw new Error(`Allocation not found: ${allocationId}`);
+    }
+
+    if (allocation.action_required !== "BEGIN_PRODUCTION") {
+      throw new Error(`Allocation ${allocationId} is not ready for production`);
+    }
+
+    // Create production order
+    const productionOrder = await db.ProductionOrders.create({
+      order_id: allocation.order_id,
+      sales_allocation_id: allocation.id,
+      order_product_id: allocation.order_product_id,
+      product_master_id: allocation.orderProduct?.product_master_id,
+      planned_quantity: allocation.allocated_quantity,
+      expected_yield_quantity:
+        productionData.expected_yield || allocation.allocated_quantity,
+      production_status: "IN_PRODUCTION",
+      production_notes: productionData.production_notes || "",
+      started_by: startedBy,
+      started_at: new Date(),
+    });
+
+    allocation.allocation_status = "PRODUCTION_IN_PROGRESS";
+    allocation.remarks =
+      `Production started by ${startedBy}. ${productionData.production_notes || ""}`.trim();
+    await allocation.save();
+
+    return {
+      allocation,
+      productionOrder,
+    };
+  }
+
+  /**
+   * Raise purchase request for an allocation
+   * @param {string} allocationId - Allocation ID
+   * @param {string} requestedBy - User who requested purchase
+   * @param {string} remarks - Purchase request remarks
+   * @returns {Promise<Object>} Updated allocation and purchase requests
+   */
+  async raisePurchaseRequest(allocationId, requestedBy, remarks = "") {
+    const allocation = await db.SalesAllocation.findByPk(allocationId);
+    if (!allocation) {
+      throw new Error(`Allocation not found: ${allocationId}`);
+    }
+
+    if (allocation.action_required !== "RAISE_PURCHASE_REQUEST") {
+      throw new Error(
+        `Allocation ${allocationId} does not require purchase request`,
+      );
+    }
+
+    // Get purchase requests for this allocation/order
+    const PurchaseRequestService = require("./PurchaseRequestService");
+    const purchaseRequests =
+      await PurchaseRequestService.getPurchaseRequestsForOrder(
+        allocation.order_id,
+      );
+
+    allocation.allocation_status = "COMPLETED";
+    allocation.remarks =
+      `Purchase request raised by ${requestedBy}. ${remarks}`.trim();
+    await allocation.save();
+
+    return {
+      allocation,
+      purchaseRequests,
+    };
   }
 }
 
