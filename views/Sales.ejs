@@ -3315,7 +3315,7 @@
               targets: [3],
               className: "text-left",
               render: function (data, type, row) {
-                return data || 0;
+                return `<span class="quantity-value">${data || 0}</span>`;
               },
             },
             {
@@ -3338,13 +3338,13 @@
                 const isAllocated =
                   data === "Allocated" || data === "ALLOCATED";
                 const statusText = isAllocated ? "Allocated" : "Pending";
-                const statusColor = isAllocated
-                  ? 'style="color: #EA5455;"'
-                  : "text-warning";
+                const statusClass = isAllocated
+                  ? "allocated-status"
+                  : "pending-status";
                 const statusIcon = isAllocated
                   ? "fa-circle-check"
                   : "fa-hourglass-half";
-                return `<span ${statusColor}>${statusText} <i class="fa-solid ${statusIcon}"></i></span>`;
+                return `<span class="${statusClass}">${statusText} <i class="fa-solid ${statusIcon}"></i></span>`;
               },
             },
           ],
@@ -3368,6 +3368,13 @@
                   dataType: "json",
                   xhrFields: { withCredentials: true },
                   success: function (response) {
+                    console.log("Inventory API Response:", {
+                      productId,
+                      response: response?.data,
+                      quantity: response?.data?.available_quantity,
+                      inventoryType: response?.data?.inventory_type,
+                      breakdown: response?.data?.breakdown,
+                    });
                     const quantity = response?.data?.available_quantity || 0;
                     const inventoryType =
                       response?.data?.inventory_type || "none";
@@ -3407,9 +3414,16 @@
                         badgeClass = "bg-danger";
                       }
 
-                      $element.html(
-                        `<span class="badge" ${badgeClass} title="${stockText}">${stockText}</span>`,
-                      );
+                      let badgeHtml = "";
+                      if (badgeClass.startsWith("style=")) {
+                        // Inline style
+                        badgeHtml = `<span class="badge" ${badgeClass} title="${stockText}">${stockText}</span>`;
+                      } else {
+                        // CSS class
+                        badgeHtml = `<span class="badge ${badgeClass}" title="${stockText}">${stockText}</span>`;
+                      }
+
+                      $element.html(badgeHtml);
                     }
                   },
                   error: function (xhr) {
@@ -3882,8 +3896,8 @@
                       <div style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="padding: 8px; background: #f5f5f5; border-radius: 3px; border-left: 3px solid #627293;">
                           <small style="color: #666;">
-                            <div><strong>Raw Materials in Stock:</strong> ${purchaseInventory} units</div>
-                            <div><strong>Finished Goods:</strong> ${salesInventory} units</div>
+                            <div><strong>Raw Materials in Stock:</strong> <span class="badge" style="background-color: #EA5455; color: white;">${purchaseInventory} units</span></div>
+                            <div><strong>Finished Goods:</strong> <span class="badge" style="background-color: #EA5455; color: white;">${salesInventory} units</span></div>
                           </small>
                         </div>
                         <p>
@@ -3893,7 +3907,7 @@
                               ? "badge-success"
                               : "badge-danger"
                           }" style="font-size: 1em; padding: 8px 12px;">
-                            Total Available: ${netInventory} units
+                            Total Available: <span class="badge" style="background-color: #EA5455; color: white;">${netInventory} units</span>
                           </span>
                         </p>
                       </div>
@@ -4484,13 +4498,17 @@
 
               console.log(
                 `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
-                  netInventory > 0 ? "Available" : "Out of Stock"
+                  netInventory > 0
+                    ? "Available"
+                    : '<span class="out-of-stock-status">Out of Stock</span>'
                 }`,
               );
 
-              const statusColor = netInventory > 0 ? "#4caf50" : "#d32f2f";
+              const statusColor = netInventory > 0 ? "#EA5455" : "#EA5455";
               const statusText =
-                netInventory > 0 ? "Available" : "Out of Stock";
+                netInventory > 0
+                  ? "Available"
+                  : '<span class="out-of-stock-status">Out of Stock</span>';
 
               materialsHtml += `
                 <div style="
@@ -4520,7 +4538,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                           <div>
                             <span style="color: #999;">Current in Stock:</span>
-                            <strong style="color: #e3e3e3; display: block;">${rawMaterialInventory} units</strong>
+                            <span class="badge" style="background-color: #6c757d; color: white;">${rawMaterialInventory} units</span>
                           </div>
                           <div>
                             <span style="color: #999;">Price per Unit:</span>
@@ -4534,7 +4552,7 @@
                       <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
                           <span style="color: #999; font-size: 12px;">Available in Stock:</span>
-                          <strong style="color: ${statusColor}; display: block; font-size: 14px;">${netInventory} units</strong>
+                          <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
                         </div>
                       </div>
                     </div>
@@ -4636,7 +4654,7 @@
               }%</span>
               <span><strong>Urgency:</strong> <span style="color: ${
                 insights.urgency === "HIGH"
-                  ? "#dc3545"
+                  ? "#EA5455"
                   : insights.urgency === "MEDIUM"
                     ? "#ffc107"
                     : "#28a745"
@@ -4741,7 +4759,7 @@
               <strong>Confidence:</strong> ${insights.confidence}% | 
               <strong>Urgency:</strong> <span style="color: ${
                 insights.urgency === "HIGH"
-                  ? "#dc3545"
+                  ? "#EA5455"
                   : insights.urgency === "MEDIUM"
                     ? "#ffc107"
                     : "#28a745"
@@ -5038,8 +5056,10 @@
         const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
         const roundedQuantity = Math.ceil(bufferedQuantity);
         const hasStock = availableStock >= roundedQuantity;
-        const stockColor = hasStock ? "#28a745" : "#dc3545";
-        const stockStatus = hasStock ? "✓ Available" : "✗ Out of Stock";
+        const stockColor = hasStock ? "#EA5455" : "#EA5455";
+        const stockStatus = hasStock
+          ? '<span class="badge" style="background-color: #EA5455; color: white;">✓ Available</span>'
+          : '<span class="badge" style="background-color: #EA5455; color: white;">✗ Out of Stock</span>';
 
         // Calculate quantity to purchase after deducting available stock
         const quantityToPurchase = Math.max(
@@ -5054,7 +5074,7 @@
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #fff; border-radius: 3px; border-left: 3px solid ${stockColor};">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Available Stock:</strong> ${availableStock} units</span>
+                <span><strong>Available Stock:</strong> <span class="badge" style="background-color: ${stockColor}; color: white;">${availableStock} units</span></span>
                 <span style="color: ${stockColor}; font-weight: bold;">${stockStatus}</span>
               </div>
             </div>
@@ -5083,7 +5103,7 @@
             </div>
             ${
               !hasStock
-                ? '<div style="margin-top: 10px; color: #dc3545; font-weight: bold;">⚠️ Current stock insufficient to fulfill complete requirement!</div>'
+                ? '<div style="margin-top: 10px; color: #EA5455; font-weight: bold;">⚠️ Current stock insufficient to fulfill complete requirement!</div>'
                 : '<div style="margin-top: 10px; color: #28a745; font-weight: bold;">✓ Sufficient stock available - no additional purchase needed!</div>'
             }
             <input type="hidden" id="single-raw-material-id" value="${materialId}">

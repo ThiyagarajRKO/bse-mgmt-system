@@ -186,3 +186,33 @@
   padding-right: 5%;
   padding-bottom: 2%;
 }
+
+/* Make available stock values red */
+.available-stock {
+  color: red !important;
+}
+
+/* Make stock quantity values in modals red */
+.modal-stock-quantity {
+  color: red !important;
+}
+
+/* Make out of stock status red */
+.out-of-stock-status {
+  color: red !important;
+}
+
+/* Make pending status red */
+.pending-status {
+  color: red !important;
+}
+
+/* Make quantity values grey */
+.quantity-value {
+  color: #6c757d !important;
+}
+
+/* Make allocated status red */
+.allocated-status {
+  color: red !important;
+}
