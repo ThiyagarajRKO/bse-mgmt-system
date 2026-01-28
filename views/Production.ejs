@@ -6122,7 +6122,7 @@
           toastr.info('Loading order for production...');
 
           // Fetch order details
-          const response = await fetch(`/api/order/${orderId}`);
+          const response = await fetch(`/api/orders/${orderId}`);
           if (!response.ok) {
             throw new Error('Failed to load order');
           }
@@ -6164,7 +6164,7 @@
           }));
 
           // Check stock for all products in the order
-          const stockResponse = await fetch('/api/order/check-stock', {
+          const stockResponse = await fetch('/api/orders/check-stock', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

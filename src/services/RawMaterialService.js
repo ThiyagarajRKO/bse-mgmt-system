@@ -52,6 +52,7 @@ export const RawMaterialService = {
       const rawProduct = await models.ProductMaster.create({
         product_name: productName,
         product_category_master_id: defaultCategory?.id,
+        species_master_id: species.id,
         size_master_id: sizeId,
         grade_master_id: null, // RAW cannot have grade
         derivative_master_id: null, // RAW is not a derivative
@@ -94,7 +95,7 @@ export const RawMaterialService = {
         unsizedProductId,
         {
           transaction,
-        }
+        },
       );
 
       if (!unsizedProduct || unsizedProduct.processing_state !== "RAW") {
@@ -104,7 +105,7 @@ export const RawMaterialService = {
       // Verify UNSIZED
       const unsizedSize = await models.SizeMaster.findByPk(
         unsizedProduct.size_master_id,
-        { transaction }
+        { transaction },
       );
 
       if (unsizedSize?.size !== "UNSIZED") {
@@ -128,7 +129,7 @@ export const RawMaterialService = {
         throw new Error(
           `Insufficient stock. Available: ${
             currentStock?.available_quantity || 0
-          }, Requested: ${totalSplit}`
+          }, Requested: ${totalSplit}`,
         );
       }
 
@@ -149,7 +150,7 @@ export const RawMaterialService = {
         {
           where: { product_id: unsizedProductId },
           transaction,
-        }
+        },
       );
 
       // Add sized inventory
@@ -194,7 +195,7 @@ export const RawMaterialService = {
               reserved_quantity: 0,
               warehouse_id: currentStock.warehouse_id, // Use same warehouse
             },
-            { transaction }
+            { transaction },
           );
         } else {
           await models.Inventory.increment(
@@ -202,12 +203,12 @@ export const RawMaterialService = {
             {
               where: { product_id: sizedProduct.id },
               transaction,
-            }
+            },
           );
         }
 
         console.log(
-          `  ✓ Split ${split.quantity} kg to ${sizedProduct.product_name}`
+          `  ✓ Split ${split.quantity} kg to ${sizedProduct.product_name}`,
         );
       }
 
@@ -220,7 +221,7 @@ export const RawMaterialService = {
       await transaction.commit();
 
       console.log(
-        `✅ Size split completed. UNSIZED ${unsizedProductId} reclassified`
+        `✅ Size split completed. UNSIZED ${unsizedProductId} reclassified`,
       );
 
       return {

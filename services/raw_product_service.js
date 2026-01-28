@@ -20,7 +20,7 @@ const { v4: uuidv4 } = require("uuid");
 function generateRawSku({ speciesCode, sizeCode }) {
   if (!speciesCode || !sizeCode) {
     throw new Error(
-      "Species code and size code are mandatory for RAW SKU generation"
+      "Species code and size code are mandatory for RAW SKU generation",
     );
   }
   return `${speciesCode}-WHL-RAW-${sizeCode}`;
@@ -38,7 +38,7 @@ function generateRawSku({ speciesCode, sizeCode }) {
 function generateRawProductName({ speciesName, sizeDisplay }) {
   if (!speciesName || !sizeDisplay) {
     throw new Error(
-      "Species name and size display are mandatory for RAW product name"
+      "Species name and size display are mandatory for RAW product name",
     );
   }
   return `${speciesName} – Whole – Raw – ${sizeDisplay}`;
@@ -60,7 +60,7 @@ function resolveRawHsn(speciesCategory, isFrozen = true) {
   const hsn = hsnMap[speciesCategory];
   if (!hsn) {
     throw new Error(
-      `Unsupported species category for RAW HSN resolution: ${speciesCategory}`
+      `Unsupported species category for RAW HSN resolution: ${speciesCategory}`,
     );
   }
   return hsn;
@@ -140,7 +140,7 @@ async function createRawProduct(sequelize, payload) {
         is_active: true,
         created_by: createdById,
       },
-      { validate: true }
+      { validate: true },
     );
   }
 
@@ -173,7 +173,7 @@ async function createRawProduct(sequelize, payload) {
         is_active: true,
         created_by: createdById,
       },
-      { validate: true }
+      { validate: true },
     );
   }
 
@@ -199,7 +199,7 @@ async function createRawProduct(sequelize, payload) {
       is_active: true,
       created_by: createdById,
     },
-    { validate: true }
+    { validate: true },
   );
 
   console.log(`✅ RAW Product created: ${productCode} (${productName})`);
@@ -229,7 +229,7 @@ async function splitUnsizedRaw(sequelize, payload) {
 
   if (!unsizedProductId || !splits || splits.length === 0) {
     throw new Error(
-      "Unsized product ID and at least one size split are mandatory"
+      "Unsized product ID and at least one size split are mandatory",
     );
   }
 
@@ -248,7 +248,7 @@ async function splitUnsizedRaw(sequelize, payload) {
   // Validate splits
   const totalSplit = splits.reduce((sum, s) => sum + s.weight, 0) + wasteWeight;
   console.log(
-    `   📊 Split check: UNSIZED=${unsizedProduct.product_code}, Total=${totalSplit}kg`
+    `   📊 Split check: UNSIZED=${unsizedProduct.product_code}, Total=${totalSplit}kg`,
   );
 
   // Find or create sized RAW products for each split
@@ -274,7 +274,7 @@ async function splitUnsizedRaw(sequelize, payload) {
     if (!sizedRawProduct) {
       // Auto-create sized RAW product
       const speciesRecord = await sequelize.models.SpeciesMaster.findByPk(
-        unsizedProduct.species_master_id
+        unsizedProduct.species_master_id,
       );
 
       sizedRawProduct = await createRawProduct(sequelize, {
@@ -335,7 +335,7 @@ function validateRawForProduction(product) {
   // Check if size is UNSIZED
   if (product.Size?.size === "UNSIZED") {
     throw new Error(
-      `Cannot issue UNSIZED raw material to production. Product must be sorted first: ${product.product_code}`
+      `Cannot issue UNSIZED raw material to production. Product must be sorted first: ${product.product_code}`,
     );
   }
 
@@ -358,7 +358,7 @@ function validateRawForSales(product) {
   // UNSIZED cannot be sold
   if (product.Size?.size === "UNSIZED") {
     throw new Error(
-      `Cannot sell UNSIZED raw material. Must be sorted and assigned a size first: ${product.product_code}`
+      `Cannot sell UNSIZED raw material. Must be sorted and assigned a size first: ${product.product_code}`,
     );
   }
 

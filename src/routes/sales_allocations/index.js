@@ -44,9 +44,9 @@ async function salesAllocationRoutes(fastify) {
     async (request, reply) => {
       return SalesAllocationController.createDemandsFromAllocation(
         request,
-        reply
+        reply,
       );
-    }
+    },
   );
 
   // Get order allocation summary
@@ -55,9 +55,30 @@ async function salesAllocationRoutes(fastify) {
     async (request, reply) => {
       return SalesAllocationController.getOrderAllocationSummary(
         request,
-        reply
+        reply,
       );
-    }
+    },
+  );
+
+  // Dispatch allocation
+  fastify.put("/sales/allocations/:id/dispatch", async (request, reply) => {
+    return SalesAllocationController.dispatchAllocation(request, reply);
+  });
+
+  // Begin production for allocation
+  fastify.put(
+    "/sales/allocations/:id/begin-production",
+    async (request, reply) => {
+      return SalesAllocationController.beginProduction(request, reply);
+    },
+  );
+
+  // Raise purchase request for allocation
+  fastify.put(
+    "/sales/allocations/:id/raise-purchase-request",
+    async (request, reply) => {
+      return SalesAllocationController.raisePurchaseRequest(request, reply);
+    },
   );
 }
 
