@@ -41,17 +41,17 @@ module.exports = (sequelize) => {
       });
 
       // Audit trail associations
-      this.belongsTo(models.UserProfile, {
+      this.belongsTo(models.UserProfiles, {
         foreignKey: "created_by",
         as: "createdByUser",
       });
 
-      this.belongsTo(models.UserProfile, {
+      this.belongsTo(models.UserProfiles, {
         foreignKey: "updated_by",
         as: "updatedByUser",
       });
 
-      this.belongsTo(models.UserProfile, {
+      this.belongsTo(models.UserProfiles, {
         foreignKey: "deleted_by",
         as: "deletedByUser",
       });
@@ -246,7 +246,7 @@ module.exports = (sequelize) => {
       createdAt: "created_at",
       updatedAt: "updated_at",
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   return SpeciesDerivativeSizeMapping;
