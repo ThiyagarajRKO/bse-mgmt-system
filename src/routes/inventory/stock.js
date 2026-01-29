@@ -14,6 +14,7 @@ export default async (fastify) => {
           status,
           product_id,
           species_id,
+          order_id,
           page = 1,
           limit = 50,
         } = request.query;
@@ -22,6 +23,31 @@ export default async (fastify) => {
         if (warehouse) where.warehouse = warehouse;
         if (status) where.status = status;
         if (product_id) where.product_id = product_id;
+
+        // If order_id is provided, filter inventory for products in that order
+        let orderProductIds = [];
+        if (order_id) {
+          const orderProducts = await fastify.models.order_products.findAll({
+            where: { order_id: order_id, is_active: true },
+            attributes: ["product_master_id"],
+          });
+          orderProductIds = orderProducts.map((op) => op.product_master_id);
+
+          if (orderProductIds.length > 0) {
+            where.product_id = {
+              [fastify.models.Sequelize.Op.in]: orderProductIds,
+            };
+          } else {
+            // No products in order, return empty result
+            return reply.send({
+              statusCode: 200,
+              data: [],
+              total: 0,
+              page: parseInt(page),
+              pages: 0,
+            });
+          }
+        }
 
         const InventoryStock = fastify.models.inventory_stock;
 

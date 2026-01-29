@@ -87,6 +87,15 @@ const CheckInventory = async (
 
       const totalFGInventory = parseFloat(fgResult?.fg_available_qty || 0);
 
+      // Add debug logging
+      console.log("DEBUG: FG Inventory Query Results", {
+        product_id: product.id,
+        allowedUnitIds,
+        fgResult,
+        totalFGInventory,
+        isProcessedProduct,
+      });
+
       // If we have finished goods inventory, treat as processed product
       if (totalFGInventory > 0 || isProcessedProduct) {
         // Fetch sales/allocated quantities - total and order-specific
@@ -168,6 +177,8 @@ const CheckInventory = async (
             has_stock: totalFGInventory > 0,
             inventory_type: totalFGInventory > 0 ? "finished_goods" : "none",
             breakdown: {
+              sales_inventory: Number(totalSalesAllocations), // Allocated to sales
+              fg_inventory: Number(totalFGInventory), // Available FG inventory
               total_inventory: Number(totalFGQuantity),
               total_allocations: Number(
                 totalSalesAllocations +

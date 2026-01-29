@@ -44,7 +44,7 @@
 
     <!-- Filters -->
     <div class="row mb-3">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label">Warehouse</label>
         <select
           id="warehouseFilter"
@@ -57,7 +57,7 @@
           <option value="WH-03">WH-03</option>
         </select>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label">Status</label>
         <select
           id="statusFilter"
@@ -70,10 +70,34 @@
           <option value="FG_INVENTORY">FG Inventory</option>
         </select>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">&nbsp;</label>
-        <button class="btn btn-primary w-100" onclick="loadInventoryData()">
+      <div class="col-md-3">
+        <label class="form-label">Order</label>
+        <select
+          id="orderFilter"
+          class="form-control"
+          onchange="loadInventoryData()"
+        >
+          <option value="">All Orders</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Product</label>
+        <select
+          id="productFilter"
+          class="form-control"
+          onchange="loadInventoryData()"
+        >
+          <option value="">All Products</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <button class="btn btn-primary" onclick="loadInventoryData()">
           <i class="fas fa-sync"></i> Refresh
+        </button>
+        <button class="btn btn-secondary ms-2" onclick="clearFilters()">
+          <i class="fas fa-times"></i> Clear Filters
         </button>
       </div>
     </div>
@@ -141,12 +165,16 @@
 
     const warehouse = document.getElementById("warehouseFilter")?.value || "";
     const status = document.getElementById("statusFilter")?.value || "";
+    const orderId = document.getElementById("orderFilter")?.value || "";
+    const productId = document.getElementById("productFilter")?.value || "";
 
     const params = new URLSearchParams({
       page: currentPage,
       limit: 20,
       ...(warehouse && { warehouse }),
       ...(status && { status }),
+      ...(orderId && { order_id: orderId }),
+      ...(productId && { product_id: productId }),
     });
 
     try {
@@ -172,7 +200,53 @@
     }
   }
 
-  function displayInventoryTable() {
+  async function loadFilterOptions() {
+    try {
+      // Load orders
+      const ordersResponse = await fetch("/api/orders?limit=100");
+      if (ordersResponse.ok) {
+        const ordersResult = await ordersResponse.json();
+        const orderSelect = document.getElementById("orderFilter");
+        orderSelect.innerHTML = '<option value="">All Orders</option>';
+
+        if (ordersResult.data && ordersResult.data.length > 0) {
+          ordersResult.data.forEach(order => {
+            const option = document.createElement("option");
+            option.value = order.id;
+            option.textContent = `${order.order_no} - ${order.customer_name || 'N/A'}`;
+            orderSelect.appendChild(option);
+          });
+        }
+      }
+
+      // Load products
+      const productsResponse = await fetch("/api/products?limit=200");
+      if (productsResponse.ok) {
+        const productsResult = await productsResponse.json();
+        const productSelect = document.getElementById("productFilter");
+        productSelect.innerHTML = '<option value="">All Products</option>';
+
+        if (productsResult.data && productsResult.data.length > 0) {
+          productsResult.data.forEach(product => {
+            const option = document.createElement("option");
+            option.value = product.id;
+            option.textContent = product.product_name;
+            productSelect.appendChild(option);
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error loading filter options:", error);
+    }
+  }
+
+  function clearFilters() {
+    document.getElementById("warehouseFilter").value = "";
+    document.getElementById("statusFilter").value = "";
+    document.getElementById("orderFilter").value = "";
+    document.getElementById("productFilter").value = "";
+    loadInventoryData();
+  }
     let html = "";
 
     if (inventoryData.length === 0) {
@@ -272,6 +346,7 @@
 
   // Initialize on page load
   document.addEventListener("DOMContentLoaded", function () {
+    loadFilterOptions();
     loadInventorySummary();
     loadInventoryData(1);
 

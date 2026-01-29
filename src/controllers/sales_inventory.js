@@ -91,6 +91,7 @@ export const GetAll = ({ start, length, search }) => {
       if (search) {
         where[Op.or] = [
           { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
+          { product_master_id: search },
         ];
       }
 
@@ -168,7 +169,7 @@ export const GetAll = ({ start, length, search }) => {
           }
 
           return plainRow;
-        })
+        }),
       );
 
       resolve({

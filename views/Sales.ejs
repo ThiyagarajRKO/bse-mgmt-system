@@ -3325,7 +3325,7 @@
                 // Store product_id and order_id in data attributes for inventory lookup
                 return `<span class="available-stock" data-product-id="${
                   data || ""
-                }" data-order-id="${row?.id || ""}" style="cursor:pointer">
+                }" data-order-id="${row?.order_id || ""}" style="cursor:pointer">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 </span>`;
               },

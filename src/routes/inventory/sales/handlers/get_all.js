@@ -1,11 +1,15 @@
 import { SalesInventory } from "../../../../controllers";
 
-export const GetAll = async ({ profile_id }, session, fastify) => {
+export const GetAll = async (
+  { profile_id, start, length, search },
+  session,
+  fastify,
+) => {
   try {
     const result = await SalesInventory.GetAll({
-      start: 0,
-      length: 1000, // Get all records
-      search: null,
+      start: start || 0,
+      length: length || 1000,
+      search: search || null,
     });
 
     if (!result) {

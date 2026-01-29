@@ -79,7 +79,7 @@ export default async (fastify) => {
           order: [["created_at", "DESC"]],
         });
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           data: rows,
           total: count,
@@ -88,7 +88,7 @@ export default async (fastify) => {
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error fetching production orders",
           error: error.message,
@@ -113,13 +113,13 @@ export default async (fastify) => {
           });
         }
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           data: productionOrder,
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error fetching production order",
           error: error.message,
@@ -185,7 +185,7 @@ export default async (fastify) => {
         // Update production order status
         await productionOrder.update({ status: "RAW_ISSUED" });
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           message: "Production started",
           data: {
@@ -197,7 +197,7 @@ export default async (fastify) => {
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error starting production",
           error: error.message,
@@ -254,7 +254,7 @@ export default async (fastify) => {
           description: `Raw material consumed for production order ${productionOrder.order_no}`,
         });
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           message: "Raw material consumed",
           data: {
@@ -361,7 +361,7 @@ export default async (fastify) => {
         // Update production order status
         await productionOrder.update({ status: "COMPLETED" });
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           message: "Production output recorded",
           data: {
@@ -376,7 +376,7 @@ export default async (fastify) => {
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error recording production output",
           error: error.message,
@@ -415,7 +415,7 @@ export default async (fastify) => {
           closed_at: new Date(),
         });
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           message: "Production order closed",
           data: {
@@ -426,7 +426,7 @@ export default async (fastify) => {
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error closing production order",
           error: error.message,
@@ -457,7 +457,7 @@ export default async (fastify) => {
           (v) => v.variance_type === "ABNORMAL",
         ).length;
 
-        reply.send({
+        return reply.send({
           statusCode: 200,
           data: {
             derivative_count: variances.length,
@@ -489,7 +489,7 @@ export default async (fastify) => {
         });
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send({
+        return reply.code(500).send({
           statusCode: 500,
           message: "Error fetching variance report",
           error: error.message,
