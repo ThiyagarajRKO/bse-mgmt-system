@@ -3866,52 +3866,61 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <h6><strong>Order No:</strong></h6>
-                      <p>${order.order_no}</p>
+                  <div class="d-flex justify-content-between mb-4">
+                    <div class="form-group">
+                      <label class="fw-bold" for="order_no">Order No:</label>
+                      <span id="view_order_no">${order.order_no}</span>
                     </div>
-                    <div class="col-md-6">
-                      <h6><strong>Allocation Status:</strong></h6>
-                      <p><span class="${
+
+                    <div class="form-group">
+                      <label class="fw-bold" for="allocation_status">Allocation Status:</label>
+                      <span class="${
                         allocationStatus === "Allocated"
                           ? "badge badge-success"
                           : "badge badge-warning"
-                      }">${allocationStatus}</span></p>
+                      }">${allocationStatus}</span>
                     </div>
                   </div>
-                  <div class="row mb-3">
-                    <div class="col-md-12">
-                      <h6><strong>Product Name:</strong></h6>
-                      <p>${productName}</p>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <h6><strong>Quantity Required:</strong></h6>
-                      <p>${quantityRequired}</p>
-                    </div>
-                    <div class="col-md-6">
-                      <h6><strong>Available Stock (Net Inventory):</strong></h6>
-                      <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="padding: 8px; background: #f5f5f5; border-radius: 3px; border-left: 3px solid #627293;">
-                          <small style="color: #666;">
-                            <div><strong>Raw Materials in Stock:</strong> <span class="badge" style="background-color: #EA5455; color: white;">${purchaseInventory} units</span></div>
-                            <div><strong>Finished Goods:</strong> <span class="badge" style="background-color: #EA5455; color: white;">${salesInventory} units</span></div>
-                          </small>
-                        </div>
-                        <p>
+
+                  <hr class="mb-4" />
+
+                  <div style="overflow-x: auto;">
+                    <table
+                      id="allocationDetailsTable"
+                      class="rounded table table-hover nowrap w-100"
+                      style="border-collapse: collapse; min-width: 800px;"
+                    >
+                    <tbody>
+                      <tr style="background-color: #f8f9fa; font-weight: bold;">
+                        <td style="text-align: center; padding: 12px;"><strong>Product</strong></td>
+                        <td style="text-align: center; padding: 12px;"><strong>Quantity Required</strong></td>
+                        <td style="text-align: center; padding: 12px;"><strong>Raw Materials in Stock</strong></td>
+                        <td style="text-align: center; padding: 12px;"><strong>Finished Goods</strong></td>
+                        <td style="text-align: center; padding: 12px;"><strong>Status</strong></td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: center; padding: 12px;">${productName}</td>
+                        <td style="text-align: center; padding: 12px;">${quantityRequired} units</td>
+                        <td style="text-align: center; padding: 12px;">${purchaseInventory} units</td>
+                        <td style="text-align: center; padding: 12px;">${salesInventory} units</td>
+                        <td style="text-align: center; padding: 12px;">
                           <span class="badge ${
                             parseFloat(netInventory) >=
                             parseFloat(quantityRequired)
                               ? "badge-success"
                               : "badge-danger"
-                          }" style="font-size: 1em; padding: 8px 12px;">
-                            Total Available: <span class="badge" style="background-color: #EA5455; color: white;">${netInventory} units</span>
+                          }">
+                            ${
+                              parseFloat(netInventory) >=
+                              parseFloat(quantityRequired)
+                                ? "Sufficient"
+                                : "Insufficient"
+                            }
                           </span>
-                        </p>
-                      </div>
-                    </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                   </div>
                 </div>
                 <div class="modal-footer">
@@ -3968,6 +3977,36 @@
         console.log("Calling .modal('show')...");
         $modal.modal("show");
         console.log("Modal show() called");
+
+        // Initialize DataTable for allocation details
+        $("#allocationDetailsTable").DataTable({
+          destroy: true,
+          responsive: false,
+          paging: false,
+          searching: false,
+          ordering: false,
+          info: false,
+          scrollY: "40vh",
+          scrollCollapse: true,
+          columns: [
+            {
+              width: "25%",
+              className: "text-center",
+            },
+            {
+              width: "25%",
+              className: "text-center",
+            },
+            {
+              width: "25%",
+              className: "text-center",
+            },
+            {
+              width: "25%",
+              className: "text-center",
+            },
+          ],
+        });
       }
 
       // Begin Production Button Handler
