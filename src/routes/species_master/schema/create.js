@@ -21,6 +21,34 @@ export const createSchema = {
             "Other",
           ],
         },
+        subcategory: {
+          type: "string",
+          enum: [
+            // Bivalve subcategories
+            "Oyster",
+            "Mussel",
+            "Clam-Scallop",
+            // Cephalopod subcategories
+            "Squid",
+            "Cuttlefish",
+            "Octopus",
+            // Fish subcategories
+            "Pelagic-Large",
+            "Pelagic-Medium",
+            "Round-Fish",
+            "Flat-Fish",
+            "Shark",
+            "Ray",
+            // Crustacean subcategories
+            "Shrimp-Prawn",
+            "Crab",
+            "Lobster",
+            // Gastropod subcategories
+            "Abalone",
+            "Top-Shell-Turban",
+            "Babylon-Snail",
+          ],
+        },
         species_code: { type: "string" },
         species_name: { type: "string" },
         scientific_name: { type: "string" },
