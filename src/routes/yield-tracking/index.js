@@ -63,6 +63,33 @@ const getYieldActualSchema = {
   },
 };
 
+const getQuantityRecommendationsSchema = {
+  body: {
+    type: "object",
+    required: ["productId", "speciesId"],
+    properties: {
+      productId: { type: "string" },
+      speciesId: { type: "string" },
+      quantityRequired: { type: "number", minimum: 0 },
+      marketConditions: {
+        type: "object",
+        properties: {
+          priceVolatility: { type: "number", minimum: 0, maximum: 1 },
+          supplyDisruption: { type: "number", minimum: 0, maximum: 1 },
+          demandForecast: { type: "number", minimum: 0, maximum: 1 },
+        },
+      },
+      inventoryLevels: {
+        type: "object",
+        properties: {
+          currentStock: { type: "number", minimum: 0 },
+          safetyStockDays: { type: "number", minimum: 0, default: 7 },
+        },
+      },
+    },
+  },
+};
+
 export const yieldTrackingRoutes = (fastify, opts, done) => {
   // Create yield standard
   fastify.post(
@@ -71,7 +98,7 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
       schema: createYieldStandardSchema,
       preHandler: fastify.authenticate,
     },
-    YieldTrackingController.createYieldStandard
+    YieldTrackingController.createYieldStandard,
   );
 
   // Get yield standards
@@ -80,7 +107,7 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
     {
       preHandler: fastify.authenticate,
     },
-    YieldTrackingController.getYieldStandards
+    YieldTrackingController.getYieldStandards,
   );
 
   // Capture yield after packing list finalization
@@ -90,7 +117,7 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
       schema: captureYieldSchema,
       preHandler: fastify.authenticate,
     },
-    YieldTrackingController.captureYield
+    YieldTrackingController.captureYield,
   );
 
   // Get yield dashboard data
@@ -100,7 +127,7 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
       schema: getYieldDashboardSchema,
       preHandler: fastify.authenticate,
     },
-    YieldTrackingController.getYieldDashboard
+    YieldTrackingController.getYieldDashboard,
   );
 
   // Get yield actual records
@@ -110,7 +137,17 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
       schema: getYieldActualSchema,
       preHandler: fastify.authenticate,
     },
-    YieldTrackingController.getYieldActual
+    YieldTrackingController.getYieldActual,
+  );
+
+  // Get quantity recommendations for procurement
+  fastify.post(
+    "/quantity-recommendations",
+    {
+      schema: getQuantityRecommendationsSchema,
+      preHandler: fastify.authenticate,
+    },
+    YieldTrackingController.getQuantityRecommendations,
   );
 
   done();
