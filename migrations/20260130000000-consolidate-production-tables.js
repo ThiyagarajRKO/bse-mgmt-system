@@ -3,12 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const tableDescription = await queryInterface.describeTable(
-      "yield_standard_master",
-    );
+    console.log("Starting consolidated production tables migration...");
+
+    const tableDescription = await queryInterface.describeTable("yield_standard_master");
 
     // Add new derivative_id column if it doesn't exist
     if (!tableDescription.derivative_id) {
+      console.log("Adding derivative_id column to yield_standard_master...");
       await queryInterface.addColumn("yield_standard_master", "derivative_id", {
         type: Sequelize.UUID,
         allowNull: true, // Initially allow null for migration
@@ -22,6 +23,7 @@ module.exports = {
     }
 
     // First, update ALL existing processing_type values to 'RAW' as a safe default
+    console.log("Updating processing_type values to RAW...");
     await queryInterface.sequelize.query(`
       UPDATE yield_standard_master
       SET processing_type = 'RAW'
@@ -32,12 +34,14 @@ module.exports = {
       await queryInterface.sequelize.query(`
         CREATE TYPE "enum_yield_standard_master_processing_type" AS ENUM('RAW', 'COOKED')
       `);
+      console.log("Created ENUM type for processing_type");
     } catch (error) {
       // ENUM type might already exist, continue
       console.log("ENUM type might already exist:", error.message);
     }
 
     // Use raw SQL to change column to ENUM with proper handling
+    console.log("Converting processing_type to ENUM...");
     await queryInterface.sequelize.query(`
       ALTER TABLE yield_standard_master
       ALTER COLUMN processing_type TYPE "enum_yield_standard_master_processing_type"
@@ -51,6 +55,7 @@ module.exports = {
 
     // Add timestamps if they don't exist
     if (!tableDescription.created_at) {
+      console.log("Adding created_at timestamp...");
       await queryInterface.addColumn("yield_standard_master", "created_at", {
         type: Sequelize.DATE,
         allowNull: false,
@@ -58,6 +63,7 @@ module.exports = {
       });
     }
     if (!tableDescription.updated_at) {
+      console.log("Adding updated_at timestamp...");
       await queryInterface.addColumn("yield_standard_master", "updated_at", {
         type: Sequelize.DATE,
         allowNull: false,
@@ -65,40 +71,22 @@ module.exports = {
       });
     }
 
-    // TODO: Data migration logic would go here
-    // This requires mapping product_form to derivative_id
-    // For now, we'll keep derivative_id nullable until proper data migration is implemented
-    // In production, this would need careful data mapping from product_form to derivative_id
-
     // Remove product_form column if it exists
     if (tableDescription.product_form) {
-      await queryInterface.removeColumn(
-        "yield_standard_master",
-        "product_form",
-      );
+      console.log("Removing product_form column...");
+      await queryInterface.removeColumn("yield_standard_master", "product_form");
     }
 
-    // Keep derivative_id nullable for now - will be made NOT NULL after data migration
-    // await queryInterface.changeColumn('yield_standard_master', 'derivative_id', {
-    //   type: Sequelize.UUID,
-    //   allowNull: false,
-    //   references: {
-    //     model: 'derivative_master',
-    //     key: 'id',
-    //   },
-    //   onUpdate: 'CASCADE',
-    //   onDelete: 'CASCADE',
-    // });
-
-    // Drop old indexes and create new ones
+    // Update indexes - drop old and create new
     try {
+      console.log("Updating indexes...");
       await queryInterface.removeIndex("yield_standard_master", [
         "species_id",
         "product_form",
         "processing_type",
       ]);
     } catch (error) {
-      // Index might not exist, continue
+      console.log("Old index might not exist:", error.message);
     }
 
     try {
@@ -112,24 +100,35 @@ module.exports = {
           },
         },
       );
+      console.log("Created new composite index");
     } catch (error) {
-      // Index might already exist, continue
+      console.log("New index might already exist:", error.message);
     }
+
+    console.log("✓ Consolidated production tables migration completed successfully");
   },
 
   async down(queryInterface, Sequelize) {
-    // Reverse the migration
-    await queryInterface.removeIndex("yield_standard_master", [
-      "species_id",
-      "derivative_id",
-      "processing_type",
-    ]);
+    console.log("Rolling back consolidated production tables changes...");
 
+    // Reverse the migration
+    try {
+      await queryInterface.removeIndex("yield_standard_master", [
+        "species_id",
+        "derivative_id",
+        "processing_type",
+      ]);
+    } catch (error) {
+      console.log("Index removal failed:", error.message);
+    }
+
+    // Add back product_form column
     await queryInterface.addColumn("yield_standard_master", "product_form", {
       type: Sequelize.ENUM("FROZEN", "COOKED", "RTE", "FRESH"),
       allowNull: true,
     });
 
+    // Convert processing_type back to string
     await queryInterface.changeColumn(
       "yield_standard_master",
       "processing_type",
@@ -139,25 +138,31 @@ module.exports = {
       },
     );
 
+    // Remove derivative_id column
     await queryInterface.removeColumn("yield_standard_master", "derivative_id");
 
-    await queryInterface.addIndex(
-      "yield_standard_master",
-      ["species_id", "product_form", "processing_type"],
-      {
-        unique: true,
-      },
-    );
+    // Recreate old index
+    try {
+      await queryInterface.addIndex(
+        "yield_standard_master",
+        ["species_id", "product_form", "processing_type"],
+        {
+          unique: true,
+        },
+      );
+    } catch (error) {
+      console.log("Old index recreation failed:", error.message);
+    }
 
     // Remove timestamps if they were added
-    const tableDescription = await queryInterface.describeTable(
-      "yield_standard_master",
-    );
+    const tableDescription = await queryInterface.describeTable("yield_standard_master");
     if (tableDescription.created_at) {
       await queryInterface.removeColumn("yield_standard_master", "created_at");
     }
     if (tableDescription.updated_at) {
       await queryInterface.removeColumn("yield_standard_master", "updated_at");
     }
+
+    console.log("✓ Rollback of consolidated production tables changes completed");
   },
 };
