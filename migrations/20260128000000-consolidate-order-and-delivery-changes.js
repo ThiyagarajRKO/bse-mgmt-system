@@ -3,7 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    console.log("Starting consolidated order and delivery changes migration...");
+    console.log(
+      "Starting consolidated order and delivery changes migration...",
+    );
 
     // 1. Add order_id to packing table
     console.log("Adding order_id to packing table...");
@@ -155,7 +157,9 @@ module.exports = {
       onUpdate: "CASCADE",
     });
 
-    console.log("✓ Consolidated order and delivery changes migration completed successfully");
+    console.log(
+      "✓ Consolidated order and delivery changes migration completed successfully",
+    );
   },
 
   async down(queryInterface, Sequelize) {
@@ -165,7 +169,10 @@ module.exports = {
     await queryInterface.removeColumn("purchase_inventory", "order_id");
     await queryInterface.removeColumn("orders", "order_status");
 
-    await queryInterface.removeIndex("order_products", "order_products_order_id_idx");
+    await queryInterface.removeIndex(
+      "order_products",
+      "order_products_order_id_idx",
+    );
     await queryInterface.removeColumn("order_products", "quantity");
 
     await queryInterface.removeColumn("procurement_products", "order_id");
@@ -179,6 +186,8 @@ module.exports = {
     await queryInterface.removeColumn("sales_inventory", "order_id");
     await queryInterface.removeColumn("packing", "order_id");
 
-    console.log("✓ Rollback of consolidated order and delivery changes completed");
+    console.log(
+      "✓ Rollback of consolidated order and delivery changes completed",
+    );
   },
 };

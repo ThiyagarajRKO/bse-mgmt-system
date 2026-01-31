@@ -5,7 +5,9 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     console.log("Starting consolidated production tables migration...");
 
-    const tableDescription = await queryInterface.describeTable("yield_standard_master");
+    const tableDescription = await queryInterface.describeTable(
+      "yield_standard_master",
+    );
 
     // Add new derivative_id column if it doesn't exist
     if (!tableDescription.derivative_id) {
@@ -74,7 +76,10 @@ module.exports = {
     // Remove product_form column if it exists
     if (tableDescription.product_form) {
       console.log("Removing product_form column...");
-      await queryInterface.removeColumn("yield_standard_master", "product_form");
+      await queryInterface.removeColumn(
+        "yield_standard_master",
+        "product_form",
+      );
     }
 
     // Update indexes - drop old and create new
@@ -105,7 +110,9 @@ module.exports = {
       console.log("New index might already exist:", error.message);
     }
 
-    console.log("✓ Consolidated production tables migration completed successfully");
+    console.log(
+      "✓ Consolidated production tables migration completed successfully",
+    );
   },
 
   async down(queryInterface, Sequelize) {
@@ -155,7 +162,9 @@ module.exports = {
     }
 
     // Remove timestamps if they were added
-    const tableDescription = await queryInterface.describeTable("yield_standard_master");
+    const tableDescription = await queryInterface.describeTable(
+      "yield_standard_master",
+    );
     if (tableDescription.created_at) {
       await queryInterface.removeColumn("yield_standard_master", "created_at");
     }
@@ -163,6 +172,8 @@ module.exports = {
       await queryInterface.removeColumn("yield_standard_master", "updated_at");
     }
 
-    console.log("✓ Rollback of consolidated production tables changes completed");
+    console.log(
+      "✓ Rollback of consolidated production tables changes completed",
+    );
   },
 };
