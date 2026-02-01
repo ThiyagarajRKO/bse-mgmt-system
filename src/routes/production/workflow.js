@@ -144,6 +144,33 @@ export default async (fastify) => {
           });
         }
 
+        // Check inventory availability for raw material
+        const InventoryStock = require("../../../models").inventory_stock;
+        const rawInventory = await InventoryStock.findOne({
+          where: {
+            product_id: productionOrder.input_species_id,
+            unit_id: "RAW_INVENTORY",
+          },
+          attributes: ["available_qty"],
+        });
+
+        const availableQty = rawInventory
+          ? parseFloat(rawInventory.available_qty)
+          : 0;
+        const requiredQty = parseFloat(productionOrder.planned_quantity_kg);
+
+        if (availableQty < requiredQty) {
+          return reply.code(400).send({
+            statusCode: 400,
+            message: `Insufficient inventory. Available: ${availableQty} kg, Required: ${requiredQty} kg`,
+            data: {
+              available_quantity: availableQty,
+              required_quantity: requiredQty,
+              can_proceed: false,
+            },
+          });
+        }
+
         // Get BOM for species
         const BOM = require("../../../models").BOM;
         const bomRule = require("../../../models").BOMRule;

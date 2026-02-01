@@ -25,6 +25,7 @@ import { getAllSchema } from "./schema/get_all";
 import { deleteSchema } from "./schema/delete";
 import { getOrderNumbersSchema } from "./schema/get_order_no";
 import { getTrackingSchema } from "./schema/get_tracking";
+import { allocateStockSchema } from "./schema/allocate_stock";
 
 export const ordersRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -311,7 +312,7 @@ export const ordersRoute = (fastify, opts, done) => {
     }
   });
 
-  fastify.post("/allocate-stock", async (req, reply) => {
+  fastify.post("/allocate-stock", allocateStockSchema, async (req, reply) => {
     try {
       const params = req.body;
 

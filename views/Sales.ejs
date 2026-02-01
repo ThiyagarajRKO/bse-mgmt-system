@@ -3940,8 +3940,7 @@
                         <button type="button" class="btn btn-success" onclick="window.location.href='/Production?order_id=${order.id}'">
                           <i class="fa-solid fa-industry"></i> Go to Production
                         </button>`
-                      : parseFloat(purchaseInventory) > 0 ||
-                          parseFloat(salesInventory) > 0
+                      : parseFloat(netInventory) >= parseFloat(quantityRequired)
                         ? `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-quantity="${quantityRequired}">
                           <i class="fa-solid fa-industry"></i> Begin Production
                         </button>`
@@ -3998,19 +3997,23 @@
           scrollCollapse: true,
           columns: [
             {
-              width: "25%",
+              width: "20%",
               className: "text-center",
             },
             {
-              width: "25%",
+              width: "20%",
               className: "text-center",
             },
             {
-              width: "25%",
+              width: "20%",
               className: "text-center",
             },
             {
-              width: "25%",
+              width: "20%",
+              className: "text-center",
+            },
+            {
+              width: "20%",
               className: "text-center",
             },
           ],

@@ -65,6 +65,7 @@ import postingRoute from "./posting";
 import salesAllocationRoute from "./sales_allocations";
 import salesInvoiceRoute from "./sales_invoices";
 import glPostingRoute from "./gl_postings";
+import purchaseRequestsRoute from "./purchase-requests";
 
 // Auth Middleware
 import { ValidateUser } from "../middlewares/authentication";
@@ -110,6 +111,11 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(procurementProductsRoute, {
     prefix: "/procurement/product",
+  });
+
+  // Purchase Request Routes
+  fastify.register(purchaseRequestsRoute, {
+    prefix: "/purchase-requests",
   });
 
   // Inventory Routes

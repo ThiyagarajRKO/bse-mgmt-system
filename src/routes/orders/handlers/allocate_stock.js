@@ -1,12 +1,17 @@
 import models from "../../../../models";
 
 export const AllocateStock = async (
-  { order_id, product_id, quantity },
+  { order_id, product_id },
   session,
   fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("AllocateStock called with params:", {
+        order_id,
+        product_id,
+      });
+
       if (!order_id) {
         return reject({
           statusCode: 420,
@@ -21,10 +26,29 @@ export const AllocateStock = async (
         });
       }
 
-      if (!quantity || quantity <= 0) {
+      // Fetch the quantity from the order_products table
+      const orderProduct = await models.OrderProducts.findOne({
+        where: {
+          order_id: order_id,
+          product_master_id: product_id,
+          is_active: true,
+        },
+        attributes: ["quantity"],
+      });
+
+      if (!orderProduct) {
         return reject({
-          statusCode: 420,
-          message: "Quantity must be greater than 0!",
+          statusCode: 404,
+          message: "Order product not found!",
+        });
+      }
+
+      const parsedQuantity = parseFloat(orderProduct.quantity);
+
+      if (parsedQuantity <= 0) {
+        return reject({
+          statusCode: 400,
+          message: "Order quantity must be greater than 0!",
         });
       }
 
@@ -49,31 +73,167 @@ export const AllocateStock = async (
       const fgInventory = await models.inventory_stock.findAll({
         where: {
           product_id: product_id,
+          unit_id: {
+            [models.Sequelize.Op.iLike]: "%fg%", // Finished goods inventory
+          },
           available_qty: {
             [models.Sequelize.Op.gt]: 0,
           },
         },
-        include: [
-          {
-            model: models.UnitMaster,
-            as: "unit",
-            where: {
-              unit_code: {
-                [models.Sequelize.Op.iLike]: "%cs%",
-              },
-            },
-            required: true,
-          },
-        ],
         attributes: ["id", "available_qty", "lot_id"],
         order: [["created_at", "ASC"]], // FIFO allocation
       });
 
       if (!fgInventory || fgInventory.length === 0) {
-        return reject({
-          statusCode: 400,
-          message: "No finished goods available for allocation",
+        console.log(
+          "No finished goods available, checking purchase inventory...",
+        );
+
+        // Check purchase inventory as fallback
+        const purchaseInventory = await models.purchase_inventory.findAll({
+          where: {
+            product_master_id: product_id,
+            available_qty: {
+              [models.Sequelize.Op.gt]: 0,
+            },
+            is_active: true,
+          },
+          attributes: [
+            [
+              models.sequelize.fn("SUM", models.sequelize.col("available_qty")),
+              "total_available",
+            ],
+          ],
+          raw: true,
         });
+
+        const availableInPurchase = parseFloat(
+          purchaseInventory[0]?.total_available || 0,
+        );
+
+        console.log(
+          `Available in purchase inventory: ${availableInPurchase}kg`,
+        );
+
+        if (availableInPurchase >= parsedQuantity) {
+          // Enough in purchase inventory, allocate from there
+          console.log(
+            "Sufficient quantity in purchase inventory, allocating...",
+          );
+
+          // Start transaction for allocation from purchase inventory
+          const transaction = await models.sequelize.transaction();
+
+          try {
+            let remainingQuantity = parsedQuantity;
+
+            // Get purchase inventory items ordered by FIFO
+            const purchaseInventoryItems =
+              await models.purchase_inventory.findAll({
+                where: {
+                  product_master_id: product_id,
+                  available_qty: {
+                    [models.Sequelize.Op.gt]: 0,
+                  },
+                  is_active: true,
+                },
+                attributes: [
+                  "id",
+                  "available_qty",
+                  "lot_id",
+                  "procurement_lot_id",
+                ],
+                order: [["created_at", "ASC"]], // FIFO allocation
+                transaction,
+              });
+
+            // Allocate from purchase inventory lots (FIFO)
+            for (const inventory of purchaseInventoryItems) {
+              if (remainingQuantity <= 0) break;
+
+              const allocateQty = Math.min(
+                remainingQuantity,
+                parseFloat(inventory.available_qty),
+              );
+
+              // Create sales inventory allocation record
+              await models.sales_inventory.create(
+                {
+                  order_id: order_id,
+                  product_master_id: product_id,
+                  quantity: allocateQty,
+                  unit_id: "kg", // Assuming kg as default unit
+                  lot_id: inventory.lot_id,
+                  procurement_lot_id: inventory.procurement_lot_id,
+                  allocation_type: "PURCHASE_INVENTORY",
+                  created_by: session?.pid || "system",
+                },
+                { transaction },
+              );
+
+              // Update purchase inventory (reduce available quantity)
+              await models.purchase_inventory.update(
+                {
+                  available_qty:
+                    parseFloat(inventory.available_qty) - allocateQty,
+                  updated_at: new Date(),
+                },
+                {
+                  where: { id: inventory.id },
+                  transaction,
+                },
+              );
+
+              remainingQuantity -= allocateQty;
+            }
+
+            // Update order status to allocated
+            await models.Orders.update(
+              {
+                order_status: "ALLOCATED",
+                allocation_status: "Allocated",
+                updated_at: new Date(),
+              },
+              {
+                where: { id: order_id },
+                transaction,
+              },
+            );
+
+            // Update order product delivery status
+            await models.OrderProducts.update(
+              {
+                delivery_status: "ALLOCATED",
+                updated_at: new Date(),
+              },
+              {
+                where: {
+                  order_id: order_id,
+                  product_master_id: product_id,
+                },
+                transaction,
+              },
+            );
+
+            await transaction.commit();
+
+            return resolve({
+              message: `Stock allocated successfully from purchase inventory. ${parsedQuantity} kg allocated.`,
+            });
+          } catch (error) {
+            await transaction.rollback();
+            console.error("Error allocating from purchase inventory:", error);
+            return reject({
+              statusCode: 500,
+              message: "Error allocating stock from purchase inventory",
+            });
+          }
+        } else {
+          return reject({
+            statusCode: 400,
+            message: `No inventory available for allocation. Finished goods: 0 kg, Purchase inventory: ${availableInPurchase} kg, Required: ${parsedQuantity} kg`,
+          });
+        }
       }
 
       // Calculate total available quantity
@@ -82,10 +242,10 @@ export const AllocateStock = async (
         0,
       );
 
-      if (totalAvailable < quantity) {
+      if (totalAvailable < parsedQuantity) {
         return reject({
           statusCode: 400,
-          message: `Insufficient finished goods stock. Available: ${totalAvailable} kg, Required: ${quantity} kg`,
+          message: `Insufficient finished goods stock. Available: ${totalAvailable} kg, Required: ${parsedQuantity} kg`,
         });
       }
 
@@ -93,7 +253,7 @@ export const AllocateStock = async (
       const transaction = await models.sequelize.transaction();
 
       try {
-        let remainingQuantity = quantity;
+        let remainingQuantity = parsedQuantity;
 
         // Allocate from inventory lots (FIFO)
         for (const inventory of fgInventory) {
