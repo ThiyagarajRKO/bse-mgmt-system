@@ -56,7 +56,6 @@ import priceRecommendationRoutes from "./price-recommendations";
 
 // Sales Order Workflow Routes (NEW)
 import salesOrderWorkflowRoute from "./sales-order-workflow";
-import orderWorkflowRoute from "./order-workflow";
 import allocationRoute from "./allocation";
 import productionRoute from "./production";
 import qaRoute from "./qa";
@@ -217,7 +216,7 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   // Orders Routes
   fastify.register(ordersRoute, {
-    prefix: "/order",
+    prefix: "/orders",
   });
 
   // Order Products Routes
@@ -289,10 +288,6 @@ export const PrivateRouters = (fastify, opts, done) => {
   // Sales Order Workflow Routes (NEW)
   fastify.register(salesOrderWorkflowRoute, {
     prefix: "/sales-orders",
-  });
-
-  fastify.register(orderWorkflowRoute, {
-    prefix: "/",
   });
 
   fastify.register(allocationRoute, {

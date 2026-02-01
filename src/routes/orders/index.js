@@ -13,6 +13,7 @@ import { AllocateStock } from "./handlers/allocate_stock";
 import { AutoAllocateStock } from "./handlers/auto_allocate_stock";
 import { DeleteEmpty } from "./handlers/delete_empty";
 import { GetTracking } from "./handlers/get_tracking";
+import { GetOrderProducts } from "./handlers/get_order_products";
 import CheckStockForProduct from "./handlers/check_stock_for_product";
 
 // Schema
@@ -99,6 +100,43 @@ export const ordersRoute = (fastify, opts, done) => {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
+      });
+    }
+  });
+
+  // Get order products - MUST be before /:order_id route
+  fastify.get("/product", async (req, reply) => {
+    try {
+      const params = {
+        profile_id: req?.token_profile_id,
+        order_id: req?.query?.order_id,
+        start: parseInt(req?.query?.start) || 0,
+        length: parseInt(req?.query?.length) || 10,
+        search: req?.query?.["search[value]"] || "",
+      };
+
+      const result = await GetOrderProducts(params);
+
+      // Format response for DataTable server-side processing
+      const response = {
+        draw: parseInt(req?.query?.draw) || 1,
+        recordsTotal: result?.count || 0,
+        recordsFiltered: result?.count || 0,
+        data: result?.rows || [],
+      };
+
+      // Add caching headers to improve performance for repeated requests
+      reply.header("Cache-Control", "private, max-age=30"); // Cache for 30 seconds
+
+      return reply.code(200).send(response);
+    } catch (err) {
+      console.error("Error in /product route:", err);
+      return reply.code(err?.statusCode || 400).send({
+        draw: parseInt(req?.query?.draw) || 1,
+        recordsTotal: 0,
+        recordsFiltered: 0,
+        data: [],
+        error: err?.message || err,
       });
     }
   });

@@ -120,7 +120,7 @@ export const Get = ({ id }) => {
       if (!isValidUuid(id)) {
         return reject({
           statusCode: 422,
-          message: "Invalid Order ID format. Expected valid UUID.",
+          message: `Invalid Order ID format. Expected valid UUID, but received: "${id}". Please provide a valid UUID.`,
         });
       }
 
@@ -165,7 +165,7 @@ export const GetWithTracking = ({ id }) => {
       if (!isValidUuid(id)) {
         return reject({
           statusCode: 422,
-          message: "Invalid Order ID format. Expected valid UUID.",
+          message: `Invalid Order ID format. Expected valid UUID, but received: "${id}". Please provide a valid UUID.`,
         });
       }
 
@@ -274,7 +274,7 @@ export const GetWithProductionTracking = ({ id }) => {
       if (!isValidUuid(id)) {
         return reject({
           statusCode: 422,
-          message: "Invalid Order ID format. Expected valid UUID.",
+          message: `Invalid Order ID format. Expected valid UUID, but received: "${id}". Please provide a valid UUID.`,
         });
       }
 
@@ -638,6 +638,91 @@ export const GetWithProductionTracking = ({ id }) => {
             0,
           ),
         },
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetOrderProducts = ({ order_id, start, length, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!order_id) {
+        return reject({
+          statusCode: 420,
+          message: "Order ID field must not be empty!",
+        });
+      }
+
+      // Validate order_id is a valid UUID
+      if (!isValidUuid(order_id)) {
+        return reject({
+          statusCode: 422,
+          message: `Invalid Order ID format. Expected valid UUID, but received: "${order_id}". Please provide a valid UUID.`,
+        });
+      }
+
+      let where = {
+        order_id,
+        is_active: true,
+      };
+
+      // Use separate queries but execute them in parallel for better performance
+      const [countResult, orderProducts] = await Promise.all([
+        // Count query - use include to match findAll behavior
+        models.OrderProducts.count({
+          where: {
+            order_id,
+            is_active: true,
+          },
+          include: [
+            {
+              model: models.ProductMaster,
+              as: "ProductMaster",
+              where: { is_active: true },
+              required: true,
+            },
+          ],
+        }),
+        // Data query
+        models.OrderProducts.findAll({
+          attributes: [
+            "id",
+            "order_id",
+            "quantity",
+            "price",
+            "discount",
+            "description",
+            "delivery_status",
+            "product_master_id",
+            "packing_id",
+            [sequelize.literal("quantity * price"), "total_price"],
+          ],
+          include: [
+            {
+              attributes: ["id", "product_name", "is_active"],
+              as: "ProductMaster",
+              model: models.ProductMaster,
+              where: { is_active: true },
+              required: true,
+            },
+            {
+              attributes: ["id"],
+              model: models.Packing,
+              required: false,
+            },
+          ],
+          where,
+          offset: start,
+          limit: length,
+          order: [["created_at", "desc"]],
+        }),
+      ]);
+
+      resolve({
+        count: countResult,
+        rows: orderProducts.map(product => product.toJSON()),
       });
     } catch (err) {
       reject(err);

@@ -2652,12 +2652,14 @@
       $(document).on("click", ".viewOrders", (e) => {
         console.log("=== viewOrders click handler fired ===");
         console.log("Event target:", e.target);
+        console.log("Order ID from target:", $(e.target).attr("order_id"));
 
         // Changing panel input fields data
         $("#closeOrdersPanelBtn").click();
 
         // Changing panel input fields data
         const view_order_id = $(e.target).attr("order_id");
+        console.log("view_order_id:", view_order_id);
 
         $("#view_order_no").text(
           $(e.target).closest("tr").children("td").eq(2).text(),
@@ -2717,6 +2719,10 @@
         // Opening Slied Panel
         $("#orderModal").modal("show");
 
+        console.log(
+          "About to call loadOrdersProductTableData with:",
+          view_order_id,
+        );
         loadOrdersProductTableData(view_order_id);
 
         // Load order tracking data for timeline
@@ -2856,10 +2862,21 @@
       });
 
       function loadOrdersProductTableData(order_id) {
+        console.log(
+          "🔍 loadOrdersProductTableData called with order_id:",
+          order_id,
+        );
         if (!order_id) {
           toastr["warning"]("Orders data should not be empty!");
           return;
         }
+
+        console.log("📊 Initializing DataTable for order products...");
+        console.log(
+          "📊 DataTable URL will be:",
+          `/api/orders/product?order_id=${order_id}`,
+        );
+        console.log("📊 order_id value:", order_id, "type:", typeof order_id);
 
         $("#orderProductTable").DataTable({
           // searching: true,
@@ -2874,55 +2891,46 @@
           ajax: {
             type: "GET",
             url: `/api/orders/product?order_id=${order_id}`,
+            beforeSend: function (xhr) {
+              console.log(
+                "🚀 DataTable AJAX request starting to:",
+                `/api/orders/product?order_id=${order_id}`,
+              );
+            },
+            success: function (data) {
+              console.log("✅ DataTable AJAX success:", data);
+            },
             error: function (xhr, error, code) {
-              $("#orderProductTable").DataTable().destroy();
-              $("#orderProductTable").DataTable({
-                scrollX: true,
-                ordering: false,
-              });
+              console.error("❌ DataTable AJAX error:", xhr, error, code);
 
               if (xhr["status"] == 420) {
                 toastr["warning"](xhr["responseJSON"]["message"]);
               } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
+                toastr["error"](
+                  xhr["responseJSON"]?.message ||
+                    "Failed to load order products",
+                );
               }
             },
-            dataSrc: function (json) {
-              json.iTotalRecords = json.data?.rows?.length;
-              json.iTotalDisplayRecords = json.data?.count;
-
-              // Return the data to be displayed in the DataTable
-              return json?.data?.rows;
-            },
+            // dataSrc: "data", // Not needed for standard server-side response format
           },
           columns: [
             { data: null },
             { data: null },
-            { data: null }, // Will be rendered in columnDefs
+            {
+              data: "ProductMaster.product_name",
+              defaultContent: "Unknown Product",
+            },
             { data: "quantity" },
             { data: "price" },
             { data: "total_price" },
           ],
           columnDefs: [
             {
-              targets: [2],
-              className: "text-left",
-              render: function (data, type, row) {
-                // Handle both direct product_master_id and packing path
-                const productName =
-                  row?.ProductMaster?.product_name ||
-                  row?.Packing?.pd?.pp?.ProductMaster?.product_name ||
-                  "Unknown Product";
-                return `<div style="min-width: 250px; word-wrap: break-word; word-break: break-word; white-space: normal; overflow-wrap: break-word;">${productName}</div>`;
-              },
-            },
-            {
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${
-                  row?.order_id
-                }" order_product_id="${
+                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${order_id}" order_product_id="${
                   row?.id || null
                 }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
               },
@@ -2931,7 +2939,7 @@
               targets: [1],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa fa-trash del delOrderProduct" order_id="${row?.order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
+                return `<i class="fa fa-trash del delOrderProduct" order_id="${order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
               },
             },
           ],
