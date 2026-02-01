@@ -423,6 +423,9 @@
     let isProduction = false;
     let totalProducedQuantity = 0;
     let allProductionCompleted = false;
+    let isPacking = false;
+    let isQA = false;
+    let isDispatching = false;
 
     if (productionOrders.length > 0) {
       // Calculate total produced quantity across all production orders
@@ -551,7 +554,6 @@
     const peelingRecords = production_tracking?.peeling || [];
     const procurementRecords = production_tracking?.procurement || [];
     let packingPercent = 0;
-    let isPacking = false;
 
     // Calculate total peeled quantity
     const totalPeeledQuantity = peelingRecords.reduce(
@@ -648,7 +650,6 @@
     // Calculate QA completion
     // QA should be completed after packing but before dispatch
     let qaPercent = 0;
-    let isQA = false;
 
     // For now, QA is considered complete when packing is complete
     // In a real implementation, this would check for QA records/approvals
@@ -715,7 +716,6 @@
     const dispatchRecords = production_tracking?.dispatches || [];
     const peeledDispatchRecords = production_tracking?.peeled_dispatches || [];
     let dispatchPercent = 0;
-    let isDispatching = false;
 
     // Calculate total dispatched quantity
     const totalDispatchedQuantity =
@@ -1034,26 +1034,26 @@
     } = trackingState;
 
     let newOrderStatus = "DRAFT";
-    let newDeliveryStatus = "pending";
+    let newDeliveryStatus = "Initiated";
 
     if (!isOrderConfirmed) {
       newOrderStatus = "DRAFT";
-      newDeliveryStatus = "pending";
+      newDeliveryStatus = "Initiated";
     } else if (!hasProductionData) {
       newOrderStatus = "CONFIRMED";
-      newDeliveryStatus = "confirmed";
+      newDeliveryStatus = "Initiated";
     } else if (productionPercent > 0 && productionPercent < 100) {
       newOrderStatus = "IN_PRODUCTION";
-      newDeliveryStatus = "in_production";
+      newDeliveryStatus = "In Transit";
     } else if (productionPercent >= 100 && packingPercent < 100) {
       newOrderStatus = "PACKED";
-      newDeliveryStatus = "packed";
+      newDeliveryStatus = "In Transit";
     } else if (packingPercent >= 100 && qaPercent < 100) {
       newOrderStatus = "READY_FOR_QA";
-      newDeliveryStatus = "ready_for_qa";
+      newDeliveryStatus = "In Transit";
     } else if (qaPercent >= 100 && dispatchPercent < 100) {
       newOrderStatus = "READY_FOR_DISPATCH";
-      newDeliveryStatus = "ready_for_dispatch";
+      newDeliveryStatus = "In Transit";
     } else if (dispatchPercent >= 100) {
       newOrderStatus = "DISPATCHED";
       newDeliveryStatus = "dispatched";
@@ -1064,7 +1064,7 @@
       dispatchPercent >= 100
     ) {
       newOrderStatus = "INVOICED";
-      newDeliveryStatus = "completed";
+      newDeliveryStatus = "Delivered";
     }
 
     // Update order status via API call

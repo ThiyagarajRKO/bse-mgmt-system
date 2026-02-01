@@ -141,14 +141,15 @@ export const yieldTrackingRoutes = (fastify, opts, done) => {
   );
 
   // Get quantity recommendations for procurement
-  fastify.post(
-    "/quantity-recommendations",
-    {
-      schema: getQuantityRecommendationsSchema,
-      preHandler: fastify.authenticate,
-    },
-    YieldTrackingController.getQuantityRecommendations,
-  );
+  // TODO: Implement getQuantityRecommendations method in YieldTrackingController
+  // fastify.post(
+  //   "/quantity-recommendations",
+  //   {
+  //     schema: getQuantityRecommendationsSchema,
+  //     preHandler: fastify.authenticate,
+  //   },
+  //   YieldTrackingController.getQuantityRecommendations,
+  // );
 
   done();
 };

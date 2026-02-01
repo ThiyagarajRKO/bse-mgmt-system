@@ -722,7 +722,7 @@ export const GetOrderProducts = ({ order_id, start, length, search }) => {
 
       resolve({
         count: countResult,
-        rows: orderProducts.map(product => product.toJSON()),
+        rows: orderProducts.map((product) => product.toJSON()),
       });
     } catch (err) {
       reject(err);

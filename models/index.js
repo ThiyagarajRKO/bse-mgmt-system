@@ -35,7 +35,11 @@ db.authenticate = async () => {
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
-      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
+      file.indexOf(".") !== 0 &&
+      file !== basename &&
+      file.slice(-3) === ".js" &&
+      file !== "product_master_raw.js" && // Skip duplicate ProductMaster model
+      file !== "production_execution.js" // Skip problematic model
     );
   })
   .forEach((file) => {
