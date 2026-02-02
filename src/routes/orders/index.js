@@ -294,7 +294,6 @@ export const ordersRoute = (fastify, opts, done) => {
     try {
       const params = {
         product_master_id: req?.params?.product_master_id,
-        order_id: req?.query?.order_id, // optional order filter
       };
 
       const result = await CheckInventory(params, req?.session, fastify);

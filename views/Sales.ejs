@@ -3366,9 +3366,7 @@
               const $element = $(this);
 
               if (productId) {
-                const url = orderId
-                  ? `/api/orders/check-inventory/${productId}?order_id=${orderId}`
-                  : `/api/orders/check-inventory/${productId}`;
+                const url = `/api/orders/check-inventory/${productId}`;
 
                 $.ajax({
                   url: url,
@@ -3389,11 +3387,13 @@
                     const breakdown = response?.data?.breakdown || {};
                     const rawMaterialsBreakdown =
                       response?.data?.raw_materials_breakdown || [];
-                    const unitOfMeasure = response?.data?.unit_of_measure || "kg";
+                    const unitOfMeasure =
+                      response?.data?.unit_of_measure || "kg";
 
                     if ($element.hasClass("available-stock")) {
                       // Update stock display with detailed information
                       let stockText = "";
+                      let shortStockText = "";
                       let badgeClass = "bg-secondary";
 
                       if (quantity > 0) {
@@ -3402,6 +3402,7 @@
 
                         if (inventoryType === "finished_goods") {
                           stockText = `${quantity} ${unitOfMeasure} (Finished Goods)`;
+                          shortStockText = `${quantity}${unitOfMeasure}`;
                           if (breakdown.sales_inventory > 0) {
                             stockText += ` - Sales: ${breakdown.sales_inventory}${unitOfMeasure}`;
                           }
@@ -3417,21 +3418,24 @@
                             response?.data?.raw_material_details
                               ?.yield_percent || "0.00";
                           stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${rawMaterialQty}kg raw @ ${yieldPercent}%)`;
+                          shortStockText = `${quantity}${unitOfMeasure}`;
                         } else {
                           stockText = `${quantity} ${unitOfMeasure}`;
+                          shortStockText = `${quantity}${unitOfMeasure}`;
                         }
                       } else {
                         stockText = "Out of Stock";
+                        shortStockText = "0";
                         badgeClass = "bg-danger";
                       }
 
                       let badgeHtml = "";
                       if (badgeClass.startsWith("style=")) {
                         // Inline style
-                        badgeHtml = `<span class="badge" ${badgeClass} title="${stockText}">${stockText}</span>`;
+                        badgeHtml = `<span class="badge" ${badgeClass} title="${stockText}">${shortStockText}</span>`;
                       } else {
                         // CSS class
-                        badgeHtml = `<span class="badge ${badgeClass}" title="${stockText}">${stockText}</span>`;
+                        badgeHtml = `<span class="badge ${badgeClass}" title="${stockText}">${shortStockText}</span>`;
                       }
 
                       $element.html(badgeHtml);
@@ -4066,19 +4070,40 @@
           }),
           contentType: "application/json",
           success: function (response) {
-            toastr.success(
-              "Stock allocated successfully. Redirecting to production...",
-              "Success",
-            );
+            // Check if this is a redirect response (order already allocated)
+            if (response.redirect) {
+              toastr.info(
+                response.message ||
+                  "Order already allocated. Redirecting to production...",
+                "Info",
+              );
 
-            // Close the modal
-            $("#allocationViewModal").modal("hide");
+              // Close the modal
+              $("#allocationViewModal").modal("hide");
 
-            // Small delay to ensure modal is closed and toast is shown before redirecting
-            setTimeout(() => {
-              // Redirect to production page with order ID
-              window.location.href = `/Production?order_id=${orderId}`;
-            }, 1500);
+              // Small delay to ensure modal is closed and toast is shown before redirecting
+              setTimeout(() => {
+                // Redirect to the specified URL or production page with order ID
+                window.location.href =
+                  response.redirect +
+                  (response.order_id ? `?order_id=${response.order_id}` : "");
+              }, 1500);
+            } else {
+              // Normal allocation success
+              toastr.success(
+                "Stock allocated successfully. Redirecting to production...",
+                "Success",
+              );
+
+              // Close the modal
+              $("#allocationViewModal").modal("hide");
+
+              // Small delay to ensure modal is closed and toast is shown before redirecting
+              setTimeout(() => {
+                // Redirect to production page with order ID
+                window.location.href = `/Production?order_id=${orderId}`;
+              }, 1500);
+            }
           },
           error: function (xhr) {
             // Reset button state
@@ -4923,6 +4948,63 @@
         });
       }
 
+      // Get default UOM for species when SizeMaster is not available
+      function getDefaultUOMForSpecies(speciesName) {
+        if (!speciesName) return "units";
+
+        const species = speciesName.toLowerCase();
+
+        // Cephalopods (Squid, Cuttlefish, Octopus) - typically kg for whole, pcs for processed
+        if (
+          species.includes("cuttlefish") ||
+          species.includes("squid") ||
+          species.includes("octopus")
+        ) {
+          return "kg";
+        }
+
+        // Shrimp/Prawn - typically count/kg
+        if (species.includes("shrimp") || species.includes("prawn")) {
+          return "count/kg";
+        }
+
+        // Fish - typically kg
+        if (
+          species.includes("fish") ||
+          species.includes("tuna") ||
+          species.includes("salmon") ||
+          species.includes("cod")
+        ) {
+          return "kg";
+        }
+
+        // Bivalves (Mussels, Oysters, Clams) - typically kg
+        if (
+          species.includes("mussel") ||
+          species.includes("oyster") ||
+          species.includes("clam") ||
+          species.includes("scallop")
+        ) {
+          return "kg";
+        }
+
+        // Default fallback
+        return "kg";
+      }
+
+      // Extract species name from product name (fallback when SpeciesMaster is not loaded)
+      function extractSpeciesFromProductName(productName) {
+        if (!productName) return null;
+
+        // Product names are typically in format: "Species | Derivative | Size"
+        const parts = productName.split(" | ");
+        if (parts.length > 0) {
+          return parts[0].trim();
+        }
+
+        return null;
+      }
+
       // Load product-specific raw materials from database
       function loadProductSpecificMaterials(
         speciesName,
@@ -4986,16 +5068,30 @@
                   dataType: "json",
                   success: function (inventoryResponse) {
                     const inventories = inventoryResponse?.data || [];
-                    const materialInventory = inventories.find(
+                    // Sum all quantities for this procurement product
+                    const materialInventories = inventories.filter(
                       (inv) =>
                         inv.procurement_product_id === material.id &&
                         inv.is_active === true,
                     );
-                    const availableStock = materialInventory?.quantity || 0;
+                    const availableStock = materialInventories.reduce(
+                      (total, inv) => total + (inv.quantity || 0),
+                      0,
+                    );
+                    const unitOfMeasure =
+                      material?.ProductMaster?.SizeMaster?.unit_of_measure ||
+                      getDefaultUOMForSpecies(
+                        material?.ProductMaster?.ProductCategoryMaster
+                          ?.SpeciesMaster?.species_name ||
+                          extractSpeciesFromProductName(
+                            material?.ProductMaster?.product_name,
+                          ),
+                      );
 
                     console.log("Inventory for material:", {
                       material_id: material.id,
                       available_stock: availableStock,
+                      unit_of_measure: unitOfMeasure,
                     });
 
                     renderSingleRawMaterial(
@@ -5004,17 +5100,28 @@
                       quantityRequired,
                       container,
                       availableStock,
+                      unitOfMeasure,
                     );
                   },
                   error: function (xhr) {
                     console.error("Error fetching inventory:", xhr);
                     // Render without inventory data
+                    const unitOfMeasure =
+                      material?.ProductMaster?.SizeMaster?.unit_of_measure ||
+                      getDefaultUOMForSpecies(
+                        material?.ProductMaster?.ProductCategoryMaster
+                          ?.SpeciesMaster?.species_name ||
+                          extractSpeciesFromProductName(
+                            material?.ProductMaster?.product_name,
+                          ),
+                      );
                     renderSingleRawMaterial(
                       material.id,
                       displayName,
                       quantityRequired,
                       container,
                       0,
+                      unitOfMeasure,
                     );
                   },
                 });
@@ -5066,16 +5173,30 @@
                 dataType: "json",
                 success: function (inventoryResponse) {
                   const inventories = inventoryResponse?.data || [];
-                  const materialInventory = inventories.find(
+                  // Sum all quantities for this procurement product
+                  const materialInventories = inventories.filter(
                     (inv) =>
                       inv.procurement_product_id === material.id &&
                       inv.is_active === true,
                   );
-                  const availableStock = materialInventory?.quantity || 0;
+                  const availableStock = materialInventories.reduce(
+                    (total, inv) => total + (inv.quantity || 0),
+                    0,
+                  );
+                  const unitOfMeasure =
+                    material?.ProductMaster?.SizeMaster?.unit_of_measure ||
+                    getDefaultUOMForSpecies(
+                      material?.ProductMaster?.ProductCategoryMaster
+                        ?.SpeciesMaster?.species_name ||
+                        extractSpeciesFromProductName(
+                          material?.ProductMaster?.product_name,
+                        ),
+                    );
 
                   console.log("Inventory for unprocessed material:", {
                     material_id: material.id,
                     available_stock: availableStock,
+                    unit_of_measure: unitOfMeasure,
                   });
 
                   renderSingleRawMaterial(
@@ -5084,17 +5205,28 @@
                     quantityRequired,
                     container,
                     availableStock,
+                    unitOfMeasure,
                   );
                 },
                 error: function (xhr) {
                   console.error("Error fetching inventory:", xhr);
                   // Render without inventory data
+                  const unitOfMeasure =
+                    material?.ProductMaster?.SizeMaster?.unit_of_measure ||
+                    getDefaultUOMForSpecies(
+                      material?.ProductMaster?.ProductCategoryMaster
+                        ?.SpeciesMaster?.species_name ||
+                        extractSpeciesFromProductName(
+                          material?.ProductMaster?.product_name,
+                        ),
+                    );
                   renderSingleRawMaterial(
                     material.id,
                     displayName,
                     quantityRequired,
                     container,
                     0,
+                    unitOfMeasure,
                   );
                 },
               });
@@ -5119,6 +5251,7 @@
         quantityRequired,
         container,
         availableStock = 0,
+        unitOfMeasure = "units",
       ) {
         // Calculate quantity with 20% buffer
         const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
@@ -5142,18 +5275,18 @@
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #fff; border-radius: 3px; border-left: 3px solid ${stockColor};">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Available Stock:</strong> <span class="badge" style="background-color: ${stockColor}; color: white;">${availableStock} units</span></span>
+                <span><strong>Available Stock:</strong> <span class="badge" style="background-color: ${stockColor}; color: white;">${availableStock} ${unitOfMeasure}</span></span>
                 <span style="color: ${stockColor}; font-weight: bold;">${stockStatus}</span>
               </div>
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #f0f8ff; border-radius: 3px; border-left: 3px solid #0066cc;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Quantity Required (with 20% buffer):</strong> ${roundedQuantity} units</span>
+                <span><strong>Quantity Required (with 20% buffer):</strong> ${roundedQuantity} ${unitOfMeasure}</span>
               </div>
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #fff3cd; border-radius: 3px; border-left: 3px solid #ffc107;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Quantity to Purchase (after stock deduction):</strong> ${quantityToPurchase} units</span>
+                <span><strong>Quantity to Purchase (after stock deduction):</strong> ${quantityToPurchase} ${unitOfMeasure}</span>
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
@@ -5167,7 +5300,7 @@
                 step="0.5"
                 style="width: 100px;"
               >
-              <span style="color: #666; font-size: 0.9em;">Units</span>
+              <span style="color: #666; font-size: 0.9em;">${unitOfMeasure}</span>
             </div>
             ${
               !hasStock

@@ -1,8 +1,8 @@
 const models = require("../../../../models");
 const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
 
-const CheckInventory = async (
-  { product_master_id, order_id },
+export const CheckInventory = async (
+  { product_master_id },
   session,
   fastify,
 ) => {
@@ -10,7 +10,6 @@ const CheckInventory = async (
     try {
       console.log("CheckInventory called with:", {
         product_master_id,
-        order_id,
       });
       if (!product_master_id) {
         return reject({
@@ -44,13 +43,16 @@ const CheckInventory = async (
             include: [
               {
                 model: models.SizeMaster,
-                as: "SizeMaster",
-                attributes: ["id", "size_name", "unit_of_measure"],
+                as: "size",
+                attributes: ["id", "size", "unit_of_measure"],
                 required: false,
               },
             ],
           },
         ],
+      }).catch((err) => {
+        console.error("Error fetching product:", err);
+        throw new Error(`Failed to fetch product: ${err.message}`);
       });
 
       if (!product) {
@@ -87,6 +89,9 @@ const CheckInventory = async (
           is_active: true,
         },
         attributes: ["id"],
+      }).catch((err) => {
+        console.error("Error fetching allowed units:", err);
+        throw new Error(`Failed to fetch allowed units: ${err.message}`);
       });
 
       const allowedUnitIds = allowedUnits.map((unit) => unit.id);
@@ -98,13 +103,20 @@ const CheckInventory = async (
         AND inv.unit_id IN (:allowedUnitIds)
       `;
 
-      const [fgResult] = await models.sequelize.query(fgSumQuery, {
-        replacements: {
-          product_id: product.id,
-          allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
-        },
-        type: models.sequelize.QueryTypes.SELECT,
-      });
+      const [fgResult] = await models.sequelize
+        .query(fgSumQuery, {
+          replacements: {
+            product_id: product.id,
+            allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
+          },
+          type: models.sequelize.QueryTypes.SELECT,
+        })
+        .catch((err) => {
+          console.error("Error executing FG inventory query:", err);
+          throw new Error(
+            `Failed to execute FG inventory query: ${err.message}`,
+          );
+        });
 
       const totalFGInventory = parseFloat(fgResult?.fg_available_qty || 0);
 
@@ -119,20 +131,15 @@ const CheckInventory = async (
 
       // If we have finished goods inventory, treat as processed product
       if (totalFGInventory > 0 || isProcessedProduct) {
-        // Fetch sales/allocated quantities - total and order-specific
-        let salesQuery = `
+        // Fetch sales/allocated quantities
+        const salesQuery = `
           SELECT COALESCE(SUM(si.quantity), 0) as total_sales_inventory_qty
           FROM sales_inventory si
           WHERE si.product_master_id = :product_id
           AND si.is_active = true
         `;
 
-        let replacements = { product_id: product.id };
-
-        if (order_id) {
-          salesQuery += ` AND si.order_id != :order_id`;
-          replacements.order_id = order_id;
-        }
+        const replacements = { product_id: product.id };
 
         const [salesResult] = await models.sequelize.query(salesQuery, {
           replacements,
@@ -142,27 +149,6 @@ const CheckInventory = async (
         const totalSalesAllocations = parseFloat(
           salesResult?.total_sales_inventory_qty || 0,
         );
-
-        // If order_id provided, also get allocations for this specific order
-        let orderSpecificAllocations = 0;
-        if (order_id) {
-          const orderQuery = `
-            SELECT COALESCE(SUM(si.quantity), 0) as order_sales_inventory_qty
-            FROM sales_inventory si
-            WHERE si.product_master_id = :product_id
-            AND si.order_id = :order_id
-            AND si.is_active = true
-          `;
-
-          const [orderResult] = await models.sequelize.query(orderQuery, {
-            replacements: { product_id: product.id, order_id },
-            type: models.sequelize.QueryTypes.SELECT,
-          });
-
-          orderSpecificAllocations = parseFloat(
-            orderResult?.order_sales_inventory_qty || 0,
-          );
-        }
 
         // The inventory_stock.available_qty already accounts for allocations
         // (auto-allocation reduces available_qty when stock is allocated)
@@ -190,7 +176,7 @@ const CheckInventory = async (
 
         // Get unit of measure from the mapping
         let unitOfMeasure =
-          product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";
+          product?.MappingProfile?.size?.unit_of_measure || "kg";
 
         // If nested include didn't work, try to fetch the mapping separately
         if (
@@ -204,19 +190,39 @@ const CheckInventory = async (
                 include: [
                   {
                     model: models.SizeMaster,
-                    as: "SizeMaster",
-                    attributes: ["id", "size_name", "unit_of_measure"],
+                    as: "size",
+                    attributes: ["id", "size", "unit_of_measure"],
                     required: false,
                   },
                 ],
               });
-            if (mapping?.SizeMaster?.unit_of_measure) {
-              unitOfMeasure = mapping.SizeMaster.unit_of_measure;
+            if (mapping?.size?.unit_of_measure) {
+              unitOfMeasure = mapping.size.unit_of_measure;
             }
           } catch (error) {
             console.log("Error fetching mapping separately:", error.message);
           }
         }
+
+        // Check for raw material stock availability
+        const rawMaterialQuery = `
+          SELECT COALESCE(SUM(pi.available_quantity), 0) as raw_material_qty
+          FROM purchase_inventory pi
+          WHERE pi.product_master_id = :product_id
+          AND pi.is_active = true
+        `;
+
+        const [rawMaterialResult] = await models.sequelize.query(
+          rawMaterialQuery,
+          {
+            replacements: { product_id: product.id },
+            type: models.sequelize.QueryTypes.SELECT,
+          },
+        );
+
+        const rawMaterialStock = parseFloat(
+          rawMaterialResult?.raw_material_qty || 0,
+        );
 
         // Return the actual available quantity from inventory_stock (already accounts for allocations)
         return resolve({
@@ -231,15 +237,10 @@ const CheckInventory = async (
             breakdown: {
               sales_inventory: Number(totalSalesAllocations), // Allocated to sales
               fg_inventory: Number(totalFGInventory), // Available FG inventory
+              raw_material_stock: Number(rawMaterialStock), // Raw material stock
               total_inventory: Number(totalFGQuantity),
-              total_allocations: Number(
-                totalSalesAllocations +
-                  (order_id ? orderSpecificAllocations : 0),
-              ),
+              total_allocations: Number(totalSalesAllocations),
               available_stock: Number(totalFGInventory),
-              order_allocations: order_id
-                ? Number(orderSpecificAllocations)
-                : undefined,
             },
           },
         });
@@ -322,13 +323,18 @@ const CheckInventory = async (
       // Calculate effective finished goods quantity using yield standards
       const effectiveFinishedGoodsQty =
         await YieldBasedInventoryCalculator.calculateEffectiveInventory(
-          rawMaterialProduct.id, // Use raw material product ID for yield calculation
+          product.id, // Use finished product ID for yield calculation (rings, not raw whole round)
           rawMaterialStockKg,
-        );
+        ).catch((err) => {
+          console.error("Error calculating effective inventory:", err);
+          throw new Error(
+            `Failed to calculate effective inventory: ${err.message}`,
+          );
+        });
 
       // Get unit of measure from the mapping
       let unitOfMeasure =
-        product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";
+        product?.MappingProfile?.size?.unit_of_measure || "kg";
       resolve({
         statusCode: 200,
         message:
@@ -342,6 +348,11 @@ const CheckInventory = async (
           inventory_type:
             effectiveFinishedGoodsQty > 0 ? "raw_materials" : "none",
           unit_of_measure: unitOfMeasure,
+          breakdown: {
+            raw_material_stock: Number(rawMaterialStockKg),
+            effective_finished_goods: Number(effectiveFinishedGoodsQty),
+            yield_percent: yieldData.base_yield_percent,
+          },
           raw_material_details: {
             product_name: rawMaterialProduct.product_name,
             raw_material_quantity: rawMaterialStockKg,
@@ -360,5 +371,3 @@ const CheckInventory = async (
     }
   });
 };
-
-module.exports = { CheckInventory };

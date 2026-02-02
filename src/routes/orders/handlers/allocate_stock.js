@@ -5,6 +5,7 @@ export const AllocateStock = async (
   session,
   fastify,
 ) => {
+  console.log("AllocateStock function called");
   return new Promise(async (resolve, reject) => {
     try {
       console.log("AllocateStock called with params:", {
@@ -34,6 +35,19 @@ export const AllocateStock = async (
           is_active: true,
         },
         attributes: ["quantity"],
+        include: [
+          {
+            model: models.ProductMaster,
+            as: "ProductMaster",
+            attributes: ["id", "product_name"],
+            include: [
+              {
+                model: models.SizeMaster,
+                attributes: ["unit_of_measure"],
+              },
+            ],
+          },
+        ],
       });
 
       if (!orderProduct) {
@@ -44,6 +58,8 @@ export const AllocateStock = async (
       }
 
       const parsedQuantity = parseFloat(orderProduct.quantity);
+      const unitOfMeasure =
+        orderProduct.ProductMaster?.SizeMaster?.unit_of_measure || "pcs";
 
       if (parsedQuantity <= 0) {
         return reject({
@@ -63,9 +79,11 @@ export const AllocateStock = async (
       });
 
       if (existingOrder) {
-        return reject({
-          statusCode: 400,
-          message: `Order ${existingOrder.order_no} is already allocated and cannot be allocated again.`,
+        return resolve({
+          message: `Order ${existingOrder.order_no} is already allocated. Redirecting to Production page.`,
+          redirect: "/production",
+          order_id: order_id,
+          order_no: existingOrder.order_no,
         });
       }
 
@@ -114,17 +132,23 @@ export const AllocateStock = async (
 
         // Calculate total available finished goods (should be 0 based on above check)
         const totalFGAvailable = 0;
-        const purchaseInventoryItems = await models.PurchaseInventory.findAll({
+
+        // Get total available quantity in purchase inventory
+        const purchaseInventorySum = await models.PurchaseInventory.findAll({
           where: {
             product_master_id: product_id,
-            quantity: {
+            available_quantity: {
               [models.Sequelize.Op.gt]: 0,
+              [models.Sequelize.Op.not]: null,
             },
             is_active: true,
           },
           attributes: [
             [
-              models.sequelize.fn("SUM", models.sequelize.col("quantity")),
+              models.sequelize.fn(
+                "SUM",
+                models.sequelize.col("available_quantity"),
+              ),
               "total_available",
             ],
           ],
@@ -132,40 +156,61 @@ export const AllocateStock = async (
         });
 
         const availableInPurchase = parseFloat(
-          purchaseInventoryItems[0]?.total_available || 0,
-        );
-
-        console.log(
-          "DEBUG: Purchase inventory for product:",
-          product_id,
-          "available:",
-          availableInPurchase,
+          purchaseInventorySum[0]?.total_available || 0,
         );
 
         // Check if this is raw material that needs yield consideration
+        const purchaseInventoryItems = await models.PurchaseInventory.findAll({
+          where: {
+            product_master_id: product_id,
+            available_quantity: {
+              [models.Sequelize.Op.gt]: 0,
+              [models.Sequelize.Op.not]: null,
+            },
+            is_active: true,
+          },
+          include: [
+            {
+              model: models.ProcurementProducts,
+              as: "ProcurementProduct",
+              attributes: ["procurement_product_type"],
+            },
+          ],
+          attributes: ["id"],
+        });
+
         const isRawMaterial = purchaseInventoryItems.some(
           (item) =>
-            item["ProcurementProduct.procurement_product_type"] ===
-            "UNPROCESSED",
+            item.ProcurementProduct?.procurement_product_type === "UNPROCESSED",
         );
 
         let effectiveAvailableQuantity = availableInPurchase;
+        let requiredRawMaterials = parsedQuantity;
 
         if (isRawMaterial) {
           // For raw materials, calculate effective finished goods considering yield
-          const YieldBasedInventoryCalculator = require("../../services/yield_based_inventory_calculator");
+          const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
           effectiveAvailableQuantity =
             await YieldBasedInventoryCalculator.calculateEffectiveInventory(
               product_id,
               availableInPurchase,
             );
+          // Calculate required raw materials for the requested finished goods quantity
+          requiredRawMaterials =
+            await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
+              product_id,
+              parsedQuantity,
+            );
           console.log(
-            `Raw material yield adjustment: ${availableInPurchase}kg raw → ${effectiveAvailableQuantity}kg effective finished goods`,
+            `Raw material yield adjustment: ${availableInPurchase}${unitOfMeasure} raw → ${effectiveAvailableQuantity}${unitOfMeasure} effective finished goods`,
+          );
+          console.log(
+            `Required raw materials for ${parsedQuantity}${unitOfMeasure} finished goods: ${requiredRawMaterials}${unitOfMeasure} raw materials`,
           );
         }
 
         console.log(
-          `Available in purchase inventory: ${availableInPurchase}kg ${isRawMaterial ? `(effective: ${effectiveAvailableQuantity}kg finished goods)` : "(finished goods)"}`,
+          `Available in purchase inventory: ${availableInPurchase}${unitOfMeasure} ${isRawMaterial ? `(effective: ${effectiveAvailableQuantity}${unitOfMeasure} finished goods)` : "(finished goods)"}`,
         );
 
         if (effectiveAvailableQuantity >= parsedQuantity) {
@@ -185,12 +230,13 @@ export const AllocateStock = async (
               await models.PurchaseInventory.findAll({
                 where: {
                   product_master_id: product_id,
-                  quantity: {
+                  available_quantity: {
                     [models.Sequelize.Op.gt]: 0,
+                    [models.Sequelize.Op.not]: null,
                   },
                   is_active: true,
                 },
-                attributes: ["id", "quantity", "lot_id", "procurement_lot_id"],
+                attributes: ["id", "available_quantity"],
                 order: [["created_at", "ASC"]], // FIFO allocation
                 transaction,
               });
@@ -201,8 +247,20 @@ export const AllocateStock = async (
 
               const allocateQty = Math.min(
                 remainingQuantity,
-                parseFloat(inventory.quantity),
+                parseFloat(inventory.available_quantity),
               );
+
+              if (isNaN(allocateQty) || allocateQty <= 0) {
+                console.error(
+                  "Invalid allocateQty:",
+                  allocateQty,
+                  "remainingQuantity:",
+                  remainingQuantity,
+                  "available_quantity:",
+                  inventory.available_quantity,
+                );
+                continue; // Skip this inventory item
+              }
 
               // Create sales inventory allocation record
               await models.SalesInventory.create(
@@ -210,10 +268,6 @@ export const AllocateStock = async (
                   order_id: order_id,
                   product_master_id: product_id,
                   quantity: allocateQty,
-                  unit_id: "kg", // Assuming kg as default unit
-                  lot_id: inventory.lot_id,
-                  procurement_lot_id: inventory.procurement_lot_id,
-                  allocation_type: "PURCHASE_INVENTORY",
                   created_by: session?.pid || "system",
                 },
                 { transaction },
@@ -222,7 +276,8 @@ export const AllocateStock = async (
               // Update purchase inventory (reduce available quantity)
               await models.PurchaseInventory.update(
                 {
-                  quantity: parseFloat(inventory.quantity) - allocateQty,
+                  available_quantity:
+                    parseFloat(inventory.available_quantity) - allocateQty,
                   updated_at: new Date(),
                 },
                 {
@@ -265,7 +320,7 @@ export const AllocateStock = async (
             await transaction.commit();
 
             return resolve({
-              message: `Stock allocated successfully from purchase inventory. ${parsedQuantity} kg allocated.`,
+              message: `Stock allocated successfully from purchase inventory. ${parsedQuantity} ${unitOfMeasure} allocated.`,
             });
           } catch (error) {
             await transaction.rollback();
@@ -276,9 +331,34 @@ export const AllocateStock = async (
             });
           }
         } else {
+          // Calculate raw material stock availability
+          const rawMaterialItems = await models.PurchaseInventory.findAll({
+            where: {
+              product_master_id: product_id,
+              available_quantity: {
+                [models.Sequelize.Op.gt]: 0,
+              },
+              is_active: true,
+            },
+            attributes: [
+              [
+                models.sequelize.fn(
+                  "SUM",
+                  models.sequelize.col("available_quantity"),
+                ),
+                "total_raw_material",
+              ],
+            ],
+            raw: true,
+          });
+
+          const rawMaterialStock = parseFloat(
+            rawMaterialItems[0]?.total_raw_material || 0,
+          );
+
           return reject({
             statusCode: 400,
-            message: `No inventory available for allocation. Finished goods: ${totalFGAvailable} kg, Purchase inventory: ${availableInPurchase} kg ${isRawMaterial ? `(effective: ${effectiveAvailableQuantity} kg finished goods)` : ""}, Required: ${parsedQuantity} kg`,
+            message: `No inventory available for allocation. Finished goods: ${totalFGAvailable} ${unitOfMeasure}, Purchase inventory: ${availableInPurchase} ${unitOfMeasure}, Raw material stock: ${rawMaterialStock} ${unitOfMeasure}${isRawMaterial ? ` (effective: ${effectiveAvailableQuantity} ${unitOfMeasure} finished goods)` : ""}, Required: ${isRawMaterial ? `${requiredRawMaterials} ${unitOfMeasure} raw materials (${parsedQuantity} ${unitOfMeasure} finished goods)` : `${parsedQuantity} ${unitOfMeasure}`}`,
           });
         }
       }
@@ -290,9 +370,52 @@ export const AllocateStock = async (
       );
 
       if (totalAvailable < parsedQuantity) {
+        // Check raw material stock availability
+        const rawMaterialItems = await models.PurchaseInventory.findAll({
+          where: {
+            product_master_id: product_id,
+            available_quantity: {
+              [models.Sequelize.Op.gt]: 0,
+            },
+            is_active: true,
+          },
+          include: [
+            {
+              model: models.ProcurementProducts,
+              as: "ProcurementProduct",
+              attributes: ["procurement_product_type"],
+            },
+          ],
+          attributes: [
+            [
+              models.sequelize.fn(
+                "SUM",
+                models.sequelize.col("available_quantity"),
+              ),
+              "total_raw_material",
+            ],
+          ],
+          raw: true,
+        });
+
+        const rawMaterialStock = parseFloat(
+          rawMaterialItems[0]?.total_raw_material || 0,
+        );
+
+        // Calculate required raw materials if this is a raw material product
+        let requiredRawMaterialsForError = parsedQuantity;
+        if (isRawMaterial) {
+          const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
+          requiredRawMaterialsForError =
+            await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
+              product_id,
+              parsedQuantity,
+            );
+        }
+
         return reject({
           statusCode: 400,
-          message: `Insufficient finished goods stock. Available: ${totalAvailable} kg, Required: ${parsedQuantity} kg`,
+          message: `Insufficient finished goods stock. Available: ${totalAvailable} ${unitOfMeasure}, Raw material stock: ${rawMaterialStock} ${unitOfMeasure}${isRawMaterial ? ` (effective: ${effectiveAvailableQuantity} ${unitOfMeasure} finished goods)` : ""}, Required: ${isRawMaterial ? `${requiredRawMaterialsForError} ${unitOfMeasure} raw materials (${parsedQuantity} ${unitOfMeasure} finished goods)` : `${parsedQuantity} ${unitOfMeasure}`}`,
         });
       }
 
@@ -318,7 +441,7 @@ export const AllocateStock = async (
               product_id: product_id,
               transaction_type: "DISPATCH", // Using DISPATCH for allocation
               qty_change: -allocateQty, // Negative for outbound
-              uom: "KG", // Required field
+              uom: unitOfMeasure.toUpperCase(), // Required field
               reference_type: "SALES_ORDER",
               reference_id: order_id,
               warehouse_from: "CS_UNIT",
@@ -397,8 +520,8 @@ export const AllocateStock = async (
               order_id: order_id,
               order_product_id: orderProduct.id,
               packing_id: null, // Allow null for inventory allocations
-              allocated_quantity: quantity,
-              allocated_unit: "KG", // Assuming KG as default unit
+              allocated_quantity: parsedQuantity,
+              allocated_unit: unitOfMeasure.toUpperCase(), // Using actual unit of measure
               allocation_date: new Date(),
               status: "ALLOCATED",
               created_by: session?.pid || session?.user_id,
@@ -412,7 +535,7 @@ export const AllocateStock = async (
               product_master_id: product_id,
               packing_id: null, // Allow null for inventory allocations
               order_id: order_id,
-              quantity: quantity,
+              quantity: parsedQuantity,
               is_active: true,
               created_by: session?.pid || session?.user_id,
             },
@@ -424,11 +547,11 @@ export const AllocateStock = async (
 
         resolve({
           statusCode: 200,
-          message: "Stock allocated successfully",
+          message: `Stock allocated successfully from finished goods. ${parsedQuantity} ${unitOfMeasure} allocated.`,
           data: {
             order_id,
             product_id,
-            allocated_quantity: quantity,
+            allocated_quantity: parsedQuantity,
           },
         });
       } catch (error) {
