@@ -193,19 +193,23 @@ const CheckInventory = async (
           product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";
 
         // If nested include didn't work, try to fetch the mapping separately
-        if (unitOfMeasure === "kg" && product.species_derivative_size_grade_mapping_id) {
+        if (
+          unitOfMeasure === "kg" &&
+          product.species_derivative_size_grade_mapping_id
+        ) {
           try {
-            const mapping = await models.species_derivative_size_grade_mapping.findOne({
-              where: { id: product.species_derivative_size_grade_mapping_id },
-              include: [
-                {
-                  model: models.SizeMaster,
-                  as: "SizeMaster",
-                  attributes: ["id", "size_name", "unit_of_measure"],
-                  required: false,
-                },
-              ],
-            });
+            const mapping =
+              await models.species_derivative_size_grade_mapping.findOne({
+                where: { id: product.species_derivative_size_grade_mapping_id },
+                include: [
+                  {
+                    model: models.SizeMaster,
+                    as: "SizeMaster",
+                    attributes: ["id", "size_name", "unit_of_measure"],
+                    required: false,
+                  },
+                ],
+              });
             if (mapping?.SizeMaster?.unit_of_measure) {
               unitOfMeasure = mapping.SizeMaster.unit_of_measure;
             }
@@ -322,9 +326,10 @@ const CheckInventory = async (
           rawMaterialStockKg,
         );
 
-        // Get unit of measure from the mapping
-        let unitOfMeasure =
-          product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";      resolve({
+      // Get unit of measure from the mapping
+      let unitOfMeasure =
+        product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";
+      resolve({
         statusCode: 200,
         message:
           effectiveFinishedGoodsQty > 0
