@@ -3389,6 +3389,7 @@
                     const breakdown = response?.data?.breakdown || {};
                     const rawMaterialsBreakdown =
                       response?.data?.raw_materials_breakdown || [];
+                    const unitOfMeasure = response?.data?.unit_of_measure || "kg";
 
                     if ($element.hasClass("available-stock")) {
                       // Update stock display with detailed information
@@ -3398,24 +3399,26 @@
                       if (quantity > 0) {
                         badgeClass =
                           'style="background-color: #EA5455; color: white;"';
+
                         if (inventoryType === "finished_goods") {
-                          stockText = `${quantity} kg (Finished Goods)`;
+                          stockText = `${quantity} ${unitOfMeasure} (Finished Goods)`;
                           if (breakdown.sales_inventory > 0) {
-                            stockText += ` - Sales: ${breakdown.sales_inventory}kg`;
+                            stockText += ` - Sales: ${breakdown.sales_inventory}${unitOfMeasure}`;
                           }
                           if (breakdown.fg_inventory > 0) {
-                            stockText += ` - FG: ${breakdown.fg_inventory}kg`;
+                            stockText += ` - FG: ${breakdown.fg_inventory}${unitOfMeasure}`;
                           }
                         } else if (inventoryType === "raw_materials") {
-                          stockText = `${quantity} kg (Raw Materials)`;
-                          if (rawMaterialsBreakdown.length > 0) {
-                            const materialNames = rawMaterialsBreakdown
-                              .map((m) => m.product_name)
-                              .join(", ");
-                            stockText += ` - ${materialNames}`;
-                          }
+                          // For raw materials: available_quantity is yield-adjusted effective finished goods
+                          const rawMaterialQty =
+                            response?.data?.raw_material_details
+                              ?.raw_material_quantity || 0;
+                          const yieldPercent =
+                            response?.data?.raw_material_details
+                              ?.yield_percent || "0.00";
+                          stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${rawMaterialQty}kg raw @ ${yieldPercent}%)`;
                         } else {
-                          stockText = `${quantity} kg`;
+                          stockText = `${quantity} ${unitOfMeasure}`;
                         }
                       } else {
                         stockText = "Out of Stock";
@@ -3628,9 +3631,15 @@
                           purchaseInventory = 0; // Raw materials
                           salesInventory = tempPurchase; // Finished goods
                         } else if (inventoryType === "raw_materials") {
-                          // For raw materials: available_quantity is raw material stock
-                          netInventory = purchaseInventory; // No subtraction needed
+                          // For raw materials: available_quantity is now yield-adjusted effective finished goods
+                          netInventory = purchaseInventory; // This is now the effective finished goods quantity
+                          // Keep raw material quantity for display
+                          const rawMaterialQty =
+                            invResponse?.data?.raw_material_details
+                              ?.raw_material_quantity || purchaseInventory;
                           salesInventory = 0; // No finished goods for raw materials
+                          // Update purchaseInventory to show actual raw material stock
+                          purchaseInventory = rawMaterialQty;
                         } else {
                           // Fallback
                           netInventory = Math.max(
@@ -4408,20 +4417,20 @@
           `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}`,
         );
 
-        let apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
-
-        // Use the new species-filtered endpoint
+        let apiUrl;
         if (speciesMasterId) {
+          apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
           console.log(
-            "✓ Using new species-filtered endpoint. Fetching raw materials with URL:",
+            "✓ Using species-filtered endpoint. Fetching raw materials with URL:",
             apiUrl,
           );
         } else {
-          console.warn("⚠ No species ID provided. Cannot fetch materials.");
-          container.html(
-            '<p style="color: #d32f2f; text-align: center;">Species information not available</p>',
+          // Fallback to general raw materials endpoint when no species is available
+          apiUrl = `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED`;
+          console.warn(
+            "⚠ No species ID provided. Falling back to general raw materials endpoint:",
+            apiUrl,
           );
-          return;
         }
 
         $.ajax({
@@ -4719,6 +4728,9 @@
                   calculation.conversionRatio || "N/A"
                 }</li>
                 <li>Yield: ${calculation.yieldPercentage || "N/A"}</li>
+                <li>Total Required: <strong>${Math.ceil(
+                  calculation.totalRequiredQuantity || 0,
+                )} units</strong></li>
                 <li>Recommended Order: <strong>${Math.ceil(
                   calculation.recommendedOrderQuantity || 0,
                 )} units</strong></li>
@@ -4750,9 +4762,12 @@
 
         // Also update the quantity hint
         $("#purchaseRequestQuantityHint").html(
-          `<strong>AI Recommended:</strong> ${Math.ceil(
-            calculation.recommendedOrderQuantity,
+          `<strong>Total Required:</strong> ${Math.ceil(
+            calculation.totalRequiredQuantity,
           )} units | 
+           <strong>To Order Now:</strong> ${Math.ceil(
+             calculation.recommendedOrderQuantity,
+           )} units | 
            <strong>Current Stock:</strong> ${Math.floor(
              calculation.currentInventory,
            )} units`,
@@ -4822,6 +4837,9 @@
                 <li>Yield: ${calculation.yieldPercentage} (${
                   calculation.productForm
                 })</li>
+                <li>Total Required: <strong>${Math.ceil(
+                  calculation.totalRequiredQuantity,
+                )} units</strong></li>
                 <li>Recommended Order: <strong style="color: #0066cc;">${Math.ceil(
                   calculation.recommendedOrderQuantity,
                 )} units</strong></li>

@@ -35,102 +35,530 @@
     currentProductionOrder = productionOrder;
     bomExplosion = bomData;
 
-    let html = `
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <small class="text-muted">Order Number</small>
-        <p class="fw-bold">${productionOrder.order_number}</p>
-      </div>
-      <div class="col-md-3">
-        <small class="text-muted">Input Qty</small>
-        <p class="fw-bold">${productionOrder.planned_quantity_kg} kg</p>
-      </div>
-      <div class="col-md-3">
-        <small class="text-muted">Status</small>
-        <p>
-          <span class="${getStatusBadge(productionOrder.status)}">
-            ${productionOrder.status}
-          </span>
-        </p>
-      </div>
-      <div class="col-md-3">
-        <button 
-          onclick="startProductionFlow(${productionOrder.id})"
-          class="btn btn-sm btn-success"
-          ${productionOrder.status !== "PLANNED" ? "disabled" : ""}
-        >
-          <i class="fas fa-play"></i> Start Production
-        </button>
-      </div>
-    </div>
-  `;
+    // Check inventory availability
+    checkInventoryAvailability(productionOrder.input_species_id, productionOrder.planned_quantity_kg)
+      .then(inventoryData => {
+        const isInventorySufficient = inventoryData.available_qty >= productionOrder.planned_quantity_kg;
 
-    if (
-      bomData &&
-      bomData.planned_outputs &&
-      bomData.planned_outputs.length > 0
-    ) {
-      html += `
-      <div class="table-responsive">
-        <table class="table table-sm table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>Derivative</th>
-              <th class="text-end">Base Yield %</th>
-              <th class="text-end">Grade Multiplier</th>
-              <th class="text-end">Size Multiplier</th>
-              <th class="text-end">Effective Yield %</th>
-              <th class="text-end">Planned Qty (kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
-
-      bomData.planned_outputs.forEach((output) => {
-        const rowClass =
-          output.derivative_code === "WASTE" ? "table-danger" : "";
-        html += `
-        <tr class="${rowClass}">
-          <td>
-            <strong>${output.derivative_name}</strong>
-            <br>
-            <small class="text-muted">${output.derivative_code}</small>
-          </td>
-          <td class="text-end">
-            <span class="badge bg-light text-dark">
-              ${output.base_yield_percent}%
-            </span>
-          </td>
-          <td class="text-end">${output.grade_multiplier || "-"}</td>
-          <td class="text-end">${output.size_multiplier || "-"}</td>
-          <td class="text-end">
-            <strong>${output.effective_yield_percent}%</strong>
-          </td>
-          <td class="text-end">
-            <strong>${output.planned_quantity_kg} kg</strong>
-          </td>
-        </tr>
+        let html = `
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <small class="text-muted">Order Number</small>
+            <p class="fw-bold">${productionOrder.order_number}</p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Input Qty</small>
+            <p class="fw-bold">${productionOrder.planned_quantity_kg} kg</p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Available Inventory</small>
+            <p class="fw-bold ${inventoryData.available_qty < productionOrder.planned_quantity_kg ? 'text-danger' : 'text-success'}">
+              ${inventoryData.available_qty} kg
+            </p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Status</small>
+            <p>
+              <span class="${getStatusBadge(productionOrder.status)}">
+                ${productionOrder.status}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            ${isInventorySufficient ?
+              `<button
+                onclick="startProductionFlow(${productionOrder.id})"
+                class="btn btn-sm btn-success"
+                ${productionOrder.status !== "PLANNED" ? "disabled" : ""}
+              >
+                <i class="fas fa-play"></i> Start Production
+              </button>` :
+              `<button
+                onclick="raisePurchaseRequest('${productionOrder.input_species_id}', ${productionOrder.planned_quantity_kg - inventoryData.available_qty})"
+                class="btn btn-sm btn-warning"
+              >
+                <i class="fas fa-shopping-cart"></i> Raise Purchase Request
+              </button>
+              <small class="text-muted ms-2">
+                Need ${productionOrder.planned_quantity_kg - inventoryData.available_qty} kg more
+              </small>`
+            }
+          </div>
+        </div>
       `;
+
+        if (
+          bomData &&
+          bomData.planned_outputs &&
+          bomData.planned_outputs.length > 0
+        ) {
+          html += `
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Derivative</th>
+                  <th class="text-end">Base Yield %</th>
+                  <th class="text-end">Grade Multiplier</th>
+                  <th class="text-end">Size Multiplier</th>
+                  <th class="text-end">Effective Yield %</th>
+                  <th class="text-end">Planned Qty (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          bomData.planned_outputs.forEach((output) => {
+            const rowClass =
+              output.derivative_code === "WASTE" ? "table-danger" : "";
+            html += `
+            <tr class="${rowClass}">
+              <td>
+                <strong>${output.derivative_name}</strong>
+                <br>
+                <small class="text-muted">${output.derivative_code}</small>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-light text-dark">
+                  ${output.base_yield_percent}%
+                </span>
+              </td>
+              <td class="text-end">${output.grade_multiplier || "-"}</td>
+              <td class="text-end">${output.size_multiplier || "-"}</td>
+              <td class="text-end">
+                <strong>${output.effective_yield_percent}%</strong>
+              </td>
+              <td class="text-end">
+                <strong>${output.planned_quantity_kg} kg</strong>
+              </td>
+            </tr>
+          `;
+          });
+
+          html += `
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="5">Total Output:</td>
+                  <td class="text-end">${bomData.total_planned_output_kg} kg</td>
+                </tr>
+                <tr class="table-danger">
+                  <td colspan="5">Total Waste:</td>
+                  <td class="text-end">${bomData.total_waste_kg} kg (${bomData.waste_percent}%)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        `;
+        }
+
+        document.getElementById("bomContainer").innerHTML = html;
+      })
+      .catch(error => {
+        console.error("Error checking inventory:", error);
+        // Fallback to original display if inventory check fails
+        let html = `
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <small class="text-muted">Order Number</small>
+            <p class="fw-bold">${productionOrder.order_number}</p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Input Qty</small>
+            <p class="fw-bold">${productionOrder.planned_quantity_kg} kg</p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Status</small>
+            <p>
+              <span class="${getStatusBadge(productionOrder.status)}">
+                ${productionOrder.status}
+              </span>
+            </p>
+          </div>
+          <div class="col-md-3">
+            <button
+              onclick="startProductionFlow(${productionOrder.id})"
+              class="btn btn-sm btn-success"
+              ${productionOrder.status !== "PLANNED" ? "disabled" : ""}
+            >
+              <i class="fas fa-play"></i> Start Production
+            </button>
+          </div>
+        </div>
+      `;
+
+        if (
+          bomData &&
+          bomData.planned_outputs &&
+          bomData.planned_outputs.length > 0
+        ) {
+          html += `
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Derivative</th>
+                  <th class="text-end">Base Yield %</th>
+                  <th class="text-end">Grade Multiplier</th>
+                  <th class="text-end">Size Multiplier</th>
+                  <th class="text-end">Effective Yield %</th>
+                  <th class="text-end">Planned Qty (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          bomData.planned_outputs.forEach((output) => {
+            const rowClass =
+              output.derivative_code === "WASTE" ? "table-danger" : "";
+            html += `
+            <tr class="${rowClass}">
+              <td>
+                <strong>${output.derivative_name}</strong>
+                <br>
+                <small class="text-muted">${output.derivative_code}</small>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-light text-dark">
+                  ${output.base_yield_percent}%
+                </span>
+              </td>
+              <td class="text-end">${output.grade_multiplier || "-"}</td>
+              <td class="text-end">${output.size_multiplier || "-"}</td>
+              <td class="text-end">
+                <strong>${output.effective_yield_percent}%</strong>
+              </td>
+              <td class="text-end">
+                <strong>${output.planned_quantity_kg} kg</strong>
+              </td>
+            </tr>
+          `;
+          });
+
+          html += `
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="5">Total Output:</td>
+                  <td class="text-end">${bomData.total_planned_output_kg} kg</td>
+                </tr>
+                <tr class="table-danger">
+                  <td colspan="5">Total Waste:</td>
+                  <td class="text-end">${bomData.total_waste_kg} kg (${bomData.waste_percent}%)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        `;
+        }
+
+        document.getElementById("bomContainer").innerHTML = html;
+      });
+  }
+
+  // Check inventory availability
+  async function checkInventoryAvailability(speciesId, requiredQty) {
+    try {
+      const response = await fetch(`/api/inventory/stock/availability/${speciesId}?unit_id=RAW_INVENTORY`);
+      if (!response.ok) throw new Error("Failed to check inventory");
+      const result = await response.json();
+      return result.data;
+    } catch (error) {
+      console.error("Error checking inventory availability:", error);
+      return { available_qty: 0, is_available: false };
+    }
+  }
+
+  // Raise purchase request
+  async function raisePurchaseRequest(speciesId, requiredQty) {
+    if (!confirm(`Raise purchase request for ${requiredQty} kg of raw material?`)) return;
+
+    try {
+      // For now, just show an alert. In a real implementation, this would create a purchase request
+      alert(`Purchase request raised for ${requiredQty} kg of species ${speciesId}`);
+      // TODO: Implement actual purchase request creation
+    } catch (error) {
+      console.error("Error raising purchase request:", error);
+      alert("Error: " + error.message);
+    }
+  }
+
+  // Start production flow
+  async function startProductionFlow(orderId) {
+    if (!confirm("Start production for this order?")) return;
+
+    try {
+      const response = await fetch(`/api/production/${orderId}/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          initial_grade: "B",
+          size_code: "MEDIUM",
+        }),
       });
 
-      html += `
-          </tbody>
-          <tfoot class="table-light fw-bold">
-            <tr>
-              <td colspan="5">Total Output:</td>
-              <td class="text-end">${bomData.total_planned_output_kg} kg</td>
-            </tr>
-            <tr class="table-danger">
-              <td colspan="5">Total Waste:</td>
-              <td class="text-end">${bomData.total_waste_kg} kg (${bomData.waste_percent}%)</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    `;
-    }
+      if (!response.ok) throw new Error("Failed to start production");
+      const result = await response.json();
 
-    document.getElementById("bomContainer").innerHTML = html;
+      if (result.data && result.data.bom_explosion) {
+        displayBOMExplosion(
+          { ...currentProductionOrder, status: "RAW_ISSUED" },
+          result.data.bom_explosion
+        );
+      }
+
+      alert("Production started! BOM exploded.");
+      window.dispatchEvent(
+        new CustomEvent("productionStarted", { detail: result.data })
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error: " + error.message);
+    }
+  }
+
+  // Load BOM explosion for a production order
+  async function loadBOMExplosion(orderId) {
+    try {
+      const response = await fetch(`/api/production/orders/${orderId}`);
+      if (!response.ok) throw new Error("Failed to fetch order");
+      const result = await response.json();
+
+      if (result.data) {
+        displayBOMExplosion(result.data, result.data.bom_explosion || null);
+      }
+    } catch (error) {
+      console.error("Error loading BOM:", error);
+    }
+  }
+
+  // Listen for order selection events
+  window.addEventListener("orderSelected", function (event) {
+    if (event.detail && event.detail.id) {
+      loadBOMExplosion(event.detail.id);
+    }
+  });
+</script>
+            <p class="fw-bold">${productionOrder.planned_quantity_kg} kg</p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Available Inventory</small>
+            <p class="fw-bold ${inventoryData.available_qty < productionOrder.planned_quantity_kg ? 'text-danger' : 'text-success'}">
+              ${inventoryData.available_qty} kg
+            </p>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Status</small>
+            <p>
+              <span class="${getStatusBadge(productionOrder.status)}">
+                ${productionOrder.status}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            ${isInventorySufficient ?
+              `<button 
+                onclick="startProductionFlow(${productionOrder.id})"
+                class="btn btn-sm btn-success"
+                ${productionOrder.status !== "PLANNED" ? "disabled" : ""}
+              >
+                <i class="fas fa-play"></i> Start Production
+              </button>` :
+              `<button 
+                onclick="raisePurchaseRequest('${productionOrder.input_species_id}', ${productionOrder.planned_quantity_kg - inventoryData.available_qty})"
+                class="btn btn-sm btn-warning"
+              >
+                <i class="fas fa-shopping-cart"></i> Raise Purchase Request
+              </button>
+              <small class="text-muted ms-2">
+                Need ${productionOrder.planned_quantity_kg - inventoryData.available_qty} kg more
+              </small>`
+            }
+          </div>
+        </div>
+      `;
+
+        if (
+          bomData &&
+          bomData.planned_outputs &&
+          bomData.planned_outputs.length > 0
+        ) {
+          html += `
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Derivative</th>
+                  <th class="text-end">Base Yield %</th>
+                  <th class="text-end">Grade Multiplier</th>
+                  <th class="text-end">Size Multiplier</th>
+                  <th class="text-end">Effective Yield %</th>
+                  <th class="text-end">Planned Qty (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+          bomData.planned_outputs.forEach((output) => {
+            const rowClass =
+              output.derivative_code === "WASTE" ? "table-danger" : "";
+            html += `
+            <tr class="${rowClass}">
+              <td>
+                <strong>${output.derivative_name}</strong>
+                <br>
+                <small class="text-muted">${output.derivative_code}</small>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-light text-dark">
+                  ${output.base_yield_percent}%
+                </span>
+              </td>
+              <td class="text-end">${output.grade_multiplier || "-"}</td>
+              <td class="text-end">${output.size_multiplier || "-"}</td>
+              <td class="text-end">
+                <strong>${output.effective_yield_percent}%</strong>
+              </td>
+              <td class="text-end">
+                <strong>${output.planned_quantity_kg} kg</strong>
+              </td>
+            </tr>
+          `;
+          });
+
+          html += `
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="5">Total Output:</td>
+                  <td class="text-end">${bomData.total_planned_output_kg} kg</td>
+                </tr>
+                <tr class="table-danger">
+                  <td colspan="5">Total Waste:</td>
+                  <td class="text-end">${bomData.total_waste_kg} kg (${bomData.waste_percent}%)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        `;
+        }
+
+        document.getElementById("bomContainer").innerHTML = html;
+      });
+  }
+
+  // Check inventory availability
+  async function checkInventoryAvailability(speciesId, requiredQty) {
+    try {
+      const response = await fetch(`/api/inventory/stock/availability/${speciesId}?unit_id=RAW_INVENTORY`);
+      if (!response.ok) throw new Error("Failed to check inventory");
+      const result = await response.json();
+      return result.data;
+    } catch (error) {
+      console.error("Error checking inventory availability:", error);
+      return { available_qty: 0, is_available: false };
+    }
+  }
+
+  // Raise purchase request
+  async function raisePurchaseRequest(speciesId, requiredQty) {
+    if (!confirm(`Raise purchase request for ${requiredQty} kg of raw material?`)) return;
+
+    try {
+      // For now, just show an alert. In a real implementation, this would create a purchase request
+      alert(`Purchase request raised for ${requiredQty} kg of species ${speciesId}`);
+      // TODO: Implement actual purchase request creation
+    } catch (error) {
+      console.error("Error raising purchase request:", error);
+      alert("Error: " + error.message);
+    }
+  }
+                <small class="text-muted">${output.derivative_code}</small>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-light text-dark">
+                  ${output.base_yield_percent}%
+                </span>
+              </td>
+              <td class="text-end">${output.grade_multiplier || "-"}</td>
+              <td class="text-end">${output.size_multiplier || "-"}</td>
+              <td class="text-end">
+                <strong>${output.effective_yield_percent}%</strong>
+              </td>
+              <td class="text-end">
+                <strong>${output.planned_quantity_kg} kg</strong>
+              </td>
+            </tr>
+          `;
+          });
+
+          html += `
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="5">Total Output:</td>
+                  <td class="text-end">${bomData.total_planned_output_kg} kg</td>
+                </tr>
+                <tr class="table-danger">
+                  <td colspan="5">Total Waste:</td>
+                  <td class="text-end">${bomData.total_waste_kg} kg (${bomData.waste_percent}%)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        `;
+        }
+
+        document.getElementById("bomContainer").innerHTML = html;
+      });
+  }
+
+  // Check inventory availability for a species
+  async function checkInventoryAvailability(speciesId, requiredQty) {
+    try {
+      const response = await fetch(`/api/inventory/stock/availability/${speciesId}?unit_id=RAW_INVENTORY`);
+      if (!response.ok) throw new Error("Failed to check inventory");
+      const result = await response.json();
+      return result.data;
+    } catch (error) {
+      console.error("Error checking inventory availability:", error);
+      // Return default values if check fails
+      return {
+        available_qty: 0,
+        on_hand_qty: 0,
+        reserved_qty: 0,
+        is_available: false,
+      };
+    }
+  }
+
+  // Raise purchase request
+  async function raisePurchaseRequest(speciesId, requiredQty) {
+    if (!confirm(`Raise purchase request for ${requiredQty} kg of raw material?`)) return;
+
+    try {
+      const response = await fetch('/api/purchase-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          species_id: speciesId,
+          required_quantity: requiredQty,
+          production_order_id: currentProductionOrder?.id,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to create purchase request');
+
+      const result = await response.json();
+      alert(`Purchase request raised successfully! Request ID: ${result.data?.request_id || 'Pending'}`);
+    } catch (error) {
+      console.error("Error raising purchase request:", error);
+      alert("Error raising purchase request: " + error.message);
+    }
   }
 
   // Start production flow
