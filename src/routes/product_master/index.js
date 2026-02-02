@@ -27,6 +27,12 @@ import {
   getProductRules,
 } from "../../middlewares/productValidation";
 
+// UOM Validation Middleware
+import {
+  validateProductUOM,
+  getUOMRequirements,
+} from "../../middleware/uom_validation";
+
 // DB Function for category validation
 async function getProductCategoriesBySpecies(species_master_id) {
   try {
@@ -74,7 +80,7 @@ export const productMasterRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.put(
@@ -100,7 +106,7 @@ export const productMasterRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get("/grades-by-category/:category_id", async (req, reply) => {
@@ -168,7 +174,7 @@ export const productMasterRoute = (fastify, opts, done) => {
     {
       preHandler: async (req, reply) => {
         console.log(
-          "DROPDOWN ROUTE MATCHED - skipping product_master_id validation"
+          "DROPDOWN ROUTE MATCHED - skipping product_master_id validation",
         );
         // This route is for dropdown data, not for getting a specific product
         // The params here are query params for filtering, not product_master_id
@@ -192,19 +198,19 @@ export const productMasterRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.get("/:product_master_id", getSchema, async (req, reply) => {
     console.log(
       "GET product by ID HANDLER CALLED with product_master_id:",
-      req.params.product_master_id
+      req.params.product_master_id,
     );
 
     // GUARD: If someone requests /:dropdown, redirect to /dropdown handler
     if (req.params.product_master_id === "dropdown") {
       console.log(
-        "GUARD: Detected /dropdown as parametric route - redirecting to dropdown handler"
+        "GUARD: Detected /dropdown as parametric route - redirecting to dropdown handler",
       );
       try {
         const params = { ...req.query };
@@ -280,19 +286,25 @@ export const productMasterRoute = (fastify, opts, done) => {
   // ========== 4D MAPPING ENDPOINTS ==========
 
   // Create product with 4D mapping validation
-  fastify.post("/create-with-mapping", async (req, reply) => {
-    try {
-      req.user = { id: req?.token_profile_id };
-      req.profile_id = req?.token_profile_id;
-      await createWithMapping(req, reply);
-    } catch (err) {
-      console.error("Error in create-with-mapping:", err.message);
-      return reply.code(err?.statusCode || 500).send({
-        success: false,
-        message: err?.message || "Failed to create product with mapping",
-      });
-    }
-  });
+  fastify.post(
+    "/create-with-mapping",
+    {
+      preHandler: validateProductUOM,
+    },
+    async (req, reply) => {
+      try {
+        req.user = { id: req?.token_profile_id };
+        req.profile_id = req?.token_profile_id;
+        await createWithMapping(req, reply);
+      } catch (err) {
+        console.error("Error in create-with-mapping:", err.message);
+        return reply.code(err?.statusCode || 500).send({
+          success: false,
+          message: err?.message || "Failed to create product with mapping",
+        });
+      }
+    },
+  );
 
   // Get product suggestions by species and derivative
   fastify.get("/suggestions", async (req, reply) => {
@@ -319,6 +331,9 @@ export const productMasterRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  // Get UOM requirements for species/derivative combination
+  fastify.get("/uom-requirements", getUOMRequirements);
 
   done();
 };
