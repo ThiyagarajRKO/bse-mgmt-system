@@ -121,12 +121,16 @@ class InventoryCheckService {
    */
   async checkRawMaterialsAvailability(productId, requiredQuantity) {
     try {
-      // Get BOM for this product to find required raw materials
+      // Get product details including derivative and species
       const productMaster = await db.ProductMaster.findByPk(productId, {
         include: [
           {
             model: db.SpeciesMaster,
             as: "Species",
+          },
+          {
+            model: db.DerivativeMaster,
+            as: "DerivativeMaster",
           },
         ],
       });
@@ -137,10 +141,36 @@ class InventoryCheckService {
       }
 
       const speciesId = productMaster.Species?.id;
+      const derivativeId = productMaster.DerivativeMaster?.id;
+
       if (!speciesId) {
         console.log(`No species found for product ${productId}`);
         return { available: 0, rawMaterials: [] };
       }
+
+      if (!derivativeId) {
+        console.log(`No derivative found for product ${productId}`);
+        return { available: 0, rawMaterials: [] };
+      }
+
+      // Get yield standard for this product
+      const yieldStandard = await db.YieldStandardMaster.findOne({
+        where: {
+          species_id: speciesId,
+          derivative_id: derivativeId,
+          processing_type: "RAW", // Default to RAW processing type
+          is_active: true,
+        },
+        attributes: ["expected_yield_pct"],
+      });
+
+      const yieldPercentage = yieldStandard?.expected_yield_pct
+        ? parseFloat(yieldStandard.expected_yield_pct) / 100
+        : 0.6; // Default conservative yield of 60%
+
+      console.log(
+        `Using yield percentage: ${yieldPercentage * 100}% for product ${productId}`,
+      );
 
       // Find BOM for this product's species
       const bom = await db.BomMaster.findOne({
@@ -193,8 +223,13 @@ class InventoryCheckService {
         const availableRawQuantity = parseFloat(
           purchaseInventory[0]?.total_available || 0,
         );
-        const materialAvailable = Math.floor(
-          availableRawQuantity / (input.quantity || 1),
+
+        // Calculate how much finished product can be produced from available raw materials
+        // considering yield loss
+        const potentialFinishedGoods =
+          availableRawQuantity / (input.quantity || 1);
+        const effectiveFinishedGoods = Math.floor(
+          potentialFinishedGoods * yieldPercentage,
         );
 
         rawMaterialsStatus.push({
@@ -202,20 +237,22 @@ class InventoryCheckService {
           productName: input.RawProduct?.product_name || "Unknown",
           required: requiredRawQuantity,
           available: availableRawQuantity,
-          canProduce: materialAvailable,
+          yieldPercentage: yieldPercentage,
+          canProduce: effectiveFinishedGoods,
         });
 
         // Update total available based on this material's constraint
-        totalAvailable = Math.min(totalAvailable, materialAvailable);
+        totalAvailable = Math.min(totalAvailable, effectiveFinishedGoods);
       }
 
       console.log(
-        `Raw materials check for product ${productId}: can produce ${totalAvailable} units`,
+        `Raw materials check for product ${productId}: can produce ${totalAvailable} units (with ${yieldPercentage * 100}% yield)`,
       );
 
       return {
         available: totalAvailable,
         rawMaterials: rawMaterialsStatus,
+        yieldPercentage: yieldPercentage,
       };
     } catch (error) {
       console.error("Error checking raw materials:", error);
