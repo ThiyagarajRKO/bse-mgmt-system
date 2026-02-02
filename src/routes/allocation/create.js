@@ -1,5 +1,7 @@
 import AllocationMaster from "../../../models/allocation_master";
 import Orders from "../../../models/orders";
+import OrderProducts from "../../../models/order_products";
+import { CheckInventory } from "../orders/handlers/check_inventory";
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -65,6 +67,40 @@ export default async (fastify) => {
           return reply.code(400).send({
             statusCode: 400,
             message: `Order must be CONFIRMED to allocate. Current status: ${order.status}`,
+          });
+        }
+
+        // Get order product to find product_master_id
+        const orderProduct = await OrderProducts.findByPk(order_product_id);
+        if (!orderProduct) {
+          return reply.code(404).send({
+            statusCode: 404,
+            message: "Order product not found",
+          });
+        }
+
+        // Check inventory availability
+        try {
+          const inventoryCheck = await CheckInventory(
+            { product_master_id: orderProduct.product_master_id },
+            null,
+            fastify,
+          );
+
+          const availableQuantity =
+            inventoryCheck?.data?.available_quantity || 0;
+
+          if (allocation_qty > availableQuantity) {
+            return reply.code(400).send({
+              statusCode: 400,
+              message: `Insufficient inventory. Requested: ${allocation_qty}, Available: ${availableQuantity}`,
+            });
+          }
+        } catch (inventoryError) {
+          fastify.log.error("Inventory check failed:", inventoryError);
+          return reply.code(500).send({
+            statusCode: 500,
+            message: "Failed to check inventory availability",
           });
         }
 

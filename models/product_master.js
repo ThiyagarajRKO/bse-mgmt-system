@@ -57,8 +57,8 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       // 4D Mapping Association (Species × Derivative × Size × Grade)
-      if (models.SpeciesDerivativeSizeGradeMapping) {
-        ProductMaster.belongsTo(models.SpeciesDerivativeSizeGradeMapping, {
+      if (models.species_derivative_size_grade_mapping) {
+        ProductMaster.belongsTo(models.species_derivative_size_grade_mapping, {
           foreignKey: "species_derivative_size_grade_mapping_id",
           as: "MappingProfile",
           onUpdate: "CASCADE",

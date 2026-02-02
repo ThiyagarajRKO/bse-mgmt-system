@@ -279,11 +279,11 @@ export const GetAll = ({
         productCategoryWhere.species_master_id = species_master_id;
         console.log(
           "[GetAll] Filtering procurement products by species_master_id:",
-          species_master_id
+          species_master_id,
         );
       } else {
         console.log(
-          "[GetAll] No species filter applied - returning ALL procurement products"
+          "[GetAll] No species filter applied - returning ALL procurement products",
         );
       }
 
@@ -292,11 +292,11 @@ export const GetAll = ({
           sequelize.where(
             sequelize.cast(
               sequelize.col("SupplierMaster.supplier_name"),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` },
@@ -322,18 +322,31 @@ export const GetAll = ({
         },
         {
           as: "ProductMaster",
-          attributes: ["id", "product_name", "product_category_master_id"],
+          attributes: [
+            "id",
+            "product_name",
+            "product_category_master_id",
+            "size_master_id",
+          ],
           model: models.ProductMaster,
           required: Object.keys(productCategoryWhere).length > 0,
           include: [
             {
               model: models.ProductCategoryMaster,
               attributes: ["id", "product_category", "species_master_id"],
-              required: Object.keys(productCategoryWhere).length > 0,
-              where:
-                Object.keys(productCategoryWhere).length > 0
-                  ? productCategoryWhere
-                  : undefined,
+              required: false,
+              include: [
+                {
+                  model: models.SpeciesMaster,
+                  attributes: ["id", "species_name"],
+                  required: false,
+                },
+              ],
+            },
+            {
+              model: models.SizeMaster,
+              attributes: ["id", "size", "unit_of_measure"],
+              required: false,
             },
           ],
         },
@@ -367,18 +380,18 @@ export const GetAll = ({
 
         if (species_master_id) {
           console.log(
-            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page for species: ${species_master_id}`
+            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page for species: ${species_master_id}`,
           );
         } else {
           console.log(
-            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page (NO FILTER)`
+            `[GetAll] Returned ${procurements.count} total / ${procurements.rows.length} on this page (NO FILTER)`,
           );
         }
       } catch (includeError) {
         // If include fails, try with simpler includes
         console.warn(
           "Error with full includes, falling back to basic includes:",
-          includeError.message
+          includeError.message,
         );
         procurements = await models.ProcurementProducts.findAndCountAll({
           subQuery: false,
@@ -410,9 +423,28 @@ export const GetAll = ({
             },
             {
               as: "ProductMaster",
-              attributes: ["id", "product_name"],
+              attributes: ["id", "product_name", "size_master_id"],
               model: models.ProductMaster,
               required: false,
+              include: [
+                {
+                  model: models.ProductCategoryMaster,
+                  attributes: ["id", "product_category", "species_master_id"],
+                  required: false,
+                  include: [
+                    {
+                      model: models.SpeciesMaster,
+                      attributes: ["id", "species_name"],
+                      required: false,
+                    },
+                  ],
+                },
+                {
+                  model: models.SizeMaster,
+                  attributes: ["id", "size", "unit_of_measure"],
+                  required: false,
+                },
+              ],
             },
           ],
           where,
@@ -462,17 +494,17 @@ export const GetPaymentItems = ({
             sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
           sequelize.where(
             sequelize.cast(
               sequelize.col("procurement_product_type"),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
         ];
@@ -561,7 +593,7 @@ export const GetPurchaseInventoryProducts = ({
             sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_purchaser: { [Op.iLike]: `%${search}%` } },
           { "$SupplierMaster.supplier_name$": { [Op.iLike]: `%${search}%` } },
@@ -587,7 +619,7 @@ export const GetPurchaseInventoryProducts = ({
           "created_at",
           [
             sequelize.literal(
-              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`
+              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`,
             ),
             "total_dispatched_quantity",
           ],
@@ -666,19 +698,19 @@ export const GetSalesInventoryProducts = ({
           "expiry_date",
           [
             sequelize.literal(
-              `(SELECT SUM(packing_quantity) FROM packing pk JOIN peeled_dispatches pd ON pd.id = pk.peeled_dispatch_id and pd.is_active = true JOIN peeling_products pp ON pp.id = pd.peeled_product_id and pp.product_master_id = '${product_master_id}' and pp.is_active = true WHERE pk.is_active = true)`
+              `(SELECT SUM(packing_quantity) FROM packing pk JOIN peeled_dispatches pd ON pd.id = pk.peeled_dispatch_id and pd.is_active = true JOIN peeling_products pp ON pp.id = pd.peeled_product_id and pp.product_master_id = '${product_master_id}' and pp.is_active = true WHERE pk.is_active = true)`,
             ),
             "total_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(quantity) FROM sales_inventory WHERE packing_id = "Packing".id AND is_active = true)`
+              `(SELECT SUM(quantity) FROM sales_inventory WHERE packing_id = "Packing".id AND is_active = true)`,
             ),
             "sold_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT STRING_AGG(DISTINCT o.order_no::text, ', ') FROM sales_inventory si LEFT JOIN orders o ON si.order_id = o.id WHERE si.packing_id = "Packing".id AND si.is_active = true)`
+              `(SELECT STRING_AGG(DISTINCT o.order_no::text, ', ') FROM sales_inventory si LEFT JOIN orders o ON si.order_id = o.id WHERE si.packing_id = "Packing".id AND si.is_active = true)`,
             ),
             "total_sales_orders",
           ],
@@ -784,7 +816,7 @@ export const GetNames = ({
                 dispatch_id != "null" && dispatch_id != undefined
                   ? "dispatches.id != '" + dispatch_id + "' and"
                   : ""
-              } dispatches.is_active = true)`
+              } dispatches.is_active = true)`,
             ),
             "dispatched_quantity",
           ],
@@ -827,7 +859,7 @@ export const GetNames = ({
       if (procurements && procurements.length > 0) {
         console.log(
           "GetNames - first item sample:",
-          JSON.stringify(procurements[0], null, 2)
+          JSON.stringify(procurements[0], null, 2),
         );
       }
 
@@ -1035,7 +1067,7 @@ export const GetProcurementSpendBySuppliersData = ({ from_date, to_date }) => {
               new Date(from_date || null),
               new Date(to_date || null),
             ],
-          }
+          },
         ),
       };
 
@@ -1081,7 +1113,7 @@ export const GetProcurementSpendByProductsData = ({ from_date, to_date }) => {
               new Date(from_date || null),
               new Date(to_date || null),
             ],
-          }
+          },
         ),
       };
 
@@ -1128,7 +1160,7 @@ export const GetProcurementSpendByDateData = ({ from_date, to_date }) => {
               new Date(from_date || null),
               new Date(to_date || null),
             ],
-          }
+          },
         ),
       };
 
@@ -1189,7 +1221,7 @@ export const GetProcurementPerformanceBySuppliersData = ({
               new Date(from_date || null),
               new Date(to_date || null),
             ],
-          }
+          },
         ),
       };
 
@@ -1234,7 +1266,7 @@ export const GetProcurementPerformanceBySuppliersData = ({
                   sum(procurement_price)
                 ELSE 
                   sum(adjusted_price) 
-              END`
+              END`,
             ),
             "desc",
           ],
@@ -1258,14 +1290,14 @@ export const GetProcurementAgebyProductsData = ({ from_date, to_date }) => {
           Sequelize.where(
             Sequelize.fn(
               "date",
-              Sequelize.col("ProcurementProducts.created_at")
+              Sequelize.col("ProcurementProducts.created_at"),
             ),
             {
               [Op.between]: [
                 new Date(from_date || null),
                 new Date(to_date || null),
               ],
-            }
+            },
           ),
         ],
       };
@@ -1328,7 +1360,7 @@ export const GetProcurementAgebyProductsData = ({ from_date, to_date }) => {
       `,
         {
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
       resolve(output_data);

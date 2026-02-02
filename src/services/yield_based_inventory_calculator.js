@@ -33,16 +33,8 @@ class YieldBasedInventoryCalculator {
         return rawQuantity; // Return raw quantity as fallback
       }
 
-      // For processed products, return the quantity as-is (no yield calculation needed)
-      if (
-        productMaster.is_raw === false ||
-        productMaster.processing_state === "PROCESSED"
-      ) {
-        console.log(
-          `Product ${productId} is processed - returning quantity unchanged: ${rawQuantity}`,
-        );
-        return rawQuantity;
-      }
+      // Always apply yield calculation for inventory checking purposes
+      // (we want to know how many finished goods can be produced from raw materials)
 
       // For raw materials, apply yield calculation
       const speciesId = productMaster.SpeciesMaster?.id;
@@ -70,12 +62,27 @@ class YieldBasedInventoryCalculator {
         ? parseFloat(yieldStandard.expected_yield_pct) / 100
         : 0.6; // Default conservative yield of 60%
 
-      // Calculate effective finished goods from raw materials
-      const effectiveFinishedGoods = rawQuantity * yieldPercentage;
+      // Special handling for count-based derivatives like cephalopod rings
+      // For rings, the yield represents "rings per whole cephalopod" not percentage
+      const isCephalopodRings =
+        productMaster.SpeciesMaster?.parent_category_type === "Cephalopod" &&
+        productMaster.Derivative?.derivative_code === "PRC_RINGS";
 
-      console.log(
-        `Yield calculation for raw product ${productId}: ${rawQuantity} raw → ${effectiveFinishedGoods} effective (at ${yieldPercentage * 100}% yield)`,
-      );
+      let effectiveFinishedGoods;
+      if (isCephalopodRings) {
+        // For cephalopod rings: raw_quantity * rings_per_cephalopod
+        // The yield percentage represents rings per whole cephalopod (e.g., 8.0 = 8 rings per cuttlefish)
+        effectiveFinishedGoods = rawQuantity * yieldPercentage;
+        console.log(
+          `Cephalopod rings yield calculation for product ${productId}: ${rawQuantity} whole cephalopods → ${effectiveFinishedGoods} rings (at ${yieldPercentage} rings per cephalopod)`,
+        );
+      } else {
+        // Standard weight-based yield calculation
+        effectiveFinishedGoods = rawQuantity * yieldPercentage;
+        console.log(
+          `Standard yield calculation for raw product ${productId}: ${rawQuantity} raw → ${effectiveFinishedGoods} effective (at ${yieldPercentage * 100}% yield)`,
+        );
+      }
 
       return effectiveFinishedGoods;
     } catch (error) {
@@ -136,12 +143,25 @@ class YieldBasedInventoryCalculator {
         ? parseFloat(yieldStandard.expected_yield_pct) / 100
         : 0.6; // Default conservative yield of 60%
 
-      // Calculate required raw materials: finished_goods / yield_percentage
-      const requiredRawMaterials = finishedQuantity / yieldPercentage;
+      // Special handling for count-based derivatives like cephalopod rings
+      const isCephalopodRings =
+        productMaster.SpeciesMaster?.parent_category_type === "Cephalopod" &&
+        productMaster.Derivative?.derivative_code === "PRC_RINGS";
 
-      console.log(
-        `Raw material calculation for product ${productId}: ${finishedQuantity} finished → ${requiredRawMaterials} raw required (at ${yieldPercentage * 100}% yield)`,
-      );
+      let requiredRawMaterials;
+      if (isCephalopodRings) {
+        // For cephalopod rings: finished_rings / rings_per_cephalopod
+        requiredRawMaterials = finishedQuantity / yieldPercentage;
+        console.log(
+          `Cephalopod rings raw material calculation for product ${productId}: ${finishedQuantity} rings → ${requiredRawMaterials} whole cephalopods required (at ${yieldPercentage} rings per cephalopod)`,
+        );
+      } else {
+        // Standard calculation: finished_goods / yield_percentage
+        requiredRawMaterials = finishedQuantity / yieldPercentage;
+        console.log(
+          `Standard raw material calculation for product ${productId}: ${finishedQuantity} finished → ${requiredRawMaterials} raw required (at ${yieldPercentage * 100}% yield)`,
+        );
+      }
 
       return requiredRawMaterials;
     } catch (error) {
