@@ -25,12 +25,23 @@ export const Get = ({ id }) => {
   });
 };
 
-export const GetAll = ({ start, length, search, procurement_product_id }) => {
+export const GetAll = ({
+  start,
+  length,
+  search,
+  procurement_product_id,
+  procurement_product_type,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       let where = {
         is_active: true,
       };
+
+      // Add procurement_product_type filter if provided
+      if (procurement_product_type) {
+        where.procurement_product_type = procurement_product_type;
+      }
 
       let targetSpeciesId = null;
 
@@ -64,7 +75,7 @@ export const GetAll = ({ start, length, search, procurement_product_id }) => {
         } catch (err) {
           console.warn(
             "Error fetching procurement product species:",
-            err.message
+            err.message,
           );
         }
       }
@@ -74,11 +85,11 @@ export const GetAll = ({ start, length, search, procurement_product_id }) => {
           sequelize.where(
             sequelize.cast(
               sequelize.col("PurchaseInventory.procurement_product_type"),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { "$ProductMaster.product_name$": { [Op.iLike]: `%${search}%` } },
         ];
@@ -166,21 +177,21 @@ export const GetAll = ({ start, length, search, procurement_product_id }) => {
           }
 
           return plainRow;
-        })
+        }),
       );
 
       // Filter by species if a target species was identified
       let filteredRows = enrichedRows;
       if (targetSpeciesId) {
         filteredRows = enrichedRows.filter(
-          (row) => row.species_id === targetSpeciesId
+          (row) => row.species_id === targetSpeciesId,
         );
       }
 
       // Apply pagination AFTER filtering by species
       const paginatedResults = filteredRows.slice(
         start || 0,
-        (start || 0) + (length || 10)
+        (start || 0) + (length || 10),
       );
 
       resolve({
@@ -309,23 +320,16 @@ export const GetBySpecies = ({ species_id, start, length, search }) => {
           }
 
           return plainRow;
-        })
+        }),
       );
 
-      // Filter results to only include materials matching the specified species_id AND contain "raw" in the name
+      // Filter results to only include materials matching the specified species_id
+      // Removed the "raw" name requirement since procurement_product_type: "UNPROCESSED" already identifies raw materials
       const filteredRows = enrichedRows.filter((row) => {
         // Check species match
         const speciesMatch = row.species_id === species_id;
 
-        // Check if product name contains "raw" (case-insensitive)
-        const productName = (
-          row.ProductMaster?.product_name ||
-          row.procurement_product_name ||
-          ""
-        ).toLowerCase();
-        const containsRaw = productName.includes("raw");
-
-        return speciesMatch && containsRaw;
+        return speciesMatch;
       });
 
       resolve({

@@ -1,15 +1,22 @@
 import { PurchaseInventory } from "../../../../controllers";
 
 export const Get = async (
-  { draw = 1, start = 0, length = 10, "search[value]": search },
+  {
+    draw = 1,
+    start = 0,
+    length = 10,
+    "search[value]": search,
+    procurement_product_type,
+  },
   session,
-  fastify
+  fastify,
 ) => {
   try {
     const result = await PurchaseInventory.GetAll({
       start: Number(start || 0),
       length: Number(length || 10),
       search,
+      procurement_product_type,
     });
 
     if (!result) {
