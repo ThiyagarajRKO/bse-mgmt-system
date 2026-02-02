@@ -169,6 +169,83 @@ class YieldBasedInventoryCalculator {
       return finishedQuantity; // Return finished quantity as fallback
     }
   }
+
+  /**
+   * Calculate finished product yield from raw material quantity based on yield standards
+   * @param {string} productId - Product master ID
+   * @param {number} rawQuantity - Raw material quantity available
+   * @returns {Promise<number>} Expected finished product quantity
+   */
+  static async calculateYieldFromRawMaterials(productId, rawQuantity) {
+    try {
+      // Get product details including derivative and species
+      const productMaster = await db.ProductMaster.findByPk(productId, {
+        include: [
+          {
+            model: db.SpeciesMaster,
+            as: "SpeciesMaster",
+          },
+          {
+            model: db.DerivativeMaster,
+            as: "Derivative",
+          },
+        ],
+      });
+
+      if (!productMaster) {
+        console.warn(`Product ${productId} not found for yield calculation`);
+        return rawQuantity; // Return raw quantity as fallback
+      }
+
+      const speciesId = productMaster.SpeciesMaster?.id;
+      const derivativeId = productMaster.Derivative?.id;
+
+      if (!speciesId || !derivativeId) {
+        console.warn(`Missing species or derivative for product ${productId}`);
+        return rawQuantity; // Return raw quantity as fallback
+      }
+
+      // Get yield standard for this product
+      const yieldStandard = await db.YieldStandardMaster.findOne({
+        where: {
+          species_id: speciesId,
+          derivative_id: derivativeId,
+          processing_type: "RAW", // Default to RAW processing type
+          is_active: true,
+        },
+        attributes: ["expected_yield_pct"],
+      });
+
+      const yieldPercentage = yieldStandard?.expected_yield_pct
+        ? parseFloat(yieldStandard.expected_yield_pct) / 100
+        : 0.6; // Default conservative yield of 60%
+
+      // Special handling for count-based derivatives like cephalopod rings
+      const isCephalopodRings =
+        productMaster.SpeciesMaster?.parent_category_type === "Cephalopod" &&
+        productMaster.Derivative?.derivative_code === "PRC_RINGS";
+
+      let finishedQuantity;
+      if (isCephalopodRings) {
+        // For cephalopod rings: whole_cephalopods * rings_per_cephalopod
+        finishedQuantity = rawQuantity * yieldPercentage;
+        console.log(
+          `Cephalopod rings yield calculation for product ${productId}: ${rawQuantity} whole cephalopods → ${finishedQuantity} rings expected (at ${yieldPercentage} rings per cephalopod)`,
+        );
+      } else {
+        // Standard calculation: raw_materials * yield_percentage
+        finishedQuantity = rawQuantity * yieldPercentage;
+        console.log(
+          `Standard yield calculation for product ${productId}: ${rawQuantity} raw → ${finishedQuantity} finished expected (at ${yieldPercentage * 100}% yield)`,
+        );
+      }
+
+      return finishedQuantity;
+    } catch (error) {
+      console.error("Error calculating yield from raw materials:", error);
+      return rawQuantity; // Return raw quantity as fallback
+    }
+  }
 }
 
 module.exports = YieldBasedInventoryCalculator;

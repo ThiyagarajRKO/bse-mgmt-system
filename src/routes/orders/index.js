@@ -14,6 +14,7 @@ import { AutoAllocateStock } from "./handlers/auto_allocate_stock";
 import { DeleteEmpty } from "./handlers/delete_empty";
 import { GetTracking } from "./handlers/get_tracking";
 import { GetOrderProducts } from "./handlers/get_order_products";
+import { GetYieldSuggestions } from "./handlers/get_yield_suggestions";
 import CheckStockForProduct from "./handlers/check_stock_for_product";
 
 // Schema
@@ -316,6 +317,25 @@ export const ordersRoute = (fastify, opts, done) => {
       const params = req.body;
 
       const result = await AllocateStock(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.post("/yield-suggestions", async (req, reply) => {
+    try {
+      const params = req.body;
+
+      const result = await GetYieldSuggestions(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,

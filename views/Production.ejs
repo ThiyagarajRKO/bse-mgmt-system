@@ -1124,6 +1124,13 @@
                               name="yield_quantity"
                               required
                             />
+                            <small
+                              class="text-muted yield-info yield-info_1"
+                              style="font-size: 11px"
+                            >
+                              <i class="fas fa-info-circle"></i> Select a
+                              product to auto-calculate yield
+                            </small>
                           </div>
 
                           <div class="form-group mt-4 mb-4">
@@ -3014,6 +3021,9 @@
                                       name="yield_quantity"
                                       required
                                     />
+                                    <small class="text-muted yield-info yield-info_${index}" style="font-size: 11px;">
+                                      <i class="fas fa-info-circle"></i> Select a product to auto-calculate yield
+                                    </small>
                                   </div>
 
                                   <div class="form-group mt-4 mb-4">
@@ -3872,6 +3882,79 @@
         } else {
           $("#balance_dispatched_quantity").css({ color: "red" });
         }
+
+        // Trigger yield recalculation for all selected products when quantity changes
+        $(".peelingProductNames").each(function() {
+          if ($(this).val()) {
+            $(this).trigger('change');
+          }
+        });
+      });
+
+      // Auto-generate yield quantity when product is selected
+      $(document).on("change", ".peelingProductNames", function() {
+        const productId = $(this).val();
+        const peelingQuantity = parseFloat($("#peeling_quantity").val());
+        const fieldsetIndex = $(this).attr('class').match(/peelingProductNames_(\d+)/)?.[1] || '1';
+        const yieldQuantityField = $(`.yield_quantity_${fieldsetIndex}`);
+        const yieldInfoField = $(`.yield-info_${fieldsetIndex}`);
+
+        if (!productId || !peelingQuantity || peelingQuantity <= 0) {
+          // Clear yield quantity and info if no product selected or invalid quantity
+          yieldQuantityField.val('');
+          yieldInfoField.html('<i class="fas fa-info-circle"></i> Select a product to auto-calculate yield');
+          return;
+        }
+
+        // Show loading state
+        yieldInfoField.html('<i class="fas fa-spinner fa-spin"></i> Calculating yield...');
+
+        // Call yield suggestions API
+        $.ajax({
+          url: '/api/orders/yield-suggestions',
+          method: 'POST',
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            product_id: productId,
+            raw_quantity: peelingQuantity
+          }),
+          success: function(response) {
+            if (response.success && response.data) {
+              const suggestions = response.data;
+              if (suggestions.length > 0) {
+                const suggestion = suggestions[0]; // Use first suggestion
+                yieldQuantityField.val(suggestion.suggested_quantity);
+
+                // Show yield information
+                const yieldRate = suggestion.yield_rate ? `${suggestion.yield_rate}%` : 'N/A';
+                const requiredRaw = suggestion.required_raw_quantity ? suggestion.required_raw_quantity : 'N/A';
+                const inventoryStatus = suggestion.inventory_status || 'Unknown';
+
+                yieldInfoField.html(`
+                  <i class="fas fa-check-circle text-success"></i>
+                  <strong>Yield Rate:</strong> ${yieldRate} |
+                  <strong>Required Raw:</strong> ${requiredRaw} |
+                  <strong>Inventory:</strong> ${inventoryStatus}
+                `);
+
+                toastr["success"](`Yield auto-calculated: ${suggestion.suggested_quantity} units`);
+              } else {
+                yieldInfoField.html('<i class="fas fa-exclamation-triangle text-warning"></i> No yield data available');
+                yieldQuantityField.val('');
+              }
+            } else {
+              yieldInfoField.html('<i class="fas fa-exclamation-triangle text-warning"></i> No yield suggestions available');
+              yieldQuantityField.val('');
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.error("Error fetching yield suggestions:", textStatus, errorThrown);
+            yieldInfoField.html('<i class="fas fa-times-circle text-danger"></i> Failed to calculate yield');
+            yieldQuantityField.val('');
+            toastr["error"]("Failed to calculate yield quantity");
+          }
+        });
       });
 
       function loadPeelingMethods() {
@@ -3972,13 +4055,6 @@
               ...input_params,
             },
           };
-        }
-
-        if (yield_quantity > 0 && peeling_quantity < yield_quantity) {
-          toastr["warning"](
-            "Yield quantity must not be greater than peeling quantity!"
-          );
-          return;
         }
 
         $.ajax({
