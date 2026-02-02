@@ -1,4 +1,5 @@
 const models = require("../../../../models");
+const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
 
 const CheckInventory = async (
   { product_master_id, order_id },
@@ -7,6 +8,10 @@ const CheckInventory = async (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("CheckInventory called with:", {
+        product_master_id,
+        order_id,
+      });
       if (!product_master_id) {
         return reject({
           statusCode: 420,
@@ -22,6 +27,7 @@ const CheckInventory = async (
           "product_name",
           "derivative_master_id",
           "product_category_master_id",
+          "species_derivative_size_grade_mapping_id",
         ],
         include: [
           {
@@ -29,6 +35,20 @@ const CheckInventory = async (
             as: "Derivative",
             attributes: ["id", "derivative_code", "derivative_name"],
             required: false,
+          },
+          {
+            model: models.species_derivative_size_grade_mapping,
+            as: "MappingProfile",
+            attributes: ["id", "size_master_id"],
+            required: false,
+            include: [
+              {
+                model: models.SizeMaster,
+                as: "SizeMaster",
+                attributes: ["id", "size_name", "unit_of_measure"],
+                required: false,
+              },
+            ],
           },
         ],
       });
@@ -42,6 +62,7 @@ const CheckInventory = async (
             available_quantity: 0,
             has_stock: false,
             inventory_type: "none",
+            unit_of_measure: "kg", // Default unit
           },
         });
       }
@@ -167,6 +188,32 @@ const CheckInventory = async (
           totalFGResult?.total_fg_quantity || 0,
         );
 
+        // Get unit of measure from the mapping
+        let unitOfMeasure =
+          product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";
+
+        // If nested include didn't work, try to fetch the mapping separately
+        if (unitOfMeasure === "kg" && product.species_derivative_size_grade_mapping_id) {
+          try {
+            const mapping = await models.species_derivative_size_grade_mapping.findOne({
+              where: { id: product.species_derivative_size_grade_mapping_id },
+              include: [
+                {
+                  model: models.SizeMaster,
+                  as: "SizeMaster",
+                  attributes: ["id", "size_name", "unit_of_measure"],
+                  required: false,
+                },
+              ],
+            });
+            if (mapping?.SizeMaster?.unit_of_measure) {
+              unitOfMeasure = mapping.SizeMaster.unit_of_measure;
+            }
+          } catch (error) {
+            console.log("Error fetching mapping separately:", error.message);
+          }
+        }
+
         // Return the actual available quantity from inventory_stock (already accounts for allocations)
         return resolve({
           statusCode: 200,
@@ -176,6 +223,7 @@ const CheckInventory = async (
             available_quantity: Number(totalFGInventory), // This is already the available (unallocated) quantity
             has_stock: totalFGInventory > 0,
             inventory_type: totalFGInventory > 0 ? "finished_goods" : "none",
+            unit_of_measure: unitOfMeasure,
             breakdown: {
               sales_inventory: Number(totalSalesAllocations), // Allocated to sales
               fg_inventory: Number(totalFGInventory), // Available FG inventory
@@ -265,22 +313,35 @@ const CheckInventory = async (
         type: models.sequelize.QueryTypes.SELECT,
       });
 
-      const availableStockKg = inventoryResult?.available_qty || 0;
+      const rawMaterialStockKg = inventoryResult?.available_qty || 0;
 
-      resolve({
+      // Calculate effective finished goods quantity using yield standards
+      const effectiveFinishedGoodsQty =
+        await YieldBasedInventoryCalculator.calculateEffectiveInventory(
+          rawMaterialProduct.id, // Use raw material product ID for yield calculation
+          rawMaterialStockKg,
+        );
+
+        // Get unit of measure from the mapping
+        let unitOfMeasure =
+          product?.MappingProfile?.SizeMaster?.unit_of_measure || "kg";      resolve({
         statusCode: 200,
         message:
-          availableStockKg > 0
-            ? "Raw materials inventory available"
+          effectiveFinishedGoodsQty > 0
+            ? "Raw materials inventory available (yield-adjusted)"
             : "No raw materials available",
         data: {
           product_master_id,
-          available_quantity: availableStockKg,
-          has_stock: availableStockKg > 0,
-          inventory_type: availableStockKg > 0 ? "raw_materials" : "none",
+          available_quantity: effectiveFinishedGoodsQty,
+          has_stock: effectiveFinishedGoodsQty > 0,
+          inventory_type:
+            effectiveFinishedGoodsQty > 0 ? "raw_materials" : "none",
+          unit_of_measure: unitOfMeasure,
           raw_material_details: {
             product_name: rawMaterialProduct.product_name,
+            raw_material_quantity: rawMaterialStockKg,
             yield_percent: yieldData.base_yield_percent,
+            effective_yield_used: true,
           },
         },
       });

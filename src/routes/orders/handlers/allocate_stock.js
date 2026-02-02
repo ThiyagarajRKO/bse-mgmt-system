@@ -70,37 +70,61 @@ export const AllocateStock = async (
       }
 
       // Check if finished goods are available
+      // Get unit IDs for Collection Center and Cold Storage (same logic as check_inventory)
+      const allowedUnits = await models.UnitMaster.findAll({
+        where: {
+          unit_type: {
+            [models.Sequelize.Op.in]: ["Collection Center", "Cold Storage"],
+          },
+          is_active: true,
+        },
+        attributes: ["id"],
+      });
+
+      const allowedUnitIds = allowedUnits.map((unit) => unit.id);
+      console.log("DEBUG: Allowed units for allocation:", allowedUnitIds);
+      console.log("DEBUG: Allowed units for allocation:", allowedUnitIds);
+
       const fgInventory = await models.inventory_stock.findAll({
         where: {
           product_id: product_id,
           unit_id: {
-            [models.Sequelize.Op.iLike]: "%fg%", // Finished goods inventory
+            [models.Sequelize.Op.in]:
+              allowedUnitIds.length > 0 ? allowedUnitIds : [null],
           },
           available_qty: {
             [models.Sequelize.Op.gt]: 0,
           },
         },
         attributes: ["id", "available_qty", "lot_id"],
-        order: [["created_at", "ASC"]], // FIFO allocation
+        order: [["updated_at", "ASC"]], // FIFO allocation
       });
+
+      console.log(
+        "DEBUG: FG Inventory found:",
+        fgInventory.length,
+        "items for product:",
+        product_id,
+      );
 
       if (!fgInventory || fgInventory.length === 0) {
         console.log(
           "No finished goods available, checking purchase inventory...",
         );
 
-        // Check purchase inventory as fallback
-        const purchaseInventory = await models.purchase_inventory.findAll({
+        // Calculate total available finished goods (should be 0 based on above check)
+        const totalFGAvailable = 0;
+        const purchaseInventoryItems = await models.PurchaseInventory.findAll({
           where: {
             product_master_id: product_id,
-            available_qty: {
+            quantity: {
               [models.Sequelize.Op.gt]: 0,
             },
             is_active: true,
           },
           attributes: [
             [
-              models.sequelize.fn("SUM", models.sequelize.col("available_qty")),
+              models.sequelize.fn("SUM", models.sequelize.col("quantity")),
               "total_available",
             ],
           ],
@@ -108,14 +132,43 @@ export const AllocateStock = async (
         });
 
         const availableInPurchase = parseFloat(
-          purchaseInventory[0]?.total_available || 0,
+          purchaseInventoryItems[0]?.total_available || 0,
         );
 
         console.log(
-          `Available in purchase inventory: ${availableInPurchase}kg`,
+          "DEBUG: Purchase inventory for product:",
+          product_id,
+          "available:",
+          availableInPurchase,
         );
 
-        if (availableInPurchase >= parsedQuantity) {
+        // Check if this is raw material that needs yield consideration
+        const isRawMaterial = purchaseInventoryItems.some(
+          (item) =>
+            item["ProcurementProduct.procurement_product_type"] ===
+            "UNPROCESSED",
+        );
+
+        let effectiveAvailableQuantity = availableInPurchase;
+
+        if (isRawMaterial) {
+          // For raw materials, calculate effective finished goods considering yield
+          const YieldBasedInventoryCalculator = require("../../services/yield_based_inventory_calculator");
+          effectiveAvailableQuantity =
+            await YieldBasedInventoryCalculator.calculateEffectiveInventory(
+              product_id,
+              availableInPurchase,
+            );
+          console.log(
+            `Raw material yield adjustment: ${availableInPurchase}kg raw → ${effectiveAvailableQuantity}kg effective finished goods`,
+          );
+        }
+
+        console.log(
+          `Available in purchase inventory: ${availableInPurchase}kg ${isRawMaterial ? `(effective: ${effectiveAvailableQuantity}kg finished goods)` : "(finished goods)"}`,
+        );
+
+        if (effectiveAvailableQuantity >= parsedQuantity) {
           // Enough in purchase inventory, allocate from there
           console.log(
             "Sufficient quantity in purchase inventory, allocating...",
@@ -129,20 +182,15 @@ export const AllocateStock = async (
 
             // Get purchase inventory items ordered by FIFO
             const purchaseInventoryItems =
-              await models.purchase_inventory.findAll({
+              await models.PurchaseInventory.findAll({
                 where: {
                   product_master_id: product_id,
-                  available_qty: {
+                  quantity: {
                     [models.Sequelize.Op.gt]: 0,
                   },
                   is_active: true,
                 },
-                attributes: [
-                  "id",
-                  "available_qty",
-                  "lot_id",
-                  "procurement_lot_id",
-                ],
+                attributes: ["id", "quantity", "lot_id", "procurement_lot_id"],
                 order: [["created_at", "ASC"]], // FIFO allocation
                 transaction,
               });
@@ -153,11 +201,11 @@ export const AllocateStock = async (
 
               const allocateQty = Math.min(
                 remainingQuantity,
-                parseFloat(inventory.available_qty),
+                parseFloat(inventory.quantity),
               );
 
               // Create sales inventory allocation record
-              await models.sales_inventory.create(
+              await models.SalesInventory.create(
                 {
                   order_id: order_id,
                   product_master_id: product_id,
@@ -172,10 +220,9 @@ export const AllocateStock = async (
               );
 
               // Update purchase inventory (reduce available quantity)
-              await models.purchase_inventory.update(
+              await models.PurchaseInventory.update(
                 {
-                  available_qty:
-                    parseFloat(inventory.available_qty) - allocateQty,
+                  quantity: parseFloat(inventory.quantity) - allocateQty,
                   updated_at: new Date(),
                 },
                 {
@@ -231,7 +278,7 @@ export const AllocateStock = async (
         } else {
           return reject({
             statusCode: 400,
-            message: `No inventory available for allocation. Finished goods: 0 kg, Purchase inventory: ${availableInPurchase} kg, Required: ${parsedQuantity} kg`,
+            message: `No inventory available for allocation. Finished goods: ${totalFGAvailable} kg, Purchase inventory: ${availableInPurchase} kg ${isRawMaterial ? `(effective: ${effectiveAvailableQuantity} kg finished goods)` : ""}, Required: ${parsedQuantity} kg`,
           });
         }
       }
