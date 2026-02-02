@@ -30,8 +30,9 @@ export const calculateRequirementsSchema = {
       },
       processingType: {
         type: "string",
-        enum: ["WHOLE", "CLEANED", "FILLETED", "PROCESSED"],
-        description: "Processing type (default: WHOLE)",
+        enum: ["RAW", "COOKED"],
+        default: "RAW",
+        description: "Processing type (default: RAW)",
       },
     },
     required: ["productId", "quantityRequired"],

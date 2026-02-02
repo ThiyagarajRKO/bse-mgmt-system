@@ -145,6 +145,55 @@ export default async (fastify) => {
         }
 
         // Check inventory availability for raw material
+        // First get BOM to understand yield requirements
+        const BOM = require("../../../models").BOM;
+        const bomRule = require("../../../models").BOMRule;
+
+        const bom = await BOM.findOne({
+          where: { input_species_id: productionOrder.input_species_id },
+        });
+
+        if (!bom) {
+          return reply.code(400).send({
+            statusCode: 400,
+            message:
+              "BOM not found for species - cannot check inventory requirements",
+          });
+        }
+
+        // Get yield information from BOM rules for inventory check
+        const yieldRules = await bomRule.findAll({
+          where: { bom_id: bom.id },
+        });
+
+        if (!yieldRules || yieldRules.length === 0) {
+          return reply.code(400).send({
+            statusCode: 400,
+            message: "No BOM rules found - cannot determine yield requirements",
+          });
+        }
+
+        // Calculate the minimum yield percentage (most conservative approach)
+        const minYieldPercent = Math.min(
+          ...yieldRules.map(
+            (rule) =>
+              (rule.base_yield_percent *
+                (rule.grade_multiplier || 1) *
+                (rule.size_multiplier || 1)) /
+              100,
+          ),
+        );
+
+        // Calculate raw inventory needed: finished_goods_required / yield_percentage
+        const requiredFinishedQty = parseFloat(
+          productionOrder.planned_quantity_kg,
+        );
+        const requiredRawQty = requiredFinishedQty / minYieldPercent;
+
+        console.log(
+          `Production requires ${requiredFinishedQty}kg finished goods. With ${minYieldPercent * 100}% yield, need ${requiredRawQty}kg raw inventory`,
+        );
+
         const InventoryStock = require("../../../models").inventory_stock;
         const rawInventory = await InventoryStock.findOne({
           where: {
@@ -154,30 +203,23 @@ export default async (fastify) => {
           attributes: ["available_qty"],
         });
 
-        const availableQty = rawInventory
+        const availableRawQty = rawInventory
           ? parseFloat(rawInventory.available_qty)
           : 0;
-        const requiredQty = parseFloat(productionOrder.planned_quantity_kg);
 
-        if (availableQty < requiredQty) {
+        if (availableRawQty < requiredRawQty) {
           return reply.code(400).send({
             statusCode: 400,
-            message: `Insufficient inventory. Available: ${availableQty} kg, Required: ${requiredQty} kg`,
+            message: `Insufficient raw inventory. Available: ${availableRawQty} kg, Required: ${requiredRawQty} kg (for ${requiredFinishedQty} kg finished goods at ${minYieldPercent * 100}% yield)`,
             data: {
-              available_quantity: availableQty,
-              required_quantity: requiredQty,
+              available_raw_quantity: availableRawQty,
+              required_raw_quantity: requiredRawQty,
+              required_finished_quantity: requiredFinishedQty,
+              yield_percentage: minYieldPercent,
               can_proceed: false,
             },
           });
         }
-
-        // Get BOM for species
-        const BOM = require("../../../models").BOM;
-        const bomRule = require("../../../models").BOMRule;
-
-        const bom = await BOM.findOne({
-          where: { input_species_id: productionOrder.input_species_id },
-        });
 
         if (!bom) {
           return reply.code(400).send({

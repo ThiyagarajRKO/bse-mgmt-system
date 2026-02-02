@@ -24,7 +24,7 @@ export class RawMaterialCalculator {
         speciesId,
         productCategoryId,
         productForm = "FRESH",
-        processingType = "WHOLE",
+        processingType = "RAW",
       } = params;
 
       console.log("Starting Raw Material Calculation:", {
@@ -38,7 +38,12 @@ export class RawMaterialCalculator {
       // Step 1: Fetch product details (simplified query)
       let product = await models.ProductMaster.findOne({
         where: { id: productId, is_active: true },
-        attributes: ["id", "product_name", "product_category_master_id"],
+        attributes: [
+          "id",
+          "product_name",
+          "product_category_master_id",
+          "derivative_master_id",
+        ],
         raw: true,
       });
 
@@ -48,7 +53,7 @@ export class RawMaterialCalculator {
         return this._calculateWithDefaultYield(
           quantityRequired,
           null,
-          productForm
+          productForm,
         );
       }
 
@@ -68,31 +73,33 @@ export class RawMaterialCalculator {
       console.log("Product Info:", {
         productName: product.product_name,
         effectiveSpeciesId,
-        productForm,
+        derivativeId: product.derivative_master_id,
         processingType,
       });
 
-      // Step 3: Fetch yield standard for this species and product form
-      if (!effectiveSpeciesId) {
-        console.warn("No species ID available, using defaults");
+      // Step 3: Fetch yield standard for this species and derivative
+      if (!effectiveSpeciesId || !product.derivative_master_id) {
+        console.warn(
+          "No species ID or derivative ID available, using defaults",
+        );
         return this._calculateWithDefaultYield(
           quantityRequired,
           product,
-          productForm
+          productForm,
         );
       }
 
       const yieldStandard = await models.YieldStandardMaster.findOne({
         where: {
           species_id: effectiveSpeciesId,
-          product_form: productForm,
+          derivative_id: product.derivative_master_id,
           processing_type: processingType,
           is_active: true,
         },
         attributes: [
           "id",
           "species_id",
-          "product_form",
+          "derivative_id",
           "processing_type",
           "expected_yield_pct",
           "allowed_variance_pct",
@@ -107,13 +114,13 @@ export class RawMaterialCalculator {
 
       if (!yieldStandard) {
         console.warn(
-          `No yield standard found for species=${effectiveSpeciesId}, form=${productForm}, type=${processingType}`
+          `No yield standard found for species=${effectiveSpeciesId}, derivative=${product.derivative_master_id}, type=${processingType}`,
         );
         // Default conservative yield if not found
         return this._calculateWithDefaultYield(
           quantityRequired,
           product,
-          productForm
+          productForm,
         );
       }
 
@@ -131,13 +138,12 @@ export class RawMaterialCalculator {
 
       // Step 5: Fetch similar products from same category to learn patterns
       const similarProducts = await this._fetchCategoryProductPatterns(
-        product.product_category_master_id
+        product.product_category_master_id,
       );
 
       // Step 6: Get current inventory levels for this raw material
-      const inventoryLevels = await this._getInventoryLevels(
-        effectiveSpeciesId
-      );
+      const inventoryLevels =
+        await this._getInventoryLevels(effectiveSpeciesId);
 
       // Step 7: Compile intelligent calculation results
       const calculations = {
@@ -151,12 +157,13 @@ export class RawMaterialCalculator {
         currentInventory: inventoryLevels.totalAvailable,
         inventoryGap: Math.max(
           0,
-          rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable
+          rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
         ),
         recommendedOrderQuantity: Math.max(
           rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
-          0
+          0,
         ),
+        totalRequiredQuantity: rawMaterialNeeded + bufferQuantity, // Add total required regardless of inventory
         processingType: processingType,
         productForm: productForm,
         productCategory: product?.ProductCategoryMaster?.product_category,
@@ -168,10 +175,20 @@ export class RawMaterialCalculator {
       const aiAnalysis = this._performAIAnalysis(
         calculations,
         similarProducts,
-        inventoryLevels
+        inventoryLevels,
       );
 
-      console.log("Raw Material Calculation Complete:", calculations);
+      console.log("Raw Material Calculation Complete:", {
+        finishedProductRequired: quantityRequired,
+        rawMaterialNeeded,
+        bufferQuantity,
+        totalWithBuffer: rawMaterialNeeded + bufferQuantity,
+        currentInventory: inventoryLevels.totalAvailable,
+        recommendedOrderQuantity: Math.max(
+          rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
+          0,
+        ),
+      });
 
       return {
         success: true,
@@ -189,7 +206,7 @@ export class RawMaterialCalculator {
         data: this._calculateWithDefaultYield(
           params.quantityRequired,
           null,
-          params.productForm
+          params.productForm,
         ),
       };
     }
@@ -205,7 +222,7 @@ export class RawMaterialCalculator {
       const { productId, quantityRequired, speciesId } = params;
 
       const productForms = ["FRESH", "FROZEN", "COOKED", "RTE"];
-      const processingTypes = ["WHOLE", "CLEANED", "FILLETED", "PROCESSED"];
+      const processingTypes = ["RAW", "COOKED"];
 
       const recommendations = [];
 
@@ -230,7 +247,7 @@ export class RawMaterialCalculator {
           } catch (error) {
             // Skip failed combinations
             console.warn(
-              `Skipping ${form}-${type} combination: ${error.message}`
+              `Skipping ${form}-${type} combination: ${error.message}`,
             );
           }
         }
@@ -238,7 +255,7 @@ export class RawMaterialCalculator {
 
       // Sort by recommended order quantity (ascending)
       recommendations.sort(
-        (a, b) => a.recommendedOrderQuantity - b.recommendedOrderQuantity
+        (a, b) => a.recommendedOrderQuantity - b.recommendedOrderQuantity,
       );
 
       return {
@@ -298,13 +315,13 @@ export class RawMaterialCalculator {
     // Optimization tips based on patterns
     if (variance > 5) {
       analysis.optimizationTips.push(
-        "Consider reducing variance threshold through better process control"
+        "Consider reducing variance threshold through better process control",
       );
     }
 
     if (inventory.totalAvailable > calculations.rawMaterialNeeded * 2) {
       analysis.optimizationTips.push(
-        "High inventory on hand - consider consolidation opportunities"
+        "High inventory on hand - consider consolidation opportunities",
       );
     }
 
@@ -314,13 +331,13 @@ export class RawMaterialCalculator {
         similarProducts.length;
       if (avgYield > parseFloat(calculations.yieldPercentage) * 1.05) {
         analysis.optimizationTips.push(
-          "Similar products show higher yield - review processing standards"
+          "Similar products show higher yield - review processing standards",
         );
       }
     }
 
     analysis.optimizationTips.push(
-      "Always verify with quality check before production"
+      "Always verify with quality check before production",
     );
 
     return analysis;
@@ -353,36 +370,89 @@ export class RawMaterialCalculator {
    */
   static async _getInventoryLevels(speciesId) {
     try {
-      const inventory = await models.PurchaseInventory.findAll({
+      // First, get all product categories for this species
+      const categories = await models.ProductCategoryMaster.findAll({
+        where: { species_master_id: speciesId, is_active: true },
+        attributes: ["id"],
+        raw: true,
+      });
+
+      const categoryIds = categories.map((cat) => cat.id);
+
+      if (categoryIds.length === 0) {
+        console.warn(`No categories found for species ${speciesId}`);
+        return {
+          totalAvailable: 0,
+          recordCount: 0,
+          details: [],
+        };
+      }
+
+      // Get all products in these categories
+      const products = await models.ProductMaster.findAll({
         where: {
+          product_category_master_id: { [Op.in]: categoryIds },
           is_active: true,
         },
-        include: [
-          {
-            model: models.ProcurementProducts,
-            attributes: ["id", "product_master_id"],
-            include: [
-              {
-                model: models.ProductMaster,
-                attributes: ["product_category_master_id"],
-                include: [
-                  {
-                    model: models.ProductCategoryMaster,
-                    attributes: ["species_master_id"],
-                    where: { species_master_id: speciesId },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+        attributes: ["id"],
+        raw: true,
+      });
+
+      const productIds = products.map((prod) => prod.id);
+
+      if (productIds.length === 0) {
+        console.warn(
+          `No products found for categories of species ${speciesId}`,
+        );
+        return {
+          totalAvailable: 0,
+          recordCount: 0,
+          details: [],
+        };
+      }
+
+      // Get procurement products for these product masters
+      const procurementProducts = await models.ProcurementProducts.findAll({
+        where: {
+          product_master_id: { [Op.in]: productIds },
+          is_active: true,
+          procurement_product_type: "UNPROCESSED", // Only raw materials
+        },
+        attributes: ["id"],
+        raw: true,
+      });
+
+      const procurementProductIds = procurementProducts.map((pp) => pp.id);
+
+      if (procurementProductIds.length === 0) {
+        console.warn(
+          `No procurement products found for products of species ${speciesId}`,
+        );
+        return {
+          totalAvailable: 0,
+          recordCount: 0,
+          details: [],
+        };
+      }
+
+      // Finally, get the inventory for these procurement products
+      const inventory = await models.PurchaseInventory.findAll({
+        where: {
+          procurement_product_id: { [Op.in]: procurementProductIds },
+          is_active: true,
+        },
+        attributes: ["id", "quantity", "procurement_product_id"],
         raw: true,
         limit: 100,
       });
 
       const totalAvailable = inventory.reduce(
         (sum, inv) => sum + parseFloat(inv.quantity || 0),
-        0
+        0,
+      );
+
+      console.log(
+        `Inventory levels for species ${speciesId}: ${totalAvailable} total from ${inventory.length} records`,
       );
 
       return {
@@ -421,7 +491,8 @@ export class RawMaterialCalculator {
       currentInventory: 0,
       inventoryGap: rawMaterialNeeded + bufferQuantity,
       recommendedOrderQuantity: rawMaterialNeeded + bufferQuantity,
-      processingType: "UNKNOWN",
+      totalRequiredQuantity: rawMaterialNeeded + bufferQuantity,
+      processingType: "RAW",
       productForm: productForm || "FRESH",
       productCategory:
         product?.ProductCategoryMaster?.product_category || "N/A",

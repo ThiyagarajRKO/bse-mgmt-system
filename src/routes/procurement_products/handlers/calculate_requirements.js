@@ -10,7 +10,7 @@ export const CalculateRequirements = (
     processingType,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -35,7 +35,7 @@ export const CalculateRequirements = (
           speciesId,
           productCategoryId,
           productForm: productForm || "FRESH",
-          processingType: processingType || "WHOLE",
+          processingType: processingType || "RAW",
         });
 
       if (result.success) {
@@ -65,7 +65,7 @@ export const CalculateRequirements = (
 export const GetMultiCategoryRecommendations = (
   { productId, quantityRequired, speciesId },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
