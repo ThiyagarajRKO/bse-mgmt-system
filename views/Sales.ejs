@@ -2766,45 +2766,49 @@
         // Get all ordered products for stock checking
         // We'll set these after the table loads
         setTimeout(() => {
-          const tableApi = $("#orderProductTable").DataTable();
-          if (tableApi) {
-            const rowsData = tableApi.rows().data();
+          try {
+            const tableApi = $("#orderProductTable").DataTable();
+            if (tableApi) {
+              const rowsData = tableApi.rows().data();
 
-            // Convert DataTable API object to array
-            let allProducts = [];
-            if (rowsData && typeof rowsData === "object") {
-              // If it's a DataTable API object, iterate through it
-              for (let i = 0; i < rowsData.length; i++) {
-                allProducts.push(rowsData[i]);
-              }
-            }
-
-            if (allProducts.length > 0) {
-              const products = [];
-
-              // Collect all products with their quantities
-              allProducts.forEach((product) => {
-                const product_master_id =
-                  product?.product_master_id || product?.ProductMaster?.id;
-                const quantity_required_kg = product?.quantity || 0;
-
-                if (product_master_id && quantity_required_kg > 0) {
-                  products.push({
-                    product_master_id,
-                    quantity_required_kg,
-                  });
+              // Convert DataTable API object to array
+              let allProducts = [];
+              if (rowsData && typeof rowsData === "object") {
+                // If it's a DataTable API object, iterate through it
+                for (let i = 0; i < rowsData.length; i++) {
+                  allProducts.push(rowsData[i]);
                 }
-              });
+              }
 
-              // Store all products in view_order_no attributes for use in confirm button
-              if (products.length > 0) {
-                $("#view_order_no").attr(
-                  "ordered_products",
-                  JSON.stringify(products),
-                );
-                $("#view_order_no").attr("product_count", products.length);
+              if (allProducts.length > 0) {
+                const products = [];
+
+                // Collect all products with their quantities
+                allProducts.forEach((product) => {
+                  const product_master_id =
+                    product?.product_master_id || product?.ProductMaster?.id;
+                  const quantity_required_kg = product?.quantity || 0;
+
+                  if (product_master_id && quantity_required_kg > 0) {
+                    products.push({
+                      product_master_id,
+                      quantity_required_kg,
+                    });
+                  }
+                });
+
+                // Store all products in view_order_no attributes for use in confirm button
+                if (products.length > 0) {
+                  $("#view_order_no").attr(
+                    "ordered_products",
+                    JSON.stringify(products),
+                  );
+                  $("#view_order_no").attr("product_count", products.length);
+                }
               }
             }
+          } catch (error) {
+            console.error("Error accessing order products table:", error);
           }
         }, 500);
       });
@@ -2867,7 +2871,17 @@
           order_id,
         );
         if (!order_id) {
+          console.error("❌ No order_id provided");
           toastr["warning"]("Orders data should not be empty!");
+          return;
+        }
+
+        // Validate UUID format
+        const uuidRegex =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(order_id)) {
+          console.error("❌ Invalid order_id format:", order_id);
+          toastr["error"]("Invalid order ID format");
           return;
         }
 
@@ -2878,73 +2892,158 @@
         );
         console.log("📊 order_id value:", order_id, "type:", typeof order_id);
 
-        $("#orderProductTable").DataTable({
-          // searching: true,
-          destroy: true,
-          responsive: false,
-          processing: true,
-          serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
-          scrollY: "40vh",
-          ordering: false,
-          ajax: {
-            type: "GET",
-            url: `/api/orders/product?order_id=${order_id}`,
-            beforeSend: function (xhr) {
-              console.log(
-                "🚀 DataTable AJAX request starting to:",
-                `/api/orders/product?order_id=${order_id}`,
-              );
-            },
-            success: function (data) {
-              console.log("✅ DataTable AJAX success:", data);
-            },
-            error: function (xhr, error, code) {
-              console.error("❌ DataTable AJAX error:", xhr, error, code);
+        // Add a small delay to ensure the modal is fully rendered
+        setTimeout(() => {
+          try {
+            // Clear any existing DataTable instance first
+            if ($.fn.DataTable.isDataTable("#orderProductTable")) {
+              console.log("📊 Destroying existing DataTable");
+              $("#orderProductTable").DataTable().clear().destroy();
+            }
 
-              if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](
-                  xhr["responseJSON"]?.message ||
-                    "Failed to load order products",
+            // Clear any existing table content
+            $("#orderProductTable tbody").empty();
+
+            console.log("📊 Making AJAX request to load data");
+            // Load data via AJAX first, then initialize DataTable
+            $.ajax({
+              type: "GET",
+              url: `/api/orders/product?order_id=${order_id}`,
+              xhrFields: {
+                withCredentials: true,
+              },
+              timeout: 10000, // 10 second timeout
+              success: function (response, textStatus, xhr) {
+                console.log("✅ AJAX success:", response);
+                console.log("✅ Response status:", xhr.status);
+                console.log(
+                  "✅ Data type:",
+                  typeof response,
+                  "Is object:",
+                  typeof response === "object",
                 );
-              }
-            },
-            // dataSrc: "data", // Not needed for standard server-side response format
-          },
-          columns: [
-            { data: null },
-            { data: null },
-            {
-              data: "ProductMaster.product_name",
-              defaultContent: "Unknown Product",
-            },
-            { data: "quantity" },
-            { data: "price" },
-            { data: "total_price" },
-          ],
-          columnDefs: [
-            {
-              targets: [0],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-pen-to-square edit editOrders" order_id="${order_id}" order_product_id="${
-                  row?.id || null
-                }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+
+                // Validate response - backend returns DataTable format
+                if (
+                  !response ||
+                  typeof response !== "object" ||
+                  !Array.isArray(response.data)
+                ) {
+                  console.error(
+                    "❌ Expected DataTable response format but got:",
+                    response,
+                  );
+                  toastr.error("Invalid response format from server");
+                  return;
+                }
+
+                const data = response.data; // Extract the actual data array
+                console.log(
+                  "📊 Creating DataTable with",
+                  data.length,
+                  "products",
+                );
+
+                // Initialize DataTable with the loaded data
+                $("#orderProductTable").DataTable({
+                  data: data,
+                  responsive: false,
+                  processing: false, // Disable processing since data is already loaded
+                  serverSide: false,
+                  scrollX: true,
+                  scrollCollapse: true,
+                  scrollY: "40vh",
+                  ordering: false,
+                  paging: false,
+                  columns: [
+                    { data: null, defaultContent: "" }, // Edit button column
+                    { data: null, defaultContent: "" }, // Delete button column
+                    {
+                      data: "ProductMaster.product_name",
+                      defaultContent: "Unknown Product",
+                    },
+                    { data: "quantity", defaultContent: "0" },
+                    { data: "price", defaultContent: "0.00" },
+                    { data: "total_price", defaultContent: "0.00" },
+                  ],
+                  columnDefs: [
+                    {
+                      targets: [0],
+                      className: "text-left",
+                      render: function (data, type, row) {
+                        return `<i class="fa fa-pen-to-square edit editOrders" order_id="${order_id}" order_product_id="${
+                          row?.id || null
+                        }" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                      },
+                    },
+                    {
+                      targets: [1],
+                      className: "text-left",
+                      render: function (data, type, row) {
+                        return `<i class="fa fa-trash del delOrderProduct" order_id="${order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
+                      },
+                    },
+                  ],
+                  language: {
+                    emptyTable: "No products found for this order",
+                  },
+                  drawCallback: function () {
+                    console.log("📊 DataTable draw callback - table rendered");
+                    // Re-initialize tooltips after table draw
+                    $('[data-toggle="tooltip"]').tooltip();
+                  },
+                });
+
+                console.log("✅ DataTable initialized successfully");
               },
-            },
-            {
-              targets: [1],
-              className: "text-left",
-              render: function (data, type, row) {
-                return `<i class="fa fa-trash del delOrderProduct" order_id="${order_id}" order_product_id="${row["id"]}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to delete this order"></i>`;
+              error: function (xhr, error, code) {
+                console.error("❌ AJAX error:", xhr, error, code);
+                console.error("❌ Response text:", xhr.responseText);
+                console.error("❌ Status:", xhr.status);
+
+                // Initialize table with error message
+                $("#orderProductTable").DataTable({
+                  destroy: true,
+                  responsive: false,
+                  processing: false,
+                  serverSide: false,
+                  scrollX: true,
+                  ordering: false,
+                  paging: false,
+                  data: [],
+                  columns: [
+                    { data: null, defaultContent: "" },
+                    { data: null, defaultContent: "" },
+                    { data: null, defaultContent: "Error loading data" },
+                    { data: null, defaultContent: "" },
+                    { data: null, defaultContent: "" },
+                    { data: null, defaultContent: "" },
+                  ],
+                  language: {
+                    emptyTable:
+                      "Error loading products. Please check your connection and try again.",
+                  },
+                });
+
+                if (xhr["status"] == 420) {
+                  toastr["warning"](xhr["responseJSON"]["message"]);
+                } else if (xhr["status"] == 401 || xhr["status"] == 403) {
+                  toastr["error"](
+                    "Authentication required. Please log in again.",
+                  );
+                } else {
+                  toastr["error"](
+                    xhr["responseJSON"]?.message ||
+                      "Failed to load order products. Please try again.",
+                  );
+                }
               },
-            },
-          ],
-          drawCallback: () => {},
-        });
+            });
+          } catch (error) {
+            console.error("❌ DataTable initialization error:", error);
+            toastr.error("Failed to initialize order products table");
+          }
+        }, 200); // Increased delay to ensure modal is rendered
       }
 
       let view_order_center_id = "";
@@ -4334,7 +4433,12 @@
         // If we already have speciesId from the order data, use it directly
         if (speciesId) {
           console.log(`✓ Using provided species ID: ${speciesId}`);
-          loadRawMaterialsBySpecies(speciesId, quantityRequired, container);
+          loadRawMaterialsBySpecies(
+            speciesId,
+            quantityRequired,
+            container,
+            productId,
+          );
           return;
         }
 
@@ -4418,6 +4522,7 @@
               speciesMasterId,
               quantityRequired,
               container,
+              productId,
             );
           },
           error: function (xhr, status, error) {
@@ -4432,14 +4537,361 @@
         });
       }
 
+      // Helper function to process raw materials and display them
+      function processRawMaterials(rawMaterials, quantityRequired, container) {
+        let materialsHtml =
+          '<div style="display: flex; flex-direction: column; gap: 10px;">';
+        rawMaterials.forEach((material) => {
+          const materialName =
+            material.procurement_product_name ||
+            (material.ProductMaster && material.ProductMaster.product_name) ||
+            "Unknown";
+          const supplierName =
+            material.SupplierMaster && material.SupplierMaster.supplier_name
+              ? ` - ${material.SupplierMaster.supplier_name}`
+              : "";
+
+          // Initialize inventory variables
+          let rawMaterialInventory = 0; // Purchase inventory (raw materials)
+          let producedInventory = 0; // Sales inventory (finished goods)
+          let netInventory = 0;
+
+          const productMasterId = material.product_master_id;
+
+          // Debug: Log what we're searching for
+          console.log(
+            `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`,
+          );
+          console.log(`[DEBUG] Material data:`, material);
+
+          // Fetch raw material inventory (purchase inventory) for this specific material
+          $.ajax({
+            url: `/api/inventory/purchase/all?procurement_product_id=${material.procurement_product_id}`,
+            method: "GET",
+            dataType: "json",
+            timeout: 5000,
+            async: false,
+            success: function (inventoryResponse) {
+              console.log(
+                `[DEBUG] API Response for procurement_product_id ${material.procurement_product_id}:`,
+                inventoryResponse,
+              );
+
+              if (inventoryResponse?.data) {
+                if (Array.isArray(inventoryResponse.data)) {
+                  console.log(
+                    `[DEBUG] Response is array with ${inventoryResponse.data.length} items`,
+                  );
+                  rawMaterialInventory = inventoryResponse.data.reduce(
+                    (sum, inv) => {
+                      console.log(
+                        `[DEBUG] Item:`,
+                        inv,
+                        `Quantity: ${inv.quantity}`,
+                      );
+                      return sum + (inv.quantity || 0);
+                    },
+                    0,
+                  );
+                } else if (inventoryResponse.data.quantity !== undefined) {
+                  console.log(
+                    `[DEBUG] Response is object with quantity:`,
+                    inventoryResponse.data.quantity,
+                  );
+                  rawMaterialInventory = inventoryResponse.data.quantity || 0;
+                } else {
+                  console.log(
+                    `[DEBUG] Response data structure unexpected:`,
+                    inventoryResponse.data,
+                  );
+                  rawMaterialInventory = 0;
+                }
+              } else {
+                console.log(`[DEBUG] No data in response`);
+                rawMaterialInventory = 0;
+              }
+
+              console.log(
+                `[DEBUG] Final raw material inventory for ${material.procurement_product_id}: ${rawMaterialInventory}`,
+              );
+
+              // Fetch produced inventory (sales inventory) for this material's product
+              if (productMasterId) {
+                $.ajax({
+                  url: `/api/inventory/sales/all?product_master_id=${productMasterId}`,
+                  method: "GET",
+                  dataType: "json",
+                  timeout: 5000,
+                  async: false,
+                  success: function (salesResponse) {
+                    console.log(
+                      `[DEBUG] Sales inventory response for product_master_id ${productMasterId}:`,
+                      salesResponse,
+                    );
+
+                    if (salesResponse?.data) {
+                      if (Array.isArray(salesResponse.data)) {
+                        producedInventory = salesResponse.data.reduce(
+                          (sum, inv) => {
+                            console.log(
+                              `[DEBUG] Sales item:`,
+                              inv,
+                              `Quantity: ${inv.quantity}`,
+                            );
+                            return sum + (inv.quantity || 0);
+                          },
+                          0,
+                        );
+                      } else if (salesResponse.data.quantity !== undefined) {
+                        producedInventory = salesResponse.data.quantity || 0;
+                      } else {
+                        producedInventory = 0;
+                      }
+                    } else {
+                      producedInventory = 0;
+                    }
+
+                    console.log(
+                      `[DEBUG] Final produced inventory for product_master_id ${productMasterId}: ${producedInventory}`,
+                    );
+
+                    // Calculate net inventory
+                    netInventory = rawMaterialInventory - producedInventory;
+                    console.log(
+                      `[DEBUG] Net inventory calculation: ${rawMaterialInventory} - ${producedInventory} = ${netInventory}`,
+                    );
+
+                    // Determine status based on net inventory
+                    let statusText = "Unknown";
+                    let statusColor = "#gray";
+
+                    if (netInventory > 0) {
+                      statusText = "Available";
+                      statusColor = "#4CAF50"; // Green
+                    } else if (netInventory === 0) {
+                      statusText = "Out of Stock";
+                      statusColor = "#FF9800"; // Orange
+                    } else {
+                      statusText = "Over-committed";
+                      statusColor = "#f44336"; // Red
+                    }
+
+                    // Build the material card HTML
+                    materialsHtml += `
+                      <div style="
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 15px;
+                        background: white;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                      ">
+                        <div style="flex: 1;">
+                          <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                            ${materialName}${supplierName}
+                          </div>
+                          <div style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                            Raw: ${rawMaterialInventory} | Produced: ${producedInventory}
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; color: #333;">Net Available:</span>
+                            <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
+                          </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                          <button class="btn btn-primary btn-sm" style="min-width: 100px;" onclick="selectRawMaterial('${material.procurement_product_id}', '${materialName}', ${netInventory})">
+                            Select
+                          </button>
+                          <span style="
+                            background: ${statusColor};
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: bold;
+                            white-space: nowrap;
+                          ">${statusText}</span>
+                        </div>
+                      </div>
+                    `;
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(
+                      `Error fetching sales inventory for product_master_id ${productMasterId}:`,
+                      status,
+                      error,
+                    );
+                    // Default to 0 produced inventory on error
+                    producedInventory = 0;
+                    netInventory = rawMaterialInventory;
+
+                    let statusText =
+                      netInventory > 0 ? "Available" : "Out of Stock";
+                    let statusColor = netInventory > 0 ? "#4CAF50" : "#FF9800";
+
+                    materialsHtml += `
+                      <div style="
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 15px;
+                        background: white;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                      ">
+                        <div style="flex: 1;">
+                          <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                            ${materialName}${supplierName}
+                          </div>
+                          <div style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                            Raw: ${rawMaterialInventory} | Produced: ${producedInventory} (error)
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; color: #333;">Net Available:</span>
+                            <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
+                          </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                          <button class="btn btn-primary btn-sm" style="min-width: 100px;" onclick="selectRawMaterial('${material.procurement_product_id}', '${materialName}', ${netInventory})">
+                            Select
+                          </button>
+                          <span style="
+                            background: ${statusColor};
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: bold;
+                            white-space: nowrap;
+                          ">${statusText}</span>
+                        </div>
+                      </div>
+                    `;
+                  },
+                });
+              } else {
+                // No product_master_id, just show raw inventory
+                netInventory = rawMaterialInventory;
+                let statusText =
+                  netInventory > 0 ? "Available" : "Out of Stock";
+                let statusColor = netInventory > 0 ? "#4CAF50" : "#FF9800";
+
+                materialsHtml += `
+                  <div style="
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 15px;
+                    background: white;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  ">
+                    <div style="flex: 1;">
+                      <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                        ${materialName}${supplierName}
+                      </div>
+                      <div style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                        Raw: ${rawMaterialInventory} | Produced: N/A
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-weight: bold; color: #333;">Net Available:</span>
+                        <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
+                      </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                      <button class="btn btn-primary btn-sm" style="min-width: 100px;" onclick="selectRawMaterial('${material.procurement_product_id}', '${materialName}', ${netInventory})">
+                        Select
+                      </button>
+                      <span style="
+                        background: ${statusColor};
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        white-space: nowrap;
+                      ">${statusText}</span>
+                    </div>
+                  </div>
+                `;
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                `Error fetching purchase inventory for procurement_product_id ${material.procurement_product_id}:`,
+                status,
+                error,
+              );
+              // Default to 0 raw inventory on error
+              rawMaterialInventory = 0;
+              netInventory = -producedInventory;
+
+              let statusText = "Error";
+              let statusColor = "#f44336"; // Red
+
+              materialsHtml += `
+                <div style="
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  padding: 15px;
+                  background: white;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                ">
+                  <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                      ${materialName}${supplierName}
+                    </div>
+                    <div style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                      Raw: ${rawMaterialInventory} (error) | Produced: ${producedInventory}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-weight: bold; color: #333;">Net Available:</span>
+                      <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                    <button class="btn btn-primary btn-sm" style="min-width: 100px;" onclick="selectRawMaterial('${material.procurement_product_id}', '${materialName}', ${netInventory})">
+                      Select
+                    </button>
+                    <span style="
+                      background: ${statusColor};
+                      color: white;
+                      padding: 6px 12px;
+                      border-radius: 20px;
+                      font-size: 12px;
+                      font-weight: bold;
+                      white-space: nowrap;
+                    ">${statusText}</span>
+                  </div>
+                </div>
+              `;
+            },
+          });
+        });
+        materialsHtml += "</div>";
+
+        container.html(materialsHtml);
+        console.log(
+          "Raw materials HTML rendered with net inventory (purchase - sales)",
+        );
+      }
+
       // Helper function to load raw materials by species ID
       function loadRawMaterialsBySpecies(
         speciesMasterId,
         quantityRequired,
         container,
+        productId = null,
       ) {
         console.log(
-          `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}`,
+          `[loadRawMaterialsBySpecies] Loading materials for species: ${speciesMasterId}, productId: ${productId}`,
         );
 
         let apiUrl;
@@ -4488,113 +4940,191 @@
             }
 
             if (rawMaterials.length === 0) {
-              container.html(
-                '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>',
-              );
+              // If no species-specific raw materials found, try to filter by product ID
+              if (productId) {
+                console.warn(
+                  `⚠ No raw materials found for species ${speciesMasterId}. Trying to filter by product ID ${productId}.`,
+                );
+                // Try filtering by the specific product ID
+                $.ajax({
+                  url: `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED&finished_product_id=${productId}`,
+                  method: "GET",
+                  dataType: "json",
+                  timeout: 5000,
+                  success: function (productResponse) {
+                    console.log(
+                      "Product-filtered API response:",
+                      productResponse,
+                    );
+                    let productMaterials = [];
+
+                    if (productResponse?.data) {
+                      if (
+                        productResponse.data.rows &&
+                        Array.isArray(productResponse.data.rows)
+                      ) {
+                        productMaterials = productResponse.data.rows;
+                      } else if (Array.isArray(productResponse.data)) {
+                        productMaterials = productResponse.data;
+                      } else if (typeof productResponse.data === "object") {
+                        productMaterials = [productResponse.data];
+                      }
+                    }
+
+                    console.log(
+                      `Product-filtered: Found ${productMaterials.length} raw materials for product ${productId}`,
+                    );
+
+                    if (productMaterials.length === 0) {
+                      container.html(
+                        '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>',
+                      );
+                      return;
+                    }
+
+                    // Process the product-filtered materials
+                    processRawMaterials(
+                      productMaterials,
+                      quantityRequired,
+                      container,
+                    );
+                  },
+                  error: function (xhr, status, error) {
+                    console.error("Product-filtered API error:", status, error);
+                    container.html(
+                      '<p style="color: #d32f2f; text-align: center;">Error loading raw materials: ' +
+                        error +
+                        "</p>",
+                    );
+                  },
+                });
+              } else {
+                container.html(
+                  '<p style="color: #d32f2f; text-align: center;">No raw materials found for this product</p>',
+                );
+              }
               return;
             }
 
-            let materialsHtml =
-              '<div style="display: flex; flex-direction: column; gap: 10px;">';
-            rawMaterials.forEach((material) => {
-              const materialName =
-                material.procurement_product_name ||
-                (material.ProductMaster &&
-                  material.ProductMaster.product_name) ||
-                "Unknown";
-              const supplierName =
-                material.SupplierMaster && material.SupplierMaster.supplier_name
-                  ? ` - ${material.SupplierMaster.supplier_name}`
-                  : "";
+            // Process the found materials
+            processRawMaterials(rawMaterials, quantityRequired, container);
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              "Error fetching procurement products:",
+              status,
+              error,
+            );
+            container.html(
+              '<p style="color: #d32f2f; text-align: center;">Error loading raw materials: ' +
+                error +
+                "</p>",
+            );
+          },
+        });
+      }
 
-              // Initialize inventory variables
-              let rawMaterialInventory = 0; // Purchase inventory (raw materials)
-              let producedInventory = 0; // Sales inventory (finished goods)
-              let netInventory = 0;
+      // Helper function to process raw materials and display them
+      function processRawMaterials(rawMaterials, quantityRequired, container) {
+        let materialsHtml =
+          '<div style="display: flex; flex-direction: column; gap: 10px;">';
+        rawMaterials.forEach((material) => {
+          const materialName =
+            material.procurement_product_name ||
+            (material.ProductMaster && material.ProductMaster.product_name) ||
+            "Unknown";
+          const supplierName =
+            material.SupplierMaster && material.SupplierMaster.supplier_name
+              ? ` - ${material.SupplierMaster.supplier_name}`
+              : "";
 
-              const productMasterId = material.product_master_id;
+          // Initialize inventory variables
+          let rawMaterialInventory = 0; // Purchase inventory (raw materials)
+          let producedInventory = 0; // Sales inventory (finished goods)
+          let netInventory = 0;
 
-              // Debug: Log what we're searching for
+          const productMasterId = material.product_master_id;
+
+          // Debug: Log what we're searching for
+          console.log(
+            `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`,
+          );
+          console.log(`[DEBUG] Material data:`, material);
+
+          // Fetch raw material inventory (purchase inventory) for this specific material
+          $.ajax({
+            url: `/api/inventory/purchase/all?procurement_product_id=${material.procurement_product_id}`,
+            method: "GET",
+            dataType: "json",
+            timeout: 5000,
+            async: false,
+            success: function (inventoryResponse) {
               console.log(
-                `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`,
+                `[DEBUG] API Response for procurement_product_id ${material.procurement_product_id}:`,
+                inventoryResponse,
               );
-              console.log(`[DEBUG] Material data:`, material);
 
-              // Fetch raw material inventory (purchase inventory) for this specific material
-              $.ajax({
-                url: `/api/inventory/purchase/all?procurement_product_id=${material.procurement_product_id}`,
-                method: "GET",
-                dataType: "json",
-                timeout: 5000,
-                async: false,
-                success: function (inventoryResponse) {
+              if (inventoryResponse?.data) {
+                if (Array.isArray(inventoryResponse.data)) {
                   console.log(
-                    `[DEBUG] API Response for procurement_product_id ${material.procurement_product_id}:`,
-                    inventoryResponse,
+                    `[DEBUG] Response is array with ${inventoryResponse.data.length} items`,
                   );
-
-                  if (inventoryResponse?.data) {
-                    if (Array.isArray(inventoryResponse.data)) {
+                  rawMaterialInventory = inventoryResponse.data.reduce(
+                    (sum, inv) => {
                       console.log(
-                        `[DEBUG] Response is array with ${inventoryResponse.data.length} items`,
+                        `[DEBUG] Item:`,
+                        inv,
+                        `Quantity: ${inv.quantity}`,
                       );
-                      rawMaterialInventory = inventoryResponse.data.reduce(
-                        (sum, inv) => {
-                          console.log(
-                            `[DEBUG] Item:`,
-                            inv,
-                            `Quantity: ${inv.quantity}`,
-                          );
-                          return sum + (inv.quantity || 0);
-                        },
-                        0,
-                      );
-                    } else if (inventoryResponse.data.quantity !== undefined) {
-                      console.log(
-                        `[DEBUG] Response is object with quantity:`,
-                        inventoryResponse.data.quantity,
-                      );
-                      rawMaterialInventory =
-                        inventoryResponse.data.quantity || 0;
-                    } else {
-                      console.log(
-                        `[DEBUG] Response data is not array or has quantity:`,
-                        inventoryResponse.data,
-                      );
-                    }
-                  } else {
-                    console.log(`[DEBUG] No data in response`);
-                  }
-                },
-                error: function (xhr, status, error) {
-                  console.error(
-                    `Error fetching raw material inventory for ${material.procurement_product_id}:`,
-                    status,
-                    error,
-                    xhr.responseText,
+                      return sum + (inv.quantity || 0);
+                    },
+                    0,
                   );
-                  rawMaterialInventory = 0;
-                },
-              });
-
-              // Net inventory is just the raw material inventory available for this material
-              netInventory = rawMaterialInventory;
-
-              console.log(
-                `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
-                  netInventory > 0
-                    ? "Available"
-                    : '<span class="out-of-stock-status">Out of Stock</span>'
-                }`,
+                } else if (inventoryResponse.data.quantity !== undefined) {
+                  console.log(
+                    `[DEBUG] Response is object with quantity:`,
+                    inventoryResponse.data.quantity,
+                  );
+                  rawMaterialInventory = inventoryResponse.data.quantity || 0;
+                } else {
+                  console.log(
+                    `[DEBUG] Response data is not array or has quantity:`,
+                    inventoryResponse.data,
+                  );
+                }
+              } else {
+                console.log(`[DEBUG] No data in response`);
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error(
+                `Error fetching raw material inventory for ${material.procurement_product_id}:`,
+                status,
+                error,
+                xhr.responseText,
               );
+              rawMaterialInventory = 0;
+            },
+          });
 
-              const statusColor = netInventory > 0 ? "#EA5455" : "#EA5455";
-              const statusText =
-                netInventory > 0
-                  ? "Available"
-                  : '<span class="out-of-stock-status">Out of Stock</span>';
+          // Net inventory is just the raw material inventory available for this material
+          netInventory = rawMaterialInventory;
 
-              materialsHtml += `
+          console.log(
+            `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
+              netInventory > 0
+                ? "Available"
+                : '<span class="out-of-stock-status">Out of Stock</span>'
+            }`,
+          );
+
+          const statusColor = netInventory > 0 ? "#EA5455" : "#EA5455";
+          const statusText =
+            netInventory > 0
+              ? "Available"
+              : '<span class="out-of-stock-status">Out of Stock</span>';
+
+          materialsHtml += `
                 <div style="
                   padding: 14px;
                   background: linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%);
@@ -4652,27 +5182,13 @@
                   </div>
                 </div>
               `;
-            });
-            materialsHtml += "</div>";
-
-            container.html(materialsHtml);
-            console.log(
-              "Raw materials HTML rendered with net inventory (purchase - sales)",
-            );
-          },
-          error: function (xhr, status, error) {
-            console.error(
-              "Error fetching procurement products:",
-              status,
-              error,
-            );
-            container.html(
-              '<p style="color: #d32f2f; text-align: center;">Error loading raw materials: ' +
-                error +
-                "</p>",
-            );
-          },
         });
+        materialsHtml += "</div>";
+
+        container.html(materialsHtml);
+        console.log(
+          "Raw materials HTML rendered with net inventory (purchase - sales)",
+        );
       }
 
       function loadAICalculatedRequirementsForPanel(
