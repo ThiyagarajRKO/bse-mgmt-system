@@ -114,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
   // Create Hook
   ProcurementProducts.beforeCreate(async (data, options) => {
@@ -126,7 +126,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while inserting a procurements data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -151,7 +151,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while updating a procurements data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -174,7 +174,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while deleting a procurements data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -199,7 +199,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`
+              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`,
             ),
             "total_dispatched_quantity",
           ],
@@ -232,6 +232,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
       await sequelize.models.PurchaseInventory.update(
         {
           quantity: finalQuantity,
+          available_quantity: finalQuantity, // Update available quantity
           updated_at: new Date(),
           updated_by: options?.profile_id,
         },
@@ -240,7 +241,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
             id: inventoryData?.id,
             is_active: true,
           },
-        }
+        },
       ).catch(console.log);
     } else {
       await sequelize.models.PurchaseInventory.create({
@@ -248,14 +249,104 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
         quantity: finalQuantity,
+        available_quantity: finalQuantity, // Set available quantity
         is_active: true,
         created_by: options?.profile_id,
       }).catch(console.log);
     }
+
+    // Update inventory_stock for comprehensive stock tracking
+    await updateInventoryStock(sequelize, data, finalQuantity, options);
   } catch (err) {
     console.log(
       "Error while inserting a procurements data",
-      err?.message || err
+      err?.message || err,
     );
+  }
+};
+
+// Update inventory_stock table for comprehensive stock tracking
+const updateInventoryStock = async (sequelize, data, quantity, options) => {
+  try {
+    const { v4: uuidv4 } = require("uuid");
+
+    // For raw materials, use "RAW_INVENTORY" as unit_id
+    const unitId = "RAW_INVENTORY";
+    const productId = data.product_master_id;
+
+    // Find existing inventory stock record
+    let inventoryStock = await sequelize.models.InventoryStock.findOne({
+      where: {
+        product_id: productId,
+        unit_id: unitId,
+        lot_id: null, // Raw materials may not have specific lots initially
+      },
+    });
+
+    const transaction = await sequelize.transaction();
+
+    try {
+      if (inventoryStock) {
+        // Update existing stock
+        const previousQty = inventoryStock.on_hand_qty;
+        await inventoryStock.update(
+          {
+            on_hand_qty: quantity,
+            available_qty: quantity, // Available = on_hand for raw materials
+            updated_at: new Date(),
+          },
+          { transaction },
+        );
+      } else {
+        // Create new stock record
+        inventoryStock = await sequelize.models.InventoryStock.create(
+          {
+            id: uuidv4(),
+            product_id: productId,
+            unit_id: unitId,
+            lot_id: null,
+            on_hand_qty: quantity,
+            available_qty: quantity,
+            reserved_qty: 0,
+            uom: "KG",
+            cost_layer_id: null,
+            last_transaction_id: null,
+            updated_at: new Date(),
+          },
+          { transaction },
+        );
+      }
+
+      // Create inventory transaction record
+      await sequelize.models.InventoryTransaction.create(
+        {
+          id: uuidv4(),
+          stock_id: inventoryStock.id,
+          product_id: productId,
+          transaction_type: "PRODUCTION_RECEIPT",
+          qty_change: quantity,
+          uom: "KG",
+          warehouse_from: null,
+          warehouse_to: unitId,
+          reference_id: data.id, // Reference to procurement product
+          reference_type: "PROCUREMENT_PRODUCT",
+          batch_id: null,
+          lot_id: null,
+          cost_per_unit: data.procurement_price || 0,
+          total_cost: (data.procurement_price || 0) * quantity,
+          notes: `Purchase receipt for procurement product ${data.id}`,
+          created_by: options?.profile_id,
+          created_at: new Date(),
+        },
+        { transaction },
+      );
+
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      console.log("Error updating inventory stock:", err?.message || err);
+    }
+  } catch (err) {
+    console.log("Error in updateInventoryStock:", err?.message || err);
   }
 };

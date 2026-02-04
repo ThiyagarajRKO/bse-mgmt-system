@@ -571,9 +571,9 @@ const createPurchaseOrders = async (
   const createdOrders = [];
 
   try {
-    // Get product details
+    // Get product details including species for BOM lookup
     const product = await models.ProductMaster.findByPk(product_id, {
-      attributes: ["id", "product_name"],
+      attributes: ["id", "product_name", "species_master_id"],
       transaction,
     });
 
@@ -581,36 +581,82 @@ const createPurchaseOrders = async (
       throw new Error("Product not found");
     }
 
-    // Create procurement lot first
-    const lotNo = `LOT-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
-
-    const procurementLot = await models.ProcurementLots.create(
-      {
-        lot_no: lotNo,
-        procurement_date: new Date(),
-        expected_delivery_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-        status: "PENDING",
-        total_quantity: shortage,
-        created_by: session?.pid || session?.user_id,
-      },
-      { transaction },
-    );
-
-    // Create procurement product
-    await models.ProcurementProducts.create(
-      {
-        procurement_lot_id: procurementLot.id,
-        supplier_master_id: null, // To be assigned later
-        product_master_id: product_id,
-        procurement_product_type: "RAW_MATERIAL",
-        procurement_quantity: shortage,
-        procurement_price: 0, // To be set later
-        order_id: pendingOrders[0]?.order_id, // Link to first order
+    // Get BOM to identify required raw materials
+    const bom = await models.BomMaster.findOne({
+      where: {
+        species_id: product.species_master_id,
         is_active: true,
-        created_by: session?.pid || session?.user_id,
       },
-      { transaction },
-    );
+      include: [
+        {
+          model: models.BomInput,
+          as: "inputs",
+          include: [
+            {
+              model: models.ProductMaster,
+              as: "RawProduct",
+            },
+          ],
+        },
+      ],
+      transaction,
+    });
+
+    if (!bom || !bom.inputs || bom.inputs.length === 0) {
+      throw new Error(`No BOM found for product ${product.product_name}`);
+    }
+
+    // Process each raw material from BOM
+    for (const input of bom.inputs) {
+      const rawProductId = input.raw_product_id;
+      const rawProduct = input.RawProduct;
+
+      if (!rawProduct) continue;
+
+      // Calculate required quantity using BOM ratio
+      const requiredRawQuantity = (input.quantity || 1) * shortage;
+
+      // Create procurement lot for this raw material
+      const lotNo = `LOT-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+
+      const procurementLot = await models.ProcurementLots.create(
+        {
+          lot_no: lotNo,
+          procurement_date: new Date(),
+          expected_delivery_date: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000,
+          ), // 7 days from now
+          status: "PENDING",
+          total_quantity: requiredRawQuantity,
+          created_by: session?.pid || session?.user_id,
+        },
+        { transaction },
+      );
+
+      // Create procurement product for raw material
+      await models.ProcurementProducts.create(
+        {
+          procurement_lot_id: procurementLot.id,
+          supplier_master_id: null, // To be assigned later
+          product_master_id: rawProductId, // Raw material ID
+          procurement_product_type: "UNPROCESSED",
+          procurement_quantity: requiredRawQuantity,
+          procurement_price: 0, // To be set later
+          order_id: pendingOrders[0]?.order_id, // Link to first order
+          is_active: true,
+          created_by: session?.pid || session?.user_id,
+        },
+        { transaction },
+      );
+
+      createdOrders.push({
+        procurement_lot_id: procurementLot.id,
+        lot_no: lotNo,
+        product_name: rawProduct.product_name,
+        quantity: requiredRawQuantity,
+        raw_material_for: product.product_name,
+      });
+    }
 
     // Update order status to PENDING_PROCUREMENT
     for (const orderProduct of pendingOrders) {
@@ -642,15 +688,8 @@ const createPurchaseOrders = async (
 
     await transaction.commit();
 
-    createdOrders.push({
-      procurement_lot_id: procurementLot.id,
-      lot_no: lotNo,
-      product_name: product.product_name,
-      quantity: shortage,
-    });
-
     console.log(
-      `✅ Created procurement lot ${lotNo} for ${shortage}kg of ${product.product_name}`,
+      `✅ Created procurement for raw materials needed to produce ${shortage}kg of ${product.product_name}`,
     );
 
     return createdOrders;
