@@ -212,7 +212,17 @@
   color: #6c757d !important;
 }
 
-/* Make allocated status red */
+/* Make allocated status orange */
 .allocated-status {
-  color: red !important;
+  color: #f07b3f !important;
+}
+
+/* Make pending purchase status blue */
+.pending-purchase-status {
+  color: #007bff !important;
+}
+
+/* Make partial status yellow/orange */
+.partial-status {
+  color: #ffc107 !important;
 }
