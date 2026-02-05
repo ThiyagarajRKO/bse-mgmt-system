@@ -1,9 +1,9 @@
 "use strict";
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    // Create allocation_master table
-    // Links sales orders to inventory allocation (stock reservation)
+  async up(queryInterface, Sequelize) {
+    // Step 1: Create allocation_master table (from the original create migration)
     await queryInterface.createTable("allocation_master", {
       id: {
         type: Sequelize.UUID,
@@ -93,9 +93,70 @@ module.exports = {
     await queryInterface.addIndex("allocation_master", ["packing_id"]);
     await queryInterface.addIndex("allocation_master", ["status"]);
     await queryInterface.addIndex("allocation_master", ["allocation_date"]);
+
+    // Step 2: Ensure PENDING_PURCHASE exists in the enum (from the first status migration)
+    await queryInterface.sequelize.query(`
+      ALTER TYPE "allocation_status"
+      ADD VALUE IF NOT EXISTS 'PENDING_PURCHASE';
+    `);
+
+    // Step 3: Add PENDING to the enum (from the second migration)
+    await queryInterface.sequelize.query(`
+      ALTER TYPE "allocation_status"
+      ADD VALUE IF NOT EXISTS 'PENDING';
+    `);
+
+    // Step 4: Map existing records to simplified statuses (from the second migration)
+    await queryInterface.sequelize.query(`
+      UPDATE allocation_master
+      SET status = CASE
+        WHEN status IN ('RESERVED', 'CONFIRMED', 'IN_PRODUCTION', 'COMPLETED', 'CANCELLED', 'READY_FOR_DISPATCH', 'READY_FOR_PRODUCTION') THEN 'ALLOCATED'::allocation_status
+        WHEN status = 'PENDING_PURCHASE' THEN 'PENDING_PURCHASE'::allocation_status
+        ELSE 'PENDING'::allocation_status
+      END;
+    `);
+
+    // Step 5: Recreate the enum with only ALLOCATED and PENDING_PURCHASE (from the final migration)
+    // First remove any existing default
+    await queryInterface.sequelize.query(`
+      ALTER TABLE allocation_master
+      ALTER COLUMN status DROP DEFAULT;
+    `);
+
+    // Change the column to text type temporarily
+    await queryInterface.changeColumn("allocation_master", "status", {
+      type: Sequelize.TEXT,
+    });
+
+    // Drop the old enum
+    await queryInterface.sequelize.query(`
+      DROP TYPE IF EXISTS allocation_status;
+    `);
+
+    // Create the new simplified enum type
+    await queryInterface.sequelize.query(`
+      CREATE TYPE allocation_status AS ENUM ('ALLOCATED', 'PENDING_PURCHASE');
+    `);
+
+    // Change the column back to use the new enum
+    await queryInterface.changeColumn("allocation_master", "status", {
+      type: Sequelize.ENUM("ALLOCATED", "PENDING_PURCHASE"),
+    });
+
+    // Set the default to PENDING_PURCHASE (from the fourth migration)
+    await queryInterface.sequelize.query(`
+      ALTER TABLE allocation_master
+      ALTER COLUMN status SET DEFAULT 'PENDING_PURCHASE';
+    `);
   },
 
-  down: async (queryInterface, Sequelize) => {
+  async down(queryInterface, Sequelize) {
+    // Drop the allocation_master table
     await queryInterface.dropTable("allocation_master");
+
+    // Clean up the enum type if it exists
+    await queryInterface.sequelize.query(`
+      DROP TYPE IF EXISTS allocation_status;
+    `);
   },
 };

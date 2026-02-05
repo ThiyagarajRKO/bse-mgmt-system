@@ -89,9 +89,9 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="fw-bold">Allocation Status:</label>
-              <span id="alloc-status-badge" class="badge badge-warning"
-                >PENDING</span
-              >
+              <span id="alloc-status-badge" class="badge text-warning"
+                >PENDING <i class="fa-solid fa-truck-fast fa-fade"></i
+              ></span>
             </div>
           </div>
         </div>
@@ -532,7 +532,7 @@
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-        }
+        },
       );
       const data = await response.json();
 
@@ -546,13 +546,23 @@
           alloc.order?.customer?.customer_name || "-";
 
         const statusColor = SalesOrderGLFlow.getStatusColor(
-          alloc.allocation_status
+          alloc.allocation_status,
         );
-        document.getElementById(
-          "alloc-status-badge"
-        ).className = `badge bg-${statusColor}`;
-        document.getElementById("alloc-status-badge").textContent =
-          alloc.allocation_status;
+        const isCompleted = [
+          "ALLOCATED",
+          "POSTED",
+          "PAID",
+          "COMPLETED",
+        ].includes(alloc.allocation_status);
+        const textClass = isCompleted ? "text-success" : "text-warning";
+        const iconClass = isCompleted
+          ? "fa-circle-check"
+          : "fa-truck-fast fa-fade";
+
+        document.getElementById("alloc-status-badge").className =
+          `badge ${textClass}`;
+        document.getElementById("alloc-status-badge").innerHTML =
+          `${alloc.allocation_status} <i class="fa-solid ${iconClass}"></i>`;
 
         // Populate order products table
         const tbody = document.getElementById("allocationDetailsBody");
@@ -591,7 +601,7 @@
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-        }
+        },
       );
       const data = await response.json();
 
@@ -615,7 +625,7 @@
     const formData = {
       product_master_id: document.getElementById("demandProduct").value,
       demanded_quantity: parseFloat(
-        document.getElementById("demandQuantity").value
+        document.getElementById("demandQuantity").value,
       ),
       priority: document.getElementById("demandPriority").value,
       required_date: document.getElementById("demandDate").value,
@@ -624,13 +634,13 @@
     try {
       const response = await SalesOrderGLFlow.createDemandsFromAllocation(
         currentAllocationId,
-        formData
+        formData,
       );
 
       if (response.success) {
         toastr.success("Production demand created successfully");
         bootstrap.Modal.getInstance(
-          document.getElementById("createDemandsModal")
+          document.getElementById("createDemandsModal"),
         ).hide();
         loadProductionDemands();
       }
@@ -654,7 +664,7 @@
         demands.data.demands.forEach((demand) => {
           const row = document.createElement("tr");
           const statusColor = SalesOrderGLFlow.getStatusColor(
-            demand.demand_status
+            demand.demand_status,
           );
           row.innerHTML = `
             <td><small>${demand.demand_number}</small></td>
@@ -663,8 +673,8 @@
             <td>${demand.fulfilled_quantity || 0}</td>
             <td><span class="badge bg-info">${demand.priority}</span></td>
             <td><span class="badge bg-${statusColor}">${
-            demand.demand_status
-          }</span></td>
+              demand.demand_status
+            }</span></td>
             <td>
               <button class="btn btn-xs btn-info" onclick="viewDemand('${
                 demand.id
@@ -707,7 +717,7 @@
         currentInvoiceId = response.data.id;
         toastr.success("Invoice created successfully");
         bootstrap.Modal.getInstance(
-          document.getElementById("createInvoiceModal")
+          document.getElementById("createInvoiceModal"),
         ).hide();
         loadInvoiceData();
       }
@@ -722,25 +732,20 @@
     try {
       if (!currentInvoiceId) return;
 
-      const response = await SalesOrderGLFlow.getInvoiceDetails(
-        currentInvoiceId
-      );
+      const response =
+        await SalesOrderGLFlow.getInvoiceDetails(currentInvoiceId);
 
       if (response.success) {
         const invoice = response.data;
         document.getElementById("invoiceDetailsPanel").style.display = "block";
         document.getElementById("noInvoiceMessage").style.display = "none";
 
-        document.getElementById(
-          "invoiceNumber"
-        ).textContent = `Invoice #${invoice.invoice_number}`;
+        document.getElementById("invoiceNumber").textContent =
+          `Invoice #${invoice.invoice_number}`;
         document.getElementById("invoiceStatus").textContent =
           invoice.invoice_status;
-        document.getElementById(
-          "invoiceStatus"
-        ).className = `badge bg-${SalesOrderGLFlow.getStatusColor(
-          invoice.invoice_status
-        )}`;
+        document.getElementById("invoiceStatus").className =
+          `badge bg-${SalesOrderGLFlow.getStatusColor(invoice.invoice_status)}`;
 
         document.getElementById("invoiceNetAmount").textContent =
           SalesOrderGLFlow.formatCurrency(invoice.net_amount || 0);
@@ -760,7 +765,7 @@
               <td>${item.product?.product_name || "-"}</td>
               <td>${item.quantity}</td>
               <td>${SalesOrderGLFlow.formatCurrency(
-                item.cost_per_unit || 0
+                item.cost_per_unit || 0,
               )}</td>
               <td>${SalesOrderGLFlow.formatCurrency(item.line_total || 0)}</td>
             `;
@@ -791,7 +796,7 @@
           try {
             const response = await SalesOrderGLFlow.postInvoiceToGL(
               currentInvoiceId,
-              { payment_received: true }
+              { payment_received: true },
             );
 
             if (response.success) {
@@ -823,7 +828,7 @@
         entries.data.entries.forEach((entry) => {
           const row = document.createElement("tr");
           const statusColor = SalesOrderGLFlow.getStatusColor(
-            entry.posting_status
+            entry.posting_status,
           );
           row.innerHTML = `
             <td><small>${entry.entry_number}</small></td>
@@ -835,8 +840,8 @@
               entry.credit ? SalesOrderGLFlow.formatCurrency(entry.credit) : "-"
             }</td>
             <td><span class="badge bg-${statusColor}">${
-            entry.posting_status
-          }</span></td>
+              entry.posting_status
+            }</span></td>
             <td>${SalesOrderGLFlow.formatDate(entry.posting_date)}</td>
           `;
           tbody.appendChild(row);

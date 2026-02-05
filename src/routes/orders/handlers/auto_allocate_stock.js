@@ -582,39 +582,48 @@ const createPurchaseOrders = async (
     }
 
     // Get BOM to identify required raw materials
-    const bom = await models.BomMaster.findOne({
+    const bomEntries = await models.BillOfMaterials.findAll({
       where: {
-        species_id: product.species_master_id,
+        product_master_id: product_id,
         is_active: true,
       },
       include: [
         {
-          model: models.BomInput,
-          as: "inputs",
+          model: models.ProcurementProducts,
+          as: "ProcurementProduct",
           include: [
             {
               model: models.ProductMaster,
-              as: "RawProduct",
+              as: "ProductMaster",
             },
           ],
         },
       ],
-      transaction,
     });
 
-    if (!bom || !bom.inputs || bom.inputs.length === 0) {
-      throw new Error(`No BOM found for product ${product.product_name}`);
+    if (!bomEntries || bomEntries.length === 0) {
+      console.log(
+        `No BOM found for product ${product.product_name}, creating fallback procurement`,
+      );
+      // Fallback: Create procurement for the finished product itself
+      return await createFallbackProcurement(
+        product,
+        shortage,
+        pendingOrders,
+        session,
+      );
     }
 
     // Process each raw material from BOM
-    for (const input of bom.inputs) {
-      const rawProductId = input.raw_product_id;
-      const rawProduct = input.RawProduct;
+    for (const bomEntry of bomEntries) {
+      const procurementProduct = bomEntry.ProcurementProduct;
+      const rawProduct = procurementProduct?.ProductMaster;
+      const rawProductId = procurementProduct?.product_master_id;
 
-      if (!rawProduct) continue;
+      if (!rawProduct || !procurementProduct) continue;
 
       // Calculate required quantity using BOM ratio
-      const requiredRawQuantity = (input.quantity || 1) * shortage;
+      const requiredRawQuantity = (bomEntry.quantity_required || 1) * shortage;
 
       // Create procurement lot for this raw material
       const lotNo = `LOT-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
@@ -696,6 +705,95 @@ const createPurchaseOrders = async (
   } catch (error) {
     await transaction.rollback();
     console.error(`❌ Error creating procurement:`, error.message);
+    throw error;
+  }
+};
+
+// Fallback function to create procurement for finished product when no BOM is available
+const createFallbackProcurement = async (
+  product,
+  shortage,
+  pendingOrders,
+  session,
+) => {
+  const transaction = await models.sequelize.transaction();
+  const createdOrders = [];
+
+  try {
+    // Create procurement lot for the finished product
+    const lotNo = `LOT-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+
+    const procurementLot = await models.ProcurementLots.create(
+      {
+        lot_no: lotNo,
+        procurement_date: new Date(),
+        expected_delivery_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        status: "PENDING",
+        total_quantity: shortage,
+        created_by: session?.pid || session?.user_id,
+      },
+      { transaction },
+    );
+
+    // Create procurement product for the finished product (marked as PROCESSED)
+    await models.ProcurementProducts.create(
+      {
+        procurement_lot_id: procurementLot.id,
+        supplier_master_id: null, // To be assigned later
+        product_master_id: product.id, // Finished product ID
+        procurement_product_type: "PROCESSED", // Mark as PROCESSED since it's the finished product
+        procurement_quantity: shortage,
+        procurement_price: 0, // To be set later
+        order_id: pendingOrders[0]?.order_id, // Link to first order
+        is_active: true,
+        created_by: session?.pid || session?.user_id,
+      },
+      { transaction },
+    );
+
+    createdOrders.push({
+      procurement_lot_id: procurementLot.id,
+      lot_no: lotNo,
+      product_name: product.product_name,
+      quantity: shortage,
+      raw_material_for: "Finished Product (BOM not available)",
+    });
+
+    // Update order status to PENDING_PROCUREMENT
+    for (const orderProduct of pendingOrders) {
+      await models.Orders.update(
+        {
+          order_status: "PENDING_PROCUREMENT",
+          updated_at: new Date(),
+        },
+        {
+          where: { id: orderProduct.order_id, is_active: true },
+          transaction,
+        },
+      );
+
+      await models.OrderProducts.update(
+        {
+          delivery_status: "PENDING_PROCUREMENT",
+          updated_at: new Date(),
+        },
+        {
+          where: { id: orderProduct.id, is_active: true },
+          transaction,
+        },
+      );
+    }
+
+    await transaction.commit();
+
+    console.log(
+      `✅ Created fallback procurement for finished product: ${product.product_name}`,
+    );
+
+    return createdOrders;
+  } catch (error) {
+    await transaction.rollback();
+    console.error(`❌ Error creating fallback procurement:`, error.message);
     throw error;
   }
 };
