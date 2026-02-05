@@ -1965,11 +1965,26 @@
                 class="form-control"
                 placeholder="eg. 100"
                 min="1"
+                title="Hover for AI recommendations and calculation details"
+                onmouseover="showQuantityTooltip(this)"
+                onmouseout="hideQuantityTooltip()"
               />
               <small
                 class="text-muted mt-2"
                 id="purchaseRequestQuantityHint"
               ></small>
+              <!-- AI Tooltip Container -->
+              <div
+                id="quantityTooltip"
+                class="position-absolute bg-dark text-white p-3 rounded shadow-lg"
+                style="
+                  display: none;
+                  z-index: 1000;
+                  max-width: 400px;
+                  font-size: 12px;
+                  border: 1px solid #333;
+                "
+              ></div>
             </div>
 
             <!-- Action Buttons -->
@@ -2292,6 +2307,160 @@
         $("#closePurchaseRequestPanelBtn").click();
       });
 
+      // Function to handle raw material card selection
+      function selectRawMaterial(cardElement) {
+        // Find the radio button inside this card and select it
+        const radioButton = cardElement.querySelector(
+          'input[type="radio"][name="rawMaterial"]',
+        );
+        if (radioButton) {
+          radioButton.checked = true;
+
+          // Get the recommended quantity from the data attribute
+          const recommendedQuantity = cardElement.getAttribute(
+            "data-recommended-quantity",
+          );
+
+          // Auto-populate the quantity input field with the recommended quantity
+          if (recommendedQuantity && recommendedQuantity > 0) {
+            $("#purchaseRequestQuantity").val(recommendedQuantity);
+            // Update the hint text
+            $("#purchaseRequestQuantityHint").html(
+              `<small class="text-success">Auto-filled with recommended quantity: ${recommendedQuantity} kg</small>`,
+            );
+          }
+
+          // Remove selection styling from all cards
+          document.querySelectorAll(".raw-material-card").forEach((card) => {
+            card.style.borderLeftColor = "#627293";
+            card.style.background =
+              "linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%)";
+          });
+
+          // Add selection styling to clicked card
+          cardElement.style.borderLeftColor = "#28a745";
+          cardElement.style.background =
+            "linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.08) 100%)";
+
+          // Update quantity field with recommended value and show tooltip
+          if (recommendedQuantity && recommendedQuantity > 0) {
+            $("#purchaseRequestQuantity").val(recommendedQuantity);
+            $("#purchaseRequestQuantityHint").html(
+              `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQuantity} kg</small>`,
+            );
+
+            // Show tooltip briefly to highlight the recommendation
+            setTimeout(() => {
+              showQuantityTooltip($("#purchaseRequestQuantity")[0]);
+              setTimeout(() => hideQuantityTooltip(), 3000); // Hide after 3 seconds
+            }, 500);
+          }
+        }
+      }
+
+      // Clear quantity hint when user manually changes the quantity
+      $("#purchaseRequestQuantity").on("input", function () {
+        const currentVal = $(this).val();
+        if (currentVal && currentVal.trim() !== "") {
+          $("#purchaseRequestQuantityHint").html(
+            `<small class="text-info">Custom quantity entered: ${currentVal} kg</small>`,
+          );
+        } else {
+          $("#purchaseRequestQuantityHint").html("");
+        }
+      });
+
+      // AI Tooltip functions for quantity field
+      function showQuantityTooltip(inputElement) {
+        const currentValue = parseFloat($(inputElement).val()) || 0;
+        const tooltip = $("#quantityTooltip");
+
+        // Get current BOM data if available
+        const selectedMaterial = $('input[name="rawMaterial"]:checked');
+        let tooltipContent = "";
+
+        if (selectedMaterial.length > 0) {
+          const materialCard = selectedMaterial.closest(".raw-material-card");
+          const recommendedQty =
+            parseFloat(materialCard.attr("data-recommended-quantity")) || 0;
+          const requiredQty =
+            parseFloat(
+              materialCard.find(".badge").first().text().replace(" kg", ""),
+            ) || 0;
+          const currentStock =
+            parseFloat(
+              materialCard.find(".badge").eq(1).text().replace(" kg", ""),
+            ) || 0;
+
+          // Calculate AI recommendations
+          const shortage = Math.max(0, requiredQty - currentStock);
+          const buffer20 = Math.ceil(requiredQty * 0.2);
+          const buffer10 = Math.ceil(requiredQty * 0.1);
+          const optimalOrder = shortage + buffer10;
+
+          tooltipContent = `
+            <div style="line-height: 1.4;">
+              <strong>🎯 AI Quantity Analysis</strong><br>
+              <hr style="border-color: #555; margin: 8px 0;">
+              <strong>Current Input:</strong> ${currentValue} kg<br>
+              <strong>BOM Required:</strong> ${requiredQty} kg<br>
+              <strong>Current Stock:</strong> ${currentStock} kg<br>
+              <strong>Shortage Gap:</strong> ${shortage} kg<br>
+              <hr style="border-color: #555; margin: 8px 0;">
+              <strong>📊 Recommendations:</strong><br>
+              • <strong>Minimum:</strong> ${shortage} kg (covers shortage only)<br>
+              • <strong>Conservative:</strong> ${optimalOrder} kg (+10% buffer)<br>
+              • <strong>Safe:</strong> ${shortage + buffer20} kg (+20% buffer)<br>
+              • <strong>BOM Optimal:</strong> ${recommendedQty} kg (calculated)<br>
+              <hr style="border-color: #555; margin: 8px 0;">
+              <strong>💡 AI Insights:</strong><br>
+              ${
+                currentValue < shortage
+                  ? "⚠️ Below minimum requirement!"
+                  : currentValue < optimalOrder
+                    ? "✅ Adequate but consider buffer"
+                    : currentValue <= recommendedQty
+                      ? "🎯 Optimal quantity"
+                      : "📈 Above recommended (may increase costs)"
+              }
+            </div>
+          `;
+        } else {
+          tooltipContent = `
+            <div style="line-height: 1.4;">
+              <strong>🎯 AI Quantity Guidance</strong><br>
+              <hr style="border-color: #555; margin: 8px 0;">
+              <strong>Current Input:</strong> ${currentValue} kg<br>
+              <br>
+              <strong>💡 Tips:</strong><br>
+              • Select a raw material first for detailed analysis<br>
+              • Consider 10-20% buffer for safety stock<br>
+              • Factor in supplier minimums and lead times<br>
+              • Balance inventory costs vs. stockout risks<br>
+              <hr style="border-color: #555; margin: 8px 0;">
+              <strong>📈 Best Practices:</strong><br>
+              • Order in economic quantities<br>
+              • Maintain 2-4 weeks of safety stock<br>
+              • Consider seasonal demand variations
+            </div>
+          `;
+        }
+
+        tooltip.html(tooltipContent);
+
+        // Position tooltip near the input
+        const rect = inputElement.getBoundingClientRect();
+        tooltip.css({
+          top: rect.bottom + 5 + "px",
+          left: rect.left + "px",
+          display: "block",
+        });
+      }
+
+      function hideQuantityTooltip() {
+        $("#quantityTooltip").hide();
+      }
+
       $(".ordersMenu").click(function () {
         $(".menu-container").addClass("d-none");
 
@@ -2577,7 +2746,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewOrders" order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
+                return `<i class="fa-solid fa-eye view viewOrders" order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' total_price='${row.total_products_price}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
               },
             },
             {
@@ -3441,16 +3610,25 @@
               targets: [5],
               className: "text-left",
               render: (data, type, row) => {
-                // Show "Allocated" or "Pending" based on allocation_status
-                const isAllocated =
-                  data === "Allocated" || data === "ALLOCATED";
-                const statusText = isAllocated ? "Allocated" : "Pending";
-                const statusClass = isAllocated
-                  ? "allocated-status"
-                  : "pending-status";
-                const statusIcon = isAllocated
-                  ? "fa-circle-check"
-                  : "fa-hourglass-half";
+                // Show allocation status with appropriate styling
+                let statusText = "Pending";
+                let statusClass = "pending-status";
+                let statusIcon = "fa-hourglass-half";
+
+                if (data === "Allocated" || data === "ALLOCATED") {
+                  statusText = "Allocated";
+                  statusClass = "allocated-status";
+                  statusIcon = "fa-circle-check";
+                } else if (data === "Pending Purchase") {
+                  statusText = "Pending Purchase";
+                  statusClass = "pending-purchase-status";
+                  statusIcon = "fa-shopping-cart";
+                } else if (data === "Partial") {
+                  statusText = "Partial";
+                  statusClass = "partial-status";
+                  statusIcon = "fa-clock";
+                }
+
                 return `<span class="${statusClass}">${statusText} <i class="fa-solid ${statusIcon}"></i></span>`;
               },
             },
@@ -3889,6 +4067,19 @@
                 const purchaseQuantity = $("#purchaseQuantity").val();
                 const remarks = $("#purchaseRemarks").val();
 
+                // Get the selected raw material ID from radio buttons
+                const selectedRawMaterial = $(
+                  'input[name="rawMaterial"]:checked',
+                ).val();
+
+                if (!selectedRawMaterial) {
+                  toastr.error(
+                    "Please select a raw material to purchase",
+                    "Error",
+                  );
+                  return false;
+                }
+
                 if (!supplierId) {
                   toastr.error("Please select a supplier", "Error");
                   return false;
@@ -3905,7 +4096,7 @@
                   method: "POST",
                   data: JSON.stringify({
                     order_id: orderId,
-                    product_id: productId,
+                    product_id: selectedRawMaterial, // Use selected raw material ID instead of finished product ID
                     supplier_id: supplierId,
                     quantity: purchaseQuantity,
                     remarks: remarks,
@@ -3997,7 +4188,11 @@
                       <span class="${
                         allocationStatus === "Allocated"
                           ? "badge badge-success"
-                          : "badge badge-warning"
+                          : allocationStatus === "Pending Purchase"
+                            ? "badge badge-info"
+                            : allocationStatus === "Partial"
+                              ? "badge badge-warning"
+                              : "badge badge-secondary"
                       }">${allocationStatus}</span>
                     </div>
                   </div>
@@ -4425,6 +4620,186 @@
           speciesId,
         );
 
+        // First, try to get raw materials from BOM using the new API
+        $.ajax({
+          url: `/api/procurement/product/calculate/multi-category?productId=${productId}&quantityRequired=${quantityRequired}`,
+          method: "GET",
+          dataType: "json",
+          success: function (response) {
+            console.log("BOM-based raw materials API response:", response);
+
+            if (response?.data && response.data.length > 0) {
+              // Get the first recommendation (usually FRESH/RAW)
+              const firstRecommendation = response.data[0];
+              if (
+                firstRecommendation?.rawMaterials &&
+                firstRecommendation.rawMaterials.length > 0
+              ) {
+                console.log(
+                  "✓ Found raw materials from BOM:",
+                  firstRecommendation.rawMaterials,
+                );
+                // Process the BOM-based raw materials
+                processBOMRawMaterials(
+                  firstRecommendation.rawMaterials,
+                  quantityRequired,
+                  $("#purchaseRequestRawMaterials"),
+                );
+
+                // Auto-populate the quantity field with the first raw material's recommended quantity
+                const firstRawMaterial = firstRecommendation.rawMaterials[0];
+                if (firstRawMaterial?.recommended_order_quantity > 0) {
+                  $("#purchaseRequestQuantity").val(
+                    firstRawMaterial.recommended_order_quantity,
+                  );
+                  $("#purchaseRequestQuantityHint").html(
+                    `<small class="text-success">Auto-filled with BOM recommended quantity: ${firstRawMaterial.recommended_order_quantity} kg</small>`,
+                  );
+
+                  // Show tooltip briefly to highlight AI recommendations
+                  setTimeout(() => {
+                    showQuantityTooltip($("#purchaseRequestQuantity")[0]);
+                    setTimeout(() => hideQuantityTooltip(), 4000); // Hide after 4 seconds
+                  }, 1000);
+                }
+              } else {
+                console.warn(
+                  "⚠ No raw materials found in BOM response, falling back to species filtering",
+                );
+                // Fall back to the original logic if BOM doesn't have data
+                fallbackToSpeciesFiltering(
+                  productId,
+                  quantityRequired,
+                  speciesId,
+                );
+              }
+            } else {
+              console.warn(
+                "⚠ No recommendations found in BOM response, falling back to species filtering",
+              );
+              // Fall back to the original logic if BOM doesn't have data
+              fallbackToSpeciesFiltering(
+                productId,
+                quantityRequired,
+                speciesId,
+              );
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              "BOM API error, falling back to species filtering:",
+              status,
+              error,
+            );
+            // Fall back to the original logic if API fails
+            fallbackToSpeciesFiltering(productId, quantityRequired, speciesId);
+          },
+        });
+      }
+
+      // New function to process BOM-based raw materials
+      function processBOMRawMaterials(
+        rawMaterials,
+        quantityRequired,
+        container,
+      ) {
+        let materialsHtml =
+          '<div style="display: flex; flex-direction: column; gap: 10px;">';
+
+        rawMaterials.forEach((material) => {
+          const materialName = material.product_name || "Unknown";
+          const procurementProductId = material.procurement_product_id;
+
+          // Use the calculated values from BOM
+          const bomQuantityRequired = material.total_quantity_required || 0;
+          const currentStock = material.current_stock || 0;
+          const inventoryGap = material.inventory_gap || 0;
+          const recommendedOrderQuantity =
+            material.recommended_order_quantity || 0;
+          const unitOfMeasure = material.unit_of_measure || "KG";
+
+          // Determine status based on inventory gap
+          let statusText = "Unknown";
+          let statusColor = "#gray";
+
+          if (inventoryGap <= 0) {
+            statusText = "Sufficient Stock";
+            statusColor = "#4CAF50"; // Green
+          } else if (inventoryGap > 0) {
+            statusText = "Order Required";
+            statusColor = "#FF9800"; // Orange
+          }
+
+          // Build the material card HTML
+          materialsHtml += `
+            <div style="
+              padding: 14px;
+              background: linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%);
+              border-radius: 6px;
+              border-left: 4px solid #627293;
+              margin-bottom: 10px;
+              transition: all 0.3s ease;
+              cursor: pointer;
+              position: relative;
+            " class="raw-material-card" onclick="selectRawMaterial(this)" data-recommended-quantity="${recommendedOrderQuantity}" onmouseover="this.style.boxShadow='0 4px 12px rgba(98, 114, 147, 0.25)'" onmouseout="this.style.boxShadow='none'">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <input
+                      type="radio"
+                      name="rawMaterial"
+                      value="${procurementProductId}"
+                      data-material-name="${materialName}"
+                      style="cursor: pointer; width: 18px; height: 18px; accent-color: #627293;"
+                    >
+                    <strong style="color: #e3e3e3; font-size: 14px;">${materialName}</strong>
+                  </div>
+
+                  <div style="background: rgba(98, 114, 147, 0.1); padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid rgba(98, 114, 147, 0.3);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                      <div>
+                        <span style="color: #999;">Required Quantity:</span>
+                        <span class="badge" style="background-color: #6c757d; color: white;">${bomQuantityRequired} ${unitOfMeasure}</span>
+                      </div>
+                      <div>
+                        <span style="color: #999;">Current Stock:</span>
+                        <span class="badge" style="background-color: #6c757d; color: white;">${currentStock} ${unitOfMeasure}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
+                      <span style="color: #999; font-size: 12px;">Order Gap:</span>
+                      <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${inventoryGap} ${unitOfMeasure}</span>
+                    </div>
+                  </div>
+                </div>
+                <span style="
+                  background: ${statusColor};
+                  color: white;
+                  padding: 6px 12px;
+                  border-radius: 20px;
+                  font-size: 12px;
+                  font-weight: bold;
+                  white-space: nowrap;
+                ">${statusText}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        materialsHtml += "</div>";
+        container.html(materialsHtml);
+        console.log("BOM-based raw materials HTML rendered");
+      }
+
+      // Fallback function for species-based filtering
+      function fallbackToSpeciesFiltering(
+        productId,
+        quantityRequired,
+        speciesId,
+      ) {
         // First, calculate AI-powered requirements
         loadAICalculatedRequirementsForPanel(productId, quantityRequired);
 
@@ -4895,17 +5270,24 @@
         );
 
         let apiUrl;
-        if (speciesMasterId) {
+        if (productId) {
+          // Priority: Use BOM-filtered endpoint when product ID is available
+          apiUrl = `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED&finished_product_id=${productId}`;
+          console.log(
+            "✓ Using BOM-filtered endpoint for product. Fetching raw materials with URL:",
+            apiUrl,
+          );
+        } else if (speciesMasterId) {
           apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
           console.log(
             "✓ Using species-filtered endpoint. Fetching raw materials with URL:",
             apiUrl,
           );
         } else {
-          // Fallback to general raw materials endpoint when no species is available
+          // Fallback to general raw materials endpoint when no product or species is available
           apiUrl = `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED`;
           console.warn(
-            "⚠ No species ID provided. Falling back to general raw materials endpoint:",
+            "⚠ No product or species ID provided. Falling back to general raw materials endpoint:",
             apiUrl,
           );
         }
@@ -5134,7 +5516,7 @@
                   transition: all 0.3s ease;
                   cursor: pointer;
                   position: relative;
-                " class="raw-material-card" onmouseover="this.style.boxShadow='0 4px 12px rgba(98, 114, 147, 0.25)'" onmouseout="this.style.boxShadow='none'">
+                " class="raw-material-card" onclick="selectRawMaterial(this)" onmouseover="this.style.boxShadow='0 4px 12px rgba(98, 114, 147, 0.25)'" onmouseout="this.style.boxShadow='none'">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
                     <div style="flex: 1;">
                       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -6721,7 +7103,7 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewCustomerOrders" customer_id='${customer_id}' order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
+                return `<i class="fa-solid fa-eye view viewCustomerOrders" customer_id='${customer_id}' order_id='${row?.id}' payment_terms='${row.payment_terms}' payment_type='${row.payment_type}' total_price='${row.total_products_price}' customer_master_id='${row.CustomerMaster.id}' customer_name='${row.CustomerMaster.customer_name}' customer_country='${row.CustomerMaster.customer_country}' customer_email='${row.CustomerMaster.customer_email}' customer_phone='${row.CustomerMaster.customer_phone}' shipping_date='${row?.shipping_date}' shipping_method='${row?.shipping_method}' shipping_address='${row?.shipping_address}' shipping_source='${row?.ShippingMaster?.shipping_source}' shipping_destination='${row?.ShippingMaster?.shipping_destination}' shipping_carrier_name='${row?.ShippingMaster?.CarrierMaster?.carrier_name}' expected_delivery='${row?.expected_delivery_date}' aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view this order"></i>`;
               },
             },
             {
