@@ -7,7 +7,7 @@ import { Delete } from "./handlers/delete";
 import { GetOrderNumbers } from "./handlers/get_order_no";
 import { Confirm } from "./handlers/confirm";
 import { GetAllocationData } from "./handlers/get_allocation_data";
-import { CheckInventory } from "./handlers/check_inventory";
+const { CheckInventory } = require("./handlers/check_inventory");
 import { CheckFulfillmentRoute } from "./handlers/check_fulfillment_route";
 import { AllocateStock } from "./handlers/allocate_stock";
 import { AutoAllocateStock } from "./handlers/auto_allocate_stock";
@@ -295,6 +295,9 @@ export const ordersRoute = (fastify, opts, done) => {
     try {
       const params = {
         product_master_id: req?.params?.product_master_id,
+        required_quantity: req?.query?.required_quantity
+          ? parseFloat(req.query.required_quantity)
+          : null,
       };
 
       const result = await CheckInventory(params, req?.session, fastify);

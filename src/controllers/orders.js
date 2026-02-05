@@ -228,6 +228,24 @@ export const GetWithTracking = ({ id }) => {
         { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
+      // Get order status changes timeline
+      const statusTimeline = await models.OrderStatusLog.findAll({
+        where: {
+          order_id: id,
+          is_active: true,
+        },
+        attributes: [
+          "id",
+          "from_status",
+          "to_status",
+          "transition_date",
+          "transition_reason",
+          "metadata",
+          "created_at",
+        ],
+        order: [["created_at", "ASC"]],
+      });
+
       resolve({
         order: order.dataValues,
         sales_tracking: salesTracking,
@@ -236,6 +254,7 @@ export const GetWithTracking = ({ id }) => {
           total_quantity: 0,
           total_packings: 0,
         },
+        status_timeline: statusTimeline.map((log) => log.dataValues),
         production_tracking: {
           procurement: [],
           dispatches: [],
