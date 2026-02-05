@@ -31,8 +31,31 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
         throw error;
       }
 
-      // Note: Order status will be updated to CONFIRMED only after successful allocation
-      // This prevents auto-confirm and ensures CONFIRMED only occurs after confirmation + allocation
+      // Update order status to CONFIRMED immediately after confirmation
+      // Allocations will be processed asynchronously in the background
+      await models.Orders.update(
+        {
+          order_status: "CONFIRMED",
+          is_active: true,
+          confirmed_at: new Date(),
+        },
+        {
+          where: { id: order_id },
+        },
+      );
+
+      // Log the status change
+      if (models.OrderStatusLog) {
+        await models.OrderStatusLog.create({
+          order_id: order_id,
+          from_status: "DRAFT",
+          to_status: "CONFIRMED",
+          changed_by: session?.user_id,
+          profile_id: profile_id,
+          transition_reason:
+            "Order confirmed - allocations processing in background",
+        });
+      }
 
       // Get all order products for inventory checking
       const orderProducts = await models.OrderProducts.findAll({
@@ -231,7 +254,7 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
               }),
           );
 
-          // Wait for all allocations to complete and determine final status
+          // Wait for all allocations to complete (for logging purposes only)
           Promise.allSettled(allocationPromises).then(async (results) => {
             const successful = results.filter(
               (r) => r.status === "fulfilled" && !r.value.error,
@@ -243,47 +266,6 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
             fastify.log.info(
               `Auto-allocation summary for order ${order.order_no}: ${successful} successful, ${failed} failed`,
             );
-
-            // Only set status to CONFIRMED if all allocations were successful
-            if (failed === 0 && successful > 0) {
-              try {
-                await models.Orders.update(
-                  {
-                    order_status: "CONFIRMED",
-                    is_active: true,
-                    confirmed_at: new Date(),
-                  },
-                  {
-                    where: { id: order_id },
-                  },
-                );
-
-                // Log the status change
-                if (models.OrderStatusLog) {
-                  await models.OrderStatusLog.create({
-                    order_id: order_id,
-                    old_status: "DRAFT",
-                    new_status: "CONFIRMED",
-                    changed_by: session?.user_id,
-                    profile_id: profile_id,
-                    remarks: "Order confirmed after successful allocation",
-                  });
-                }
-
-                fastify.log.info(
-                  `Order ${order.order_no} status updated to CONFIRMED`,
-                );
-              } catch (statusUpdateErr) {
-                fastify.log.error(
-                  `Failed to update order status to CONFIRMED:`,
-                  statusUpdateErr,
-                );
-              }
-            } else if (failed > 0) {
-              fastify.log.warn(
-                `Order ${order.order_no} remains in DRAFT status due to allocation failures`,
-              );
-            }
           });
         }
       } catch (allocErr) {
@@ -294,10 +276,10 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
       resolve({
         statusCode: 200,
         message:
-          "Order confirmation initiated - status will be updated to CONFIRMED after successful allocation",
+          "Order confirmed successfully - allocations are being processed in the background",
         data: {
           order_id: order_id,
-          status: "DRAFT", // Status remains DRAFT until allocation completes
+          status: "CONFIRMED",
           confirmation_initiated: true,
         },
       });
