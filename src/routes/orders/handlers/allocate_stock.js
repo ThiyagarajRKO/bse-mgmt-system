@@ -356,10 +356,52 @@ export const AllocateStock = async (
             rawMaterialItems[0]?.total_raw_material || 0,
           );
 
-          return reject({
-            statusCode: 400,
-            message: `No inventory available for allocation. Finished goods: ${totalFGAvailable} ${unitOfMeasure}, Purchase inventory: ${availableInPurchase} ${unitOfMeasure}, Raw material stock: ${rawMaterialStock} ${unitOfMeasure}${isRawMaterial ? ` (effective: ${effectiveAvailableQuantity} ${unitOfMeasure} finished goods)` : ""}, Required: ${isRawMaterial ? `${requiredRawMaterials} ${unitOfMeasure} raw materials (${parsedQuantity} ${unitOfMeasure} finished goods)` : `${parsedQuantity} ${unitOfMeasure}`}`,
-          });
+          // Instead of rejecting, trigger procurement for raw materials
+          console.log(
+            "Insufficient inventory, triggering procurement for raw materials...",
+          );
+
+          try {
+            const PurchaseRequestService = require("../../../../services/PurchaseRequestService");
+
+            // Create inventory details for the service
+            const inventoryDetails = {
+              [product_id]: availableInPurchase, // Current purchase inventory
+            };
+
+            // Trigger procurement for raw materials needed
+            const procurementResult =
+              await PurchaseRequestService.createPurchaseRequest(
+                product_id,
+                parsedQuantity,
+                order_id,
+                inventoryDetails,
+              );
+
+            // Update order status to indicate procurement is in progress
+            await models.Orders.update(
+              {
+                order_status: "PROCUREMENT_PENDING",
+                allocation_status: "Procurement Initiated",
+                updated_at: new Date(),
+              },
+              {
+                where: { id: order_id },
+              },
+            );
+
+            return resolve({
+              message: `Procurement initiated for raw materials. ${procurementResult.procurementCreated?.length || 0} procurement requests created.`,
+              procurementTriggered: true,
+              procurementResult,
+            });
+          } catch (procurementError) {
+            console.error("Error triggering procurement:", procurementError);
+            return reject({
+              statusCode: 500,
+              message: `Failed to initiate procurement: ${procurementError.message}`,
+            });
+          }
         }
       }
 
@@ -413,10 +455,52 @@ export const AllocateStock = async (
             );
         }
 
-        return reject({
-          statusCode: 400,
-          message: `Insufficient finished goods stock. Available: ${totalAvailable} ${unitOfMeasure}, Raw material stock: ${rawMaterialStock} ${unitOfMeasure}${isRawMaterial ? ` (effective: ${effectiveAvailableQuantity} ${unitOfMeasure} finished goods)` : ""}, Required: ${isRawMaterial ? `${requiredRawMaterialsForError} ${unitOfMeasure} raw materials (${parsedQuantity} ${unitOfMeasure} finished goods)` : `${parsedQuantity} ${unitOfMeasure}`}`,
-        });
+        // Instead of rejecting, trigger procurement for raw materials
+        console.log(
+          "Insufficient finished goods stock, triggering procurement for raw materials...",
+        );
+
+        try {
+          const PurchaseRequestService = require("../../../../services/PurchaseRequestService");
+
+          // Create inventory details for the service
+          const inventoryDetails = {
+            [product_id]: totalAvailable, // Current finished goods inventory
+          };
+
+          // Trigger procurement for raw materials needed
+          const procurementResult =
+            await PurchaseRequestService.createPurchaseRequest(
+              product_id,
+              parsedQuantity,
+              order_id,
+              inventoryDetails,
+            );
+
+          // Update order status to indicate procurement is in progress
+          await models.Orders.update(
+            {
+              order_status: "PROCUREMENT_PENDING",
+              allocation_status: "Procurement Initiated",
+              updated_at: new Date(),
+            },
+            {
+              where: { id: order_id },
+            },
+          );
+
+          return resolve({
+            message: `Procurement initiated for raw materials. ${procurementResult.procurementCreated?.length || 0} procurement requests created.`,
+            procurementTriggered: true,
+            procurementResult,
+          });
+        } catch (procurementError) {
+          console.error("Error triggering procurement:", procurementError);
+          return reject({
+            statusCode: 500,
+            message: `Failed to initiate procurement: ${procurementError.message}`,
+          });
+        }
       }
 
       // Start transaction for allocation
