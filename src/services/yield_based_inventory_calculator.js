@@ -72,13 +72,13 @@ class YieldBasedInventoryCalculator {
       if (isCephalopodRings) {
         // For cephalopod rings: raw_quantity * rings_per_cephalopod
         // The yield percentage represents rings per whole cephalopod (e.g., 8.0 = 8 rings per cuttlefish)
-        effectiveFinishedGoods = rawQuantity * yieldPercentage;
+        effectiveFinishedGoods = Math.round(rawQuantity * yieldPercentage);
         console.log(
           `Cephalopod rings yield calculation for product ${productId}: ${rawQuantity} whole cephalopods → ${effectiveFinishedGoods} rings (at ${yieldPercentage} rings per cephalopod)`,
         );
       } else {
         // Standard weight-based yield calculation
-        effectiveFinishedGoods = rawQuantity * yieldPercentage;
+        effectiveFinishedGoods = Math.round(rawQuantity * yieldPercentage);
         console.log(
           `Standard yield calculation for raw product ${productId}: ${rawQuantity} raw → ${effectiveFinishedGoods} effective (at ${yieldPercentage * 100}% yield)`,
         );

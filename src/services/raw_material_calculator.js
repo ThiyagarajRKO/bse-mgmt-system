@@ -238,10 +238,18 @@ export class RawMaterialCalculator {
             });
 
             if (result.success && result.data) {
+              // Get the actual raw materials for this product
+              const rawMaterials = await this.getRawMaterialsForProduct({
+                productId,
+                quantityRequired,
+                speciesId,
+              });
+
               recommendations.push({
                 productForm: form,
                 processingType: type,
                 ...result.data,
+                rawMaterials: rawMaterials,
               });
             }
           } catch (error) {
@@ -511,6 +519,98 @@ export class RawMaterialCalculator {
       ...calculations,
       aiAnalysis: aiAnalysis,
     };
+  }
+
+  /**
+   * Get raw materials for a finished product based on BOM
+   * @param {Object} params - { productId, quantityRequired, speciesId }
+   * @returns {Array} - Array of raw materials with calculated requirements
+   */
+  static async getRawMaterialsForProduct(params) {
+    try {
+      const { productId, quantityRequired, speciesId } = params;
+
+      console.log("Getting raw materials for product:", {
+        productId,
+        quantityRequired,
+      });
+
+      // Get BOM entries for this finished product
+      const bomEntries = await models.BillOfMaterials.findAll({
+        where: { product_master_id: productId, is_active: true },
+        include: [
+          {
+            model: models.ProcurementProducts,
+            as: "ProcurementProduct",
+            required: true,
+            include: [
+              {
+                model: models.ProductMaster,
+                as: "ProductMaster",
+                attributes: ["id", "product_name"],
+                required: true,
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!bomEntries || bomEntries.length === 0) {
+        console.warn(`No BOM entries found for product ${productId}`);
+        return [];
+      }
+
+      const rawMaterials = [];
+
+      for (const bomEntry of bomEntries) {
+        const procurementProduct = bomEntry.ProcurementProduct;
+        if (!procurementProduct) continue;
+
+        const productMaster = procurementProduct.ProductMaster;
+        if (!productMaster) continue;
+
+        // Calculate required quantity based on BOM ratio
+        const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
+        const requiredQuantity = quantityRequired * bomQuantity;
+
+        // Get current inventory for this raw material
+        const inventory = await models.PurchaseInventory.findAll({
+          where: {
+            procurement_product_id: procurementProduct.id,
+            is_active: true,
+          },
+          attributes: ["quantity"],
+          raw: true,
+        });
+
+        const currentStock = inventory.reduce(
+          (sum, inv) => sum + parseFloat(inv.quantity || 0),
+          0,
+        );
+
+        const inventoryGap = Math.max(0, requiredQuantity - currentStock);
+
+        rawMaterials.push({
+          procurement_product_id: procurementProduct.id,
+          product_master_id: productMaster.id,
+          product_name: productMaster.product_name,
+          bom_quantity_required: bomQuantity,
+          total_quantity_required: requiredQuantity,
+          current_stock: currentStock,
+          inventory_gap: inventoryGap,
+          recommended_order_quantity: inventoryGap,
+          unit_of_measure: bomEntry.unit_of_measure || "KG",
+        });
+      }
+
+      console.log(
+        `Found ${rawMaterials.length} raw materials for product ${productId}`,
+      );
+      return rawMaterials;
+    } catch (error) {
+      console.error("Error getting raw materials for product:", error);
+      return [];
+    }
   }
 }
 
