@@ -2,6 +2,9 @@
 
 const { v4: uuidv4 } = require("uuid");
 const db = require("../models");
+const {
+  CheckInventory,
+} = require("../src/routes/orders/handlers/check_inventory");
 
 class SalesAllocationService {
   /**
@@ -66,6 +69,40 @@ class SalesAllocationService {
       );
     }
 
+    // Check inventory availability to determine allocation status
+    console.log(
+      `🔍 Checking inventory for allocation: order_product_id=${order_product_id}, quantity=${allocated_quantity}`,
+    );
+    const inventoryCheck = await CheckInventory(
+      {
+        order_product_id,
+        required_quantity: allocated_quantity,
+      },
+      null, // session
+      null, // fastify
+    );
+
+    console.log(`📊 Inventory check result:`, {
+      available_quantity: inventoryCheck.available_quantity,
+      effective_available_quantity: inventoryCheck.effective_available_quantity,
+      required_quantity: allocated_quantity,
+      allocationStatus: inventoryCheck.allocationStatus,
+    });
+
+    // Determine allocation status based on inventory check
+    let allocationStatus = "PENDING"; // Default
+    if (inventoryCheck.allocationStatus === "ALLOCATED") {
+      allocationStatus = "ALLOCATED";
+      console.log(
+        `✅ Setting allocation status to ALLOCATED - sufficient inventory`,
+      );
+    } else if (inventoryCheck.allocationStatus === "PENDING_PURCHASE") {
+      allocationStatus = "PENDING";
+      console.log(
+        `⏳ Setting allocation status to PENDING - insufficient inventory, purchase needed`,
+      );
+    }
+
     // Create allocation record
     const allocation = await db.SalesAllocation.create({
       id: uuidv4(),
@@ -74,7 +111,7 @@ class SalesAllocationService {
       allocated_quantity,
       ordered_quantity: orderProduct.quantity, // Add ordered_quantity from order product
       fulfilled_quantity: 0,
-      allocation_status: "PENDING",
+      allocation_status: allocationStatus,
       allocation_date: new Date(),
       allocated_by,
     });
@@ -98,6 +135,32 @@ class SalesAllocationService {
     if (allocation.allocation_status !== "PENDING") {
       throw new Error(
         `Cannot confirm allocation in ${allocation.allocation_status} status`,
+      );
+    }
+
+    // Check inventory before confirming allocation
+    console.log(
+      `🔍 Checking inventory before confirming allocation: ${allocationId}, quantity=${allocation.allocated_quantity}`,
+    );
+    const inventoryCheck = await CheckInventory(
+      {
+        order_product_id: allocation.order_product_id,
+        required_quantity: allocation.allocated_quantity,
+      },
+      null, // session
+      null, // fastify
+    );
+
+    console.log(`📊 Inventory check result for confirmation:`, {
+      available_quantity: inventoryCheck.available_quantity,
+      effective_available_quantity: inventoryCheck.effective_available_quantity,
+      required_quantity: allocation.allocated_quantity,
+      allocationStatus: inventoryCheck.allocationStatus,
+    });
+
+    if (inventoryCheck.allocationStatus !== "ALLOCATED") {
+      throw new Error(
+        `Cannot confirm allocation: insufficient inventory. Required: ${allocation.allocated_quantity}, Effective available: ${inventoryCheck.effective_available_quantity}`,
       );
     }
 
