@@ -93,35 +93,47 @@ module.exports = (sequelize) => {
   );
 
   ProductionOrder.associate = (models) => {
-    ProductionOrder.belongsTo(models.Orders, {
-      foreignKey: "order_id",
-      as: "sales_order",
-      onDelete: "SET NULL",
-    });
-    ProductionOrder.belongsTo(models.species_master, {
-      foreignKey: "input_species_id",
-      as: "input_species",
-    });
-    ProductionOrder.hasOne(models.production_raw_issues, {
-      foreignKey: "production_order_id",
-      as: "raw_issue",
-      onDelete: "CASCADE",
-    });
-    ProductionOrder.hasMany(models.production_derivatives, {
-      foreignKey: "production_order_id",
-      as: "derivatives",
-      onDelete: "CASCADE",
-    });
-    ProductionOrder.hasMany(models.production_outputs, {
-      foreignKey: "production_order_id",
-      as: "outputs",
-      onDelete: "CASCADE",
-    });
-    ProductionOrder.hasMany(models.grade_size_validation_logs, {
-      foreignKey: "production_order_id",
-      as: "validation_logs",
-      onDelete: "CASCADE",
-    });
+    if (models.Orders) {
+      ProductionOrder.belongsTo(models.Orders, {
+        foreignKey: "order_id",
+        as: "sales_order",
+        onDelete: "SET NULL",
+      });
+    }
+    if (models.SpeciesMaster) {
+      ProductionOrder.belongsTo(models.SpeciesMaster, {
+        foreignKey: "input_species_id",
+        as: "input_species",
+      });
+    }
+    if (models.ProductionRawIssue) {
+      ProductionOrder.hasOne(models.ProductionRawIssue, {
+        foreignKey: "production_order_id",
+        as: "raw_issue",
+        onDelete: "CASCADE",
+      });
+    }
+    if (models.ProductionDerivative) {
+      ProductionOrder.hasMany(models.ProductionDerivative, {
+        foreignKey: "production_order_id",
+        as: "derivatives",
+        onDelete: "CASCADE",
+      });
+    }
+    if (models.ProductionOutput) {
+      ProductionOrder.hasMany(models.ProductionOutput, {
+        foreignKey: "production_order_id",
+        as: "outputs",
+        onDelete: "CASCADE",
+      });
+    }
+    if (models.GradeSizeValidationLog) {
+      ProductionOrder.hasMany(models.GradeSizeValidationLog, {
+        foreignKey: "production_order_id",
+        as: "validation_logs",
+        onDelete: "CASCADE",
+      });
+    }
   };
 
   return ProductionOrder;

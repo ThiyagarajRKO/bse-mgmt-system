@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
           "YIELD_VARIANCE",
           "ADJUSTMENT",
           "RETURN",
-          "PHYSICAL_COUNT"
+          "PHYSICAL_COUNT",
         ),
         allowNull: false,
       },
@@ -104,16 +104,20 @@ module.exports = (sequelize) => {
         { fields: ["transaction_type"] },
         { fields: ["created_at"] },
       ],
-    }
+    },
   );
 
   InventoryTransaction.associate = (models) => {
-    InventoryTransaction.belongsTo(models.inventory_stock, {
-      foreignKey: "stock_id",
-    });
-    InventoryTransaction.belongsTo(models.product_master, {
-      foreignKey: "product_id",
-    });
+    if (models.inventory_stock) {
+      InventoryTransaction.belongsTo(models.inventory_stock, {
+        foreignKey: "stock_id",
+      });
+    }
+    if (models.ProductMaster) {
+      InventoryTransaction.belongsTo(models.ProductMaster, {
+        foreignKey: "product_id",
+      });
+    }
   };
 
   return InventoryTransaction;

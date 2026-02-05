@@ -90,18 +90,26 @@ module.exports = (sequelize) => {
   );
 
   ProductionConsumption.associate = (models) => {
-    ProductionConsumption.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-    });
-    ProductionConsumption.belongsTo(models.product_master, {
-      foreignKey: "raw_product_id",
-    });
-    ProductionConsumption.belongsTo(models.inventory_lot, {
-      foreignKey: "lot_id",
-    });
-    ProductionConsumption.belongsTo(models.inventory_cost_layer, {
-      foreignKey: "cost_layer_id",
-    });
+    if (models.ProductionOrder) {
+      ProductionConsumption.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+      });
+    }
+    if (models.ProductMaster) {
+      ProductionConsumption.belongsTo(models.ProductMaster, {
+        foreignKey: "raw_product_id",
+      });
+    }
+    if (models.InventoryLot) {
+      ProductionConsumption.belongsTo(models.InventoryLot, {
+        foreignKey: "lot_id",
+      });
+    }
+    if (models.InventoryCostLayer) {
+      ProductionConsumption.belongsTo(models.InventoryCostLayer, {
+        foreignKey: "cost_layer_id",
+      });
+    }
   };
 
   return ProductionConsumption;

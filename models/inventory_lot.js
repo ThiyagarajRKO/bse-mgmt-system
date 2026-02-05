@@ -79,13 +79,15 @@ module.exports = (sequelize) => {
         { fields: ["product_id", "received_date"] },
         { fields: ["expiry_date"] },
       ],
-    }
+    },
   );
 
   InventoryLot.associate = (models) => {
-    InventoryLot.belongsTo(models.product_master, {
-      foreignKey: "product_id",
-    });
+    if (models.ProductMaster) {
+      InventoryLot.belongsTo(models.ProductMaster, {
+        foreignKey: "product_id",
+      });
+    }
   };
 
   return InventoryLot;

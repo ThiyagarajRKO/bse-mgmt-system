@@ -55,7 +55,7 @@ module.exports = (sequelize) => {
           "ABNORMAL_LOSS",
           "GRADE_VARIANCE",
           "SIZE_VARIANCE",
-          "QUALITY_LOSS"
+          "QUALITY_LOSS",
         ),
         allowNull: false,
         defaultValue: "NORMAL_LOSS",
@@ -93,16 +93,20 @@ module.exports = (sequelize) => {
         { fields: ["variance_type"] },
         { fields: ["gl_posted"] },
       ],
-    }
+    },
   );
 
   ProductionVariance.associate = (models) => {
-    ProductionVariance.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-    });
-    ProductionVariance.belongsTo(models.derivative_master, {
-      foreignKey: "derivative_id",
-    });
+    if (models.ProductionOrder) {
+      ProductionVariance.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+      });
+    }
+    if (models.DerivativeMaster) {
+      ProductionVariance.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_id",
+      });
+    }
   };
 
   return ProductionVariance;

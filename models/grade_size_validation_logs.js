@@ -74,22 +74,28 @@ module.exports = (sequelize) => {
           fields: ["validation_status"],
         },
       ],
-    }
+    },
   );
 
   GradeSizeValidationLog.associate = (models) => {
-    GradeSizeValidationLog.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-      as: "production_order",
-    });
-    GradeSizeValidationLog.belongsTo(models.species_master, {
-      foreignKey: "species_id",
-      as: "species",
-    });
-    GradeSizeValidationLog.belongsTo(models.derivative_master, {
-      foreignKey: "derivative_id",
-      as: "derivative",
-    });
+    if (models.ProductionOrder) {
+      GradeSizeValidationLog.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+        as: "production_order",
+      });
+    }
+    if (models.SpeciesMaster) {
+      GradeSizeValidationLog.belongsTo(models.SpeciesMaster, {
+        foreignKey: "species_id",
+        as: "species",
+      });
+    }
+    if (models.DerivativeMaster) {
+      GradeSizeValidationLog.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_id",
+        as: "derivative",
+      });
+    }
   };
 
   return GradeSizeValidationLog;

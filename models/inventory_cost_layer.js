@@ -81,16 +81,20 @@ module.exports = (sequelize) => {
         { fields: ["product_id", "received_date"] },
         { fields: ["fifo_sequence"] },
       ],
-    }
+    },
   );
 
   InventoryCostLayer.associate = (models) => {
-    InventoryCostLayer.belongsTo(models.inventory_lot, {
-      foreignKey: "lot_id",
-    });
-    InventoryCostLayer.belongsTo(models.product_master, {
-      foreignKey: "product_id",
-    });
+    if (models.inventory_lot) {
+      InventoryCostLayer.belongsTo(models.inventory_lot, {
+        foreignKey: "lot_id",
+      });
+    }
+    if (models.ProductMaster) {
+      InventoryCostLayer.belongsTo(models.ProductMaster, {
+        foreignKey: "product_id",
+      });
+    }
   };
 
   return InventoryCostLayer;

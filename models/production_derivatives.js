@@ -60,23 +60,29 @@ module.exports = (sequelize) => {
           name: "uk_prod_deriv",
         },
       ],
-    }
+    },
   );
 
   ProductionDerivative.associate = (models) => {
-    ProductionDerivative.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-      as: "production_order",
-    });
-    ProductionDerivative.belongsTo(models.derivative_master, {
-      foreignKey: "derivative_id",
-      as: "derivative",
-    });
-    ProductionDerivative.hasMany(models.production_outputs, {
-      foreignKey: "production_derivative_id",
-      as: "outputs",
-      onDelete: "CASCADE",
-    });
+    if (models.ProductionOrder) {
+      ProductionDerivative.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+        as: "production_order",
+      });
+    }
+    if (models.DerivativeMaster) {
+      ProductionDerivative.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_id",
+        as: "derivative",
+      });
+    }
+    if (models.ProductionOutput) {
+      ProductionDerivative.hasMany(models.ProductionOutput, {
+        foreignKey: "production_derivative_id",
+        as: "outputs",
+        onDelete: "CASCADE",
+      });
+    }
   };
 
   return ProductionDerivative;

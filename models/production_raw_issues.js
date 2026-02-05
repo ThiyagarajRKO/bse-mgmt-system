@@ -67,18 +67,22 @@ module.exports = (sequelize) => {
       tableName: "production_raw_issues",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   ProductionRawIssue.associate = (models) => {
-    ProductionRawIssue.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-      as: "production_order",
-    });
-    ProductionRawIssue.belongsTo(models.inventory_master, {
-      foreignKey: "inventory_lot_id",
-      as: "inventory_lot",
-    });
+    if (models.ProductionOrder) {
+      ProductionRawIssue.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+        as: "production_order",
+      });
+    }
+    if (models.InventoryMaster) {
+      ProductionRawIssue.belongsTo(models.InventoryMaster, {
+        foreignKey: "inventory_lot_id",
+        as: "inventory_lot",
+      });
+    }
   };
 
   return ProductionRawIssue;

@@ -88,26 +88,34 @@ module.exports = (sequelize) => {
           fields: ["sku_code"],
         },
       ],
-    }
+    },
   );
 
   ProductionOutput.associate = (models) => {
-    ProductionOutput.belongsTo(models.production_orders, {
-      foreignKey: "production_order_id",
-      as: "production_order",
-    });
-    ProductionOutput.belongsTo(models.production_derivatives, {
-      foreignKey: "production_derivative_id",
-      as: "production_derivative",
-    });
-    ProductionOutput.belongsTo(models.derivative_master, {
-      foreignKey: "derivative_id",
-      as: "derivative",
-    });
-    ProductionOutput.belongsTo(models.product_master, {
-      foreignKey: "product_id",
-      as: "sku_product",
-    });
+    if (models.ProductionOrder) {
+      ProductionOutput.belongsTo(models.ProductionOrder, {
+        foreignKey: "production_order_id",
+        as: "production_order",
+      });
+    }
+    if (models.ProductionDerivative) {
+      ProductionOutput.belongsTo(models.ProductionDerivative, {
+        foreignKey: "production_derivative_id",
+        as: "production_derivative",
+      });
+    }
+    if (models.DerivativeMaster) {
+      ProductionOutput.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_id",
+        as: "derivative",
+      });
+    }
+    if (models.ProductMaster) {
+      ProductionOutput.belongsTo(models.ProductMaster, {
+        foreignKey: "product_id",
+        as: "sku_product",
+      });
+    }
   };
 
   return ProductionOutput;
