@@ -25,40 +25,14 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
       }
 
       // Check if order is already initiated/confirmed
-      if (order.order_status === "CONFIRMED") {
-        const error = new Error("Order is already confirmed");
+      if (order.order_status !== "DRAFT") {
+        const error = new Error("Order is not in a confirmable state");
         error.statusCode = 400;
         throw error;
       }
 
-      // Update the order status to CONFIRMED
-      await models.Orders.update(
-        {
-          order_status: "CONFIRMED",
-          is_active: true,
-          confirmed_at: new Date(),
-        },
-        {
-          where: { id: order_id },
-        },
-      );
-
-      // Log the status change in audit logs (if OrderStatusLog exists)
-      try {
-        if (models.OrderStatusLog) {
-          await models.OrderStatusLog.create({
-            order_id: order_id,
-            old_status: order.order_status,
-            new_status: "CONFIRMED",
-            changed_by: session?.user_id,
-            profile_id: profile_id,
-            remarks: "Order confirmed and moved to allocation workflow",
-          });
-        }
-      } catch (logErr) {
-        // Log error but don't fail the request
-        fastify.log.warn("Failed to create status log:", logErr);
-      }
+      // Note: Order status will be updated to CONFIRMED only after successful allocation
+      // This prevents auto-confirm and ensures CONFIRMED only occurs after confirmation + allocation
 
       // Get all order products for inventory checking
       const orderProducts = await models.OrderProducts.findAll({
@@ -257,17 +231,59 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
               }),
           );
 
-          // Wait for all allocations to complete (but don't block confirmation)
-          Promise.allSettled(allocationPromises).then((results) => {
+          // Wait for all allocations to complete and determine final status
+          Promise.allSettled(allocationPromises).then(async (results) => {
             const successful = results.filter(
               (r) => r.status === "fulfilled" && !r.value.error,
             ).length;
             const failed = results.filter(
               (r) => r.status === "rejected" || r.value.error,
             ).length;
+
             fastify.log.info(
               `Auto-allocation summary for order ${order.order_no}: ${successful} successful, ${failed} failed`,
             );
+
+            // Only set status to CONFIRMED if all allocations were successful
+            if (failed === 0 && successful > 0) {
+              try {
+                await models.Orders.update(
+                  {
+                    order_status: "CONFIRMED",
+                    is_active: true,
+                    confirmed_at: new Date(),
+                  },
+                  {
+                    where: { id: order_id },
+                  },
+                );
+
+                // Log the status change
+                if (models.OrderStatusLog) {
+                  await models.OrderStatusLog.create({
+                    order_id: order_id,
+                    old_status: "DRAFT",
+                    new_status: "CONFIRMED",
+                    changed_by: session?.user_id,
+                    profile_id: profile_id,
+                    remarks: "Order confirmed after successful allocation",
+                  });
+                }
+
+                fastify.log.info(
+                  `Order ${order.order_no} status updated to CONFIRMED`,
+                );
+              } catch (statusUpdateErr) {
+                fastify.log.error(
+                  `Failed to update order status to CONFIRMED:`,
+                  statusUpdateErr,
+                );
+              }
+            } else if (failed > 0) {
+              fastify.log.warn(
+                `Order ${order.order_no} remains in DRAFT status due to allocation failures`,
+              );
+            }
           });
         }
       } catch (allocErr) {
@@ -277,12 +293,12 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
 
       resolve({
         statusCode: 200,
-        message: "Order confirmed successfully with inventory processing",
+        message:
+          "Order confirmation initiated - status will be updated to CONFIRMED after successful allocation",
         data: {
           order_id: order_id,
-          status: "CONFIRMED",
-          inventory_processed: successful,
-          inventory_failed: failed,
+          status: "DRAFT", // Status remains DRAFT until allocation completes
+          confirmation_initiated: true,
         },
       });
     } catch (err) {

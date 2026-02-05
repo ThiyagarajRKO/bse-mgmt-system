@@ -63,7 +63,7 @@ class InventoryCheckService {
       // Neither product nor raw materials fully available
       return {
         action: "RAISE_PURCHASE_REQUEST",
-        allocationStatus: "COMPLETED",
+        allocationStatus: "PENDING_PURCHASE",
         salesInventoryAvailable: salesInventoryResult.available,
         purchaseInventoryAvailable: rawMaterialsResult.available,
         rawMaterialsAvailable: rawMaterialsResult.available,
@@ -172,27 +172,27 @@ class InventoryCheckService {
         `Using yield percentage: ${yieldPercentage * 100}% for product ${productId}`,
       );
 
-      // Find BOM for this product's species
-      const bom = await db.BomMaster.findOne({
+      // Find BOM for this product
+      const bomEntries = await db.BillOfMaterials.findAll({
         where: {
-          species_id: speciesId,
+          product_master_id: productId,
           is_active: true,
         },
         include: [
           {
-            model: db.BomInput,
-            as: "inputs",
+            model: db.ProcurementProducts,
+            as: "ProcurementProduct",
             include: [
               {
                 model: db.ProductMaster,
-                as: "RawProduct",
+                as: "ProductMaster",
               },
             ],
           },
         ],
       });
 
-      if (!bom || !bom.inputs || bom.inputs.length === 0) {
+      if (!bomEntries || bomEntries.length === 0) {
         console.log(`No BOM found for product ${productId}`);
         return { available: 0, rawMaterials: [] };
       }
@@ -201,9 +201,15 @@ class InventoryCheckService {
       const rawMaterialsStatus = [];
 
       // Check each raw material in the BOM
-      for (const input of bom.inputs) {
-        const rawProductId = input.raw_product_id;
-        const requiredRawQuantity = (input.quantity || 1) * requiredQuantity;
+      for (const bomEntry of bomEntries) {
+        const procurementProduct = bomEntry.ProcurementProduct;
+        const rawProduct = procurementProduct?.ProductMaster;
+        const rawProductId = procurementProduct?.product_master_id;
+
+        if (!rawProduct || !procurementProduct) continue;
+
+        const requiredRawQuantity =
+          (bomEntry.quantity_required || 1) * requiredQuantity;
 
         // Check purchase inventory for this raw material
         const purchaseInventory = await db.PurchaseInventory.findAll({
@@ -227,14 +233,14 @@ class InventoryCheckService {
         // Calculate how much finished product can be produced from available raw materials
         // considering yield loss
         const potentialFinishedGoods =
-          availableRawQuantity / (input.quantity || 1);
+          availableRawQuantity / (bomEntry.quantity_required || 1);
         const effectiveFinishedGoods = Math.floor(
           potentialFinishedGoods * yieldPercentage,
         );
 
         rawMaterialsStatus.push({
           rawProductId,
-          productName: input.RawProduct?.product_name || "Unknown",
+          productName: rawProduct.product_name,
           required: requiredRawQuantity,
           available: availableRawQuantity,
           yieldPercentage: yieldPercentage,

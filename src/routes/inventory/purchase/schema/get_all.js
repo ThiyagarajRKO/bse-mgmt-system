@@ -9,6 +9,11 @@ export const getAllSchema = {
         type: "string",
         description: "Optional: Filter by procurement product ID",
       },
+      finished_product_id: {
+        type: "string",
+        description:
+          "Optional: Filter by finished product BOM - shows only raw materials needed for this product",
+      },
     },
   },
   response: {

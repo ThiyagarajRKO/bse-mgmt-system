@@ -72,15 +72,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       status: {
-        type: DataTypes.ENUM(
-          "ALLOCATED",
-          "RESERVED",
-          "CONFIRMED",
-          "IN_PRODUCTION",
-          "COMPLETED",
-          "CANCELLED",
-        ),
-        defaultValue: "ALLOCATED",
+        type: DataTypes.ENUM("ALLOCATED", "PENDING_PURCHASE"),
+        defaultValue: "PENDING_PURCHASE",
       },
       is_active: {
         type: DataTypes.BOOLEAN,

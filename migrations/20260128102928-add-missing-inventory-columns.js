@@ -3,34 +3,52 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Add available_quantity to sales_inventory table
-    await queryInterface.addColumn("sales_inventory", "available_quantity", {
-      type: Sequelize.DECIMAL(10, 2),
-      allowNull: false,
-      defaultValue: 0,
-      comment: "Available quantity for sales (quantity - reserved/sold)",
-    });
+    // Check existing columns
+    const salesInventoryDesc =
+      await queryInterface.describeTable("sales_inventory");
+    const purchaseInventoryDesc =
+      await queryInterface.describeTable("purchase_inventory");
+    const productMasterDesc =
+      await queryInterface.describeTable("product_master");
 
-    // Add available_quantity to purchase_inventory table
-    await queryInterface.addColumn("purchase_inventory", "available_quantity", {
-      type: Sequelize.DECIMAL(10, 2),
-      allowNull: false,
-      defaultValue: 0,
-      comment: "Available quantity for production (quantity - consumed)",
-    });
+    // Add available_quantity to sales_inventory table if not exists
+    if (!salesInventoryDesc.available_quantity) {
+      await queryInterface.addColumn("sales_inventory", "available_quantity", {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0,
+        comment: "Available quantity for sales (quantity - reserved/sold)",
+      });
+    }
 
-    // Add gst_master_id to product_master table
-    await queryInterface.addColumn("product_master", "gst_master_id", {
-      type: Sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: "consolidated_gst_master",
-        key: "id",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "SET NULL",
-      comment: "Reference to GST master for tax calculations",
-    });
+    // Add available_quantity to purchase_inventory table if not exists
+    if (!purchaseInventoryDesc.available_quantity) {
+      await queryInterface.addColumn(
+        "purchase_inventory",
+        "available_quantity",
+        {
+          type: Sequelize.DECIMAL(10, 2),
+          allowNull: false,
+          defaultValue: 0,
+          comment: "Available quantity for production (quantity - consumed)",
+        },
+      );
+    }
+
+    // Add gst_master_id to product_master table if not exists
+    if (!productMasterDesc.gst_master_id) {
+      await queryInterface.addColumn("product_master", "gst_master_id", {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model: "consolidated_gst_master",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+        comment: "Reference to GST master for tax calculations",
+      });
+    }
 
     // Set default values for existing records
     await queryInterface.sequelize.query(`

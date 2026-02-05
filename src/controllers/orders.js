@@ -1278,6 +1278,28 @@ export const GetAllocationData = ({ start, length, search }) => {
             ],
           });
 
+          // Check for AllocationMaster records to see if any allocations are pending purchase
+          const allocationMasters = await models.AllocationMaster.findAll({
+            where: {
+              order_id: order.id,
+              is_active: true,
+            },
+            attributes: ["status"],
+          });
+
+          // Check if any SalesAllocation is pending due to insufficient inventory
+          const hasSalesAllocationPendingPurchase = salesAllocations.some(
+            (alloc) =>
+              alloc.allocation_status === "PENDING" &&
+              alloc.action_required === "RAISE_PURCHASE_REQUEST",
+          );
+
+          // Check if any allocation is pending purchase due to insufficient inventory
+          const hasPendingPurchase =
+            allocationMasters.some(
+              (alloc) => alloc.status === "PENDING_PURCHASE",
+            ) || hasSalesAllocationPendingPurchase;
+
           // Calculate allocation status based on SalesAllocation records
           let allocation_status = "Pending";
           if (orderProducts.length > 0 && salesAllocations.length > 0) {
@@ -1299,13 +1321,21 @@ export const GetAllocationData = ({ start, length, search }) => {
               ).length;
 
               if (confirmedAllocations === salesAllocations.length) {
-                allocation_status = "Allocated";
+                // Only show as "Allocated" if no allocations are pending purchase
+                allocation_status = hasPendingPurchase
+                  ? "Pending Purchase"
+                  : "Allocated";
               } else {
                 allocation_status = "Partial";
               }
             } else if (allocatedProductCount > 0) {
               allocation_status = "Partial";
             }
+          }
+
+          // If there are pending purchase allocations, override the status
+          if (hasPendingPurchase && allocation_status === "Allocated") {
+            allocation_status = "Pending Purchase";
           }
 
           return {
