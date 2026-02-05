@@ -1,3 +1,5 @@
+import models from "../../../../models";
+
 export const CreateRequest = (
   { profile_id, order_id, product_id, supplier_id, quantity, remarks },
   session,
@@ -5,26 +7,61 @@ export const CreateRequest = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // For now, just log the request and return success
-      // In a full implementation, this would create procurement records
-      fastify.log.info(
-        `Procurement request: order_id=${order_id}, product_id=${product_id}, supplier_id=${supplier_id}, quantity=${quantity}, remarks=${remarks}`,
-      );
+      const { v4: uuidv4 } = require("uuid");
 
-      // TODO: Implement actual procurement request creation
-      // This could involve:
-      // 1. Creating a procurement lot
-      // 2. Creating a procurement product record
-      // 3. Updating allocation status
+      // Start a transaction to ensure data consistency
+      const transaction = await fastify.sequelize.transaction();
 
-      resolve({
-        message: "Procurement request created successfully",
-        data: {
-          request_id: "temp-" + Date.now(), // Temporary ID
-        },
-      });
+      try {
+        // First, create a procurement lot
+        const procurementLot = await models.ProcurementLots.create(
+          {
+            id: uuidv4(),
+            order_id: order_id,
+            unit_master_id: null, // Will be set based on product type
+            is_active: true,
+            created_by: profile_id,
+          },
+          { transaction, profile_id },
+        );
+
+        // Create the procurement product record
+        const procurementProduct = await models.ProcurementProducts.create(
+          {
+            id: uuidv4(),
+            procurement_lot_id: procurementLot.id,
+            product_master_id: product_id,
+            supplier_master_id: supplier_id,
+            procurement_product_type: "RAW_MATERIAL", // Assuming raw material procurement
+            procurement_quantity: quantity,
+            procurement_price: 0, // Will be set during actual purchase
+            order_id: order_id,
+            is_active: true,
+            created_by: profile_id,
+          },
+          { transaction, profile_id },
+        );
+
+        // Commit the transaction
+        await transaction.commit();
+
+        fastify.log.info(
+          `Procurement request created: order_id=${order_id}, product_id=${product_id}, supplier_id=${supplier_id}, quantity=${quantity}, procurement_product_id=${procurementProduct.id}`,
+        );
+
+        resolve({
+          message: "Procurement request created successfully",
+          data: {
+            request_id: procurementProduct.id,
+            procurement_lot_id: procurementLot.id,
+          },
+        });
+      } catch (err) {
+        await transaction.rollback();
+        throw err;
+      }
     } catch (err) {
-      fastify.log.error(err);
+      fastify.log.error("Error creating procurement request:", err);
       reject(err);
     }
   });

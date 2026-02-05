@@ -9,6 +9,7 @@ import { GetPaymentItems } from "./handlers/get_payment_products";
 import { GetPaidStatus } from "./handlers/get_paid_status";
 import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
 import { GetSalesInventoryItems } from "./handlers/get_sales_inventory_products";
+import { CreateRequest } from "./handlers/create_request";
 import {
   CalculateRequirements,
   GetMultiCategoryRecommendations,
@@ -23,6 +24,7 @@ import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement
 
 // Schema
 import { createSchema } from "./schema/create";
+import { createRequestSchema } from "./schema/create_request";
 import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
@@ -69,6 +71,25 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       const params = { profile_id: req?.token_profile_id, ...req.body };
 
       const result = await Update(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.post("/request", createRequestSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.body };
+
+      const result = await CreateRequest(params, req?.session, fastify);
 
       return reply.code(result.statusCode || 200).send({
         success: true,
