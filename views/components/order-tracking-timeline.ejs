@@ -498,9 +498,11 @@
       return;
     }
 
-    const { order, production_tracking, sales_tracking } = trackingData;
+    const { order, production_tracking, sales_tracking, status_timeline } =
+      trackingData;
     console.log("📊 Order:", order);
     console.log("🏭 Production tracking:", production_tracking);
+    console.log("📅 Status timeline:", status_timeline);
 
     // Calculate total ordered quantity from order products
     const totalOrderedQuantity =
@@ -509,47 +511,68 @@
         0,
       ) || 0;
 
-    // Get order status and map to timeline stages
+    // Get order status and status timeline
     const orderStatus = order?.order_status || "ORDER_RECEIVED";
     console.log("📋 Order status:", orderStatus);
 
-    // Map order status to timeline stage index
-    let currentStageIndex;
-    switch (orderStatus) {
-      case "ORDER_RECEIVED":
-        currentStageIndex = 0;
-        break;
-      case "CONFIRMED":
-        currentStageIndex = 1;
-        break;
-      case "ALLOCATED":
-        currentStageIndex = 2;
-        break;
-      case "IN_PRODUCTION":
-        currentStageIndex = 3;
-        break;
-      case "READY_FOR_QA":
-        currentStageIndex = 4;
-        break;
-      case "QA_APPROVED":
-        currentStageIndex = 5;
-        break;
-      case "PACKED":
-        currentStageIndex = 6;
-        break;
-      case "READY_FOR_DISPATCH":
-        currentStageIndex = 7;
-        break;
-      case "DISPATCHED":
-        currentStageIndex = 8;
-        break;
-      case "INVOICED":
-      case "CLOSED":
-        currentStageIndex = 9;
-        break;
-      default:
-        currentStageIndex = 0; // Default to Order Received
+    // Process status timeline to determine completed stages
+    const completedStatuses = new Set();
+    if (status_timeline && Array.isArray(status_timeline)) {
+      status_timeline.forEach((log) => {
+        if (log.to_status) {
+          completedStatuses.add(log.to_status);
+        }
+      });
     }
+    console.log(
+      "✅ Completed statuses from timeline:",
+      Array.from(completedStatuses),
+    );
+
+    // Map order statuses to timeline stage indices
+    const statusToStageIndex = {
+      ORDER_RECEIVED: 0,
+      CONFIRMED: 1,
+      ALLOCATED: 2,
+      IN_PRODUCTION: 3,
+      READY_FOR_QA: 4,
+      QA_APPROVED: 5,
+      PACKED: 6,
+      READY_FOR_DISPATCH: 7,
+      DISPATCHED: 8,
+      INVOICED: 9,
+      CLOSED: 9,
+    };
+
+    // Determine current stage index based on completed statuses
+    let currentStageIndex = 0;
+    let maxCompletedIndex = -1;
+
+    // Find the highest completed stage
+    completedStatuses.forEach((status) => {
+      const stageIndex = statusToStageIndex[status];
+      if (stageIndex !== undefined && stageIndex > maxCompletedIndex) {
+        maxCompletedIndex = stageIndex;
+      }
+    });
+
+    // Current stage is the next one after the last completed, or the last completed if it's the current status
+    if (maxCompletedIndex >= 0) {
+      const currentStatusIndex = statusToStageIndex[orderStatus];
+      if (
+        currentStatusIndex !== undefined &&
+        currentStatusIndex > maxCompletedIndex
+      ) {
+        currentStageIndex = currentStatusIndex;
+      } else {
+        currentStageIndex = maxCompletedIndex;
+      }
+    } else {
+      // Fallback to current order status if no timeline data
+      currentStageIndex = statusToStageIndex[orderStatus] || 0;
+    }
+
+    console.log("🎯 Current stage index:", currentStageIndex);
 
     // Update each stage based on order status
     updateTimelineStage(

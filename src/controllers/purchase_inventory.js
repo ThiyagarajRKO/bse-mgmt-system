@@ -31,6 +31,7 @@ export const GetAll = ({
   search,
   procurement_product_id,
   procurement_product_type,
+  finished_product_id,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -44,6 +45,67 @@ export const GetAll = ({
       }
 
       let targetSpeciesId = null;
+      let bomRawMaterialIds = null;
+
+      // If finished_product_id is provided, get BOM raw materials for filtering
+      if (finished_product_id) {
+        try {
+          const bomEntries = await models.BillOfMaterials.findAll({
+            where: { product_master_id: finished_product_id, is_active: true },
+            include: [
+              {
+                model: models.ProcurementProducts,
+                as: "ProcurementProduct",
+                attributes: ["product_master_id"],
+                required: false,
+              },
+            ],
+          });
+
+          // Extract unique raw material product IDs from BOM
+          const rawMaterialIds = [
+            ...new Set(
+              bomEntries
+                .map((entry) => entry.ProcurementProduct?.product_master_id)
+                .filter((id) => id), // Remove null/undefined
+            ),
+          ];
+
+          if (rawMaterialIds.length > 0) {
+            bomRawMaterialIds = rawMaterialIds;
+            console.log(
+              `📋 Filtering purchase inventory by BOM raw materials for product ${finished_product_id}:`,
+              rawMaterialIds,
+            );
+          } else {
+            console.log(
+              `⚠️ No BOM entries found for product ${finished_product_id}, falling back to species filtering`,
+            );
+
+            // Fall back to species filtering when BOM is not available
+            const finishedProduct = await models.ProductMaster.findOne({
+              where: { id: finished_product_id },
+              attributes: ["id", "product_category_master_id"],
+            });
+
+            if (finishedProduct?.product_category_master_id) {
+              const category = await models.ProductCategoryMaster.findOne({
+                where: { id: finishedProduct.product_category_master_id },
+                attributes: ["id", "species_master_id"],
+              });
+
+              if (category?.species_master_id) {
+                targetSpeciesId = category.species_master_id;
+                console.log(
+                  `📋 Falling back to species filtering for species ${targetSpeciesId}`,
+                );
+              }
+            }
+          }
+        } catch (err) {
+          console.warn("Error fetching BOM for finished product:", err.message);
+        }
+      }
 
       // If procurement_product_id is provided, get its species for filtering
       if (procurement_product_id) {
@@ -180,9 +242,22 @@ export const GetAll = ({
         }),
       );
 
-      // Filter by species if a target species was identified
+      // Filter results based on available criteria
       let filteredRows = enrichedRows;
-      if (targetSpeciesId) {
+
+      // Priority 1: Filter by BOM raw materials if available
+      if (bomRawMaterialIds && bomRawMaterialIds.length > 0) {
+        filteredRows = enrichedRows.filter(
+          (row) =>
+            row.ProductMaster?.id &&
+            bomRawMaterialIds.includes(row.ProductMaster.id),
+        );
+        console.log(
+          `📋 Filtered ${filteredRows.length} raw materials from BOM out of ${enrichedRows.length} total`,
+        );
+      }
+      // Priority 2: Filter by species if BOM filtering not applied and species is available
+      else if (targetSpeciesId) {
         filteredRows = enrichedRows.filter(
           (row) => row.species_id === targetSpeciesId,
         );
