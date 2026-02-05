@@ -127,17 +127,46 @@ export const AllocateStock = async (
 
       if (!fgInventory || fgInventory.length === 0) {
         console.log(
-          "No finished goods available, checking purchase inventory...",
+          "No finished goods available, checking purchase inventory for raw materials...",
         );
 
         // Calculate total available finished goods (should be 0 based on above check)
         const totalFGAvailable = 0;
 
-        // Get total available quantity in purchase inventory
-        const purchaseInventorySum = await models.PurchaseInventory.findAll({
+        // Get BOM entries to find raw materials for this finished product
+        const bomEntries = await models.BillOfMaterials.findAll({
           where: {
             product_master_id: product_id,
-            available_quantity: {
+            is_active: true,
+          },
+          include: [
+            {
+              model: models.ProcurementProducts,
+              as: "ProcurementProduct",
+              attributes: ["product_master_id"],
+              required: false,
+            },
+          ],
+          raw: false,
+        });
+
+        // Extract raw material IDs from BOM
+        const rawMaterialIds = bomEntries
+          .map((bom) => bom.ProcurementProduct?.product_master_id)
+          .filter((id) => id);
+
+        console.log(
+          `Found ${rawMaterialIds.length} raw materials in BOM for finished product ${product_id}`,
+        );
+
+        // Get total available quantity in purchase inventory for raw materials
+        const purchaseInventorySum = await models.PurchaseInventory.findAll({
+          where: {
+            product_master_id: {
+              [models.Sequelize.Op.in]:
+                rawMaterialIds.length > 0 ? rawMaterialIds : [product_id], // Fallback to direct lookup if no BOM
+            },
+            quantity: {
               [models.Sequelize.Op.gt]: 0,
               [models.Sequelize.Op.not]: null,
             },
@@ -145,10 +174,7 @@ export const AllocateStock = async (
           },
           attributes: [
             [
-              models.sequelize.fn(
-                "SUM",
-                models.sequelize.col("available_quantity"),
-              ),
+              models.sequelize.fn("SUM", models.sequelize.col("quantity")),
               "total_available",
             ],
           ],
@@ -162,8 +188,11 @@ export const AllocateStock = async (
         // Check if this is raw material that needs yield consideration
         const purchaseInventoryItems = await models.PurchaseInventory.findAll({
           where: {
-            product_master_id: product_id,
-            available_quantity: {
+            product_master_id: {
+              [models.Sequelize.Op.in]:
+                rawMaterialIds.length > 0 ? rawMaterialIds : [product_id], // Fallback to direct lookup if no BOM
+            },
+            quantity: {
               [models.Sequelize.Op.gt]: 0,
               [models.Sequelize.Op.not]: null,
             },
@@ -225,18 +254,21 @@ export const AllocateStock = async (
           try {
             let remainingQuantity = parsedQuantity;
 
-            // Get purchase inventory items ordered by FIFO
+            // Get purchase inventory items ordered by FIFO (for raw materials)
             const purchaseInventoryItems =
               await models.PurchaseInventory.findAll({
                 where: {
-                  product_master_id: product_id,
-                  available_quantity: {
+                  product_master_id: {
+                    [models.Sequelize.Op.in]:
+                      rawMaterialIds.length > 0 ? rawMaterialIds : [product_id], // Fallback if no BOM
+                  },
+                  quantity: {
                     [models.Sequelize.Op.gt]: 0,
                     [models.Sequelize.Op.not]: null,
                   },
                   is_active: true,
                 },
-                attributes: ["id", "available_quantity"],
+                attributes: ["id", "quantity", "product_master_id"],
                 order: [["created_at", "ASC"]], // FIFO allocation
                 transaction,
               });
@@ -247,7 +279,7 @@ export const AllocateStock = async (
 
               const allocateQty = Math.min(
                 remainingQuantity,
-                parseFloat(inventory.available_quantity),
+                parseFloat(inventory.quantity),
               );
 
               if (isNaN(allocateQty) || allocateQty <= 0) {
@@ -256,8 +288,8 @@ export const AllocateStock = async (
                   allocateQty,
                   "remainingQuantity:",
                   remainingQuantity,
-                  "available_quantity:",
-                  inventory.available_quantity,
+                  "quantity:",
+                  inventory.quantity,
                 );
                 continue; // Skip this inventory item
               }
@@ -273,11 +305,10 @@ export const AllocateStock = async (
                 { transaction },
               );
 
-              // Update purchase inventory (reduce available quantity)
+              // Update purchase inventory (reduce quantity)
               await models.PurchaseInventory.update(
                 {
-                  available_quantity:
-                    parseFloat(inventory.available_quantity) - allocateQty,
+                  quantity: parseFloat(inventory.quantity) - allocateQty,
                   updated_at: new Date(),
                 },
                 {
@@ -334,18 +365,18 @@ export const AllocateStock = async (
           // Calculate raw material stock availability
           const rawMaterialItems = await models.PurchaseInventory.findAll({
             where: {
-              product_master_id: product_id,
-              available_quantity: {
+              product_master_id: {
+                [models.Sequelize.Op.in]:
+                  rawMaterialIds.length > 0 ? rawMaterialIds : [product_id], // Fallback if no BOM
+              },
+              quantity: {
                 [models.Sequelize.Op.gt]: 0,
               },
               is_active: true,
             },
             attributes: [
               [
-                models.sequelize.fn(
-                  "SUM",
-                  models.sequelize.col("available_quantity"),
-                ),
+                models.sequelize.fn("SUM", models.sequelize.col("quantity")),
                 "total_raw_material",
               ],
             ],

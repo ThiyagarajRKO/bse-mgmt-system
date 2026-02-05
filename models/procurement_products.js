@@ -64,10 +64,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       procurement_quantity: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.INTEGER,
       },
       adjusted_quantity: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.INTEGER,
       },
       procurement_price: {
         type: DataTypes.FLOAT,
@@ -133,7 +133,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Create Hook
   ProcurementProducts.afterCreate(async (data, options) => {
-    updateInvenoryQuantity(sequelize, data, options);
+    await updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Update Hook
@@ -185,36 +185,56 @@ module.exports = (sequelize, DataTypes) => {
 // Utils Functions
 const updateInvenoryQuantity = async (sequelize, data, options) => {
   try {
-    const procurementProduct =
-      await sequelize.models.ProcurementProducts.findOne({
+    // Get all active procurement products for this product and type
+    const allProcurementProducts =
+      await sequelize.models.ProcurementProducts.findAll({
         subQuery: false,
-        attributes: [
-          [
-            sequelize.fn("sum", sequelize.col("procurement_quantity")),
-            "total_quantity",
-          ],
-          [
-            sequelize.fn("sum", sequelize.col("adjusted_quantity")),
-            "total_adjusted_quantity",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "ProcurementProducts".id and is_active = true)`,
-            ),
-            "total_dispatched_quantity",
-          ],
-        ],
+        attributes: ["id", "procurement_quantity", "adjusted_quantity"],
         where: {
           product_master_id: data?.product_master_id,
           procurement_product_type: data?.procurement_product_type,
           is_active: true,
         },
-        group: ["ProcurementProducts.id"],
         raw: true,
       });
 
+    // Calculate totals manually to avoid grouping issues
+    let total_quantity = 0;
+    let total_adjusted_quantity = 0;
+
+    for (const pp of allProcurementProducts) {
+      total_quantity += pp.procurement_quantity || 0;
+      total_adjusted_quantity += pp.adjusted_quantity || 0;
+    }
+
+    // Get dispatched quantity for all these procurement products
+    const dispatchedData = await sequelize.models.Dispatches.findAll({
+      attributes: [
+        [
+          sequelize.fn("sum", sequelize.col("dispatch_quantity")),
+          "total_dispatched",
+        ],
+      ],
+      where: {
+        procurement_product_id: allProcurementProducts.map((p) => p.id),
+        is_active: true,
+      },
+      raw: true,
+    });
+
+    const total_dispatched_quantity = dispatchedData[0]?.total_dispatched || 0;
+
+    const finalQuantity = Math.floor(
+      (total_adjusted_quantity > 0 ? total_adjusted_quantity : total_quantity) -
+        (total_dispatched_quantity || 0),
+    );
+
+    console.log(
+      `Updating purchase inventory for product ${data?.product_master_id}, type: ${data?.procurement_product_type}, finalQuantity: ${finalQuantity}`,
+    );
+
     const inventoryData = await sequelize.models.PurchaseInventory.findOne({
-      attributes: ["id"],
+      attributes: ["id", "quantity"],
       where: {
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
@@ -223,16 +243,13 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
       raw: true,
     });
 
-    const finalQuantity =
-      (procurementProduct?.total_adjusted_quantity ||
-        procurementProduct?.total_quantity) -
-      (procurementProduct?.total_dispatched_quantity || 0);
-
     if (inventoryData?.id) {
+      console.log(
+        `Updating existing purchase inventory ${inventoryData.id} from quantity ${inventoryData.quantity} to ${finalQuantity}`,
+      );
       await sequelize.models.PurchaseInventory.update(
         {
           quantity: finalQuantity,
-          available_quantity: finalQuantity, // Update available quantity
           updated_at: new Date(),
           updated_by: options?.profile_id,
         },
@@ -242,24 +259,38 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
             is_active: true,
           },
         },
-      ).catch(console.log);
+      ).catch((err) => {
+        console.error(
+          "Error updating purchase inventory:",
+          err?.message || err,
+        );
+      });
     } else {
+      console.log(
+        `Creating new purchase inventory for product ${data?.product_master_id} with quantity ${finalQuantity}`,
+      );
+      const { v4: uuidv4 } = require("uuid");
       await sequelize.models.PurchaseInventory.create({
+        id: uuidv4(),
         procurement_product_id: data?.id,
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
         quantity: finalQuantity,
-        available_quantity: finalQuantity, // Set available quantity
         is_active: true,
         created_by: options?.profile_id,
-      }).catch(console.log);
+      }).catch((err) => {
+        console.error(
+          "Error creating purchase inventory:",
+          err?.message || err,
+        );
+      });
     }
 
     // Update inventory_stock for comprehensive stock tracking
     await updateInventoryStock(sequelize, data, finalQuantity, options);
   } catch (err) {
     console.log(
-      "Error while inserting a procurements data",
+      "Error while updating purchase inventory:",
       err?.message || err,
     );
   }

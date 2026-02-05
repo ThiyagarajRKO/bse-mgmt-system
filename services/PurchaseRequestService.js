@@ -185,9 +185,10 @@ class PurchaseRequestService {
             continue;
           }
 
-          // Calculate required quantity using BOM ratio
-          let requiredRawQuantity =
-            (bomEntry.quantity_required || 1) * requiredQuantity;
+          // Calculate required quantity using BOM ratio (convert to integer)
+          let requiredRawQuantity = Math.floor(
+            (bomEntry.quantity_required || 1) * requiredQuantity,
+          );
 
           // Process this raw material
           const result = await this.processRawMaterialProcurement(
@@ -206,8 +207,8 @@ class PurchaseRequestService {
         console.log(`Processing raw materials found by species lookup`);
         // Process raw materials found by species (no BOM ratios available)
         for (const rawProduct of rawProducts) {
-          // Use 1:1 ratio since we don't have BOM data
-          const requiredRawQuantity = requiredQuantity;
+          // Use 1:1 ratio since we don't have BOM data (convert to integer)
+          const requiredRawQuantity = Math.floor(requiredQuantity);
 
           const result = await this.processRawMaterialProcurement(
             rawProduct,
@@ -252,7 +253,7 @@ class PurchaseRequestService {
 
       // Check current inventory for this raw product
       const currentStock = inventoryDetails[rawProduct.product_id] || 0;
-      const shortage = Math.max(0, requiredQuantity - currentStock);
+      const shortage = Math.max(0, Math.floor(requiredQuantity - currentStock));
 
       if (shortage <= 0) {
         console.log(
@@ -329,6 +330,48 @@ class PurchaseRequestService {
             profile_id: systemUserId, // Pass profile_id for the beforeCreate hook
           },
         );
+
+        // Create or update purchase inventory record
+        const existingInventory = await db.PurchaseInventory.findOne({
+          where: {
+            product_master_id: rawProduct.id,
+            procurement_product_type: "UNPROCESSED",
+            is_active: true,
+          },
+          transaction,
+        });
+
+        if (existingInventory) {
+          // Update existing inventory
+          await existingInventory.update(
+            {
+              quantity: (existingInventory.quantity || 0) + shortage,
+              updated_at: new Date(),
+              updated_by: systemUserId,
+            },
+            { transaction },
+          );
+          console.log(
+            `Updated purchase inventory for ${rawProduct.product_name} to ${existingInventory.quantity + shortage}`,
+          );
+        } else {
+          // Create new purchase inventory record
+          await db.PurchaseInventory.create(
+            {
+              id: uuidv4(),
+              product_master_id: rawProduct.id,
+              procurement_product_id: procurementProduct.id,
+              procurement_product_type: "UNPROCESSED",
+              quantity: shortage,
+              is_active: true,
+              created_by: systemUserId,
+            },
+            { transaction },
+          );
+          console.log(
+            `Created purchase inventory for ${rawProduct.product_name} with quantity ${shortage}`,
+          );
+        }
 
         await transaction.commit();
 
