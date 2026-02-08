@@ -1,6 +1,13 @@
 const models = require("../../../../models");
 const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
 
+// Helper function to remove secondary UOM from bracket notation
+// e.g. "g (per piece)" -> "g", "kg" -> "kg"
+const cleanUOM = (uom) => {
+  if (!uom) return "kg";
+  return uom.replace(/\s*\(.*\)/, "").trim();
+};
+
 // Helper function to create purchase request
 const createPurchaseRequest = async (
   productId,
@@ -174,84 +181,48 @@ const CheckInventory = async (
 
       const allowedUnitIds = allowedUnits.map((unit) => unit.id);
 
-      // Query raw materials available in purchase_inventory
-      const fgSumQuery = `
-        SELECT COALESCE(SUM(pi.available_stock), 0) as fg_available_qty
-        FROM purchase_inventory pi
-        WHERE pi.product_master_id = :product_id
-        AND pi.is_active = true
+      // REQUIREMENT: Finished goods inventory should be 0 unless production is complete
+      // and the finished goods is available in sales_inventory.
+      //
+      // Structure:
+      // - sales_inventory = finished goods (processed, ready to sell)
+      // - purchase_inventory = raw materials (unprocessed input)
+      //
+      // Check if product exists in sales_inventory (indicates production is complete)
+      const salesInventoryQuery = `
+        SELECT COUNT(*) as count, COALESCE(SUM(si.quantity), 0) as total_quantity
+        FROM sales_inventory si
+        WHERE si.product_master_id = :product_id
+        AND si.is_active = true
       `;
 
-      const [fgResult] = await models.sequelize
-        .query(fgSumQuery, {
-          replacements: {
-            product_id: product.id,
-          },
+      const [salesInventoryResult] = await models.sequelize.query(
+        salesInventoryQuery,
+        {
+          replacements: { product_id: product.id },
           type: models.sequelize.QueryTypes.SELECT,
-        })
-        .catch((err) => {
-          console.error("Error executing FG inventory query:", err);
-          throw new Error(
-            `Failed to execute FG inventory query: ${err.message}`,
-          );
-        });
+        },
+      );
 
-      const totalFGInventory = parseFloat(fgResult?.fg_available_qty || 0);
+      const existsInSalesInventory = (salesInventoryResult?.count || 0) > 0;
+      const finishedGoodsInventory = parseFloat(
+        salesInventoryResult?.total_quantity || 0,
+      );
 
-      // Add debug logging
-      console.log("DEBUG: FG Inventory Query Results", {
+      console.log("DEBUG: Finished Goods Check (Sales Inventory)", {
         product_id: product.id,
-        allowedUnitIds,
-        fgResult,
-        totalFGInventory,
-        isProcessedProduct,
+        existsInSalesInventory,
+        finishedGoodsInventory,
       });
 
-      // If we have finished goods inventory, treat as available stock (regardless of processing status)
-      if (totalFGInventory > 0) {
-        // Fetch sales/allocated quantities
-        const salesQuery = `
-          SELECT COALESCE(SUM(si.quantity), 0) as total_sales_inventory_qty
-          FROM sales_inventory si
-          WHERE si.product_master_id = :product_id
-          AND si.is_active = true
-        `;
+      // Only treat as finished goods if BOTH conditions are met:
+      // 1. Product exists in sales_inventory (production is complete)
+      // 2. Physical stock exists in sales_inventory (finishedGoodsInventory > 0)
+      const isFinishedGoodsAvailable =
+        existsInSalesInventory && finishedGoodsInventory > 0;
 
-        const replacements = { product_id: product.id };
-
-        const [salesResult] = await models.sequelize.query(salesQuery, {
-          replacements,
-          type: models.sequelize.QueryTypes.SELECT,
-        });
-
-        const totalSalesAllocations = parseFloat(
-          salesResult?.total_sales_inventory_qty || 0,
-        );
-
-        // The inventory_stock.available_qty already accounts for allocations
-        // (auto-allocation reduces available_qty when stock is allocated)
-        // So we don't need to subtract sales_inventory again - that would double-count
-
-        // Get total FG inventory (without considering allocations for breakdown)
-        const totalFGQuery = `
-          SELECT COALESCE(SUM(inv.on_hand_qty), 0) as total_fg_quantity
-          FROM inventory_stock inv
-          WHERE inv.product_id = :product_id
-          AND inv.unit_id IN (:allowedUnitIds)
-        `;
-
-        const [totalFGResult] = await models.sequelize.query(totalFGQuery, {
-          replacements: {
-            product_id: product.id,
-            allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
-          },
-          type: models.sequelize.QueryTypes.SELECT,
-        });
-
-        const totalFGQuantity = parseFloat(
-          totalFGResult?.total_fg_quantity || 0,
-        );
-
+      if (isFinishedGoodsAvailable) {
+        // Finished goods are available from sales_inventory
         // Get unit of measure from the mapping
         let unitOfMeasure =
           product?.MappingProfile?.size?.unit_of_measure || "kg";
@@ -282,28 +253,31 @@ const CheckInventory = async (
           }
         }
 
-        // Check for raw material stock availability
-        const rawMaterialQuery = `
-          SELECT COALESCE(SUM(pi.quantity), 0) as raw_material_qty
-          FROM purchase_inventory pi
-          WHERE pi.product_master_id = :product_id
-          AND pi.is_active = true
+        // Remove secondary UOM from bracket notation
+        unitOfMeasure = cleanUOM(unitOfMeasure);
+
+        // Get total FG inventory (from inventory_stock for breakdown)
+        const totalFGQuery = `
+          SELECT COALESCE(SUM(inv.on_hand_qty), 0) as total_fg_quantity
+          FROM inventory_stock inv
+          WHERE inv.product_id = :product_id
+          AND inv.unit_id IN (:allowedUnitIds)
         `;
 
-        const [rawMaterialResult] = await models.sequelize.query(
-          rawMaterialQuery,
-          {
-            replacements: { product_id: product.id },
-            type: models.sequelize.QueryTypes.SELECT,
+        const [totalFGResult] = await models.sequelize.query(totalFGQuery, {
+          replacements: {
+            product_id: product.id,
+            allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
           },
-        );
+          type: models.sequelize.QueryTypes.SELECT,
+        });
 
-        const rawMaterialStock = parseFloat(
-          rawMaterialResult?.raw_material_qty || 0,
+        const totalFGQuantity = parseFloat(
+          totalFGResult?.total_fg_quantity || 0,
         );
 
         // Check if purchase request is needed
-        const finalAvailableQuantity = Number(totalFGInventory);
+        const finalAvailableQuantity = Math.round(finishedGoodsInventory);
         let purchaseRequestCreated = false;
 
         if (required_quantity && finalAvailableQuantity < required_quantity) {
@@ -316,30 +290,27 @@ const CheckInventory = async (
             );
             purchaseRequestCreated = true;
             console.log(
-              `📋 Purchase request created for ${Math.round(required_quantity - finalAvailableQuantity)}kg shortage of ${product.product_name}`,
+              `📋 Purchase request created for ${Math.round(required_quantity - finalAvailableQuantity)} shortage of ${product.product_name}`,
             );
           } catch (error) {
             console.error("Error creating purchase request:", error);
           }
         }
 
-        // Return the actual available quantity from inventory_stock (already accounts for allocations)
+        // Return the finished goods quantity from sales_inventory
         return resolve({
           statusCode: 200,
-          message: "Available inventory (unallocated stock only)",
+          message: "Finished goods available (from sales inventory)",
           data: {
             product_master_id,
-            available_quantity: Math.round(finalAvailableQuantity), // This is already the available (unallocated) quantity
-            has_stock: totalFGInventory > 0,
-            inventory_type: totalFGInventory > 0 ? "finished_goods" : "none",
+            available_quantity: finalAvailableQuantity,
+            has_stock: finishedGoodsInventory > 0,
+            inventory_type: "finished_goods",
             unit_of_measure: unitOfMeasure,
             breakdown: {
-              sales_inventory: Math.round(totalSalesAllocations), // Allocated to sales
-              fg_inventory: Math.round(totalFGInventory), // Available FG inventory
-              raw_material_stock: Math.round(rawMaterialStock), // Raw material stock
+              sales_inventory_qty: Math.round(finishedGoodsInventory),
               total_inventory: Math.round(totalFGQuantity),
-              total_allocations: Math.round(totalSalesAllocations),
-              available_stock: Math.round(totalFGInventory),
+              available_stock: Math.round(finishedGoodsInventory),
             },
             purchase_request_created: purchaseRequestCreated,
             shortage_amount:
@@ -350,7 +321,17 @@ const CheckInventory = async (
         });
       }
 
-      // For products without finished goods inventory, calculate from raw materials using BOM
+      // For products without finished goods in sales_inventory,
+      // calculate from raw materials using BOM
+      console.log(
+        "DEBUG: No finished goods in sales_inventory - checking raw materials",
+        {
+          product_id: product.id,
+          existsInSalesInventory,
+          finishedGoodsInventory,
+        },
+      );
+
       // Get the BOM data for this product
       const bomEntries = await models.BillOfMaterials.findAll({
         where: { product_master_id: product.id, is_active: true },
@@ -515,6 +496,9 @@ const CheckInventory = async (
       // Get unit of measure from the mapping
       let unitOfMeasure =
         product?.MappingProfile?.size?.unit_of_measure || "kg";
+
+      // Remove secondary UOM from bracket notation
+      unitOfMeasure = cleanUOM(unitOfMeasure);
 
       // Check if purchase request is needed
       const finalAvailableQuantity = effectiveFinishedGoodsQty;

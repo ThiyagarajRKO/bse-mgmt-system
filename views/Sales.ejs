@@ -2279,7 +2279,24 @@
         const productMasterId = $('input[name="rawMaterial"]:checked').data(
           "product-master-id",
         );
-        const quantityToOrder = parseFloat($("#purchaseRequestQuantity").val());
+        let quantityToOrder = parseFloat($("#purchaseRequestQuantity").val());
+
+        // REQUIREMENT: Quantity to order should equal Order Needed (recommended quantity)
+        // Get the recommended quantity from the selected raw material card
+        const selectedCard =
+          document.querySelector('.raw-material-card[style*="28a745"]') ||
+          document.querySelector(
+            '.raw-material-card:has(input[type="radio"]:checked)',
+          );
+        const recommendedQuantity = selectedCard
+          ? parseFloat(selectedCard.getAttribute("data-recommended-quantity"))
+          : null;
+
+        // If recommended quantity is available, use it as the order quantity
+        if (recommendedQuantity && recommendedQuantity > 0) {
+          quantityToOrder = recommendedQuantity;
+          $("#purchaseRequestQuantity").val(quantityToOrder);
+        }
 
         if (!selectedMaterial) {
           toastr.warning("Please select a raw material", "Info");
@@ -5018,18 +5035,21 @@
                       console.log(
                         `[DEBUG] Item:`,
                         inv,
-                        `Quantity: ${inv.quantity}`,
+                        `Available Stock: ${inv.available_stock}`,
                       );
-                      return sum + (inv.quantity || 0);
+                      return sum + (inv.available_stock || 0);
                     },
                     0,
                   );
-                } else if (inventoryResponse.data.quantity !== undefined) {
+                } else if (
+                  inventoryResponse.data.available_stock !== undefined
+                ) {
                   console.log(
-                    `[DEBUG] Response is object with quantity:`,
-                    inventoryResponse.data.quantity,
+                    `[DEBUG] Response is object with available_stock:`,
+                    inventoryResponse.data.available_stock,
                   );
-                  rawMaterialInventory = inventoryResponse.data.quantity || 0;
+                  rawMaterialInventory =
+                    inventoryResponse.data.available_stock || 0;
                 } else {
                   console.log(
                     `[DEBUG] Response data structure unexpected:`,
@@ -5524,21 +5544,24 @@
                       console.log(
                         `[DEBUG] Item:`,
                         inv,
-                        `Quantity: ${inv.quantity}`,
+                        `Available Stock: ${inv.available_stock}`,
                       );
-                      return sum + (inv.quantity || 0);
+                      return sum + (inv.available_stock || 0);
                     },
                     0,
                   );
-                } else if (inventoryResponse.data.quantity !== undefined) {
+                } else if (
+                  inventoryResponse.data.available_stock !== undefined
+                ) {
                   console.log(
-                    `[DEBUG] Response is object with quantity:`,
-                    inventoryResponse.data.quantity,
+                    `[DEBUG] Response is object with available_stock:`,
+                    inventoryResponse.data.available_stock,
                   );
-                  rawMaterialInventory = inventoryResponse.data.quantity || 0;
+                  rawMaterialInventory =
+                    inventoryResponse.data.available_stock || 0;
                 } else {
                   console.log(
-                    `[DEBUG] Response data is not array or has quantity:`,
+                    `[DEBUG] Response data is not array or has available_stock:`,
                     inventoryResponse.data,
                   );
                 }
