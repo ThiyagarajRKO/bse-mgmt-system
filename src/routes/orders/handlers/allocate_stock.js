@@ -396,9 +396,11 @@ export const AllocateStock = async (
             const PurchaseRequestService = require("../../../../services/PurchaseRequestService");
 
             // Create inventory details for the service
-            const inventoryDetails = {
-              [product_id]: availableInPurchase, // Current purchase inventory
-            };
+            // Map raw material IDs to their current inventory quantities
+            const inventoryDetails = {};
+            for (const rawMatId of rawMaterialIds) {
+              inventoryDetails[rawMatId] = 0; // Raw materials have no existing inventory
+            }
 
             // Trigger procurement for raw materials needed
             const procurementResult =
@@ -409,11 +411,21 @@ export const AllocateStock = async (
                 inventoryDetails,
               );
 
+            // Count successful procurement records created
+            const procurementCount = Array.isArray(procurementResult)
+              ? procurementResult.filter((r) => r !== null).length
+              : procurementResult ? 1 : 0;
+
             // Update order status to indicate procurement is in progress
+            const allocationStatus =
+              procurementCount > 0
+                ? `Procurement Created (${procurementCount} requests)`
+                : "Procurement Failed";
+
             await models.Orders.update(
               {
-                order_status: "PROCUREMENT_PENDING",
-                allocation_status: "Procurement Initiated",
+                order_status: procurementCount > 0 ? "PROCUREMENT_PENDING" : "ALLOCATION_FAILED",
+                allocation_status: allocationStatus,
                 updated_at: new Date(),
               },
               {
@@ -422,8 +434,11 @@ export const AllocateStock = async (
             );
 
             return resolve({
-              message: `Procurement initiated for raw materials. ${procurementResult.procurementCreated?.length || 0} procurement requests created.`,
-              procurementTriggered: true,
+              message: procurementCount > 0
+                ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
+                : "Failed to create procurement records.",
+              procurementTriggered: procurementCount > 0,
+              procurementCount,
               procurementResult,
             });
           } catch (procurementError) {
@@ -495,9 +510,11 @@ export const AllocateStock = async (
           const PurchaseRequestService = require("../../../../services/PurchaseRequestService");
 
           // Create inventory details for the service
-          const inventoryDetails = {
-            [product_id]: totalAvailable, // Current finished goods inventory
-          };
+          // Map raw material IDs to their current inventory quantities (0 since we're creating new procurement)
+          const inventoryDetails = {};
+          for (const rawMatId of rawMaterialIds) {
+            inventoryDetails[rawMatId] = 0; // Raw materials have no existing inventory in this scenario
+          }
 
           // Trigger procurement for raw materials needed
           const procurementResult =
@@ -508,11 +525,21 @@ export const AllocateStock = async (
               inventoryDetails,
             );
 
+          // Count successful procurement records created
+          const procurementCount = Array.isArray(procurementResult)
+            ? procurementResult.filter((r) => r !== null).length
+            : procurementResult ? 1 : 0;
+
           // Update order status to indicate procurement is in progress
+          const allocationStatus =
+            procurementCount > 0
+              ? `Procurement Created (${procurementCount} requests)`
+              : "Procurement Failed";
+
           await models.Orders.update(
             {
-              order_status: "PROCUREMENT_PENDING",
-              allocation_status: "Procurement Initiated",
+              order_status: procurementCount > 0 ? "PROCUREMENT_PENDING" : "ALLOCATION_FAILED",
+              allocation_status: allocationStatus,
               updated_at: new Date(),
             },
             {
@@ -521,8 +548,11 @@ export const AllocateStock = async (
           );
 
           return resolve({
-            message: `Procurement initiated for raw materials. ${procurementResult.procurementCreated?.length || 0} procurement requests created.`,
-            procurementTriggered: true,
+            message: procurementCount > 0
+              ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
+              : "Failed to create procurement records.",
+            procurementTriggered: procurementCount > 0,
+            procurementCount,
             procurementResult,
           });
         } catch (procurementError) {

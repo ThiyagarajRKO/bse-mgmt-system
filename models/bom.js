@@ -41,7 +41,7 @@ module.exports = (sequelize) => {
       tableName: "bom_master",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   const BomInput = sequelize.define(
@@ -73,7 +73,7 @@ module.exports = (sequelize) => {
       tableName: "bom_input",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   const BomOutput = sequelize.define(
@@ -109,7 +109,7 @@ module.exports = (sequelize) => {
       tableName: "bom_output",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   const DerivativeGradeSizeRule = sequelize.define(
@@ -149,7 +149,7 @@ module.exports = (sequelize) => {
       tableName: "derivative_grade_size_rule",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   const BomCost = sequelize.define(
@@ -181,7 +181,7 @@ module.exports = (sequelize) => {
       tableName: "bom_cost",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   // Associations
@@ -194,12 +194,7 @@ module.exports = (sequelize) => {
   BomMaster.hasMany(BomCost, { foreignKey: "bom_id", as: "costs" });
   BomCost.belongsTo(BomMaster, { foreignKey: "bom_id" });
 
-  // Return models using pattern expected by models/index.js
-  return {
-    BomMaster: BomMaster,
-    BomInput: BomInput,
-    BomOutput: BomOutput,
-    DerivativeGradeSizeRule: DerivativeGradeSizeRule,
-    BomCost: BomCost,
-  };
+  // Return only the primary BomMaster model
+  // Other models will be loaded separately from their own files
+  return BomMaster;
 };

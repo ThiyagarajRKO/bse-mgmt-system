@@ -72,15 +72,70 @@ class PurchaseRequestService {
 
       if (!bomEntries || bomEntries.length === 0) {
         console.log(
-          `No BOM found for product ${productId}, creating procurement for finished product as fallback`,
+          `No BOM found for product ${productId}, searching for raw materials by species`,
         );
-        // Fallback: Create procurement for the finished product itself when no BOM is available
-        return await this.createFallbackProcurement(
-          productId,
-          requiredQuantity,
-          orderId,
-          inventoryDetails,
+        // If no BOM, try to find raw materials by species
+        const finishedProduct = await db.ProductMaster.findByPk(productId, {
+          include: [
+            {
+              model: db.SpeciesMaster,
+              as: "SpeciesMaster",
+            },
+          ],
+        });
+
+        if (!finishedProduct?.species_master_id) {
+          throw new Error(
+            `Cannot create procurement: Product ${productId} has no species assigned. Please configure the product with a species.`,
+          );
+        }
+
+        const rawProducts = await db.ProductMaster.findAll({
+          where: {
+            species_master_id: finishedProduct.species_master_id,
+            is_active: true,
+          },
+          include: [
+            {
+              model: db.DerivativeMaster,
+              as: "Derivative",
+              where: {
+                processing_level: "Raw",
+              },
+              required: true,
+            },
+          ],
+        });
+
+        if (rawProducts.length === 0) {
+          throw new Error(
+            `Cannot create procurement: No raw materials found for species ${finishedProduct.SpeciesMaster?.species_name}. Please configure raw materials.`,
+          );
+        }
+
+        console.log(
+          `Found ${rawProducts.length} raw products by species lookup`,
         );
+
+        // Process raw materials found by species
+        const purchaseRequests = [];
+        for (const rawProduct of rawProducts) {
+          const requiredRawQuantity = Math.floor(requiredQuantity);
+
+          const result = await this.processRawMaterialProcurement(
+            rawProduct,
+            requiredRawQuantity,
+            orderId,
+            inventoryDetails,
+            `Species-based (no BOM found)`,
+          );
+
+          if (result) {
+            purchaseRequests.push(result);
+          }
+        }
+
+        return purchaseRequests;
       }
 
       // Get raw product details separately to avoid query issues
@@ -139,16 +194,10 @@ class PurchaseRequestService {
         }
       }
 
-      // If still no raw products found, fall back to finished product procurement
+      // If still no raw products found, throw an error
       if (rawProducts.length === 0) {
-        console.log(
-          `No raw materials found for product ${productId}, falling back to finished product procurement`,
-        );
-        return await this.createFallbackProcurement(
-          productId,
-          requiredQuantity,
-          orderId,
-          inventoryDetails,
+        throw new Error(
+          `Cannot create procurement: No raw materials found for product ${productId}. Please configure BOM and raw materials.`,
         );
       }
 
@@ -341,22 +390,27 @@ class PurchaseRequestService {
           transaction,
         });
 
+        console.log(
+          `DEBUG: Creating purchase inventory - Product: ${rawProduct.product_name}, Shortage: ${shortage}, Type: UNPROCESSED`,
+        );
+
         if (existingInventory) {
           // Update existing inventory
+          const newQuantity = (existingInventory.quantity || 0) + shortage;
           await existingInventory.update(
             {
-              quantity: (existingInventory.quantity || 0) + shortage,
+              quantity: newQuantity,
               updated_at: new Date(),
               updated_by: systemUserId,
             },
             { transaction },
           );
           console.log(
-            `Updated purchase inventory for ${rawProduct.product_name} to ${existingInventory.quantity + shortage}`,
+            `Updated purchase inventory for ${rawProduct.product_name} from ${existingInventory.quantity} to ${newQuantity}`,
           );
         } else {
           // Create new purchase inventory record
-          await db.PurchaseInventory.create(
+          const newInventory = await db.PurchaseInventory.create(
             {
               id: uuidv4(),
               product_master_id: rawProduct.id,
@@ -369,7 +423,7 @@ class PurchaseRequestService {
             { transaction },
           );
           console.log(
-            `Created purchase inventory for ${rawProduct.product_name} with quantity ${shortage}`,
+            `Created purchase inventory for ${rawProduct.product_name} with quantity ${shortage}. Record: ${JSON.stringify(newInventory.toJSON())}`,
           );
         }
 
@@ -722,14 +776,10 @@ class PurchaseRequestService {
 
       if (rawMaterials.length === 0) {
         console.log(
-          `No raw materials found for species ${finishedProduct.SpeciesMaster?.species_name}, falling back to finished product procurement`,
+          `No raw materials found for species ${finishedProduct.SpeciesMaster?.species_name}`,
         );
-        // Ultimate fallback: purchase the finished product itself
-        return await this.createFinishedProductProcurement(
-          productId,
-          requiredQuantity,
-          orderId,
-          inventoryDetails,
+        throw new Error(
+          `Cannot create procurement: No raw materials found for species ${finishedProduct.SpeciesMaster?.species_name}. Please configure raw materials and BOM.`,
         );
       }
 

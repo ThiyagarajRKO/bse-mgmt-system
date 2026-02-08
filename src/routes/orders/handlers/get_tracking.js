@@ -3,16 +3,30 @@ import { Orders } from "../../../controllers";
 export const GetTracking = ({ order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Try to get enhanced production tracking if available
+      // Use enhanced production tracking to get full data
       let tracking;
 
-      if (Orders.GetWithProductionTracking) {
+      // Try GetWithProductionTracking first (includes sales inventory, dispatches, peeling, etc)
+      if (
+        Orders.GetWithProductionTracking &&
+        typeof Orders.GetWithProductionTracking === "function"
+      ) {
+        console.log("[GetTracking] Using GetWithProductionTracking");
         tracking = await Orders.GetWithProductionTracking({
           id: order_id,
         });
-      } else {
+      } else if (
+        Orders.GetWithTracking &&
+        typeof Orders.GetWithTracking === "function"
+      ) {
+        console.log("[GetTracking] Using GetWithTracking (fallback)");
         tracking = await Orders.GetWithTracking({
           id: order_id,
+        });
+      } else {
+        return reject({
+          statusCode: 500,
+          message: "No tracking methods available",
         });
       }
 

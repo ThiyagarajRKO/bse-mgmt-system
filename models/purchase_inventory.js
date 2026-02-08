@@ -60,6 +60,17 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.FLOAT,
       },
+      available_stock: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        comment:
+          "Available stock after deducting reserved quantities for pending purchase requests",
+      },
+      reserved_quantity: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        comment: "Quantity reserved for pending purchase requests",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -82,7 +93,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   return PurchaseInventory;

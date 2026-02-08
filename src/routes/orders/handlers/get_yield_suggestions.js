@@ -92,27 +92,116 @@ export const GetYieldSuggestions = async (
         calculationMode = "raw_to_finished";
       }
 
-      // Get current available inventory for this product
-      const availableInventory = await models.PurchaseInventory.findAll({
+      // STEP 1: Get BOM for this finished product
+      // BOM tells us which raw materials (product_master_id) are needed and in what quantity
+      const bom = await models.BillOfMaterials.findAll({
         where: {
           product_master_id: product_id,
-          quantity: { [models.Sequelize.Op.gt]: 0 },
           is_active: true,
         },
-        attributes: ["quantity"],
+        attributes: ["id", "product_master_id", "quantity_required"],
         include: [
           {
-            model: models.ProcurementProducts,
-            as: "ProcurementProduct",
-            attributes: ["procurement_product_type"],
+            model: models.ProductMaster,
+            as: "ProductMaster",
+            attributes: ["id", "product_name"],
           },
         ],
       });
+
+      console.log(
+        `[GetYieldSuggestions] Found ${bom.length} BOM entries for product ${product_id}`,
+      );
+
+      // STEP 2: Extract raw material product IDs from BOM
+      // Note: BOM specifies product_master_id of raw materials, not procurement_product_id
+      // Procurement products are created dynamically when purchase requests are generated
+      const bomRawProductIds = bom
+        .map((entry) => entry.product_master_id)
+        .filter(Boolean);
+
+      if (bomRawProductIds.length === 0) {
+        console.warn(
+          `[GetYieldSuggestions] ⚠️  No BOM found for product ${product_id}. Cannot determine raw materials.`,
+        );
+        return reject({
+          statusCode: 422,
+          message:
+            "No Bill of Materials found for this finished product. Please configure BOM first.",
+        });
+      }
+
+      // STEP 3: Get current available inventory ONLY for BOM raw materials
+      // This ensures we only consider materials that are actually in the recipe
+      const availableInventory = await models.PurchaseInventory.findAll({
+        where: {
+          product_master_id: { [models.Sequelize.Op.in]: bomRawProductIds },
+          quantity: { [models.Sequelize.Op.gt]: 0 },
+          is_active: true,
+        },
+        attributes: [
+          "id",
+          "quantity",
+          "available_quantity",
+          "product_master_id",
+          "created_at",
+        ],
+      });
+
+      // STEP 4: For each inventory item, find the actual procured product (if any)
+      // This maps BOM raw materials with dynamically created procurement products
+      let rawMaterialsWithProcurement = [];
+      for (const inv of availableInventory) {
+        // Find procurement products created for this raw material
+        const procurementProducts = await models.ProcurementProducts.findAll({
+          where: {
+            product_master_id: inv.product_master_id,
+            is_active: true,
+          },
+          attributes: ["id", "procurement_product_type"],
+          include: [
+            {
+              model: models.ProductMaster,
+              as: "ProductMaster",
+              attributes: ["id", "product_name"],
+            },
+          ],
+          limit: 1, // Use the most recent
+          order: [["created_at", "DESC"]],
+        });
+
+        const procProduct = procurementProducts[0];
+        const bomEntry = bom.find(
+          (b) => b.product_master_id === inv.product_master_id,
+        );
+
+        rawMaterialsWithProcurement.push({
+          inventory_id: inv.id,
+          procurement_product_id: procProduct?.id || null,
+          product_name: procProduct?.ProductMaster?.product_name || "Unknown",
+          procurement_type:
+            procProduct?.procurement_product_type || "UNPROCESSED",
+          quantity: Math.ceil(parseFloat(inv.quantity || 0) * 100) / 100,
+          available_quantity:
+            Math.ceil(
+              parseFloat(inv.available_quantity || inv.quantity || 0) * 100,
+            ) / 100,
+          created_date: inv.created_at,
+          bom_quantity_required: bomEntry?.quantity_required || null,
+        });
+      }
 
       const totalAvailable = availableInventory.reduce(
         (sum, item) => sum + parseFloat(item.quantity || 0),
         0,
       );
+
+      console.log(
+        `[GetYieldSuggestions] ✅ Found ${rawMaterialsWithProcurement.length} inventory records for BOM raw materials`,
+      );
+
+      // Enrich inventory details for display
+      const rawMaterialsConsidered = rawMaterialsWithProcurement;
 
       // Get yield standard information
       const yieldStandard = await models.YieldStandardMaster.findOne({
@@ -150,6 +239,11 @@ export const GetYieldSuggestions = async (
         required_raw_quantity: Math.ceil(calculatedRawQuantity * 100) / 100,
 
         current_available_inventory: Math.ceil(totalAvailable * 100) / 100,
+
+        // ✅ NEW: Show raw materials considered for AI recommendation
+        raw_materials_considered: rawMaterialsConsidered,
+        raw_materials_count: rawMaterialsConsidered.length,
+
         yield_rate: yieldPercentage * 100, // Frontend expects yield_rate as percentage
         yield_percentage: yieldPercentage * 100,
         is_count_based: isCephalopodRings,

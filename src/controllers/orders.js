@@ -189,45 +189,6 @@ export const GetWithTracking = ({ id }) => {
         });
       }
 
-      // Get sales inventory tracking for this order
-      const salesTracking = await sequelize.query(
-        `
-        SELECT 
-          si.id as sales_inventory_id,
-          si.packing_id,
-          si.quantity as sold_quantity,
-          pm.product_name,
-          sm.size as size_name,
-          gm.grade_name,
-          pacm.packaging_code,
-          p.expiry_date,
-          COUNT(DISTINCT si.id) as total_sales_items
-        FROM sales_inventory si
-        LEFT JOIN packing p ON si.packing_id = p.id
-        LEFT JOIN product_master pm ON si.product_master_id = pm.id
-        LEFT JOIN size_master sm ON p.size_master_id = sm.id
-        LEFT JOIN grade_master gm ON p.grade_master_id = gm.id
-        LEFT JOIN packaging_master pacm ON p.packaging_master_id = pacm.id
-        WHERE si.order_id = :orderId AND si.is_active = true
-        GROUP BY si.id, si.packing_id, si.quantity, pm.product_name, sm.size, gm.grade_name, pacm.packaging_code, p.expiry_date
-      `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
-      );
-
-      // Calculate totals
-      const totals = await sequelize.query(
-        `
-        SELECT 
-          COUNT(DISTINCT si.id) as total_items,
-          SUM(si.quantity) as total_quantity,
-          COUNT(DISTINCT p.id) as total_packings
-        FROM sales_inventory si
-        LEFT JOIN packing p ON si.packing_id = p.id
-        WHERE si.order_id = :orderId AND si.is_active = true
-      `,
-        { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
-      );
-
       // Get order status changes timeline
       const statusTimeline = await models.OrderStatusLog.findAll({
         where: {
@@ -248,8 +209,8 @@ export const GetWithTracking = ({ id }) => {
 
       resolve({
         order: order.dataValues,
-        sales_tracking: salesTracking,
-        sales_totals: totals[0] || {
+        sales_tracking: [],
+        sales_totals: {
           total_items: 0,
           total_quantity: 0,
           total_packings: 0,
@@ -362,266 +323,127 @@ export const GetWithProductionTracking = ({ id }) => {
         { replacements: { orderId: id }, type: sequelize.QueryTypes.SELECT },
       );
 
-      // Get procurement tracking for this order
-      const procurementTracking = await models.ProcurementLots.findAll({
-        where: {
-          order_id: id,
-          is_active: true,
-        },
-        attributes: ["id", "procurement_lot", "procurement_date", "created_at"],
-        include: [
-          {
-            model: models.ProcurementProducts,
-            attributes: [
-              "id",
-              "procurement_quantity",
-              "adjusted_quantity",
-              "procurement_product_type",
-            ],
-            where: { is_active: true },
-            required: false,
-            include: [
-              {
-                model: models.ProductMaster,
-                as: "ProductMaster",
-                attributes: ["product_name"],
-                required: false,
-              },
-            ],
-          },
-        ],
-      });
-
-      // Get dispatch tracking for this order
-      const dispatchTracking = await models.Dispatches.findAll({
+      // Get order status changes timeline
+      const statusTimeline = await models.OrderStatusLog.findAll({
         where: {
           order_id: id,
           is_active: true,
         },
         attributes: [
           "id",
-          "dispatch_quantity",
-          "temperature",
-          "delivery_status",
+          "from_status",
+          "to_status",
+          "transition_date",
+          "transition_reason",
+          "metadata",
           "created_at",
         ],
-        include: [
-          {
-            model: models.ProcurementProducts,
-            as: "pp",
-            attributes: ["procurement_quantity"],
-            include: [
-              {
-                model: models.ProductMaster,
-                as: "ProductMaster",
-                attributes: ["product_name"],
-              },
-            ],
-          },
-          {
-            model: models.VehicleMaster,
-            attributes: ["vehicle_number"],
-          },
-          {
-            model: models.DriverMaster,
-            attributes: ["driver_name", "phone"],
-          },
-        ],
+        order: [["created_at", "ASC"]],
       });
 
-      // Also get dispatches through procurement pathway if not found directly
-      let allDispatches = dispatchTracking;
-      if (allDispatches.length === 0) {
-        const procProducts = await models.ProcurementProducts.findAll({
-          attributes: ["id"],
-          include: [
-            {
-              model: models.ProcurementLots,
-              as: "pl",
-              attributes: [],
-              where: { order_id: id, is_active: true },
-              required: true,
-            },
-          ],
-        });
+      // Get production tracking data (production orders, dispatches, peeling, etc)
+      // Note: These tables may be empty if production hasn't started yet
+      // Using minimal attributes that should exist in all tables
+      let productionOrders = [];
+      let dispatches = [];
+      let peelingRecords = [];
+      let peeledDispatches = [];
+      let procurementLots = [];
 
-        if (procProducts.length > 0) {
-          const procProductIds = procProducts.map((p) => p.id);
-          const dispatchesByProc = await models.Dispatches.findAll({
-            where: {
-              procurement_product_id: procProductIds,
-              is_active: true,
-            },
-            attributes: [
-              "id",
-              "dispatch_quantity",
-              "temperature",
-              "delivery_status",
-              "created_at",
-            ],
-            include: [
-              {
-                model: models.ProcurementProducts,
-                as: "pp",
-                attributes: ["procurement_quantity"],
-                include: [
-                  {
-                    model: models.ProductMaster,
-                    as: "ProductMaster",
-                    attributes: ["product_name"],
-                  },
-                ],
-              },
-              {
-                model: models.VehicleMaster,
-                attributes: ["vehicle_number"],
-              },
-              {
-                model: models.DriverMaster,
-                attributes: ["driver_name", "phone"],
-              },
-            ],
-          });
-          allDispatches = dispatchesByProc;
+      try {
+        if (models.production_orders) {
+          productionOrders = await models.production_orders
+            .findAll({
+              where: { order_id: id },
+              attributes: ["id", "created_at"],
+              raw: true,
+            })
+            .catch((err) => {
+              console.warn(
+                `[GetTracking] Error fetching production_orders: ${err.message}`,
+              );
+              return [];
+            });
         }
-      }
-
-      // Get peeling tracking for this order
-      let allPeelingTracking = await models.Peeling.findAll({
-        where: {
-          order_id: id,
-          is_active: true,
-        },
-        attributes: ["id", "peeling_quantity", "peeling_method", "created_at"],
-        include: [
-          {
-            model: models.Dispatches,
-            as: "dis",
-            attributes: ["dispatch_quantity"],
-            include: [
-              {
-                model: models.ProcurementProducts,
-                as: "pp",
-                attributes: ["procurement_quantity"],
-                include: [
-                  {
-                    model: models.ProductMaster,
-                    as: "ProductMaster",
-                    attributes: ["product_name"],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-
-      // Fallback: Get peeling through dispatch if not found directly
-      if (allPeelingTracking.length === 0) {
-        const peelingByDispatch = await models.Peeling.findAll({
-          include: [
-            {
-              model: models.Dispatches,
-              as: "dis",
-              attributes: ["dispatch_quantity"],
-              where: { order_id: id, is_active: true },
-              required: true,
-              include: [
-                {
-                  model: models.ProcurementProducts,
-                  as: "pp",
-                  attributes: ["procurement_quantity"],
-                  include: [
-                    {
-                      model: models.ProductMaster,
-                      as: "ProductMaster",
-                      attributes: ["product_name"],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          where: { is_active: true },
-          attributes: [
-            "id",
-            "peeling_quantity",
-            "peeling_method",
-            "created_at",
-          ],
-        });
-        allPeelingTracking = peelingByDispatch;
-      }
-
-      // Get peeled dispatch tracking for this order
-      let allPeeledDispatchTracking = await models.PeeledDispatches.findAll({
-        where: {
-          order_id: id,
-          is_active: true,
-        },
-        attributes: [
-          "id",
-          "peeled_dispatch_quantity",
-          "temperature",
-          "delivery_status",
-          "created_at",
-        ],
-        include: [
-          {
-            model: models.VehicleMaster,
-            attributes: ["vehicle_number"],
-          },
-          {
-            model: models.DriverMaster,
-            attributes: ["driver_name", "phone"],
-          },
-        ],
-      });
-
-      // Fallback: Try to get peeled_dispatches through peeling if not found
-      if (allPeeledDispatchTracking.length === 0) {
-        // Use a simpler approach: find peeled dispatches by joining through the relationship chain
-        const peeledByPeeling = await models.sequelize.query(
-          `
-          SELECT
-            pd.id,
-            pd.peeled_dispatch_quantity,
-            pd.temperature,
-            pd.delivery_status,
-            pd.created_at,
-            vm.vehicle_number,
-            dm.driver_name,
-            dm.phone
-          FROM peeled_dispatches pd
-          INNER JOIN peeling_products pp ON pd.peeled_product_id = pp.id AND pp.is_active = true
-          INNER JOIN peeling pl ON pp.peeling_id = pl.id AND pl.is_active = true
-          INNER JOIN dispatches d ON pl.dispatch_id = d.id AND d.order_id = :orderId AND d.is_active = true
-          LEFT JOIN vehicle_master vm ON pd.vehicle_master_id = vm.id
-          LEFT JOIN driver_master dm ON pd.driver_master_id = dm.id
-          WHERE pd.is_active = true
-        `,
-          {
-            replacements: { orderId: id },
-            type: models.sequelize.QueryTypes.SELECT,
-            model: models.PeeledDispatches,
-          },
+      } catch (err) {
+        console.warn(
+          `[GetTracking] Could not fetch production_orders: ${err.message}`,
         );
-        allPeeledDispatchTracking = peeledByPeeling;
       }
 
-      // Get production orders for this sales order
-      const productionOrders = await models.production_orders.findAll({
-        where: {
-          order_id: id,
-        },
-        attributes: [
-          "id",
-          "status",
-          "planned_quantity_kg",
-          "produced_quantity_kg",
-          "created_at",
-        ],
-      });
+      try {
+        if (models.Dispatches) {
+          dispatches = await models.Dispatches.findAll({
+            where: { order_id: id },
+            attributes: ["id", "created_at"],
+            raw: true,
+          }).catch((err) => {
+            console.warn(
+              `[GetTracking] Error fetching dispatches: ${err.message}`,
+            );
+            return [];
+          });
+        }
+      } catch (err) {
+        console.warn(
+          `[GetTracking] Could not fetch dispatches: ${err.message}`,
+        );
+      }
+
+      try {
+        if (models.Peeling) {
+          peelingRecords = await models.Peeling.findAll({
+            where: { order_id: id },
+            attributes: ["id", "created_at"],
+            raw: true,
+          }).catch((err) => {
+            console.warn(
+              `[GetTracking] Error fetching peeling: ${err.message}`,
+            );
+            return [];
+          });
+        }
+      } catch (err) {
+        console.warn(`[GetTracking] Could not fetch peeling: ${err.message}`);
+      }
+
+      try {
+        if (models.PeeledDispatches) {
+          peeledDispatches = await models.PeeledDispatches.findAll({
+            where: { order_id: id },
+            attributes: ["id", "created_at"],
+            raw: true,
+          }).catch((err) => {
+            console.warn(
+              `[GetTracking] Error fetching peeled_dispatches: ${err.message}`,
+            );
+            return [];
+          });
+        }
+      } catch (err) {
+        console.warn(
+          `[GetTracking] Could not fetch peeled_dispatches: ${err.message}`,
+        );
+      }
+
+      try {
+        if (models.ProcurementLots) {
+          procurementLots = await models.ProcurementLots.findAll({
+            where: { order_id: id },
+            attributes: ["id", "created_at"],
+            raw: true,
+          }).catch((err) => {
+            console.warn(
+              `[GetTracking] Error fetching procurement_lots: ${err.message}`,
+            );
+            return [];
+          });
+        }
+      } catch (err) {
+        console.warn(
+          `[GetTracking] Could not fetch procurement_lots: ${err.message}`,
+        );
+      }
 
       resolve({
         order: order.dataValues,
@@ -631,29 +453,30 @@ export const GetWithProductionTracking = ({ id }) => {
           total_quantity: 0,
           total_packings: 0,
         },
+        status_timeline: statusTimeline.map((log) => log.dataValues),
         production_tracking: {
-          procurement: procurementTracking,
-          dispatches: allDispatches,
-          peeling: allPeelingTracking,
-          peeled_dispatches: allPeeledDispatchTracking,
+          procurement: procurementLots,
+          dispatches: dispatches,
+          peeling: peelingRecords,
+          peeled_dispatches: peeledDispatches,
           production_orders: productionOrders,
         },
         summary: {
-          total_procurement_lots: procurementTracking.length,
-          total_dispatches: allDispatches.length,
-          total_peeling_records: allPeelingTracking.length,
-          total_peeled_dispatches: allPeeledDispatchTracking.length,
+          total_procurement_lots: procurementLots.length,
+          total_dispatches: dispatches.length,
+          total_peeling_records: peelingRecords.length,
+          total_peeled_dispatches: peeledDispatches.length,
           total_production_orders: productionOrders.length,
-          total_dispatched_quantity: allDispatches.reduce(
-            (sum, d) => sum + (d.dispatch_quantity || 0),
+          total_dispatched_quantity: dispatches.reduce(
+            (sum, d) => sum + (d.dispatch_quantity_kg || 0),
             0,
           ),
-          total_peeled_quantity: allPeelingTracking.reduce(
-            (sum, p) => sum + (p.peeling_quantity || 0),
+          total_peeled_quantity: peelingRecords.reduce(
+            (sum, p) => sum + (p.peeled_output_quantity_kg || 0),
             0,
           ),
-          total_peeled_dispatched_quantity: allPeeledDispatchTracking.reduce(
-            (sum, pd) => sum + (pd.peeled_dispatch_quantity || 0),
+          total_peeled_dispatched_quantity: peeledDispatches.reduce(
+            (sum, pd) => sum + (pd.dispatch_quantity_kg || 0),
             0,
           ),
         },
@@ -1100,6 +923,13 @@ export const GetAllocationData = ({ start, length, search }) => {
             ],
             [
               sequelize.literal(
+                `(SELECT MAX(status) FROM production_orders po 
+                  WHERE po.order_id = "Orders".id)`,
+              ),
+              "production_status",
+            ],
+            [
+              sequelize.literal(
                 `(SELECT SUM(total_price) FROM order_products op WHERE op.order_id = "Orders".id and op.is_active = true)`,
               ),
               "total_products_price",
@@ -1218,6 +1048,13 @@ export const GetAllocationData = ({ start, length, search }) => {
               ),
               "total_products_price",
             ],
+            [
+              sequelize.literal(
+                `(SELECT MAX(status) FROM production_orders po 
+                  WHERE po.order_id = "Orders".id)`,
+              ),
+              "production_status",
+            ],
           ],
           include: [
             {
@@ -1291,9 +1128,11 @@ export const GetAllocationData = ({ start, length, search }) => {
               is_active: true,
             },
             attributes: [
+              "id",
               "allocation_status",
               "allocated_quantity",
               "order_product_id",
+              "action_required",
             ],
           });
 
@@ -1360,6 +1199,7 @@ export const GetAllocationData = ({ start, length, search }) => {
           return {
             ...orderJson,
             allocation_status,
+            sales_allocations: salesAllocations,
           };
         }),
       );

@@ -158,7 +158,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Update Hook
   ProcurementProducts.afterUpdate(async (data, options) => {
-    updateInvenoryQuantity(sequelize, data, options);
+    await updateInvenoryQuantity(sequelize, data, options);
   });
 
   // Delete Hook
@@ -185,109 +185,93 @@ module.exports = (sequelize, DataTypes) => {
 // Utils Functions
 const updateInvenoryQuantity = async (sequelize, data, options) => {
   try {
-    // Get all active procurement products for this product and type
-    const allProcurementProducts =
-      await sequelize.models.ProcurementProducts.findAll({
-        subQuery: false,
-        attributes: ["id", "procurement_quantity", "adjusted_quantity"],
+    console.log(
+      `[INVENTORY UPDATE] Updating purchase inventory for procurement product ${data?.id}, product_master_id: ${data?.product_master_id}, quantity procured: ${data?.procurement_quantity}`,
+    );
+
+    // IMPORTANT: Store THIS procurement_product's quantity only, not a sum of all
+    // Each procurement creates a separate inventory record with its own quantity
+    const currentQuantity = data?.procurement_quantity || 0;
+
+    console.log(
+      `[INVENTORY UPDATE] Current procurement quantity for this product: ${currentQuantity} units`,
+    );
+
+    // STEP 1: Create/Update individual record for THIS procurement_product_id ONLY
+    // This is crucial for getRawMaterialsForProduct to find it
+    const individualInventory =
+      await sequelize.models.PurchaseInventory.findOne({
+        attributes: ["id", "quantity"],
         where: {
-          product_master_id: data?.product_master_id,
-          procurement_product_type: data?.procurement_product_type,
+          procurement_product_id: data?.id,
           is_active: true,
         },
         raw: true,
       });
 
-    // Calculate totals manually to avoid grouping issues
-    let total_quantity = 0;
-    let total_adjusted_quantity = 0;
+    const { v4: uuidv4 } = require("uuid");
 
-    for (const pp of allProcurementProducts) {
-      total_quantity += pp.procurement_quantity || 0;
-      total_adjusted_quantity += pp.adjusted_quantity || 0;
-    }
-
-    // Get dispatched quantity for all these procurement products
-    const dispatchedData = await sequelize.models.Dispatches.findAll({
-      attributes: [
-        [
-          sequelize.fn("sum", sequelize.col("dispatch_quantity")),
-          "total_dispatched",
-        ],
-      ],
-      where: {
-        procurement_product_id: allProcurementProducts.map((p) => p.id),
-        is_active: true,
-      },
-      raw: true,
-    });
-
-    const total_dispatched_quantity = dispatchedData[0]?.total_dispatched || 0;
-
-    const finalQuantity = Math.floor(
-      (total_adjusted_quantity > 0 ? total_adjusted_quantity : total_quantity) -
-        (total_dispatched_quantity || 0),
-    );
-
-    console.log(
-      `Updating purchase inventory for product ${data?.product_master_id}, type: ${data?.procurement_product_type}, finalQuantity: ${finalQuantity}`,
-    );
-
-    const inventoryData = await sequelize.models.PurchaseInventory.findOne({
-      attributes: ["id", "quantity"],
-      where: {
-        product_master_id: data?.product_master_id,
-        procurement_product_type: data?.procurement_product_type,
-        is_active: true,
-      },
-      raw: true,
-    });
-
-    if (inventoryData?.id) {
+    if (individualInventory?.id) {
       console.log(
-        `Updating existing purchase inventory ${inventoryData.id} from quantity ${inventoryData.quantity} to ${finalQuantity}`,
+        `[INVENTORY UPDATE] Updating individual procurement product inventory record ${individualInventory.id} with quantity ${currentQuantity}`,
       );
+
+      // Get current reserved quantity to recalculate available stock
+      const currentRecord = await sequelize.models.PurchaseInventory.findOne({
+        attributes: ["reserved_quantity"],
+        where: {
+          id: individualInventory.id,
+          is_active: true,
+        },
+        raw: true,
+      });
+
+      const reservedQty = currentRecord?.reserved_quantity || 0;
+      const availableQty = Math.max(0, currentQuantity - reservedQty);
+
       await sequelize.models.PurchaseInventory.update(
         {
-          quantity: finalQuantity,
+          quantity: currentQuantity,
+          available_stock: availableQty,
           updated_at: new Date(),
           updated_by: options?.profile_id,
         },
         {
           where: {
-            id: inventoryData?.id,
+            id: individualInventory?.id,
             is_active: true,
           },
         },
       ).catch((err) => {
         console.error(
-          "Error updating purchase inventory:",
+          "[INVENTORY UPDATE] Error updating individual inventory:",
           err?.message || err,
         );
       });
     } else {
       console.log(
-        `Creating new purchase inventory for product ${data?.product_master_id} with quantity ${finalQuantity}`,
+        `[INVENTORY UPDATE] Creating new individual procurement product inventory for ${data?.id} with quantity ${currentQuantity}`,
       );
-      const { v4: uuidv4 } = require("uuid");
       await sequelize.models.PurchaseInventory.create({
         id: uuidv4(),
         procurement_product_id: data?.id,
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
-        quantity: finalQuantity,
+        quantity: currentQuantity,
+        available_stock: currentQuantity, // Initialize available_stock equal to total quantity (no reservations yet)
+        reserved_quantity: 0, // No reservations initially
         is_active: true,
         created_by: options?.profile_id,
       }).catch((err) => {
         console.error(
-          "Error creating purchase inventory:",
+          "[INVENTORY UPDATE] Error creating individual inventory:",
           err?.message || err,
         );
       });
     }
 
     // Update inventory_stock for comprehensive stock tracking
-    await updateInventoryStock(sequelize, data, finalQuantity, options);
+    await updateInventoryStock(sequelize, data, currentQuantity, options);
   } catch (err) {
     console.log(
       "Error while updating purchase inventory:",

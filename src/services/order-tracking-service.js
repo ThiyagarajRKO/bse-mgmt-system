@@ -161,13 +161,15 @@ const createProductionOrder = async (
   transaction,
 ) => {
   try {
-    // Get a plant if available
-    const plant = await models.PlantMaster.findOne({
-      where: { is_active: true },
-      transaction,
-    });
-
-    const plantId = plant?.id || null;
+    // Get a unit (plant location) - use UnitMaster instead of PlantMaster
+    let plantId = null;
+    if (models.UnitMaster) {
+      const unit = await models.UnitMaster.findOne({
+        where: { is_active: true },
+        transaction,
+      });
+      plantId = unit?.id || null;
+    }
 
     // Get species from first product
     const firstProduct = await models.OrderProducts.findOne({
@@ -175,7 +177,7 @@ const createProductionOrder = async (
       include: [
         {
           model: models.ProductMaster,
-          as: "product",
+          as: "ProductMaster",
           attributes: ["id"],
           include: [
             {
@@ -188,8 +190,15 @@ const createProductionOrder = async (
       transaction,
     });
 
+    // Get species from the included ProductMaster data
     const speciesId =
-      firstProduct?.product?.ProductCategoryMaster?.species_master_id || null;
+      firstProduct?.ProductMaster?.ProductCategoryMaster?.species_master_id ||
+      firstProduct?.ProductMaster?.product_category_master_id ||
+      null;
+
+    // Use order ID as plant_id if PlantMaster is not available
+    const plantIdForOrder =
+      plantId || order.id?.substring(0, 20) || "DEFAULT_PLANT";
 
     const productionOrder = await models.production_orders.create(
       {
@@ -197,7 +206,7 @@ const createProductionOrder = async (
         order_id: order.id,
         order_no: orderNumber,
         order_type: "SALES",
-        plant_id: plantId,
+        plant_id: plantIdForOrder,
         input_species_id: speciesId,
         planned_quantity_kg: totalQuantity,
         planned_start_date: new Date(),

@@ -42,6 +42,48 @@ export const CreateRequest = (
           { transaction, profile_id },
         );
 
+        // Update purchase inventory to reserve quantity for this purchase request
+        const purchaseInventory = await models.PurchaseInventory.findOne(
+          {
+            where: {
+              product_master_id: product_id,
+              is_active: true,
+            },
+          },
+          { transaction },
+        );
+
+        if (purchaseInventory) {
+          // Calculate new reserved and available quantities
+          const currentReserved = purchaseInventory.reserved_quantity || 0;
+          const newReserved = currentReserved + quantity;
+          const totalQuantity = purchaseInventory.quantity || 0;
+          const newAvailable = Math.max(0, totalQuantity - newReserved);
+
+          await models.PurchaseInventory.update(
+            {
+              reserved_quantity: newReserved,
+              available_stock: newAvailable,
+              updated_at: new Date(),
+              updated_by: profile_id,
+            },
+            {
+              where: {
+                id: purchaseInventory.id,
+              },
+            },
+            { transaction },
+          );
+
+          fastify.log.info(
+            `Updated inventory for product ${product_id}: reserved=${newReserved}, available=${newAvailable}`,
+          );
+        } else {
+          fastify.log.warn(
+            `No purchase inventory found for product ${product_id}, purchase request created without inventory update`,
+          );
+        }
+
         // Commit the transaction
         await transaction.commit();
 

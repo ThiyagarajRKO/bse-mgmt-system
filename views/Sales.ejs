@@ -2010,6 +2010,9 @@
 
   <script type="text/javascript">
     jQuery(document).ready(async function ($) {
+      // Disable AJAX caching globally to ensure fresh data is always fetched
+      $.ajaxSetup({ cache: false });
+
       // Declarations
       let is_updated_data = false;
       let productNamesArray = [];
@@ -2273,6 +2276,9 @@
         const selectedMaterialName = $(
           'input[name="rawMaterial"]:checked',
         ).data("material-name");
+        const productMasterId = $('input[name="rawMaterial"]:checked').data(
+          "product-master-id",
+        );
         const quantityToOrder = parseFloat($("#purchaseRequestQuantity").val());
 
         if (!selectedMaterial) {
@@ -2290,6 +2296,7 @@
         const materialData = {
           id: selectedMaterial,
           procurement_product_name: selectedMaterialName,
+          product_master_id: productMasterId,
           quantity: quantityToOrder,
         };
 
@@ -3492,7 +3499,8 @@
           ordering: false,
           ajax: {
             type: "GET",
-            url: "/api/orders/allocation",
+            url: `/api/orders/allocation?t=${Date.now()}`,
+            cache: false,
             error: function (xhr, error, code) {
               console.error("❌ Allocation API error:", xhr);
               $("#allocationTable").DataTable().destroy();
@@ -3994,10 +4002,11 @@
         const orderId = $(this).data("order-id");
         const productId = $(this).data("product-id");
         const orderNo = $(this).data("order-no");
+        const allocationId = $(this).data("allocation-id");
 
         $.confirm({
           title: "Begin Production?",
-          content: `Are you sure you want to begin production for order <strong>${orderNo}</strong>? This will redirect you to the production page.`,
+          content: `Are you sure you want to begin production for order <strong>${orderNo}</strong>? This will update the production status and redirect you to the production page.`,
           backgroundDismiss: false,
           backgroundDismissAnimation: "glow",
           type: "blue",
@@ -4012,8 +4021,40 @@
               text: "Begin Production",
               btnClass: "btn-blue",
               action: function () {
-                // Redirect to production page with order context
-                window.location.href = `/production?order_id=${orderId}&product_id=${productId}`;
+                // Show loading toast
+                toastr.info("Updating production status...", "Please Wait");
+
+                // Call the begin production API to update allocation and order status
+                $.ajax({
+                  url: `/api/sales/allocations/${allocationId}/begin-production`,
+                  method: "PUT",
+                  contentType: "application/json",
+                  data: JSON.stringify({
+                    production_notes: `Production started for order ${orderNo}`,
+                  }),
+                  success: function (response) {
+                    console.log("Production status updated:", response);
+                    toastr.success(
+                      "Production status updated. Redirecting to production page...",
+                      "Success",
+                    );
+
+                    // Refresh allocation table before redirecting
+                    setTimeout(() => {
+                      loadAllocationTableData();
+                      // Redirect to production page with order context
+                      window.location.href = `/production?order_id=${orderId}&product_id=${productId}`;
+                    }, 1500);
+                  },
+                  error: function (xhr) {
+                    let errorMsg = "Failed to update production status!";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                      errorMsg = xhr.responseJSON.message;
+                    }
+                    toastr.error(errorMsg, "Error");
+                    console.error("Begin production error:", xhr);
+                  },
+                });
               },
             },
             cancel: function () {
@@ -4161,13 +4202,19 @@
         console.log("showOrderViewModal called with order:", order);
         const allocationStatus = order.allocation_status;
 
+        // Get the first SalesAllocation ID for this order if available
+        let allocationId = null;
+        if (order.sales_allocations && order.sales_allocations.length > 0) {
+          allocationId = order.sales_allocations[0].id;
+        }
+
         // Create a simple modal for viewing order details
         const modalHtml = `
           <div class="modal fade" id="allocationViewModal" tabindex="-1" role="dialog" aria-labelledby="allocationViewModalLabel" aria-hidden="true" data-order-id="${
             order.id
           }" data-product-id="${productMasterId}" data-species-id="${
             speciesMasterId || ""
-          }">
+          }" data-allocation-id="${allocationId || ""}">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -4248,7 +4295,7 @@
                           <i class="fa-solid fa-industry"></i> Go to Production
                         </button>`
                       : parseFloat(netInventory) >= parseFloat(quantityRequired)
-                        ? `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-quantity="${quantityRequired}">
+                        ? `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-allocation-id="${allocationId || ""}" data-quantity="${quantityRequired}">
                           <i class="fa-solid fa-industry"></i> Begin Production
                         </button>`
                         : `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
@@ -4565,6 +4612,7 @@
         window.currentPurchaseRequest = {
           orderId,
           productId,
+          speciesId,
           productName,
           quantityRequired,
           orderNo,
@@ -4577,17 +4625,20 @@
           <p><strong>Quantity Required:</strong> ${quantityRequired} units</p>
           <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
             <i class="fa-solid fa-info-circle me-2"></i>
-            A 20% buffer will be added to the order quantity for safety stock.
+            Recommended quantity will be calculated after checking raw material inventory.
           </p>
         `;
         $("#purchaseRequestOrderDetails").html(orderDetailsHtml);
 
-        // Initialize quantity field with calculated value (20% buffer)
+        // Initialize quantity field with calculated value (20% buffer + initial estimate)
         const quantityWithBuffer = Math.ceil(quantityRequired * 1.2);
         $("#purchaseRequestQuantity").val(quantityWithBuffer);
         $("#purchaseRequestQuantityHint").text(
-          `Recommended: ${quantityWithBuffer} units (includes 20% buffer)`,
+          `Calculating recommended quantity based on existing raw material inventory...`,
         );
+
+        // Clear any cached API responses to force fresh data
+        $.ajaxSetup({ cache: false });
 
         // Load raw materials
         $("#purchaseRequestRawMaterials").html(
@@ -4622,9 +4673,10 @@
 
         // First, try to get raw materials from BOM using the new API
         $.ajax({
-          url: `/api/procurement/product/calculate/multi-category?productId=${productId}&quantityRequired=${quantityRequired}`,
+          url: `/api/procurement/product/calculate/multi-category?productId=${productId}&quantityRequired=${quantityRequired}&t=${Date.now()}`,
           method: "GET",
           dataType: "json",
+          cache: false,
           success: function (response) {
             console.log("BOM-based raw materials API response:", response);
 
@@ -4710,12 +4762,15 @@
           const materialName = material.product_name || "Unknown";
           const procurementProductId = material.procurement_product_id;
 
-          // Use the calculated values from BOM
-          const bomQuantityRequired = material.total_quantity_required || 0;
-          const currentStock = material.current_stock || 0;
-          const inventoryGap = material.inventory_gap || 0;
-          const recommendedOrderQuantity =
-            material.recommended_order_quantity || 0;
+          // Use the calculated values from BOM - round all to whole numbers
+          const bomQuantityRequired = Math.ceil(
+            material.total_quantity_required || 0,
+          );
+          const currentStock = Math.ceil(material.current_stock || 0);
+          const inventoryGap = Math.ceil(material.inventory_gap || 0);
+          const recommendedOrderQuantity = Math.ceil(
+            material.recommended_order_quantity || 0,
+          );
           const unitOfMeasure = material.unit_of_measure || "KG";
 
           // Determine status based on inventory gap
@@ -4723,10 +4778,10 @@
           let statusColor = "#gray";
 
           if (inventoryGap <= 0) {
-            statusText = "Sufficient Stock";
+            statusText = "✓ Sufficient";
             statusColor = "#4CAF50"; // Green
           } else if (inventoryGap > 0) {
-            statusText = "Order Required";
+            statusText = "⚠ Order Needed";
             statusColor = "#FF9800"; // Orange
           }
 
@@ -4750,6 +4805,7 @@
                       name="rawMaterial"
                       value="${procurementProductId}"
                       data-material-name="${materialName}"
+                      data-product-master-id="${material.product_master_id}"
                       style="cursor: pointer; width: 18px; height: 18px; accent-color: #627293;"
                     >
                     <strong style="color: #e3e3e3; font-size: 14px;">${materialName}</strong>
@@ -4758,20 +4814,20 @@
                   <div style="background: rgba(98, 114, 147, 0.1); padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid rgba(98, 114, 147, 0.3);">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                       <div>
-                        <span style="color: #999;">Required Quantity:</span>
+                        <span style="color: #999;">Required:</span>
                         <span class="badge" style="background-color: #6c757d; color: white;">${bomQuantityRequired} ${unitOfMeasure}</span>
                       </div>
                       <div>
-                        <span style="color: #999;">Current Stock:</span>
-                        <span class="badge" style="background-color: #6c757d; color: white;">${currentStock} ${unitOfMeasure}</span>
+                        <span style="color: #999;">In Warehouse:</span>
+                        <span class="badge" style="background-color: #28a745; color: white;">${currentStock} ${unitOfMeasure}</span>
                       </div>
                     </div>
                   </div>
 
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
-                      <span style="color: #999; font-size: 12px;">Order Gap:</span>
-                      <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${inventoryGap} ${unitOfMeasure}</span>
+                      <span style="color: #999; font-size: 12px;">Order Needed:</span>
+                      <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${recommendedOrderQuantity} ${unitOfMeasure}</span>
                     </div>
                   </div>
                 </div>
@@ -5256,6 +5312,18 @@
         console.log(
           "Raw materials HTML rendered with net inventory (purchase - sales)",
         );
+
+        // Calculate and update the recommended quantity after materials are loaded
+        if (
+          window.currentPurchaseRequest &&
+          window.currentPurchaseRequest.quantityRequired
+        ) {
+          setTimeout(() => {
+            calculateAdjustedRecommendedQuantity(
+              window.currentPurchaseRequest.quantityRequired,
+            );
+          }, 500);
+        }
       }
 
       // Helper function to load raw materials by species ID
@@ -5491,18 +5559,19 @@
 
           // Net inventory is just the raw material inventory available for this material
           netInventory = rawMaterialInventory;
+          const roundedNetInventory = Math.ceil(netInventory);
 
           console.log(
-            `Material: ${materialName}, Quantity in Stock: ${rawMaterialInventory}, Status: ${
-              netInventory > 0
+            `Material: ${materialName}, Quantity in Stock: ${Math.ceil(rawMaterialInventory)}, Status: ${
+              roundedNetInventory > 0
                 ? "Available"
                 : '<span class="out-of-stock-status">Out of Stock</span>'
             }`,
           );
 
-          const statusColor = netInventory > 0 ? "#EA5455" : "#EA5455";
+          const statusColor = roundedNetInventory > 0 ? "#EA5455" : "#EA5455";
           const statusText =
-            netInventory > 0
+            roundedNetInventory > 0
               ? "Available"
               : '<span class="out-of-stock-status">Out of Stock</span>';
 
@@ -5525,6 +5594,7 @@
                           name="rawMaterial"
                           value="${material.id}"
                           data-material-name="${materialName}"
+                          data-product-master-id="${material.product_master_id}"
                           style="cursor: pointer; width: 18px; height: 18px; accent-color: #627293;"
                         >
                         <strong style="color: #e3e3e3; font-size: 14px;">${materialName}${supplierName}</strong>
@@ -5534,7 +5604,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                           <div>
                             <span style="color: #999;">Current in Stock:</span>
-                            <span class="badge" style="background-color: #6c757d; color: white;">${rawMaterialInventory} units</span>
+                            <span class="badge" style="background-color: #6c757d; color: white;">${Math.ceil(rawMaterialInventory)} units</span>
                           </div>
                           <div>
                             <span style="color: #999;">Price per Unit:</span>
@@ -5548,7 +5618,7 @@
                       <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="padding: 8px 12px; background: rgba(98, 114, 147, 0.15); border-radius: 4px; border-left: 3px solid ${statusColor}; flex: 1;">
                           <span style="color: #999; font-size: 12px;">Available in Stock:</span>
-                          <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${netInventory} units</span>
+                          <span class="badge" style="background-color: ${statusColor}; color: white; font-size: 14px;">${roundedNetInventory} units</span>
                         </div>
                       </div>
                     </div>
@@ -5571,6 +5641,18 @@
         console.log(
           "Raw materials HTML rendered with net inventory (purchase - sales)",
         );
+
+        // Calculate and update the recommended quantity after materials are loaded
+        if (
+          window.currentPurchaseRequest &&
+          window.currentPurchaseRequest.quantityRequired
+        ) {
+          setTimeout(() => {
+            calculateAdjustedRecommendedQuantity(
+              window.currentPurchaseRequest.quantityRequired,
+            );
+          }, 500);
+        }
       }
 
       function loadAICalculatedRequirementsForPanel(
@@ -5695,6 +5777,57 @@
              calculation.currentInventory,
            )} units`,
         );
+      }
+
+      // Calculate recommended order quantity after deducting available raw materials
+      function calculateAdjustedRecommendedQuantity(quantityRequired) {
+        // Get total available raw material inventory
+        let totalAvailableRawMaterial = 0;
+
+        $(".raw-material-card").each(function () {
+          // Extract available stock from each raw material card
+          const stockText = $(this)
+            .find("strong:contains('Available Stock')")
+            .next()
+            .text();
+          if (stockText) {
+            const match = stockText.match(/(\d+)/);
+            if (match) {
+              totalAvailableRawMaterial += parseInt(match[1]) || 0;
+            }
+          }
+        });
+
+        console.log(
+          `Total available raw material: ${totalAvailableRawMaterial} units`,
+        );
+        console.log(`Quantity required: ${quantityRequired} units`);
+
+        // Calculate buffer quantity
+        const quantityWithBuffer = Math.ceil(quantityRequired * 1.2);
+
+        // Deduct available inventory from buffer quantity
+        const adjustedRecommendation = Math.max(
+          0,
+          quantityWithBuffer - totalAvailableRawMaterial,
+        );
+
+        console.log(
+          `Adjusted recommendation: ${adjustedRecommendation} units (${quantityWithBuffer} - ${totalAvailableRawMaterial})`,
+        );
+
+        // Update the quantity hint with adjusted value
+        $("#purchaseRequestQuantityHint").html(
+          `<strong>Total Required:</strong> ${Math.ceil(quantityRequired)} units | 
+           <strong>With Buffer (20%):</strong> ${quantityWithBuffer} units | 
+           <strong>Available Raw Material:</strong> ${totalAvailableRawMaterial} units | 
+           <strong style="color: #0066cc;">Recommended to Order:</strong> <strong style="color: #0066cc; font-size: 1.1em;">${adjustedRecommendation} units</strong>`,
+        );
+
+        // Update the input field
+        $("#purchaseRequestQuantity").val(adjustedRecommendation);
+
+        return adjustedRecommendation;
       }
 
       // AI-Powered Raw Material Calculator - Fetch intelligent requirements
@@ -6154,7 +6287,8 @@
         // Calculate quantity with 20% buffer
         const bufferedQuantity = parseFloat(quantityRequired) * 1.2;
         const roundedQuantity = Math.ceil(bufferedQuantity);
-        const hasStock = availableStock >= roundedQuantity;
+        const roundedAvailableStock = Math.ceil(availableStock);
+        const hasStock = roundedAvailableStock >= roundedQuantity;
         const stockColor = hasStock ? "#EA5455" : "#EA5455";
         const stockStatus = hasStock
           ? '<span class="badge" style="background-color: #EA5455; color: white;">✓ Available</span>'
@@ -6163,7 +6297,7 @@
         // Calculate quantity to purchase after deducting available stock
         const quantityToPurchase = Math.max(
           0,
-          roundedQuantity - availableStock,
+          roundedQuantity - roundedAvailableStock,
         );
 
         const html = `
@@ -6173,7 +6307,7 @@
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #fff; border-radius: 3px; border-left: 3px solid ${stockColor};">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Available Stock:</strong> <span class="badge" style="background-color: ${stockColor}; color: white;">${availableStock} ${unitOfMeasure}</span></span>
+                <span><strong>Available Stock:</strong> <span class="badge" style="background-color: ${stockColor}; color: white;">${roundedAvailableStock} ${unitOfMeasure}</span></span>
                 <span style="color: ${stockColor}; font-weight: bold;">${stockStatus}</span>
               </div>
             </div>
@@ -6184,7 +6318,7 @@
             </div>
             <div style="margin-bottom: 10px; padding: 8px; background: #fff3cd; border-radius: 3px; border-left: 3px solid #ffc107;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>Quantity to Purchase (after stock deduction):</strong> ${quantityToPurchase} ${unitOfMeasure}</span>
+                <span><strong>Quantity to Purchase (after stock deduction):</strong> ${Math.ceil(quantityToPurchase)} ${unitOfMeasure}</span>
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
@@ -6193,9 +6327,9 @@
                 type="number" 
                 id="single-raw-material-qty" 
                 class="form-control form-control-sm" 
-                value="${quantityToPurchase}" 
+                value="${Math.ceil(quantityToPurchase)}" 
                 min="0" 
-                step="0.5"
+                step="1"
                 style="width: 100px;"
               >
               <span style="color: #666; font-size: 0.9em;">${unitOfMeasure}</span>
@@ -6207,7 +6341,7 @@
             }
             <input type="hidden" id="single-raw-material-id" value="${materialId}">
             <input type="hidden" id="single-raw-material-name" value="${materialName}">
-            <input type="hidden" id="single-raw-material-available-stock" value="${availableStock}">
+            <input type="hidden" id="single-raw-material-available-stock" value="${roundedAvailableStock}">
             <input type="hidden" id="single-raw-material-quantity-required" value="${roundedQuantity}">
           </div>
         `;
@@ -6288,7 +6422,7 @@
                 class="form-control form-control-sm" 
                 value="${roundedQuantity}" 
                 min="0" 
-                step="0.5"
+                step="1"
                 style="width: 100px;"
               >
               <span style="color: #666; font-size: 0.9em;">Units</span>
@@ -6508,12 +6642,14 @@
         if (rawMaterials && rawMaterials.length > 0) {
           rawMaterials.forEach((material) => {
             const materialQuantity = parseFloat(material.quantity) || 0;
-            const materialBuffered = materialQuantity * 1.2; // Add 20% buffer
-            const materialRounded = Math.ceil(materialBuffered);
+            // Use the quantity as-is (no additional buffer since user has already specified the final quantity)
+            const materialRounded = Math.ceil(materialQuantity);
 
             const procurementData = {
               procurement_date: procurementDate,
-              product_master_id: String(productId),
+              product_master_id: String(
+                material.product_master_id || productId,
+              ),
               supplier_master_id: String(supplierId),
               unit_master_id: String(unitId),
               procurement_product_type: "UNPROCESSED",
@@ -6537,20 +6673,72 @@
               success: function (response) {
                 successCount++;
 
+                const action = response?.data?.action || "created";
+                const updatedQuantity = response?.data?.updatedQuantity;
+
+                if (action === "updated") {
+                  console.log(
+                    `Purchase request updated for material ${material.id}: quantity appended to ${updatedQuantity} units`,
+                  );
+                } else {
+                  console.log(
+                    `Purchase request created for material ${material.id}: ${materialRounded} units`,
+                  );
+                }
+
+                // Refresh raw materials to update available stock for subsequent purchases
                 console.log(
-                  `Purchase request created for material ${material.id}: ${materialRounded} units`,
+                  "[REFRESH] Refreshing raw materials after successful purchase creation...",
+                  "action:",
+                  action,
+                  "updatedQuantity:",
+                  updatedQuantity,
                 );
+                if (window.currentPurchaseRequest) {
+                  setTimeout(() => {
+                    // Clear the container completely first
+                    console.log("[REFRESH] Clearing container...");
+                    $("#purchaseRequestRawMaterials")
+                      .empty()
+                      .html(
+                        '<p style="color: #999; text-align: center;">✓ Refreshing inventory... (just ordered ' +
+                          materialRounded +
+                          " units)</p>",
+                      );
+
+                    // Then reload with fresh data
+                    console.log(
+                      "[REFRESH] Calling loadRawMaterialsForPurchaseRequest with productId:",
+                      window.currentPurchaseRequest.productId,
+                      "quantityRequired:",
+                      window.currentPurchaseRequest.quantityRequired,
+                      "speciesId:",
+                      window.currentPurchaseRequest.speciesId,
+                    );
+                    loadRawMaterialsForPurchaseRequest(
+                      window.currentPurchaseRequest.productId,
+                      window.currentPurchaseRequest.quantityRequired,
+                      window.currentPurchaseRequest.speciesId,
+                    );
+                  }, 1200); // Increased delay to allow DB to fully sync
+                }
 
                 if (successCount === totalCount) {
-                  // All materials created successfully
+                  // All materials created/updated successfully
+                  const actionText =
+                    rawMaterials.some(
+                      (m, idx) =>
+                        response?.data?.action === "updated" && idx === 0,
+                    ) && response?.data?.action === "updated"
+                      ? "updated/appended"
+                      : "created";
+
                   toastr.success(
-                    `Purchase requests created successfully!<br>
+                    `Purchase requests ${actionText} successfully!<br>
                     <strong>${rawMaterials
                       .map(
                         (m) =>
-                          `${m.procurement_product_name}: ${
-                            m.quantity
-                          } → ${Math.ceil(m.quantity * 1.2)}`,
+                          `${m.procurement_product_name}: ${Math.ceil(m.quantity)} units ordered`,
                       )
                       .join("<br>")}</strong>`,
                     "Success",

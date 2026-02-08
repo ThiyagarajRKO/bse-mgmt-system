@@ -30,17 +30,29 @@ export const Create = (
       });
 
       if (procurement_lot?.id) {
-        const procurement_product = await ProcurementProducts.Count({
+        const existingProduct = await ProcurementProducts.FindByFilters({
           procurement_lot_id: procurement_lot?.id,
           product_master_id,
           supplier_master_id,
           procurement_product_type,
         });
 
-        if (procurement_product > 0) {
-          return reject({
-            statusCode: 420,
-            message: "Procurement product already exist!",
+        if (existingProduct?.id) {
+          // Product already exists - append quantity instead of rejecting
+          const updatedQuantity =
+            (existingProduct.procurement_quantity || 0) +
+            (procurement_quantity || 0);
+          await ProcurementProducts.Update(profile_id, existingProduct.id, {
+            procurement_quantity: updatedQuantity,
+          });
+          return resolve({
+            message:
+              "Procurement quantity has been updated successfully (appended to existing)",
+            data: {
+              procurement_product_id: existingProduct.id,
+              action: "updated",
+              updatedQuantity,
+            },
           });
         }
       }
@@ -57,16 +69,29 @@ export const Create = (
 
       procurement_lot_id = procurement_lot_id || procurement_lot?.id;
 
-      const procurement_product = await ProcurementProducts.Count({
+      const existingProduct = await ProcurementProducts.FindByFilters({
         procurement_lot_id,
         product_master_id,
         supplier_master_id,
         procurement_product_type,
       });
 
-      if (procurement_product > 0) {
-        return reject({
-          message: "Procurement product already exist!",
+      if (existingProduct?.id) {
+        // Product already exists - append quantity instead of rejecting
+        const updatedQuantity =
+          (existingProduct.procurement_quantity || 0) +
+          (procurement_quantity || 0);
+        await ProcurementProducts.Update(profile_id, existingProduct.id, {
+          procurement_quantity: updatedQuantity,
+        });
+        return resolve({
+          message:
+            "Procurement quantity has been updated successfully (appended to existing)",
+          data: {
+            procurement_product_id: existingProduct.id,
+            action: "updated",
+            updatedQuantity,
+          },
         });
       }
 
@@ -92,6 +117,7 @@ export const Create = (
         message: "Procurement has been inserted successfully",
         data: {
           procurement_product_id: purchase?.id,
+          action: "created",
         },
       });
     } catch (err) {

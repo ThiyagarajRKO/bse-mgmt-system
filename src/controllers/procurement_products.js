@@ -916,6 +916,51 @@ export const Count = ({
   });
 };
 
+export const FindByFilters = ({
+  id,
+  procurement_lot_id,
+  product_master_id,
+  supplier_master_id,
+  procurement_product_type,
+}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let where = {
+        is_active: true,
+      };
+
+      if (id) {
+        where.id = id;
+      }
+
+      if (procurement_lot_id) {
+        where.procurement_lot_id = procurement_lot_id;
+      }
+
+      if (supplier_master_id) {
+        where.supplier_master_id = supplier_master_id;
+      }
+
+      if (product_master_id) {
+        where.product_master_id = product_master_id;
+      }
+
+      if (procurement_product_type) {
+        where.procurement_product_type = procurement_product_type;
+      }
+
+      const product = await models.ProcurementProducts.findOne({
+        where,
+        raw: true,
+      });
+
+      resolve(product || null);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const CheckLot = ({
   id,
   procurement_lot_id,

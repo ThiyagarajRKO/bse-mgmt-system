@@ -230,6 +230,7 @@ export const GetMatchingRawMaterials = ({
                 "id",
                 "product_name",
                 "product_category_master_id",
+                "species_master_id",
                 "size_master_id",
               ],
               as: "ProductMaster",
@@ -249,7 +250,16 @@ export const GetMatchingRawMaterials = ({
         purchaseInventories.rows.map(async (row) => {
           const plainRow = row.get ? row.get({ plain: true }) : row;
 
-          if (plainRow.ProductMaster?.product_category_master_id) {
+          // IMPORTANT: Check BOTH direct species_master_id AND category-based species
+          // Approach 1: Direct species_master_id
+          if (plainRow.ProductMaster?.species_master_id) {
+            plainRow.species_id = plainRow.ProductMaster.species_master_id;
+            console.log(
+              `[GetMatchingRawMaterials] ✅ Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID (DIRECT): ${plainRow.species_id}`,
+            );
+          }
+          // Approach 2: Via ProductCategory if not already set
+          else if (plainRow.ProductMaster?.product_category_master_id) {
             try {
               const category = await models.ProductCategoryMaster.findOne({
                 where: {
@@ -270,12 +280,16 @@ export const GetMatchingRawMaterials = ({
                   : category;
                 plainRow.species_id = category.species_master_id;
                 console.log(
-                  `[GetMatchingRawMaterials] Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID: ${plainRow.species_id}`,
+                  `[GetMatchingRawMaterials] ✅ Raw Material: ${plainRow.ProductMaster?.product_name}, Species ID (CATEGORY): ${plainRow.species_id}`,
                 );
               }
             } catch (err) {
               console.warn("Error fetching category:", err.message);
             }
+          } else {
+            console.warn(
+              `[GetMatchingRawMaterials] ⚠️ Cannot determine species for: ${plainRow.ProductMaster?.product_name}`,
+            );
           }
 
           if (plainRow.ProductMaster?.size_master_id) {
@@ -299,12 +313,26 @@ export const GetMatchingRawMaterials = ({
       );
 
       // Filter to only include raw materials with matching species_id
-      const matchingRawMaterials = enrichedRows.filter(
-        (row) => row.species_id === species_id,
-      );
+      // IMPORTANT: Also exclude any materials where species couldn't be determined (undefined)
+      const matchingRawMaterials = enrichedRows.filter((row) => {
+        if (!row.species_id) {
+          console.warn(
+            `[GetMatchingRawMaterials] ⚠️ SKIP: ${row.ProductMaster?.product_name} - species unknown`,
+          );
+          return false;
+        }
+
+        const matches = row.species_id === species_id;
+        if (!matches) {
+          console.log(
+            `[GetMatchingRawMaterials] ❌ FILTERED OUT: ${row.ProductMaster?.product_name} (species ${row.species_id}) - ordered species is ${species_id}`,
+          );
+        }
+        return matches;
+      });
 
       console.log(
-        `[GetMatchingRawMaterials] Total raw materials: ${enrichedRows.length}, Matching species: ${matchingRawMaterials.length}`,
+        `[GetMatchingRawMaterials] FINAL RESULT: Total raw materials in stock: ${enrichedRows.length}, Matching species: ${matchingRawMaterials.length}`,
       );
 
       // Apply pagination AFTER filtering by species

@@ -2401,6 +2401,17 @@
               targets: [4],
               className: "text-left",
               render: function (data, type, row) {
+                const qaStatus = row?.qa_status || 'Pending';
+                const statusClass = qaStatus === 'Passed' ? 'text-success' :
+                                   qaStatus === 'Failed' ? 'text-danger' :
+                                   qaStatus === 'Conditional' ? 'text-warning' : 'text-secondary';
+                return `<span class="qa-status-link ${statusClass}" style="cursor: pointer; text-decoration: underline;" peeled_dispatch_id="${row?.id}">${qaStatus}</span>`;
+              },
+            },
+            {
+              targets: [5],
+              className: "text-left",
+              render: function (data, type, row) {
                 if (row?.temperature !== null && row?.temperature !== undefined && row.temperature !== "") {
                   return parseFloat(row.temperature).toFixed(2);
                 }
@@ -2408,21 +2419,21 @@
               },
             },
             {
-              targets: [5],
+              targets: [6],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span unit_master_id='${row["UnitMaster"]?.id}'>${row["UnitMaster"]?.unit_code || "-"}</i>`;
               },
             },
             {
-              targets: [6],
+              targets: [7],
               className: "text-left",
               render: function (data, type, row) {
                 return `<span vehicle_master_id='${row["VehicleMaster"]?.id}'>${row["VehicleMaster"]?.vehicle_number || "-"}</i>`;
               },
             },
             {
-              targets: [7],
+              targets: [8],
               className: "text-left",
               render: function (data, type, row) {
                 return `<a href="tel:${row["DriverMaster"]?.phone?.startsWith("91")
@@ -2434,14 +2445,14 @@
               },
             },
             {
-              targets: [8],
+              targets: [9],
               className: "text-left",
               render: function (data, type, row) {
                 return row?.delivery_notes || "-";
               },
             },
             {
-              targets: [9],
+              targets: [10],
               className: "text-left",
               render: (data, type, row) => {
                 const status = row?.delivery_status || "Pending";
@@ -2453,7 +2464,7 @@
               },
             },
             {
-              targets: [10],
+              targets: [1],
               className: "text-left",
               render: function (data, type, row) {
                 const date = new Date(row?.created_at);
@@ -6212,7 +6223,23 @@
           // Perform stock check for the order
           await checkStockForProduction(order);
 
-          toastr.success(`Order ${order.order_no || order.id} loaded for production`);
+          // Update order status to IN_PRODUCTION via the tracking pipeline
+          console.log('Updating order status to IN_PRODUCTION...');
+          const initiateResponse = await fetch(`/api/orders/${orderId}/initiate-production`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+          });
+
+          if (initiateResponse.ok) {
+            console.log('Order status updated to IN_PRODUCTION');
+            toastr.success(`Order ${order.order_no || order.id} production initiated - status updated to IN_PRODUCTION`);
+          } else {
+            console.warn('Failed to update order status, but order loaded successfully');
+            toastr.success(`Order ${order.order_no || order.id} loaded for production`);
+          }
 
         } catch (error) {
           console.error('Error loading order for production:', error);
@@ -6234,8 +6261,8 @@
       async function checkStockForProduction(order) {
         try {
           // Prepare products array for stock check
-          const orderedProducts = order.order_products.map(product => ({
-            product_master_id: product.product_id,
+          const orderedProducts = order.OrderProducts.map(product => ({
+            product_master_id: product.product_master_id,
             quantity_required_kg: product.quantity
           }));
 

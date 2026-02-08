@@ -178,6 +178,14 @@ export class RawMaterialCalculator {
         inventoryLevels,
       );
 
+      // ✅ NEW: Get actual raw materials list for this product
+      // This list can be used to populate a "select raw material" dropdown
+      const rawMaterialsList = await this.getRawMaterialsForProduct({
+        productId,
+        quantityRequired,
+        speciesId: effectiveSpeciesId,
+      });
+
       console.log("Raw Material Calculation Complete:", {
         finishedProductRequired: quantityRequired,
         rawMaterialNeeded,
@@ -188,6 +196,7 @@ export class RawMaterialCalculator {
           rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
           0,
         ),
+        rawMaterialsCount: rawMaterialsList.length,
       });
 
       return {
@@ -196,6 +205,9 @@ export class RawMaterialCalculator {
           ...calculations,
           aiAnalysis: aiAnalysis,
           timestamp: new Date().toISOString(),
+          // ✅ NEW FIELD: Raw materials list with product names for dropdown selection
+          raw_materials: rawMaterialsList,
+          raw_materials_count: rawMaterialsList.length,
         },
       };
     } catch (error) {
@@ -530,64 +542,322 @@ export class RawMaterialCalculator {
     try {
       const { productId, quantityRequired, speciesId } = params;
 
-      console.log("Getting raw materials for product:", {
+      console.log("[RAW MATERIALS] Getting raw materials for product:", {
         productId,
         quantityRequired,
+        speciesId,
       });
 
+      // Step 1: Fetch the finished product to get its species - IMPORTANT for filtering
+      let effectiveSpeciesId = speciesId;
+      let orderedProduct = null;
+
+      if (!effectiveSpeciesId) {
+        // Try multiple approaches to get species from product
+        orderedProduct = await models.ProductMaster.findOne({
+          where: { id: productId, is_active: true },
+          attributes: [
+            "id",
+            "product_name",
+            "species_master_id",
+            "product_category_master_id",
+          ],
+          raw: false,
+        });
+
+        // Approach 1: Direct species_master_id (if available)
+        if (orderedProduct?.species_master_id) {
+          effectiveSpeciesId = orderedProduct.species_master_id;
+          console.log(
+            "[RAW MATERIALS] ✅ Found species from product.species_master_id:",
+            effectiveSpeciesId,
+          );
+        }
+        // Approach 2: Through product category
+        else if (orderedProduct?.product_category_master_id) {
+          const category = await models.ProductCategoryMaster.findOne({
+            where: { id: orderedProduct.product_category_master_id },
+            attributes: ["species_master_id"],
+            raw: true,
+          });
+          if (category?.species_master_id) {
+            effectiveSpeciesId = category.species_master_id;
+            console.log(
+              "[RAW MATERIALS] ✅ Found species from product category:",
+              effectiveSpeciesId,
+            );
+          }
+        }
+
+        if (!effectiveSpeciesId) {
+          console.warn(
+            "[RAW MATERIALS] ⚠️  Could not determine species for product:",
+            productId,
+          );
+        }
+      }
+
+      if (!orderedProduct) {
+        orderedProduct = await models.ProductMaster.findOne({
+          where: { id: productId, is_active: true },
+          attributes: ["id", "product_name"],
+          raw: true,
+        });
+      }
+
+      console.log(
+        "[RAW MATERIALS] Querying BOM entries for product:",
+        productId,
+      );
+      console.log("[RAW MATERIALS] Expected species ID:", effectiveSpeciesId);
+
       // Get BOM entries for this finished product
-      const bomEntries = await models.BillOfMaterials.findAll({
+      const simpleBomEntries = await models.BillOfMaterials.findAll({
         where: { product_master_id: productId, is_active: true },
-        include: [
-          {
-            model: models.ProcurementProducts,
-            as: "ProcurementProduct",
-            required: true,
+        raw: true,
+      });
+
+      console.log(
+        `[RAW MATERIALS] Found ${simpleBomEntries.length} basic BOM entries for product ${productId}`,
+      );
+
+      if (!simpleBomEntries || simpleBomEntries.length === 0) {
+        console.warn(
+          `[RAW MATERIALS] No BOM entries found for product ${productId}`,
+        );
+        return [];
+      }
+
+      if (!effectiveSpeciesId) {
+        console.error(
+          "[RAW MATERIALS] ❌ CRITICAL: Cannot filter raw materials - species ID is unknown!",
+        );
+        console.error(
+          "[RAW MATERIALS] Will return empty list to prevent cross-species contamination",
+        );
+        return [];
+      }
+
+      // Now enrich each BOM entry with procurement product and product master data
+      const bomEntries = [];
+      for (const simpleBom of simpleBomEntries) {
+        try {
+          console.log(
+            `[RAW MATERIALS] Fetching procurement product: ${simpleBom.procurement_product_id}`,
+          );
+
+          // First try without include to see if it exists at all
+          // NOTE: paranoid: false is needed because ProcurementProducts uses soft deletes
+          const procProductBasic = await models.ProcurementProducts.findOne({
+            where: { id: simpleBom.procurement_product_id, is_active: true },
+            paranoid: false, // Include soft-deleted records
+            raw: true,
+          });
+
+          if (!procProductBasic) {
+            console.warn(
+              `[RAW MATERIALS] ❌ Procurement product ${simpleBom.procurement_product_id} not found (basic query)`,
+            );
+            continue;
+          }
+
+          console.log(
+            `[RAW MATERIALS] ✅ Found basic procurement product ${simpleBom.procurement_product_id}`,
+          );
+
+          // Now try with include
+          const procProduct = await models.ProcurementProducts.findOne({
+            where: { id: simpleBom.procurement_product_id, is_active: true },
             include: [
               {
                 model: models.ProductMaster,
                 as: "ProductMaster",
-                attributes: ["id", "product_name"],
-                required: true,
+                required: false,
+                attributes: [
+                  "id",
+                  "product_name",
+                  "product_category_master_id",
+                ],
               },
             ],
-          },
-        ],
-      });
+            paranoid: false, // Include soft-deleted records
+            raw: false,
+          });
 
-      if (!bomEntries || bomEntries.length === 0) {
-        console.warn(`No BOM entries found for product ${productId}`);
+          if (procProduct && procProduct.ProductMaster) {
+            console.log(
+              `[RAW MATERIALS] ✅ Found procurement product with ProductMaster ${simpleBom.procurement_product_id}`,
+            );
+            bomEntries.push({
+              ...simpleBom,
+              ProcurementProduct: procProduct,
+            });
+          } else if (procProduct && !procProduct.ProductMaster) {
+            console.warn(
+              `[RAW MATERIALS] ⚠️  Procurement product exists but ProductMaster missing: ${simpleBom.procurement_product_id}`,
+            );
+            console.log(
+              `[RAW MATERIALS] ProductMaster from query:`,
+              procProduct.ProductMaster,
+            );
+          } else {
+            console.warn(
+              `[RAW MATERIALS] ⚠️  BOM entry ${simpleBom.id} references non-existent procurement product ${simpleBom.procurement_product_id}`,
+            );
+          }
+        } catch (err) {
+          console.error(
+            `[RAW MATERIALS] Error fetching procurement product ${simpleBom.procurement_product_id}: ${err.message}`,
+          );
+        }
+      }
+
+      console.log(
+        `[RAW MATERIALS] After enrichment: ${bomEntries.length}/${simpleBomEntries.length} valid BOM entries`,
+      );
+
+      if (bomEntries.length === 0) {
+        console.warn(
+          `[RAW MATERIALS] All BOM entries for product ${productId} are orphaned or broken`,
+        );
         return [];
       }
+      console.log(
+        `[RAW MATERIALS] Filtering to species: ${effectiveSpeciesId}`,
+      );
 
       const rawMaterials = [];
 
       for (const bomEntry of bomEntries) {
         const procurementProduct = bomEntry.ProcurementProduct;
-        if (!procurementProduct) continue;
+        if (!procurementProduct) {
+          console.warn(
+            `[RAW MATERIALS] No procurement product for BOM entry ${bomEntry.id}`,
+          );
+          continue;
+        }
 
         const productMaster = procurementProduct.ProductMaster;
-        if (!productMaster) continue;
+        if (!productMaster) {
+          console.warn(
+            `[RAW MATERIALS] No product master for procurement product ${procurementProduct.id}`,
+          );
+          continue;
+        }
+
+        // Fetch full product details with species to check for species match
+        let rawMaterialProduct = await models.ProductMaster.findOne({
+          where: { id: productMaster.id, is_active: true },
+          attributes: [
+            "id",
+            "product_name",
+            "species_master_id",
+            "product_category_master_id",
+          ],
+          raw: false,
+        });
+
+        if (!rawMaterialProduct) {
+          console.warn(
+            `[RAW MATERIALS] ⚠️  Raw material product not found: ${productMaster.id}`,
+          );
+          continue;
+        }
+
+        // STRICT SPECIES FILTERING: Only include raw materials from the SAME species
+        // Get the species ID from the raw material product
+        let rawMaterialSpeciesId = rawMaterialProduct.species_master_id;
+
+        // If raw material doesn't have direct species_master_id, try product category
+        if (
+          !rawMaterialSpeciesId &&
+          rawMaterialProduct.product_category_master_id
+        ) {
+          const rawCategory = await models.ProductCategoryMaster.findOne({
+            where: { id: rawMaterialProduct.product_category_master_id },
+            attributes: ["species_master_id"],
+            raw: true,
+          });
+          rawMaterialSpeciesId = rawCategory?.species_master_id;
+        }
+
+        // FILTER: Only keep if species matches
+        if (effectiveSpeciesId && rawMaterialSpeciesId) {
+          if (rawMaterialSpeciesId !== effectiveSpeciesId) {
+            console.log(
+              `[RAW MATERIALS] ❌ SKIP: Raw material "${rawMaterialProduct.product_name}" is species ${rawMaterialSpeciesId}, but ordered product is species ${effectiveSpeciesId}`,
+            );
+            continue;
+          }
+          console.log(
+            `[RAW MATERIALS] ✅ KEEP: Raw material "${rawMaterialProduct.product_name}" is correct species ${effectiveSpeciesId}`,
+          );
+        } else if (!rawMaterialSpeciesId) {
+          console.warn(
+            `[RAW MATERIALS] ⚠️  Cannot determine species for raw material ${productMaster.id}, skipping`,
+          );
+          continue;
+        }
 
         // Calculate required quantity based on BOM ratio
         const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
         const requiredQuantity = quantityRequired * bomQuantity;
 
-        // Get current inventory for this raw material
-        const inventory = await models.PurchaseInventory.findAll({
+        // Get ALL procurement inventory records for this product_master_id
+        // Filter to only active, non-default/seeded records when possible
+        // Get records ordered by creation date (newest first) to prioritize actual orders
+        const allInventoryRecords = await models.PurchaseInventory.findAll({
           where: {
-            procurement_product_id: procurementProduct.id,
+            product_master_id: productMaster.id,
             is_active: true,
           },
-          attributes: ["quantity"],
+          attributes: [
+            "id",
+            "quantity",
+            "available_stock",
+            "reserved_quantity",
+            "procurement_product_id",
+            "created_at",
+          ],
+          order: [["created_at", "DESC"]], // Most recent first
           raw: true,
         });
 
-        const currentStock = inventory.reduce(
-          (sum, inv) => sum + parseFloat(inv.quantity || 0),
-          0,
+        console.log(
+          `[RAW MATERIALS] Found ${allInventoryRecords.length} inventory records for product ${productMaster.id}:`,
+          allInventoryRecords.map((r) => ({
+            id: r.id,
+            quantity: r.quantity,
+            available_stock: r.available_stock,
+            reserved_quantity: r.reserved_quantity,
+            created_at: r.created_at,
+          })),
         );
 
+        // Sum all quantities to get total warehouse stock
+        // Use available_stock if initialized, fall back to quantity
+        // available_stock = quantity - reserved_quantity
+        const currentStock = allInventoryRecords.reduce((sum, inv) => {
+          // If available_stock is set and greater than 0, use it
+          // Otherwise, initialize it as total quantity
+          const availStock = inv.available_stock || 0;
+          const qty = availStock > 0 ? availStock : inv.quantity || 0;
+          return sum + qty;
+        }, 0);
+
+        console.log(
+          `[RAW MATERIALS] Total warehouse stock for product ${productMaster.id}:`,
+          {
+            recordsFound: allInventoryRecords.length,
+            currentStock,
+            breakdown: allInventoryRecords.map((r) => ({
+              procurement_product_id: r.procurement_product_id,
+              quantity: r.quantity,
+            })),
+          },
+        );
+
+        // Calculate inventory gap based on warehouse stock
         const inventoryGap = Math.max(0, requiredQuantity - currentStock);
 
         rawMaterials.push({
@@ -604,12 +874,90 @@ export class RawMaterialCalculator {
       }
 
       console.log(
-        `Found ${rawMaterials.length} raw materials for product ${productId}`,
+        `[RAW MATERIALS] Found ${rawMaterials.length} raw materials for product ${productId}`,
+        rawMaterials,
       );
       return rawMaterials;
     } catch (error) {
-      console.error("Error getting raw materials for product:", error);
+      console.error(
+        "[RAW MATERIALS] Error getting raw materials for product:",
+        error,
+      );
       return [];
+    }
+  }
+
+  /**
+   * Get multi-category raw material recommendations
+   * Returns arrays of raw materials grouped by category/type
+   */
+  static async getMultiCategoryRecommendations(params) {
+    try {
+      const { productId, quantityRequired, speciesId } = params;
+
+      console.log("[MULTI-CATEGORY] Getting recommendations for product:", {
+        productId,
+        quantityRequired,
+        speciesId,
+      });
+
+      // Use the existing getRawMaterialsForProduct method
+      const rawMaterials = await this.getRawMaterialsForProduct({
+        productId,
+        quantityRequired,
+        speciesId,
+      });
+
+      console.log(
+        `[MULTI-CATEGORY] Retrieved ${rawMaterials.length} raw materials`,
+      );
+
+      // If no BOM entries found, return empty array
+      if (!rawMaterials || rawMaterials.length === 0) {
+        console.warn(
+          "[MULTI-CATEGORY] No raw materials found for product:",
+          productId,
+        );
+        return {
+          data: [],
+          success: false,
+          message:
+            "No BOM entries or raw materials configured for this product",
+        };
+      }
+
+      // Group raw materials by type or category
+      const grouped = {};
+      rawMaterials.forEach((material) => {
+        const category = material.procurement_product_type || "UNPROCESSED";
+        if (!grouped[category]) {
+          grouped[category] = [];
+        }
+        grouped[category].push(material);
+      });
+
+      // Convert to array format with category info
+      const result = Object.entries(grouped).map(([category, materials]) => ({
+        category,
+        categoryName: category === "UNPROCESSED" ? "Raw Materials" : category,
+        rawMaterials: materials,
+        totalMaterials: materials.length,
+        totalInventoryGap: materials.reduce(
+          (sum, m) => sum + m.inventory_gap,
+          0,
+        ),
+      }));
+
+      console.log("[MULTI-CATEGORY] Grouped into", result.length, "categories");
+
+      return {
+        data: result,
+        success: true,
+        rawMaterialsCount: rawMaterials.length,
+      };
+    } catch (error) {
+      console.error("[MULTI-CATEGORY] Error:", error);
+      throw error;
     }
   }
 }

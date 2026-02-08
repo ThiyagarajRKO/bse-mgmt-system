@@ -1,4 +1,13 @@
-"use strict";
+Albacore Tuna: 1 products missing BOMs
+──────────────────────────────────────────────────────────────────────
+   • Albacore Tuna | UNP WHOLE ROUND | UNSIZED
+
+American Lobster: 2 products missing BOMs
+──────────────────────────────────────────────────────────────────────
+   • American Lobster | UNP HEADON SHELLON | UNSIZED
+   • American Lobster | UNP WHOLE ROUND | UNSIZED
+
+Arabian Cuttlefish: 1 products missing BOMs"use strict";
 const { v4: uuidv4 } = require("uuid");
 
 /**
@@ -128,8 +137,15 @@ module.exports = {
       }
     }
 
-    // First, create procurement_products records for each UNIQUE RAW product
-    console.log(`Creating procurement_products records...\n`);
+    // NOTE: We DO NOT create default procurement_products records anymore
+    // Reason: Default 1000 kg quantities were polluting inventory calculations
+    // when getRawMaterialsForProduct() summed all purchase_inventory records.
+    // Now, procurement products are only created when orders are confirmed
+    // and actual purchase requests are generated based on real demand.
+    
+    // The BOM structure is set up above; procurement data is created on-demand.
+    
+    console.log(`⚠️  Skipping default procurement_products creation (now on-demand only)\n`);
     const uniqueRawProducts = new Map();
 
     // Build unique set based on product_id to avoid duplicates
@@ -140,46 +156,16 @@ module.exports = {
     }
 
     const procurementRows = [];
-    for (const [productId, rawProduct] of uniqueRawProducts) {
-      procurementRows.push({
-        id: uuidv4(),
-        product_master_id: rawProduct.product_id,
-        procurement_lot_id: defaultProcurementLotId,
-        supplier_master_id: defaultSupplierId,
-        procurement_product_type: "UNPROCESSED",
-        procurement_quantity: 1000, // 1000 kg available per raw product
-        adjusted_quantity: 1000,
-        procurement_price: 10, // Placeholder price per kg
-        adjusted_price: 10,
-        procurement_purchaser: "SYSTEM",
-        is_active: true,
-        created_at: now,
-        updated_at: now,
-        created_by: systemUserId,
-        updated_by: systemUserId,
-      });
+    // Removed: Default 1000 kg procurement products
+    // These will be created dynamically when orders are confirmed
     }
 
     // Insert procurement products in batches
-    if (procurementRows.length > 0) {
-      const batchSize = 500;
-      for (let i = 0; i < procurementRows.length; i += batchSize) {
-        const batch = procurementRows.slice(i, i + batchSize);
-        try {
-          await queryInterface.bulkInsert("procurement_products", batch, {});
-          console.log(
-            `  ✓ Inserted procurement batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(procurementRows.length / batchSize)}`,
-          );
-        } catch (err) {
-          // Some might already exist - that's OK
-          console.log(
-            `  ⚠️  Batch ${Math.floor(i / batchSize) + 1} may have duplicates (OK)`,
-          );
-        }
-      }
-    }
-
-    // Fetch the newly created procurement_products
+    
+    // Skip inserting default procurement products (now on-demand only)
+    // This prevents the hardcoded 1000 kg values from polluting inventory
+    
+    // Fetch existing procurement_products (if any were created externally)
     const procurementProducts = await queryInterface.sequelize.query(
       `SELECT 
         pp.id as procurement_id,
@@ -196,7 +182,7 @@ module.exports = {
     }
 
     console.log(
-      `\nCreated ${procurementProducts.length} procurement records\n`,
+      `\nFound ${procurementProducts.length} existing procurement records (not creating defaults anymore)\n`,
     );
 
     // Build BOM records
