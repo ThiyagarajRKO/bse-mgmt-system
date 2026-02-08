@@ -294,18 +294,28 @@ export const AllocateStock = async (
                 continue; // Skip this inventory item
               }
 
-              // Create sales inventory allocation record
-              await models.SalesInventory.create(
+              // ✅ CORRECTED: Create ProductionOrder instead of SalesInventory
+              // Raw materials are being allocated, so production is needed
+              // SalesInventory should ONLY be created after production completes
+
+              const productionOrderNo = `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+              await models.ProductionOrder.create(
                 {
+                  order_no: productionOrderNo,
                   order_id: order_id,
-                  product_master_id: product_id,
-                  quantity: allocateQty,
+                  plant_id: "PLANT_001",
+                  input_species_id: inventory.product_master_id || product_id,
+                  planned_quantity_kg: allocateQty,
+                  planned_start_date: new Date(),
+                  status: "PLANNED",
                   created_by: session?.pid || "system",
+                  remarks: `Production order for sales order allocation. Raw material quantity: ${allocateQty}`,
                 },
                 { transaction },
               );
 
-              // Update purchase inventory (reduce quantity)
+              // Update purchase inventory (reduce quantity - preparing for production)
               await models.PurchaseInventory.update(
                 {
                   quantity: parseFloat(inventory.quantity) - allocateQty,
@@ -320,11 +330,11 @@ export const AllocateStock = async (
               remainingQuantity -= allocateQty;
             }
 
-            // Update order status to allocated
+            // Update order status to PENDING_PRODUCTION (raw materials allocated, waiting for manufacturing)
             await models.Orders.update(
               {
-                order_status: "ALLOCATED",
-                allocation_status: "Allocated",
+                order_status: "PENDING_PRODUCTION",
+                allocation_status: "PENDING_PRODUCTION",
                 updated_at: new Date(),
               },
               {
@@ -414,7 +424,9 @@ export const AllocateStock = async (
             // Count successful procurement records created
             const procurementCount = Array.isArray(procurementResult)
               ? procurementResult.filter((r) => r !== null).length
-              : procurementResult ? 1 : 0;
+              : procurementResult
+                ? 1
+                : 0;
 
             // Update order status to indicate procurement is in progress
             const allocationStatus =
@@ -424,7 +436,10 @@ export const AllocateStock = async (
 
             await models.Orders.update(
               {
-                order_status: procurementCount > 0 ? "PROCUREMENT_PENDING" : "ALLOCATION_FAILED",
+                order_status:
+                  procurementCount > 0
+                    ? "PROCUREMENT_PENDING"
+                    : "ALLOCATION_FAILED",
                 allocation_status: allocationStatus,
                 updated_at: new Date(),
               },
@@ -434,9 +449,10 @@ export const AllocateStock = async (
             );
 
             return resolve({
-              message: procurementCount > 0
-                ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
-                : "Failed to create procurement records.",
+              message:
+                procurementCount > 0
+                  ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
+                  : "Failed to create procurement records.",
               procurementTriggered: procurementCount > 0,
               procurementCount,
               procurementResult,
@@ -528,7 +544,9 @@ export const AllocateStock = async (
           // Count successful procurement records created
           const procurementCount = Array.isArray(procurementResult)
             ? procurementResult.filter((r) => r !== null).length
-            : procurementResult ? 1 : 0;
+            : procurementResult
+              ? 1
+              : 0;
 
           // Update order status to indicate procurement is in progress
           const allocationStatus =
@@ -538,7 +556,10 @@ export const AllocateStock = async (
 
           await models.Orders.update(
             {
-              order_status: procurementCount > 0 ? "PROCUREMENT_PENDING" : "ALLOCATION_FAILED",
+              order_status:
+                procurementCount > 0
+                  ? "PROCUREMENT_PENDING"
+                  : "ALLOCATION_FAILED",
               allocation_status: allocationStatus,
               updated_at: new Date(),
             },
@@ -548,9 +569,10 @@ export const AllocateStock = async (
           );
 
           return resolve({
-            message: procurementCount > 0
-              ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
-              : "Failed to create procurement records.",
+            message:
+              procurementCount > 0
+                ? `Procurement created successfully. ${procurementCount} procurement requests initiated.`
+                : "Failed to create procurement records.",
             procurementTriggered: procurementCount > 0,
             procurementCount,
             procurementResult,

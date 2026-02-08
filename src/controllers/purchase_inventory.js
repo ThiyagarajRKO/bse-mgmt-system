@@ -163,7 +163,7 @@ export const GetAll = ({
           "id",
           "procurement_product_id",
           "procurement_product_type",
-          "quantity",
+          "available_stock",
         ],
         include: [
           {
@@ -318,7 +318,7 @@ export const GetBySpecies = ({ species_id, start, length, search }) => {
           "id",
           "procurement_product_id",
           "procurement_product_type",
-          "quantity",
+          "available_stock",
         ],
         include: [
           {

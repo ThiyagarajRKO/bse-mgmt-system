@@ -191,7 +191,7 @@ export const CheckStockForProduct = async (productData, session, fastify) => {
       // Calculate available stock from inventory
       // This queries actual inventory/packing records
       const inventoryQuery = `
-        SELECT COALESCE(SUM(pi.quantity), 0) as available_qty
+        SELECT COALESCE(SUM(pi.available_stock), 0) as available_qty
         FROM purchase_inventory pi
         INNER JOIN procurement_products pp ON pi.procurement_product_id = pp.id
         WHERE pp.product_master_id = :product_id 

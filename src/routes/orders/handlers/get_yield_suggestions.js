@@ -142,7 +142,8 @@ export const GetYieldSuggestions = async (
         attributes: [
           "id",
           "quantity",
-          "available_quantity",
+          "available_stock",
+          "reserved_quantity",
           "product_master_id",
           "created_at",
         ],
@@ -184,7 +185,7 @@ export const GetYieldSuggestions = async (
           quantity: Math.ceil(parseFloat(inv.quantity || 0) * 100) / 100,
           available_quantity:
             Math.ceil(
-              parseFloat(inv.available_quantity || inv.quantity || 0) * 100,
+              parseFloat(inv.available_stock || inv.quantity || 0) * 100,
             ) / 100,
           created_date: inv.created_at,
           bom_quantity_required: bomEntry?.quantity_required || null,
