@@ -158,8 +158,7 @@ const CheckInventory = async (
       const isProcessedProduct =
         product?.Derivative?.derivative_code?.startsWith("PRC_") || false;
 
-      // First, check if there's finished goods inventory available, regardless of processing status
-      // Get unit IDs for Collection Center and Cold Storage (same logic as auto_allocate_stock)
+      // Get unit IDs for Collection Center and Cold Storage
       const allowedUnits = await models.UnitMaster.findAll({
         where: {
           unit_type: {
@@ -175,18 +174,18 @@ const CheckInventory = async (
 
       const allowedUnitIds = allowedUnits.map((unit) => unit.id);
 
+      // Query raw materials available in purchase_inventory
       const fgSumQuery = `
-        SELECT COALESCE(SUM(inv.available_qty), 0) as fg_available_qty
-        FROM inventory_stock inv
-        WHERE inv.product_id = :product_id
-        AND inv.unit_id IN (:allowedUnitIds)
+        SELECT COALESCE(SUM(pi.available_stock), 0) as fg_available_qty
+        FROM purchase_inventory pi
+        WHERE pi.product_master_id = :product_id
+        AND pi.is_active = true
       `;
 
       const [fgResult] = await models.sequelize
         .query(fgSumQuery, {
           replacements: {
             product_id: product.id,
-            allowedUnitIds: allowedUnitIds.length > 0 ? allowedUnitIds : [null],
           },
           type: models.sequelize.QueryTypes.SELECT,
         })
@@ -355,18 +354,6 @@ const CheckInventory = async (
       // Get the BOM data for this product
       const bomEntries = await models.BillOfMaterials.findAll({
         where: { product_master_id: product.id, is_active: true },
-        include: [
-          {
-            model: models.ProcurementProducts,
-            as: "ProcurementProduct",
-            include: [
-              {
-                model: models.ProductMaster,
-                as: "ProductMaster",
-              },
-            ],
-          },
-        ],
       });
 
       if (!bomEntries || bomEntries.length === 0) {
@@ -384,13 +371,95 @@ const CheckInventory = async (
 
       // Get raw material from first BOM entry
       const firstBomEntry = bomEntries[0];
-      const rawMaterialProduct =
-        firstBomEntry.ProcurementProduct?.ProductMaster;
 
-      if (!rawMaterialProduct) {
+      console.log("DEBUG: Processing BOM entry", {
+        bom_id: firstBomEntry.id,
+        procurement_product_id: firstBomEntry.procurement_product_id,
+        quantity_required: firstBomEntry.quantity_required,
+      });
+
+      // Strategy 1: Try to get raw material via procurement product (if it exists and is not soft-deleted)
+      let rawMaterialProductId = null;
+
+      if (firstBomEntry.procurement_product_id) {
+        try {
+          const procurementProduct = await models.ProcurementProducts.findOne({
+            where: {
+              id: firstBomEntry.procurement_product_id,
+              is_active: true,
+            },
+            attributes: ["product_master_id"],
+            paranoid: false, // Include soft-deleted records temporarily to check if it was deleted
+          });
+
+          if (procurementProduct && procurementProduct.product_master_id) {
+            rawMaterialProductId = procurementProduct.product_master_id;
+            console.log(
+              "DEBUG: Found raw material via procurement product:",
+              rawMaterialProductId,
+            );
+          } else {
+            console.log(
+              "DEBUG: Procurement product exists but has no product_master_id or is deleted",
+            );
+          }
+        } catch (e) {
+          console.log("DEBUG: Error fetching procurement product:", e?.message);
+        }
+      }
+
+      // Strategy 2: If no procurement product, infer raw material from BOM context
+      // Assume finished products are made from same-species raw materials
+      // Find a raw material of same species/derivative combination
+      if (!rawMaterialProductId) {
+        console.log(
+          "DEBUG: Attempting to infer raw material from product species/derivative...",
+        );
+
+        try {
+          // Get species of the finished product
+          const productWithSpecies = await models.ProductMaster.findOne({
+            where: { id: product.id, is_active: true },
+            include: [
+              {
+                model: models.SpeciesMaster,
+                as: "SpeciesMaster",
+                attributes: ["id"],
+                required: false,
+              },
+            ],
+          });
+
+          const speciesId = productWithSpecies?.SpeciesMaster?.id;
+
+          if (speciesId) {
+            // Find an unprocessed (raw) product from same species
+            const rawMaterial = await models.ProductMaster.findOne({
+              where: {
+                species_master_id: speciesId,
+                is_raw: true,
+                is_active: true,
+              },
+              attributes: ["id", "product_name"],
+            });
+
+            if (rawMaterial) {
+              rawMaterialProductId = rawMaterial.id;
+              console.log(
+                "DEBUG: Inferred raw material from species:",
+                rawMaterial.product_name,
+              );
+            }
+          }
+        } catch (e) {
+          console.log("DEBUG: Error inferring raw material:", e?.message);
+        }
+      }
+
+      if (!rawMaterialProductId) {
         return resolve({
           statusCode: 200,
-          message: "Raw material product not found",
+          message: "Could not determine raw material for this product",
           data: {
             product_master_id,
             available_quantity: 0,
@@ -400,9 +469,19 @@ const CheckInventory = async (
         });
       }
 
+      // Fetch raw material product details
+      const rawMaterialProduct = await models.ProductMaster.findOne({
+        where: { id: rawMaterialProductId, is_active: true },
+        attributes: [
+          "id",
+          "product_name",
+          "species_derivative_size_grade_mapping_id",
+        ],
+      });
+
       // Calculate available stock from purchase_inventory
       const inventoryQuery = `
-        SELECT COALESCE(SUM(pi.quantity), 0) as available_qty
+        SELECT COALESCE(SUM(pi.available_stock), 0) as available_qty
         FROM purchase_inventory pi
         WHERE pi.product_master_id = :product_id
         AND pi.is_active = true

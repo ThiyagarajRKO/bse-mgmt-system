@@ -190,10 +190,11 @@ const AutoAllocateStock = async ({ product_id }, session, fastify) => {
             allocatedFromInventory += allocateFromThisLot;
           }
 
-          // Update order status to ALLOCATED
+          // Update order status to PENDING_PRODUCTION (raw materials allocated, waiting for manufacturing)
           await models.Orders.update(
             {
-              order_status: "ALLOCATED",
+              order_status: "PENDING_PRODUCTION",
+              allocation_status: "PENDING_PRODUCTION",
               updated_at: new Date(),
             },
             {
@@ -205,7 +206,7 @@ const AutoAllocateStock = async ({ product_id }, session, fastify) => {
           // Update order product status
           await models.OrderProducts.update(
             {
-              delivery_status: "ALLOCATED",
+              delivery_status: "PENDING_PRODUCTION",
               updated_at: new Date(),
             },
             {
@@ -452,20 +453,28 @@ const allocateFromPurchaseInventory = async (
         const orderQuantity = parseFloat(orderProduct.quantity);
         const allocateQuantity = Math.min(orderQuantity, remainingToAllocate);
 
-        // Create sales_inventory record for allocation
-        await models.SalesInventory.create(
+        // ✅ CORRECTED: Create ProductionOrder instead of SalesInventory
+        // Raw materials are being allocated, so production is needed
+        // SalesInventory should ONLY be created after production completes
+
+        const productionOrderNo = `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        await models.ProductionOrder.create(
           {
-            product_master_id: product_id,
-            packing_id: null,
+            order_no: productionOrderNo,
             order_id: orderProduct.order_id,
-            quantity: allocateQuantity,
-            is_active: true,
+            plant_id: "PLANT_001",
+            input_species_id: product_id,
+            planned_quantity_kg: allocateQuantity,
+            planned_start_date: new Date(),
+            status: "PLANNED",
             created_by: session?.pid || session?.user_id,
+            remarks: `Production order for auto-allocation. Raw material quantity: ${allocateQuantity}`,
           },
           { transaction },
         );
 
-        // Update purchase inventory (reduce available quantity)
+        // Update purchase inventory (reduce available quantity - preparing for production)
         let allocatedFromPurchase = 0;
         for (const purchaseItem of purchaseInventoryItems) {
           if (allocatedFromPurchase >= allocateQuantity) break;
