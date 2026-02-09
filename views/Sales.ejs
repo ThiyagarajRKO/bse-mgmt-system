@@ -3667,7 +3667,14 @@
               const orderId = $(this).data("order-id");
               const $element = $(this);
 
-              if (productId) {
+              // Only fetch inventory if we have a valid product ID (UUID format)
+              // UUID pattern: 8-4-4-4-12 hex digits separated by hyphens
+              const uuidPattern =
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+              const isValidUUID =
+                productId && uuidPattern.test(String(productId));
+
+              if (isValidUUID) {
                 const url = `/api/orders/check-inventory/${productId}`;
 
                 $.ajax({
@@ -3753,8 +3760,11 @@
                   },
                 });
               } else {
+                // Product ID is missing or invalid - show placeholder
                 if ($element.hasClass("available-stock")) {
-                  $element.html(`<span class="badge bg-secondary">-</span>`);
+                  $element.html(
+                    `<span class="badge bg-secondary" title="Product ID not available">-</span>`,
+                  );
                 }
               }
             });
@@ -4312,21 +4322,6 @@
 
                   <hr class="my-4" />
 
-                  <!-- Purchase Request History Section -->
-                  <div class="purchase-request-history mt-4">
-                    <h6 class="fw-bold mb-3">
-                      <i class="fa-solid fa-clipboard-list"></i> Purchase Request History
-                    </h6>
-                    <div
-                      id="purchaseRequestHistoryTable_${order.id}"
-                      class="table-responsive"
-                      style="max-height: 300px; overflow-y: auto;"
-                    >
-                      <p style="color: #999; text-align: center; margin: 20px 0;">
-                        Loading purchase requests...
-                      </p>
-                    </div>
-                  </div>
                 </div>
                 <div class="modal-footer">
                   ${
@@ -4381,9 +4376,6 @@
         console.log("Calling .modal('show')...");
         $modal.modal("show");
         console.log("Modal show() called");
-
-        // Load purchase request history for this order
-        loadPurchaseRequestHistory(order.id);
 
         // Initialize DataTable for allocation details
         $("#allocationDetailsTable").DataTable({
