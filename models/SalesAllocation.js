@@ -48,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM(
           "PENDING",
           "ALLOCATED",
+          "PENDING_PURCHASE",
           "PRODUCTION_IN_PROGRESS",
           "COMPLETED",
         ),

@@ -97,9 +97,9 @@ class SalesAllocationService {
         `✅ Setting allocation status to ALLOCATED - sufficient inventory`,
       );
     } else if (inventoryCheck.allocationStatus === "PENDING_PURCHASE") {
-      allocationStatus = "PENDING";
+      allocationStatus = "PENDING_PURCHASE";
       console.log(
-        `⏳ Setting allocation status to PENDING - insufficient inventory, purchase needed`,
+        `⏳ Setting allocation status to PENDING_PURCHASE - insufficient inventory, purchase needed`,
       );
     }
 
