@@ -39,7 +39,9 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    console.log("\n⚠️  Note: This is a setup seeder. Manual cleanup may be required.");
+    console.log(
+      "\n⚠️  Note: This is a setup seeder. Manual cleanup may be required.",
+    );
   },
 };
 
@@ -68,7 +70,8 @@ async function populateBOM(queryInterface) {
 
     for (const processedProduct of processedProducts) {
       // Find matching RAW product (same species)
-      const [rawProducts] = await queryInterface.sequelize.query(`
+      const [rawProducts] = await queryInterface.sequelize.query(
+        `
         SELECT 
           pm.id,
           pm.product_name
@@ -77,48 +80,57 @@ async function populateBOM(queryInterface) {
           AND pm.is_raw = true
           AND pm.is_active = true
         LIMIT 1
-      `, {
-        replacements: { speciesId: processedProduct.species_master_id },
-        type: queryInterface.sequelize.QueryTypes.SELECT
-      });
+      `,
+        {
+          replacements: { speciesId: processedProduct.species_master_id },
+          type: queryInterface.sequelize.QueryTypes.SELECT,
+        },
+      );
 
       if (rawProducts.length > 0) {
         const rawProduct = rawProducts[0];
 
         // Check if BOM already exists
-        const [existingBom] = await queryInterface.sequelize.query(`
+        const [existingBom] = await queryInterface.sequelize.query(
+          `
           SELECT id FROM bill_of_materials
           WHERE product_master_id = :processedId
             AND raw_material_id = :rawId
             AND is_active = true
-        `, {
-          replacements: {
-            processedId: processedProduct.id,
-            rawId: rawProduct.id
+        `,
+          {
+            replacements: {
+              processedId: processedProduct.id,
+              rawId: rawProduct.id,
+            },
+            type: queryInterface.sequelize.QueryTypes.SELECT,
           },
-          type: queryInterface.sequelize.QueryTypes.SELECT
-        });
+        );
 
         if (existingBom.length === 0) {
           // Calculate quantity required based on yield
-          const yieldPercent = parseFloat(processedProduct.expected_yield_percent) || 60;
+          const yieldPercent =
+            parseFloat(processedProduct.expected_yield_percent) || 60;
           const quantityRequired = 100 / yieldPercent; // If 60% yield, need 1.67 kg raw for 1 kg processed
 
           // Create BOM entry
-          await queryInterface.sequelize.query(`
+          await queryInterface.sequelize.query(
+            `
             INSERT INTO bill_of_materials 
             (id, product_master_id, raw_material_id, quantity_required, is_active, created_at, created_by)
             VALUES (:id, :processedId, :rawId, :quantity, true, :now, :by)
-          `, {
-            replacements: {
-              id: uuidv4(),
-              processedId: processedProduct.id,
-              rawId: rawProduct.id,
-              quantity: quantityRequired,
-              now: new Date(),
-              by: "seeder"
-            }
-          });
+          `,
+            {
+              replacements: {
+                id: uuidv4(),
+                processedId: processedProduct.id,
+                rawId: rawProduct.id,
+                quantity: quantityRequired,
+                now: new Date(),
+                by: "seeder",
+              },
+            },
+          );
 
           bomsCreated++;
         }
@@ -139,13 +151,16 @@ async function populateBOM(queryInterface) {
 async function createMissingProcurementProducts(queryInterface) {
   try {
     // Get all species
-    const [allSpecies] = await queryInterface.sequelize.query(`
+    const [allSpecies] = await queryInterface.sequelize.query(
+      `
       SELECT DISTINCT sm.id, sm.species_name
       FROM species_master sm
       WHERE sm.is_active = true
-    `, {
-      type: queryInterface.sequelize.QueryTypes.SELECT
-    });
+    `,
+      {
+        type: queryInterface.sequelize.QueryTypes.SELECT,
+      },
+    );
 
     console.log(`Found ${allSpecies.length} species`);
 
@@ -153,61 +168,73 @@ async function createMissingProcurementProducts(queryInterface) {
 
     for (const species of allSpecies) {
       // Check if species has any procurement products
-      const [existingProducts] = await queryInterface.sequelize.query(`
+      const [existingProducts] = await queryInterface.sequelize.query(
+        `
         SELECT COUNT(*) as count
         FROM procurement_products pp
         JOIN product_master pm ON pp.product_master_id = pm.id
         WHERE pm.species_master_id = :speciesId
           AND pp.is_active = true
-      `, {
-        replacements: { speciesId: species.id },
-        type: queryInterface.sequelize.QueryTypes.SELECT
-      });
+      `,
+        {
+          replacements: { speciesId: species.id },
+          type: queryInterface.sequelize.QueryTypes.SELECT,
+        },
+      );
 
       if (existingProducts[0].count === 0) {
         // Find a raw product for this species
-        const [rawProduct] = await queryInterface.sequelize.query(`
+        const [rawProduct] = await queryInterface.sequelize.query(
+          `
           SELECT id, product_name
           FROM product_master
           WHERE species_master_id = :speciesId
             AND is_raw = true
             AND is_active = true
           LIMIT 1
-        `, {
-          replacements: { speciesId: species.id },
-          type: queryInterface.sequelize.QueryTypes.SELECT
-        });
+        `,
+          {
+            replacements: { speciesId: species.id },
+            type: queryInterface.sequelize.QueryTypes.SELECT,
+          },
+        );
 
         if (rawProduct.length > 0) {
           // Create procurement product
           const procId = uuidv4();
-          await queryInterface.sequelize.query(`
+          await queryInterface.sequelize.query(
+            `
             INSERT INTO procurement_products 
             (id, product_master_id, procurement_product_type, quantity, is_active, created_at)
             VALUES (:id, :productId, :type, :qty, true, :now)
-          `, {
-            replacements: {
-              id: procId,
-              productId: rawProduct[0].id,
-              type: "RAW",
-              qty: 0,
-              now: new Date()
-            }
-          });
+          `,
+            {
+              replacements: {
+                id: procId,
+                productId: rawProduct[0].id,
+                type: "RAW",
+                qty: 0,
+                now: new Date(),
+              },
+            },
+          );
 
           // Create inventory record
-          await queryInterface.sequelize.query(`
+          await queryInterface.sequelize.query(
+            `
             INSERT INTO purchase_inventory 
             (id, procurement_product_id, product_master_id, quantity, available_stock, reserved_quantity, is_active, created_at)
             VALUES (:id, :procId, :productId, 0, 0, 0, true, :now)
-          `, {
-            replacements: {
-              id: uuidv4(),
-              procId: procId,
-              productId: rawProduct[0].id,
-              now: new Date()
-            }
-          });
+          `,
+            {
+              replacements: {
+                id: uuidv4(),
+                procId: procId,
+                productId: rawProduct[0].id,
+                now: new Date(),
+              },
+            },
+          );
 
           productsCreated++;
         }

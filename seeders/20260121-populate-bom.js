@@ -1,13 +1,4 @@
-Albacore Tuna: 1 products missing BOMs
-──────────────────────────────────────────────────────────────────────
-   • Albacore Tuna | UNP WHOLE ROUND | UNSIZED
-
-American Lobster: 2 products missing BOMs
-──────────────────────────────────────────────────────────────────────
-   • American Lobster | UNP HEADON SHELLON | UNSIZED
-   • American Lobster | UNP WHOLE ROUND | UNSIZED
-
-Arabian Cuttlefish: 1 products missing BOMs"use strict";
+"use strict";
 const { v4: uuidv4 } = require("uuid");
 
 /**
@@ -214,7 +205,16 @@ module.exports = {
       // Calculate quantity required based on yield
       // If yield is 60%, then 100kg input → 60kg output
       // So for 1kg output, need: 1 / (yield% / 100) = 1 / 0.60 = 1.67kg input
+      // CRITICAL FIX: Use the PROCESSED product's yield (e.g., PRC_DRESSED = 70%)
+      // NOT the RAW product's yield (which is always 100%)
       const yieldPercent = processedProduct.expected_yield_percent || 85;
+      if (!yieldPercent || yieldPercent <= 0 || yieldPercent > 100) {
+        console.warn(
+          `Invalid yield for product ${processedProduct.product_name}: ${yieldPercent}, skipping`,
+        );
+        skipCount++;
+        continue;
+      }
       const quantityRequired = 1 / (yieldPercent / 100);
 
       bomRows.push({
