@@ -93,6 +93,16 @@ module.exports = (sequelize, DataTypes) => {
         comment:
           "Reference to the sales order for which this procurement product is allocated",
       },
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "Pending",
+        comment: "Status of the purchase request: Pending, Approved, Rejected",
+      },
+      approver_name: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "Name of the person who approved/rejected the request",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },

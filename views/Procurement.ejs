@@ -504,6 +504,17 @@
           class="topMenu-container d-flex justify-content-center overflow-auto mt-0"
         >
           <div
+            class="topMenu-item purchaseRequestMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Purchase Request</span>
+            </div>
+          </div>
+
+          <div
             class="topMenu-item procurementMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
@@ -1023,6 +1034,251 @@
           </div>
         </div>
         <!-- Purchases Container Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------------ Purchase Request Container ------------------------------------ -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container purchaseRequestContainer d-none">
+          <!-- Slide-in Panel -->
+          <div
+            id="purchaseRequestSlideInPanel"
+            class="slideInPanel px-4 overflow-auto"
+          >
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="purchaseRequestPanelHeading" class="fw-bold"
+                    >Add Purchase Request</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closePurchaseRequestPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+                <hr />
+                <div>
+                  <div class="form-group my-2">
+                    <label for="purchase_request_date">Date of Request</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="purchase_request_date"
+                      name="purchaseRequestDate"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="purchase_request_product">Product</label>
+                    <select
+                      id="purchase_request_product"
+                      class="form-control input-dropdown w-100"
+                      name="purchaseRequestProduct"
+                      required
+                    ></select>
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="purchase_request_quantity">Quantity (kg)</label>
+                    <input
+                      id="purchase_request_quantity"
+                      maxlength="10"
+                      class="form-control"
+                      placeholder="eg. 24"
+                      type="number"
+                      name="purchaseRequestQuantity"
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="purchase_request_price">Price per KG</label>
+                    <input
+                      id="purchase_request_price"
+                      maxlength="10"
+                      class="form-control"
+                      placeholder="eg. 24"
+                      type="number"
+                      name="purchaseRequestPrice"
+                    />
+                  </div>
+
+                  <div class="form-group my-3">
+                    <label for="purchase_request_supplier">Supplier Name</label>
+                    <select
+                      id="purchase_request_supplier"
+                      class="form-control input-dropdown w-100"
+                      name="purchaseRequestSupplier"
+                      required
+                    ></select>
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="purchase_request_purchaser">Purchaser</label>
+                    <input
+                      id="purchase_request_purchaser"
+                      class="form-control"
+                      placeholder="eg. Smith"
+                      type="text"
+                      name="purchaseRequestPurchaser"
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="purchase_request_remarks">Remarks</label>
+                    <textarea
+                      id="purchase_request_remarks"
+                      class="form-control"
+                      placeholder="eg. Urgent request for stock replenishment"
+                      name="purchaseRequestRemarks"
+                      rows="3"
+                    ></textarea>
+                  </div>
+
+                  <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                    <div
+                      id="submitPurchaseRequest"
+                      class="col-lg-5 btn btn-danger"
+                    >
+                      Save
+                    </div>
+                    <div
+                      id="resetPurchaseRequestDataBtn"
+                      class="col-lg-5 btn btn-outline-danger"
+                    >
+                      Clear
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approve Purchase Request Panel -->
+          <div
+            id="approvePurchaseRequestSlideInPanel"
+            class="slideInPanel px-4 overflow-auto"
+          >
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="approvePurchaseRequestPanelHeading" class="fw-bold"
+                    >Approve Purchase Request</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closeApprovePurchaseRequestPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+                <hr />
+                <div>
+                  <div class="form-group my-2">
+                    <label for="approve_purchase_request_product"
+                      >Product</label
+                    >
+                    <input
+                      id="approve_purchase_request_product"
+                      class="form-control"
+                      type="text"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="approve_purchase_request_quantity"
+                      >Quantity (kg)</label
+                    >
+                    <input
+                      id="approve_purchase_request_quantity"
+                      class="form-control"
+                      type="number"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="form-group my-2">
+                    <label for="approve_purchase_request_price"
+                      >Price per KG</label
+                    >
+                    <input
+                      id="approve_purchase_request_price"
+                      class="form-control"
+                      placeholder="Enter price per KG"
+                      type="number"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group my-3">
+                    <label for="approve_purchase_request_supplier"
+                      >Supplier Name</label
+                    >
+                    <select
+                      id="approve_purchase_request_supplier"
+                      class="form-control input-dropdown w-100"
+                      required
+                    ></select>
+                  </div>
+
+                  <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                    <div
+                      id="submitApprovePurchaseRequest"
+                      class="col-lg-5 btn btn-danger"
+                    >
+                      Approve & Save
+                    </div>
+                    <div
+                      id="closeApprovePurchaseRequestPanelDataBtn"
+                      class="col-lg-5 btn btn-outline-danger"
+                    >
+                      Cancel
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center mt-4 py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openPurchaseRequestPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 100px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >Add</span
+                  >
+                </div>
+              </div>
+              <table
+                id="purchaseRequestTable"
+                class="table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="fw-bold"><span>Request Date</span></th>
+                    <th class="fw-bold"><span>Order No</span></th>
+                    <th class="fw-bold"><span>Product</span></th>
+                    <th class="fw-bold"><span>Quantity (kg)</span></th>
+                    <th class="fw-bold"><span>Approver</span></th>
+                    <th class="fw-bold"><span>Status</span></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Purchase Request Container Ends -->
 
         <!-- ------------------------------------------------------------------------------------------------------------- -->
         <!-- ------------------------------------------ Supplier Container ----------------------------------------------- -->
@@ -1891,6 +2147,13 @@
         $("#procurement_product_supplier").select2({
           placeholder: "Choose a supplier",
           allowClear: true,
+        });
+
+        // Approve panel supplier dropdown - ensure Select2 styling and dropdown inside the slide panel
+        $("#approve_purchase_request_supplier").select2({
+          placeholder: "Choose a supplier",
+          allowClear: true,
+          dropdownParent: $("#approvePurchaseRequestSlideInPanel"),
         });
 
         $("#paymentMethods").select2({
@@ -4208,6 +4471,475 @@
       $("#submitPayment").click(function () {
         savePayment();
       });
+
+      // ---------------------------------------------------------
+      // ------------------- Purchase Request -------------------
+      // ---------------------------------------------------------
+
+      // Open panel
+      $("#openPurchaseRequestPanelBtn").click(function () {
+        openSlidePanel(
+          "purchaseRequestSlideInPanel",
+          "purchaseRequestPanelHeading",
+          "Purchase Request",
+          "submitPurchaseRequest",
+          "procurement_product_id",
+        );
+
+        // Changing panel save button attribute
+        $(`#submitPurchaseRequest`).attr("procurement_product_id", null);
+      });
+
+      // Close panel
+      $("#closePurchaseRequestPanelBtn").click(function () {
+        closeSlidePanel("purchaseRequestSlideInPanel");
+      });
+
+      $(".purchaseRequestMenu").click(function () {
+        $(".menu-container").addClass("d-none");
+
+        $(".purchaseRequestContainer").removeClass("d-none");
+        $(".purchaseRequestContainer").addClass("d-block");
+
+        loadPurchaseRequestDropdowns();
+        loadPurchaseRequestTableData();
+      });
+
+      $("#submitPurchaseRequest").click(function () {
+        savePurchaseRequest();
+      });
+
+      // Reset form button
+      $("#resetPurchaseRequestDataBtn").click(function () {
+        $("#purchase_request_date").val("");
+        $("#purchase_request_product").val("");
+        $("#purchase_request_quantity").val("");
+        $("#purchase_request_price").val("");
+        $("#purchase_request_supplier").val("");
+        $("#purchase_request_purchaser").val("");
+        $("#purchase_request_remarks").val("");
+        $(`#submitPurchaseRequest`).text("Save");
+        $(`#submitPurchaseRequest`).attr("procurement_product_id", null);
+      });
+
+      function loadPurchaseRequestDropdowns() {
+        // Load products
+        $.get("/api/products", function (data) {
+          const products = data.data || [];
+          let productOptions = '<option value="">-- Select Product --</option>';
+          products.forEach((product) => {
+            productOptions += `<option value="${product.id}">${product.product_name}</option>`;
+          });
+          $("#purchase_request_product").html(productOptions);
+        });
+
+        // Load suppliers
+        $.get("/api/suppliers", function (data) {
+          const suppliers = data.data || [];
+          let supplierOptions =
+            '<option value="">-- Select Supplier --</option>';
+          suppliers.forEach((supplier) => {
+            supplierOptions += `<option value="${supplier.id}">${supplier.supplier_name}</option>`;
+          });
+          $("#purchase_request_supplier").html(supplierOptions);
+        });
+      }
+
+      // Close Approve Purchase Request Panel
+      $("#closeApprovePurchaseRequestPanelBtn").click(function () {
+        closeSlidePanel("approvePurchaseRequestSlideInPanel");
+      });
+
+      // Close Approve Purchase Request Panel Data Button
+      $("#closeApprovePurchaseRequestPanelDataBtn").click(function () {
+        closeSlidePanel("approvePurchaseRequestSlideInPanel");
+      });
+
+      // Submit Approve Purchase Request
+      $("#submitApprovePurchaseRequest").click(function () {
+        // Use data() to retrieve the value that was set when approve was clicked
+        const procurement_product_id = $(this).data("procurement_product_id");
+        console.log("Submit button clicked. Element HTML:", this.outerHTML);
+        console.log(
+          "procurement_product_id from submit button data:",
+          procurement_product_id,
+        );
+        const price = $("#approve_purchase_request_price").val();
+        const supplierId = $("#approve_purchase_request_supplier").val();
+
+        console.log("Form values - Price:", price, "SupplierId:", supplierId);
+        console.log(
+          "Supplier select val():",
+          $("#approve_purchase_request_supplier").val(),
+        );
+        console.log(
+          "Supplier select data():",
+          $("#approve_purchase_request_supplier").data(),
+        );
+        console.log(
+          "Supplier select selected option:",
+          $("#approve_purchase_request_supplier option:selected").val(),
+        );
+
+        if (!procurement_product_id) {
+          toastr.error(
+            "Error: Could not determine purchase request ID. Please click Approve again.",
+            "Error",
+          );
+          return;
+        }
+
+        if (!price || price <= 0) {
+          toastr.error("Please enter a valid price", "Validation Error");
+          return;
+        }
+
+        if (!supplierId) {
+          toastr.error("Please select a supplier", "Validation Error");
+          return;
+        }
+
+        console.log(
+          "Submitting approve with procurement_product_id:",
+          procurement_product_id,
+          "supplierId:",
+          supplierId,
+        );
+
+        $.ajax({
+          url: `/api/procurement/product/procurement-requests/${procurement_product_id}/approve`,
+          type: "PUT",
+          data: JSON.stringify({
+            status: "Approved",
+            procurement_price: parseFloat(price),
+            supplier_master_id: supplierId,
+          }),
+          contentType: "application/json",
+          success: function (response) {
+            toastr.success(
+              response.message || "Purchase request approved successfully",
+              "Success",
+            );
+            closeSlidePanel("approvePurchaseRequestSlideInPanel");
+            loadPurchaseRequestTableData();
+          },
+          error: function (xhr, error, code) {
+            console.error("Approve error:", xhr.responseJSON);
+            toastr.error(
+              xhr.responseJSON?.message || "Error approving purchase request",
+              "Error",
+            );
+          },
+        });
+      });
+
+      function loadPurchaseRequestTableData() {
+        $("#purchaseRequestTable").DataTable({
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          scrollY: "40vh",
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: "/api/procurement/product/procurement-requests",
+            error: function (xhr, error, code) {
+              $("#purchaseRequestTable").DataTable().destroy();
+              $("#purchaseRequestTable").DataTable({
+                scrollX: true,
+                ordering: false,
+              });
+
+              toastr.error(
+                xhr.responseJSON?.message || "Error loading data",
+                "Error",
+              );
+            },
+            dataSrc: function (json) {
+              json.iTotalRecords = json.data?.rows?.length || 0;
+              json.iTotalDisplayRecords = json.data?.count || 0;
+
+              // Return the data to be displayed in the DataTable
+              return json?.data?.rows || [];
+            },
+          },
+          columns: [
+            { data: "id" }, // Approve button - bind to id
+            { data: "id" }, // Delete button - bind to id
+            { data: "created_at" },
+            { data: "order_no" },
+            { data: "product_name" },
+            { data: "procurement_quantity" },
+            { data: "approver_name" },
+            { data: "status" },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-left",
+              render: function (data, type, row) {
+                console.log(
+                  "Rendering approve button. data:",
+                  data,
+                  "row:",
+                  row,
+                );
+                const isApproved = row?.status === "Approved";
+                return `<i class="fa-solid fa-check-circle approvePurchaseRequest ${isApproved ? "disabled" : ""}" procurement_product_id="${data}" aria-hidden="true" style="font-size:15px;color:${isApproved ? "#ccc" : "#f07b3f"}" data-toggle="tooltip" data-placement="top" title="${isApproved ? "Already approved" : "Click to approve this purchase request"}"></i>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-left",
+              render: function (data, type, row) {
+                return `<i class="fa fa-trash del deletePurchaseRequest" procurement_product_id="${data}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click to delete this purchase request"></i>`;
+              },
+            },
+            {
+              targets: [2],
+              render: function (data, type, row) {
+                return data ? new Date(data).toLocaleDateString() : "";
+              },
+            },
+            {
+              targets: [3],
+              render: function (data, type, row) {
+                return data || "-";
+              },
+            },
+          ],
+        });
+      }
+
+      function savePurchaseRequest() {
+        const procurement_product_id = $("#submitPurchaseRequest").attr(
+          "procurement_product_id",
+        );
+        const productId = $("#purchase_request_product").val();
+        const quantity = parseFloat($("#purchase_request_quantity").val()) || 0;
+        const price = parseFloat($("#purchase_request_price").val()) || 0;
+        const supplierId = $("#purchase_request_supplier").val();
+        const purchaser = $("#purchase_request_purchaser").val();
+        const remarks = $("#purchase_request_remarks").val();
+
+        if (!productId || !quantity || !price || !supplierId) {
+          toastr.error("Please fill all required fields", "Validation Error");
+          return;
+        }
+
+        const data = {
+          product_master_id: productId,
+          procurement_quantity: quantity,
+          procurement_price: price,
+          supplier_master_id: supplierId,
+          procurement_purchaser: purchaser,
+          procurement_product_type: "Purchase Request",
+          procurement_totalamount: quantity * price,
+        };
+
+        const url = procurement_product_id
+          ? `/api/procurement/product/procurement-requests/${procurement_product_id}`
+          : "/api/procurement/product/procurement-requests";
+        const method = procurement_product_id ? "PUT" : "POST";
+
+        $.ajax({
+          url: url,
+          type: method,
+          data: JSON.stringify(data),
+          contentType: "application/json",
+          success: function (response) {
+            toastr.success(
+              response.message || "Purchase request saved successfully",
+              "Success",
+            );
+            $("#resetPurchaseRequestDataBtn").click();
+            loadPurchaseRequestTableData();
+          },
+          error: function (xhr, error, code) {
+            toastr.error(
+              xhr.responseJSON?.message || "Error saving purchase request",
+              "Error",
+            );
+          },
+        });
+      }
+
+      // Edit purchase request
+      $(document).on("click", ".editPurchaseRequest", function () {
+        const procurement_product_id = $(this).attr("procurement_product_id");
+
+        $.get(
+          `/api/procurement/product/procurement-requests/${procurement_product_id}`,
+          function (response) {
+            const request = response.data;
+
+            $("#purchase_request_date").val(
+              request.created_at?.split("T")[0] || "",
+            );
+            $("#purchase_request_product").val(request.product_master_id || "");
+            $("#purchase_request_quantity").val(
+              request.procurement_quantity || "",
+            );
+            $("#purchase_request_price").val(request.procurement_price || "");
+            $("#purchase_request_supplier").val(
+              request.supplier_master_id || "",
+            );
+            $("#purchase_request_purchaser").val(
+              request.procurement_purchaser || "",
+            );
+            $("#purchase_request_remarks").val(request.adjusted_reason || "");
+
+            $(`#submitPurchaseRequest`).text("Update");
+            $(`#submitPurchaseRequest`).attr(
+              "procurement_product_id",
+              procurement_product_id,
+            );
+
+            // Scroll to panel
+            $(".slideInPanel").scrollTop(0);
+            openSlidePanel(
+              "purchaseRequestSlideInPanel",
+              "purchaseRequestPanelHeading",
+              "Update Purchase Request",
+              "submitPurchaseRequest",
+              procurement_product_id,
+            );
+          },
+        ).fail(function (xhr) {
+          toastr.error(
+            xhr.responseJSON?.message || "Error loading purchase request",
+            "Error",
+          );
+        });
+      });
+
+      // Delete purchase request
+      $(document).on("click", ".deletePurchaseRequest", function () {
+        const procurement_product_id = $(this).attr("procurement_product_id");
+
+        if (confirm("Are you sure you want to delete this purchase request?")) {
+          $.ajax({
+            url: `/api/procurement/product/procurement-requests/${procurement_product_id}`,
+            type: "DELETE",
+            success: function (response) {
+              toastr.success(
+                response.message || "Purchase request deleted successfully",
+                "Success",
+              );
+              loadPurchaseRequestTableData();
+            },
+            error: function (xhr, error, code) {
+              toastr.error(
+                xhr.responseJSON?.message || "Error deleting purchase request",
+                "Error",
+              );
+            },
+          });
+        }
+      });
+
+      // Approve purchase request
+      $(document).on(
+        "click",
+        ".approvePurchaseRequest:not(.disabled)",
+        function () {
+          const procurement_product_id = $(this).attr("procurement_product_id");
+          console.log("Approve button clicked. Element HTML:", this.outerHTML);
+          console.log(
+            "procurement_product_id attribute:",
+            procurement_product_id,
+          );
+
+          if (!procurement_product_id) {
+            toastr.error(
+              "Error: Could not determine purchase request ID",
+              "Error",
+            );
+            return;
+          }
+
+          // Fetch purchase request details
+          $.ajax({
+            url: `/api/procurement/product/procurement-requests/${procurement_product_id}`,
+            method: "GET",
+            success: function (response) {
+              const data = response.data;
+
+              // Populate the approve panel with data
+              $("#approve_purchase_request_product").val(
+                data.ProductMaster?.product_name || "",
+              );
+              $("#approve_purchase_request_quantity").val(
+                data.procurement_quantity || "",
+              );
+              $("#approve_purchase_request_price").val(
+                data.procurement_price || "",
+              );
+              // Use data() for more reliable attribute storage
+              $("#submitApprovePurchaseRequest").data(
+                "procurement_product_id",
+                procurement_product_id,
+              );
+              console.log(
+                "Set procurement_product_id on submit button:",
+                procurement_product_id,
+              );
+              console.log(
+                "Verified stored value:",
+                $("#submitApprovePurchaseRequest").data(
+                  "procurement_product_id",
+                ),
+              );
+
+              // Load suppliers dropdown
+              $.ajax({
+                url: "/api/master/supplier",
+                method: "GET",
+                success: function (response) {
+                  console.log("Suppliers response:", response);
+                  const suppliers = response?.data?.rows || [];
+                  console.log("Suppliers array:", suppliers);
+                  let options = '<option value="">Select Supplier</option>';
+                  if (Array.isArray(suppliers)) {
+                    suppliers.forEach((supplier) => {
+                      const isSelected =
+                        supplier.supplier_master_id === data.supplier_master_id
+                          ? "selected"
+                          : "";
+                      options += `<option value="${supplier.id}" ${isSelected}>${supplier.supplier_name}</option>`;
+                    });
+                  }
+                  $("#approve_purchase_request_supplier").html(options);
+                },
+                error: function (err) {
+                  console.error("Error loading suppliers:", err);
+                  $("#approve_purchase_request_supplier").html(
+                    '<option value="">Error loading suppliers</option>',
+                  );
+                },
+              });
+
+              // Open the side panel
+              openSlidePanel(
+                "approvePurchaseRequestSlideInPanel",
+                "approvePurchaseRequestPanelHeading",
+                "Approve Purchase Request",
+                "submitApprovePurchaseRequest",
+                "procurement_product_id",
+              );
+            },
+            error: function (xhr) {
+              toastr.error(
+                xhr.responseJSON?.message || "Error loading purchase request",
+                "Error",
+              );
+            },
+          });
+        },
+      );
 
       function loadPaymentDropdowns() {
         loadPaymentSuppliers();

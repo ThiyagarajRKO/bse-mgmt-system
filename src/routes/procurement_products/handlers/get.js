@@ -1,10 +1,10 @@
 import { ProcurementProducts } from "../../../controllers";
 
-export const Get = ({ procurement_product_id }, session, fastify) => {
+export const Get = ({ id, procurement_product_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
       let procurement = await ProcurementProducts.Get({
-        id: procurement_product_id,
+        id: id || procurement_product_id,
       });
 
       if (!procurement) {

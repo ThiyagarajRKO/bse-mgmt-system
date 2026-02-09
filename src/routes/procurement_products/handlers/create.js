@@ -110,6 +110,7 @@ export const Create = (
         procurement_quantity,
         procurement_price,
         procurement_purchaser,
+        order_id,
         is_active: true,
       });
 

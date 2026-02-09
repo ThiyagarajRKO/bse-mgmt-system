@@ -10,6 +10,8 @@ import { GetPaidStatus } from "./handlers/get_paid_status";
 import { GetPurchaseInventoryItems } from "./handlers/get_purchase_inventory_products";
 import { GetSalesInventoryItems } from "./handlers/get_sales_inventory_products";
 import { CreateRequest } from "./handlers/create_request";
+import { GetPurchaseRequests } from "./handlers/get_purchase_requests";
+import { ApprovePurchaseRequest } from "./handlers/approve_purchase_request";
 import {
   CalculateRequirements,
   GetMultiCategoryRecommendations,
@@ -103,6 +105,160 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  // ================ PURCHASE REQUESTS ROUTES (Must come before /:id route) ================
+  fastify.get("/procurement-requests", async (req, reply) => {
+    try {
+      const params = {
+        profile_id: req?.token_profile_id,
+        ...req.query,
+        procurement_product_type: ["Purchase Request", "UNPROCESSED"],
+      };
+
+      const result = await GetPurchaseRequests(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.post("/procurement-requests", async (req, reply) => {
+    try {
+      const params = {
+        profile_id: req?.token_profile_id,
+        ...req.body,
+        procurement_product_type: "Purchase Request",
+      };
+
+      const result = await Create(params, req?.session, fastify);
+
+      return reply.code(result.statusCode || 200).send({
+        success: true,
+        message: result.message,
+        data: result?.data,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  fastify.get(
+    "/procurement-requests/:procurement_product_id",
+    async (req, reply) => {
+      try {
+        const params = {
+          profile_id: req?.token_profile_id,
+          id: req.params.procurement_product_id,
+        };
+
+        const result = await Get(params, req?.session, fastify);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.put(
+    "/procurement-requests/:procurement_product_id",
+    async (req, reply) => {
+      try {
+        const params = {
+          profile_id: req?.token_profile_id,
+          id: req.params.procurement_product_id,
+          ...req.body,
+        };
+
+        const result = await Update(params, req?.session, fastify);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.delete(
+    "/procurement-requests/:procurement_product_id",
+    async (req, reply) => {
+      try {
+        const params = {
+          profile_id: req?.token_profile_id,
+          procurement_product_id: req.params.procurement_product_id,
+        };
+
+        const result = await Delete(params, req?.session, fastify);
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.put(
+    "/procurement-requests/:procurement_product_id/approve",
+    async (req, reply) => {
+      try {
+        const params = {
+          profile_id: req?.token_profile_id,
+          id: req.params.procurement_product_id,
+          ...req.body,
+        };
+
+        const result = await ApprovePurchaseRequest(
+          params,
+          req?.session,
+          fastify,
+        );
+
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message || "Purchase request approved successfully",
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+  // ================ END PURCHASE REQUESTS ROUTES ================
 
   fastify.get("/:procurement_product_id", getSchema, async (req, reply) => {
     try {
@@ -293,6 +449,10 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       });
     }
   });
+
+  // ----------------------------------------------------------------------
+  // ----------------------- Purchase Requests ----------------------------
+  // ----------------------------------------------------------------------
 
   // ----------------------------------------------------------------------
   // ------------------------------- Charts -------------------------------

@@ -72,6 +72,13 @@ export const Insert = async (profile_id, procurement_data) => {
 export const Update = async (profile_id, id, procurement_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log(
+        "ProcurementProducts.Update called with id:",
+        id,
+        "data:",
+        procurement_data,
+      );
+
       if (!id) {
         return reject({
           statusCode: 420,
@@ -104,6 +111,8 @@ export const Update = async (profile_id, id, procurement_data) => {
         supplierId = currentProduct?.supplier_master_id;
       }
 
+      console.log("Final supplier_master_id for constraint check:", supplierId);
+
       const paidStatus = await GetPaidStatus({
         procurement_product_id: id,
         supplier_master_id: supplierId,
@@ -124,6 +133,7 @@ export const Update = async (profile_id, id, procurement_data) => {
         individualHooks: true,
         profile_id,
       });
+      console.log("Update result:", result);
       resolve(result);
     } catch (err) {
       reject(err);

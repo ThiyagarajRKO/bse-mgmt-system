@@ -4147,17 +4147,20 @@
                   toastr.error("Please enter a valid quantity", "Error");
                   return false;
                 }
-
-                // Submit purchase request
+                // Submit purchase request to the new Purchase Request endpoint
                 $.ajax({
-                  url: "/api/procurement/request",
+                  url: "/api/procurement/product/procurement-requests",
                   method: "POST",
                   data: JSON.stringify({
                     order_id: orderId,
-                    product_id: selectedRawMaterial, // Use selected raw material ID instead of finished product ID
-                    supplier_id: supplierId,
-                    quantity: purchaseQuantity,
-                    remarks: remarks,
+                    product_master_id: selectedRawMaterial,
+                    supplier_master_id: supplierId,
+                    procurement_quantity: parseInt(purchaseQuantity),
+                    procurement_price: 0, // Will be filled in procurement module
+                    procurement_purchaser: "SALES_ORDER", // Mark as coming from sales order
+                    procurement_product_type: "Purchase Request",
+                    status: "Pending",
+                    adjusted_reason: remarks,
                   }),
                   contentType: "application/json",
                   success: function (response) {
@@ -4167,6 +4170,11 @@
                     );
                     // Refresh the allocation table
                     loadAllocationTableData();
+
+                    // If Purchase Request table exists in Procurement, reload it
+                    if ($.fn.DataTable.isDataTable("#purchaseRequestTable")) {
+                      $("#purchaseRequestTable").DataTable().ajax.reload();
+                    }
                   },
                   error: function (xhr) {
                     const errorMessage =
@@ -4301,6 +4309,24 @@
                     </tbody>
                   </table>
                   </div>
+
+                  <hr class="my-4" />
+
+                  <!-- Purchase Request History Section -->
+                  <div class="purchase-request-history mt-4">
+                    <h6 class="fw-bold mb-3">
+                      <i class="fa-solid fa-clipboard-list"></i> Purchase Request History
+                    </h6>
+                    <div
+                      id="purchaseRequestHistoryTable_${order.id}"
+                      class="table-responsive"
+                      style="max-height: 300px; overflow-y: auto;"
+                    >
+                      <p style="color: #999; text-align: center; margin: 20px 0;">
+                        Loading purchase requests...
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   ${
@@ -4355,6 +4381,9 @@
         console.log("Calling .modal('show')...");
         $modal.modal("show");
         console.log("Modal show() called");
+
+        // Load purchase request history for this order
+        loadPurchaseRequestHistory(order.id);
 
         // Initialize DataTable for allocation details
         $("#allocationDetailsTable").DataTable({
@@ -4534,6 +4563,93 @@
           );
         }, 300);
       });
+
+      // Load Purchase Request History for an order
+      function loadPurchaseRequestHistory(orderId) {
+        const $container = $(`#purchaseRequestHistoryTable_${orderId}`);
+
+        // Fetch purchase requests for this order from the API
+        $.ajax({
+          url: `/api/procurement/product/procurement-requests?order_id=${orderId}`,
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            console.log("Purchase request history:", response);
+
+            if (
+              response.success &&
+              response.data &&
+              response.data.rows.length > 0
+            ) {
+              const requests = response.data.rows;
+
+              // Build table HTML
+              let tableHtml = `
+                <table class="table table-sm table-hover mb-0">
+                  <thead style="background-color: #f8f9fa;">
+                    <tr>
+                      <th style="text-align: center;">Date</th>
+                      <th style="text-align: center;">Product</th>
+                      <th style="text-align: center;">Quantity</th>
+                      <th style="text-align: center;">Supplier</th>
+                      <th style="text-align: center;">Status</th>
+                      <th style="text-align: center;">Approver</th>
+                      <th style="text-align: center;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+              `;
+
+              requests.forEach(function (pr) {
+                const date = new Date(pr.created_at).toLocaleDateString();
+                const statusBadge =
+                  pr.status === "Approved"
+                    ? `<span class="badge badge-success">${pr.status}</span>`
+                    : pr.status === "Rejected"
+                      ? `<span class="badge badge-danger">${pr.status}</span>`
+                      : `<span class="badge badge-warning">${pr.status}</span>`;
+
+                tableHtml += `
+                  <tr>
+                    <td style="text-align: center; font-size: 0.9rem;">${date}</td>
+                    <td style="text-align: center; font-size: 0.9rem;">${pr.product_name || "N/A"}</td>
+                    <td style="text-align: center; font-size: 0.9rem;">${pr.procurement_quantity || 0}</td>
+                    <td style="text-align: center; font-size: 0.9rem;">${pr.supplier_name || "N/A"}</td>
+                    <td style="text-align: center;">${statusBadge}</td>
+                    <td style="text-align: center; font-size: 0.9rem;">${pr.approver_name || "-"}</td>
+                    <td style="text-align: center;">
+                      <button class="btn btn-sm btn-outline-primary" title="View details" onclick="alert('View PR #${pr.id}')">
+                        <i class="fa-solid fa-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              });
+
+              tableHtml += `
+                  </tbody>
+                </table>
+              `;
+
+              $container.html(tableHtml);
+            } else {
+              $container.html(`
+                <p style="color: #999; text-align: center; margin: 20px 0;">
+                  <i class="fa-solid fa-info-circle"></i> No purchase requests raised yet for this order.
+                </p>
+              `);
+            }
+          },
+          error: function (error) {
+            console.error("Error loading purchase request history:", error);
+            $container.html(`
+              <p style="color: #d32f2f; text-align: center; margin: 20px 0;">
+                <i class="fa-solid fa-exclamation-triangle"></i> Error loading purchase request history
+              </p>
+            `);
+          },
+        });
+      }
 
       // Check if purchase request already exists
       function checkExistingPurchaseRequest(

@@ -4,10 +4,15 @@ import { Update as ProcurementLotUpdateHandler } from "../../procurement_lots/ha
 export const Update = (
   { profile_id, procurement_product_id, procurement_product_data },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("Update handler called with:", {
+        profile_id,
+        procurement_product_id,
+        procurement_product_data,
+      });
       if (procurement_product_data?.procurement_lot_id) {
         const procurement_lot = await ProcurementLotUpdateHandler(
           {
@@ -15,13 +20,13 @@ export const Update = (
             procurement_lot_id: procurement_product_data?.procurement_lot_id,
             procurement_lot_data: {
               procurement_date: new Date(
-                procurement_product_data?.procurement_date
+                procurement_product_data?.procurement_date,
               ),
               unit_master_id: procurement_product_data?.unit_master_id,
             },
           },
           session,
-          fastify
+          fastify,
         );
 
         if (procurement_lot[0] <= 0) {
@@ -51,7 +56,7 @@ export const Update = (
       const updated_data = await ProcurementProducts.Update(
         profile_id,
         procurement_product_id,
-        procurement_product_data
+        procurement_product_data,
       );
 
       if (updated_data?.[0] > 0) {
