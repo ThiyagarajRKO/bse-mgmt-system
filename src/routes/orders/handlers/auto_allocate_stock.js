@@ -190,11 +190,11 @@ const AutoAllocateStock = async ({ product_id }, session, fastify) => {
             allocatedFromInventory += allocateFromThisLot;
           }
 
-          // Update order status to PENDING_PRODUCTION (raw materials allocated, waiting for manufacturing)
+          // Update order status to IN_PRODUCTION (raw materials allocated, manufacturing in progress)
           await models.Orders.update(
             {
-              order_status: "PENDING_PRODUCTION",
-              allocation_status: "PENDING_PRODUCTION",
+              order_status: "IN_PRODUCTION",
+              allocation_status: "IN_PRODUCTION",
               updated_at: new Date(),
             },
             {
@@ -498,10 +498,10 @@ const allocateFromPurchaseInventory = async (
           allocatedFromPurchase += allocateFromThisItem;
         }
 
-        // Update order status to READY_FOR_PRODUCTION
+        // Update order status to IN_PRODUCTION (materials ready, production starting)
         await models.Orders.update(
           {
-            order_status: "READY_FOR_PRODUCTION",
+            order_status: "IN_PRODUCTION",
             updated_at: new Date(),
           },
           {
@@ -676,11 +676,11 @@ const createPurchaseOrders = async (
       });
     }
 
-    // Update order status to PENDING_PROCUREMENT
+    // Update order status to CONFIRMED (waiting for procurement)
     for (const orderProduct of pendingOrders) {
       await models.Orders.update(
         {
-          order_status: "PENDING_PROCUREMENT",
+          order_status: "CONFIRMED",
           updated_at: new Date(),
         },
         {
@@ -768,11 +768,11 @@ const createFallbackProcurement = async (
       raw_material_for: "Finished Product (BOM not available)",
     });
 
-    // Update order status to PENDING_PROCUREMENT
+    // Update order status to CONFIRMED (waiting for procurement)
     for (const orderProduct of pendingOrders) {
       await models.Orders.update(
         {
-          order_status: "PENDING_PROCUREMENT",
+          order_status: "CONFIRMED",
           updated_at: new Date(),
         },
         {

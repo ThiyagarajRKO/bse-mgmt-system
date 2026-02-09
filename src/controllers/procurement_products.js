@@ -822,7 +822,7 @@ export const GetNames = ({
           [sequelize.col("SupplierMaster.supplier_name"), "supplier_name"],
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(dispatches.dispatch_quantity) IS NULL THEN 0 ELSE SUM(dispatches.dispatch_quantity) END FROM dispatches WHERE "ProcurementProducts".id = procurement_product_id and ${
+              `(SELECT COALESCE(SUM(dispatches.dispatch_quantity), 0) FROM dispatches WHERE dispatches.procurement_product_id = "ProcurementProducts".id and ${
                 dispatch_id != "null" && dispatch_id != undefined
                   ? "dispatches.id != '" + dispatch_id + "' and"
                   : ""

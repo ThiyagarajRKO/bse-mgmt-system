@@ -208,8 +208,17 @@ class InventoryCheckService {
 
         if (!rawProduct || !procurementProduct) continue;
 
+        // Validate BOM quantity is positive
+        const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
+        if (bomQuantity <= 0) {
+          console.warn(
+            `Invalid BOM quantity ${bomQuantity} for product ${rawProductId}, using 1.0`,
+          );
+          bomEntry.quantity_required = 1;
+        }
+
         const requiredRawQuantity =
-          (bomEntry.quantity_required || 1) * requiredQuantity;
+          bomEntry.quantity_required * requiredQuantity;
 
         // Check purchase inventory for this raw material
         const purchaseInventory = await db.PurchaseInventory.findAll({
@@ -232,8 +241,11 @@ class InventoryCheckService {
 
         // Calculate how much finished product can be produced from available raw materials
         // considering yield loss
+        const bomQuantityDivisor = parseFloat(bomEntry.quantity_required) || 1;
         const potentialFinishedGoods =
-          availableRawQuantity / (bomEntry.quantity_required || 1);
+          bomQuantityDivisor > 0
+            ? availableRawQuantity / bomQuantityDivisor
+            : 0;
         const effectiveFinishedGoods = Math.floor(
           potentialFinishedGoods * yieldPercentage,
         );

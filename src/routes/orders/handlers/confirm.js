@@ -89,8 +89,13 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
             },
           });
 
-          if (!allocation) {
-            // Create new allocation
+          // Only create allocations if inventory is immediately available (COMPLETED or BEGIN_PRODUCTION)
+          // For PENDING_PURCHASE (need to buy raw materials), wait for purchase approval
+          if (
+            !allocation &&
+            inventoryResult.allocationStatus !== "PENDING_PURCHASE"
+          ) {
+            // Create new allocation only for immediately available inventory
             allocation = await models.SalesAllocation.create({
               order_id: order_id,
               order_product_id: orderProduct.id,
@@ -110,8 +115,15 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
                 shortfall: inventoryResult.shortfall,
               }),
             });
-          } else {
-            // Update existing allocation
+
+            console.log(
+              `✅ Allocation created for order ${order_id}: status=${inventoryResult.allocationStatus}`,
+            );
+          } else if (
+            allocation &&
+            inventoryResult.allocationStatus !== "PENDING_PURCHASE"
+          ) {
+            // Update existing allocation only if not pending
             await allocation.update({
               allocation_status: inventoryResult.allocationStatus,
               action_required: inventoryResult.action,
@@ -124,6 +136,18 @@ export const Confirm = async ({ profile_id, order_id }, session, fastify) => {
                 shortfall: inventoryResult.shortfall,
               }),
             });
+
+            console.log(
+              `✅ Allocation updated for order ${order_id}: status=${inventoryResult.allocationStatus}`,
+            );
+          } else if (
+            !allocation &&
+            inventoryResult.allocationStatus === "PENDING_PURCHASE"
+          ) {
+            // For pending purchases, log that allocation will be created when purchase is approved
+            console.log(
+              `⏳ Order ${order_id} needs purchase approval. Allocation will be created when purchase is approved.`,
+            );
           }
 
           // Execute inventory reductions based on availability
