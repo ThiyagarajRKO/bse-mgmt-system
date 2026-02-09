@@ -1,6 +1,7 @@
 import AllocationMaster from "../../../models/allocation_master";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async (fastify) => {
   // Update allocation
@@ -30,9 +31,9 @@ export default async (fastify) => {
         // Update allowed fields
         const updates = { updated_by: profile_id };
         if (allocation_qty && allocation_qty > 0) {
-          updates.allocation_qty = allocation_qty;
+          updates.allocated_quantity = allocation_qty;
         }
-        if (status && ["ALLOCATED", "PARTIAL", "FULFILLED"].includes(status)) {
+        if (status && ["ALLOCATED", "PENDING_PURCHASE"].includes(status)) {
           updates.status = status;
         }
 

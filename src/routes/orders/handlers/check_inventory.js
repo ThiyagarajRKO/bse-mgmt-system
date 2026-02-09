@@ -110,6 +110,16 @@ const CheckInventory = async (
         });
       }
 
+      // Validate UUID format
+      const uuidPattern =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidPattern.test(String(product_master_id))) {
+        return reject({
+          statusCode: 420,
+          message: "Invalid Product ID format!",
+        });
+      }
+
       // Get product details
       const product = await models.ProductMaster.findOne({
         where: { id: product_master_id, is_active: true },
@@ -280,7 +290,16 @@ const CheckInventory = async (
         const finalAvailableQuantity = Math.round(finishedGoodsInventory);
         let purchaseRequestCreated = false;
 
-        if (required_quantity && finalAvailableQuantity < required_quantity) {
+        // Check if an approved purchase request already exists for this product/order
+        // Note: order_id is not passed in params, so this check is skipped
+        // The order_id would need to be passed from the frontend for this to work
+
+        // If no approved purchase request exists, check if we need to create one
+        if (
+          required_quantity &&
+          finalAvailableQuantity < required_quantity &&
+          !purchaseRequestCreated
+        ) {
           try {
             await createPurchaseRequest(
               product.id,
@@ -460,6 +479,24 @@ const CheckInventory = async (
         ],
       });
 
+      // Check if raw material product was found
+      if (!rawMaterialProduct) {
+        console.log(
+          "ERROR: Raw material product not found for ID:",
+          rawMaterialProductId,
+        );
+        return resolve({
+          statusCode: 200,
+          message: "Raw material product not found",
+          data: {
+            product_master_id,
+            available_quantity: 0,
+            has_stock: false,
+            inventory_type: "none",
+          },
+        });
+      }
+
       // Calculate available stock from purchase_inventory
       const inventoryQuery = `
         SELECT COALESCE(SUM(pi.available_stock), 0) as available_qty
@@ -504,7 +541,16 @@ const CheckInventory = async (
       const finalAvailableQuantity = effectiveFinishedGoodsQty;
       let purchaseRequestCreated = false;
 
-      if (required_quantity && finalAvailableQuantity < required_quantity) {
+      // Check if an approved purchase request already exists for this product/order
+      // Note: order_id is not passed in params, so this check is skipped
+      // The order_id would need to be passed from the frontend for this to work
+
+      // If no approved purchase request exists, check if we need to create one
+      if (
+        required_quantity &&
+        finalAvailableQuantity < required_quantity &&
+        !purchaseRequestCreated
+      ) {
         try {
           await createPurchaseRequest(
             product.id,
@@ -553,11 +599,19 @@ const CheckInventory = async (
         },
       });
     } catch (err) {
-      fastify.log.error(err);
+      fastify.log.error("CheckInventory Error:", {
+        message: err.message,
+        stack: err.stack,
+        product_master_id: product_master_id,
+      });
       reject({
         statusCode: 500,
-        message: "Error checking inventory",
+        message: "Error checking inventory: " + err.message,
         error: err.message,
+        debug_info: {
+          product_master_id: product_master_id,
+          error_type: err.constructor.name,
+        },
       });
     }
   });

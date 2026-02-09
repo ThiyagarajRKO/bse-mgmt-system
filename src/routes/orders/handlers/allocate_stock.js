@@ -330,11 +330,10 @@ export const AllocateStock = async (
               remainingQuantity -= allocateQty;
             }
 
-            // Update order status to PENDING_PRODUCTION (raw materials allocated, waiting for manufacturing)
+            // Update order status to IN_PRODUCTION (raw materials allocated, manufacturing in progress)
             await models.Orders.update(
               {
-                order_status: "PENDING_PRODUCTION",
-                allocation_status: "PENDING_PRODUCTION",
+                order_status: "IN_PRODUCTION",
                 updated_at: new Date(),
               },
               {
@@ -436,11 +435,7 @@ export const AllocateStock = async (
 
             await models.Orders.update(
               {
-                order_status:
-                  procurementCount > 0
-                    ? "PROCUREMENT_PENDING"
-                    : "ALLOCATION_FAILED",
-                allocation_status: allocationStatus,
+                order_status: "CONFIRMED",
                 updated_at: new Date(),
               },
               {
@@ -556,11 +551,7 @@ export const AllocateStock = async (
 
           await models.Orders.update(
             {
-              order_status:
-                procurementCount > 0
-                  ? "PROCUREMENT_PENDING"
-                  : "ALLOCATION_FAILED",
-              allocation_status: allocationStatus,
+              order_status: "CONFIRMED",
               updated_at: new Date(),
             },
             {

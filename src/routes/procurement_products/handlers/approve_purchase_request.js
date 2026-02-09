@@ -85,24 +85,152 @@ export const ApprovePurchaseRequest = async (
       const finalSupplier =
         supplier_master_id || procurementProduct.supplier_master_id;
 
-      // Create a record in purchase_inventory table
-      const purchaseInventoryRecord = await models.PurchaseInventory.create({
-        product_master_id: procurementProduct.product_master_id,
-        procurement_product_id: id,
-        supplier_master_id: finalSupplier,
-        quantity_ordered: procurementProduct.procurement_quantity,
-        quantity_received: 0, // Will be updated when goods are received
-        unit_price: finalPrice,
-        total_amount: finalPrice * procurementProduct.procurement_quantity,
-        status: "Pending", // Pending receipt
-        created_by: profile_id,
-        is_active: true,
+      // Update or create purchase_inventory record
+      // Only set available_stock when the purchase request is APPROVED
+      let purchaseInventoryRecord = await models.PurchaseInventory.findOne({
+        where: {
+          product_master_id: procurementProduct.product_master_id,
+          procurement_product_id: id,
+        },
       });
 
-      console.log(
-        "Purchase inventory record created:",
-        purchaseInventoryRecord.id,
-      );
+      if (purchaseInventoryRecord) {
+        // Update existing record - set quantity and available_stock on approval
+        await purchaseInventoryRecord.update({
+          quantity: procurementProduct.procurement_quantity,
+          available_stock: procurementProduct.procurement_quantity,
+          supplier_master_id: finalSupplier,
+          unit_price: finalPrice,
+          total_amount: finalPrice * procurementProduct.procurement_quantity,
+          status: "Approved",
+          updated_by: profile_id,
+        });
+
+        console.log(
+          "Purchase inventory record updated:",
+          purchaseInventoryRecord.id,
+        );
+      } else {
+        // Create new record if it doesn't exist
+        purchaseInventoryRecord = await models.PurchaseInventory.create({
+          product_master_id: procurementProduct.product_master_id,
+          procurement_product_id: id,
+          supplier_master_id: finalSupplier,
+          quantity: procurementProduct.procurement_quantity,
+          available_stock: procurementProduct.procurement_quantity,
+          reserved_quantity: 0,
+          unit_price: finalPrice,
+          total_amount: finalPrice * procurementProduct.procurement_quantity,
+          status: "Approved",
+          created_by: profile_id,
+          is_active: true,
+        });
+
+        console.log(
+          "Purchase inventory record created:",
+          purchaseInventoryRecord.id,
+        );
+      }
+
+      // ALLOCATION: If this procurement is for an order, allocate the purchased inventory
+      let allocationResult = null;
+      if (procurementProduct.order_id) {
+        console.log(
+          `📦 Allocating purchased inventory for order: ${procurementProduct.order_id}`,
+        );
+
+        // Get the order details
+        const order = await models.Orders.findByPk(procurementProduct.order_id);
+        if (!order) {
+          console.log(`⚠️ Order not found: ${procurementProduct.order_id}`);
+        } else {
+          // Get all order products for this order to find matching product
+          const orderProducts = await models.OrderProducts.findAll({
+            where: {
+              order_id: procurementProduct.order_id,
+              product_master_id: procurementProduct.product_master_id,
+            },
+          });
+
+          if (orderProducts.length > 0) {
+            // For each order product, allocate or update allocation
+            for (const orderProduct of orderProducts) {
+              console.log(
+                `🔄 Processing order product: ${orderProduct.id}, quantity needed: ${orderProduct.quantity}`,
+              );
+
+              // Check if allocation exists for this order product
+              let allocation = await models.SalesAllocation.findOne({
+                where: {
+                  order_id: procurementProduct.order_id,
+                  order_product_id: orderProduct.id,
+                },
+                order: [["created_at", "DESC"]],
+              });
+
+              if (allocation) {
+                // Allocation exists, update the allocated quantity
+                const newAllocatedQuantity =
+                  (allocation.allocated_quantity || 0) +
+                  procurementProduct.procurement_quantity;
+                const quantityToAllocate = Math.min(
+                  newAllocatedQuantity,
+                  orderProduct.quantity,
+                );
+
+                console.log(
+                  `📝 Updating allocation: old=${allocation.allocated_quantity}, new=${quantityToAllocate}`,
+                );
+
+                // When purchase is approved, allocation status becomes ALLOCATED
+                // (inventory is now available and allocated to the order)
+                await models.SalesAllocation.update(
+                  {
+                    allocated_quantity: quantityToAllocate,
+                    allocation_status: "ALLOCATED", // ✅ Always set to ALLOCATED on approval
+                  },
+                  { where: { id: allocation.id } },
+                );
+
+                console.log(
+                  `✅ Allocation updated: ${allocation.id} → Status: ALLOCATED`,
+                );
+              } else {
+                // No allocation exists, create one
+                const allocateQuantity = Math.min(
+                  procurementProduct.procurement_quantity,
+                  orderProduct.quantity,
+                );
+
+                const newAllocation = await models.SalesAllocation.create({
+                  order_id: procurementProduct.order_id,
+                  order_product_id: orderProduct.id,
+                  allocated_quantity: allocateQuantity,
+                  ordered_quantity: orderProduct.quantity,
+                  fulfilled_quantity: 0,
+                  allocation_status: "ALLOCATED",
+                  allocation_date: new Date(),
+                  allocated_by: profile_id,
+                });
+
+                console.log(
+                  `✨ New allocation created: ${newAllocation.id}, quantity: ${allocateQuantity}`,
+                );
+              }
+            }
+
+            allocationResult = {
+              allocated: true,
+              orderId: procurementProduct.order_id,
+              quantity: procurementProduct.procurement_quantity,
+            };
+          }
+        }
+      } else {
+        console.log(
+          `⚠️ No order associated with this procurement product: ${id}`,
+        );
+      }
 
       resolve({
         message:
@@ -111,6 +239,7 @@ export const ApprovePurchaseRequest = async (
           procurement_product_id: id,
           purchase_inventory_id: purchaseInventoryRecord.id,
           status: "Approved",
+          allocation: allocationResult,
         },
       });
     } catch (err) {

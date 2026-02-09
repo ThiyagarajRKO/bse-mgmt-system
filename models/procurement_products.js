@@ -237,12 +237,12 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
       });
 
       const reservedQty = currentRecord?.reserved_quantity || 0;
-      const availableQty = Math.max(0, currentQuantity - reservedQty);
+      const availableQty = 0; // Keep at 0 until purchase is approved
 
       await sequelize.models.PurchaseInventory.update(
         {
           quantity: currentQuantity,
-          available_stock: availableQty,
+          available_stock: availableQty, // Keep at 0 until purchase is approved
           updated_at: new Date(),
           updated_by: options?.profile_id,
         },
@@ -268,7 +268,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
         quantity: currentQuantity,
-        available_stock: currentQuantity, // Initialize available_stock equal to total quantity (no reservations yet)
+        available_stock: 0, // DO NOT make available until purchase is approved
         reserved_quantity: 0, // No reservations initially
         is_active: true,
         created_by: options?.profile_id,

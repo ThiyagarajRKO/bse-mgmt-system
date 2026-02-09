@@ -150,10 +150,10 @@ export default async (fastify) => {
           });
         }
 
-        if (order.status !== "CONFIRMED") {
+        if (order.order_status !== "CONFIRMED") {
           return reply.code(400).send({
             statusCode: 400,
-            message: `Order must be CONFIRMED to allocate. Current status: ${order.status}`,
+            message: `Order must be CONFIRMED to allocate. Current status: ${order.order_status}`,
           });
         }
 
@@ -283,7 +283,7 @@ export default async (fastify) => {
         });
 
         // Update order status based on allocation status
-        let newOrderStatus = order.status; // Keep current status by default
+        let newOrderStatus = order.order_status; // Keep current status by default
         if (allocationStatus === "ALLOCATED") {
           newOrderStatus = "ALLOCATED";
         } else if (allocationStatus === "PENDING_PURCHASE") {
@@ -291,7 +291,7 @@ export default async (fastify) => {
         }
 
         await order.update({
-          status: newOrderStatus,
+          order_status: newOrderStatus,
           updated_by: profile_id,
         });
 
