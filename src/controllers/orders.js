@@ -907,22 +907,6 @@ export const GetAllocationData = ({ start, length, search }) => {
             "delivery_status",
             [
               sequelize.literal(
-                `CASE 
-                  WHEN EXISTS (
-                    SELECT 1 FROM sales_inventory si 
-                    WHERE si.order_id = "Orders".id 
-                    AND si.is_active = true 
-                    AND si.quantity > 0
-                  ) THEN 'Allocated'
-                  WHEN order_status IN ('ALLOCATED', 'IN_PRODUCTION', 'READY_FOR_QA', 'QA_APPROVED', 'PACKED', 'READY_FOR_DISPATCH', 'DISPATCHED', 'INVOICED', 'CLOSED') 
-                  THEN 'Allocated' 
-                  ELSE 'Pending' 
-                END`,
-              ),
-              "allocation_status",
-            ],
-            [
-              sequelize.literal(
                 `(SELECT MAX(status) FROM production_orders po 
                   WHERE po.order_id = "Orders".id)`,
               ),
@@ -1145,18 +1129,31 @@ export const GetAllocationData = ({ start, length, search }) => {
             attributes: ["status"],
           });
 
-          // Check if any SalesAllocation is pending due to insufficient inventory
+          // Check if any SalesAllocation is pending purchase due to insufficient inventory
           const hasSalesAllocationPendingPurchase = salesAllocations.some(
             (alloc) =>
-              alloc.allocation_status === "PENDING" &&
+              alloc.allocation_status === "PENDING_PURCHASE" ||
               alloc.action_required === "RAISE_PURCHASE_REQUEST",
           );
 
+          // Check if there are ANY approved purchase requests for this order
+          const approvedProcurementCount =
+            await models.ProcurementProducts.count({
+              where: {
+                order_id: order.id,
+                status: "Approved",
+                is_active: true,
+              },
+            });
+
           // Check if any allocation is pending purchase due to insufficient inventory
+          // BUT: If there are approved purchase requests, consider it as ALLOCATED (not pending)
           const hasPendingPurchase =
-            allocationMasters.some(
+            (allocationMasters.some(
               (alloc) => alloc.status === "PENDING_PURCHASE",
-            ) || hasSalesAllocationPendingPurchase;
+            ) ||
+              hasSalesAllocationPendingPurchase) &&
+            approvedProcurementCount === 0; // ← Only pending if NO approved purchases
 
           // Calculate allocation status based on SalesAllocation records
           let allocation_status = "Pending";
