@@ -8,7 +8,8 @@ module.exports = {
     const dbDialect = queryInterface.sequelize.options.dialect;
 
     if (dbDialect === "postgres") {
-      // For PostgreSQL: Create new ENUM type with added value
+      // For PostgreSQL: Try to add value to existing ENUM type
+      // If the type doesn't exist, the SalesAllocations table probably wasn't created yet
       await queryInterface.sequelize
         .query(
           `
@@ -17,8 +18,13 @@ module.exports = {
       `,
         )
         .catch((err) => {
-          // If enum value already exists, this is fine
-          if (err.message.includes("already exists")) {
+          // If enum type doesn't exist, that's OK - it will be created by another migration
+          if (err.message.includes("does not exist")) {
+            console.log(
+              "ℹ️  Enum type does not exist yet - will be created by SalesAllocations migration",
+            );
+            return; // Not an error, table hasn't been created yet
+          } else if (err.message.includes("already exists")) {
             console.log(
               "✅ PENDING_PURCHASE already exists in allocation_status enum",
             );
