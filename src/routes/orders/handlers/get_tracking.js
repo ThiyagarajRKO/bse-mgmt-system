@@ -1,34 +1,16 @@
 import { Orders } from "../../../controllers";
+import OrderTrackingService from "../../../services/OrderTrackingService.js";
 
 export const GetTracking = ({ order_id }, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Use enhanced production tracking to get full data
-      let tracking;
+      console.log(`[GetTracking] Fetching tracking for order: ${order_id}`);
 
-      // Try GetWithProductionTracking first (includes sales inventory, dispatches, peeling, etc)
-      if (
-        Orders.GetWithProductionTracking &&
-        typeof Orders.GetWithProductionTracking === "function"
-      ) {
-        console.log("[GetTracking] Using GetWithProductionTracking");
-        tracking = await Orders.GetWithProductionTracking({
-          id: order_id,
-        });
-      } else if (
-        Orders.GetWithTracking &&
-        typeof Orders.GetWithTracking === "function"
-      ) {
-        console.log("[GetTracking] Using GetWithTracking (fallback)");
-        tracking = await Orders.GetWithTracking({
-          id: order_id,
-        });
-      } else {
-        return reject({
-          statusCode: 500,
-          message: "No tracking methods available",
-        });
-      }
+      // Pass fastify so service can access models from the decorated instance
+      const tracking = await OrderTrackingService.getOrderTracking(
+        order_id,
+        fastify,
+      );
 
       if (!tracking) {
         return reject({
@@ -37,10 +19,15 @@ export const GetTracking = ({ order_id }, session, fastify) => {
         });
       }
 
+      console.log(
+        `[GetTracking] ✅ Returned tracking with current_stage: ${tracking.current_progress?.current_stage}`,
+      );
+
       resolve({
         data: tracking,
       });
     } catch (err) {
+      console.error(`[GetTracking] Error: ${err.message}`);
       fastify.log.error(err);
       reject(err);
     }
