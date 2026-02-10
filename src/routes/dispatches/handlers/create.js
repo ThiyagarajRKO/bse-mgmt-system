@@ -3,6 +3,7 @@ import {
   LocationMaster,
   ProcurementProducts,
 } from "../../../controllers";
+import OrderTrackingService from "../../../services/OrderTrackingService.js";
 
 export const Create = (
   {
@@ -52,6 +53,21 @@ export const Create = (
         order_id,
         is_active: true,
       });
+
+      // ✅ SYNC ORDER TRACKING: Update order status based on dispatch creation
+      if (order_id) {
+        try {
+          await OrderTrackingService.syncOrderStatus(order_id);
+          console.log(
+            `✅ Order tracking synced for dispatch creation: ${order_id}`,
+          );
+        } catch (trackingError) {
+          console.warn(
+            `⚠️ Warning: Could not sync order tracking: ${trackingError.message}`,
+          );
+          // Don't fail dispatch creation if tracking fails
+        }
+      }
 
       resolve({
         message: "Dispatch data has been inserted successfully",
