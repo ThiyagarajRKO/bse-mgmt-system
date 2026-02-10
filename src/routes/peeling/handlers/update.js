@@ -1,9 +1,10 @@
 import { Dispatches, Peeling, PeelingProducts } from "../../../controllers";
+import OrderTrackingService from "../../../services/OrderTrackingService.js";
 
 export const Update = (
   { profile_id, peeling_id, peeling_data },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -46,14 +47,31 @@ export const Update = (
       const updated_data = await Peeling.Update(
         profile_id,
         peeling_id,
-        peeling_data
+        peeling_data,
       );
 
       if (updated_data?.[0] > 0) {
         await PeelingProducts.BulkUpsert(
           profile_id,
-          peeling_data?.PeelingProducts
+          peeling_data?.PeelingProducts,
         );
+
+        // ✅ SYNC ORDER TRACKING: Update order status based on peeling update
+        // Get the peeling record to retrieve order_id
+        try {
+          const peeling = await Peeling.GetById(peeling_id);
+          if (peeling?.order_id) {
+            await OrderTrackingService.syncOrderStatus(peeling.order_id);
+            console.log(
+              `✅ Order tracking synced for peeling update: ${peeling.order_id}`,
+            );
+          }
+        } catch (trackingError) {
+          console.warn(
+            `⚠️ Warning: Could not sync order tracking: ${trackingError.message}`,
+          );
+          // Don't fail peeling update if tracking fails
+        }
 
         return resolve({
           message: "Peeling data has been updated successfully",
