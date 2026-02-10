@@ -30,7 +30,7 @@ class InventoryCheckService {
         // Product is fully available in sales inventory
         return {
           action: "DISPATCH",
-          allocationStatus: "COMPLETED",
+          allocationStatus: "ALLOCATED",
           salesInventoryAvailable: salesInventoryResult.available,
           purchaseInventoryAvailable: 0,
           rawMaterialsAvailable: 0,
@@ -51,7 +51,7 @@ class InventoryCheckService {
         // Raw materials are available for production
         return {
           action: "BEGIN_PRODUCTION",
-          allocationStatus: "COMPLETED",
+          allocationStatus: "ALLOCATED",
           salesInventoryAvailable: salesInventoryResult.available,
           purchaseInventoryAvailable: rawMaterialsResult.available,
           rawMaterialsAvailable: rawMaterialsResult.available,

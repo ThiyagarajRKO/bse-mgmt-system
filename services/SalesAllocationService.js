@@ -83,23 +83,28 @@ class SalesAllocationService {
     );
 
     console.log(`📊 Inventory check result:`, {
-      available_quantity: inventoryCheck.available_quantity,
-      effective_available_quantity: inventoryCheck.effective_available_quantity,
+      available_quantity: inventoryCheck?.data?.available_quantity,
+      inventory_type: inventoryCheck?.data?.inventory_type,
+      shortage_amount: inventoryCheck?.data?.shortage_amount,
       required_quantity: allocated_quantity,
-      allocationStatus: inventoryCheck.allocationStatus,
     });
 
     // Determine allocation status based on inventory check
+    // If available_quantity >= required_quantity, it's ALLOCATED
+    // If there's a shortage, it's PENDING_PURCHASE (needs to buy more)
     let allocationStatus = "PENDING"; // Default
-    if (inventoryCheck.allocationStatus === "ALLOCATED") {
+    const availableQty = inventoryCheck?.data?.available_quantity || 0;
+    const shortageAmount = inventoryCheck?.data?.shortage_amount || 0;
+
+    if (availableQty >= allocated_quantity && shortageAmount === 0) {
       allocationStatus = "ALLOCATED";
       console.log(
-        `✅ Setting allocation status to ALLOCATED - sufficient inventory`,
+        `✅ Setting allocation status to ALLOCATED - sufficient inventory (${availableQty}kg available)`,
       );
-    } else if (inventoryCheck.allocationStatus === "PENDING_PURCHASE") {
+    } else if (shortageAmount > 0) {
       allocationStatus = "PENDING_PURCHASE";
       console.log(
-        `⏳ Setting allocation status to PENDING_PURCHASE - insufficient inventory, purchase needed`,
+        `⏳ Setting allocation status to PENDING_PURCHASE - insufficient inventory, shortage of ${shortageAmount}kg`,
       );
     }
 

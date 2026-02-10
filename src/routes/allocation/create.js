@@ -168,8 +168,14 @@ export default async (fastify) => {
 
         // Check inventory and create purchase request if needed
         let purchaseRequestCreated = false;
+        let inventoryCheck = null; // Declare outside try block so it's accessible later
+        let availableQuantity = 0;
+        let inventoryType = null;
+        let rawMaterialStock = 0;
+        let finishedGoodsAvailable = 0;
+
         try {
-          const inventoryCheck = await CheckInventory(
+          inventoryCheck = await CheckInventory(
             {
               product_master_id: orderProduct.product_master_id,
               required_quantity: allocation_qty,
@@ -178,11 +184,12 @@ export default async (fastify) => {
             fastify,
           );
 
-          const availableQuantity =
-            inventoryCheck?.data?.available_quantity || 0;
-          const inventoryType = inventoryCheck?.data?.inventory_type;
-          const rawMaterialStock =
+          availableQuantity = inventoryCheck?.data?.available_quantity || 0;
+          inventoryType = inventoryCheck?.data?.inventory_type;
+          rawMaterialStock =
             inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
+          finishedGoodsAvailable =
+            inventoryCheck?.data?.breakdown?.effective_finished_goods || 0;
           const alreadyCreatedPurchaseRequest =
             inventoryCheck?.data?.purchase_request_created || false;
 
@@ -233,12 +240,6 @@ export default async (fastify) => {
         // Determine allocation status based on inventory availability
         let allocationStatus = "PENDING_PURCHASE"; // Default when insufficient inventory
         let allocationRemarks = "";
-
-        const availableQuantity = inventoryCheck?.data?.available_quantity || 0;
-        const finishedGoodsAvailable =
-          inventoryCheck?.data?.breakdown?.effective_finished_goods || 0;
-        const rawMaterialStock =
-          inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
 
         console.log(
           `🎯 Allocation Debug - Product: ${orderProduct.product_master_id}, Requested: ${allocation_qty}, Available: ${availableQuantity}, FG: ${finishedGoodsAvailable}, Raw: ${rawMaterialStock}`,
