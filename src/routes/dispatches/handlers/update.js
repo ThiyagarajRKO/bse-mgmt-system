@@ -1,9 +1,10 @@
 import { Dispatches, ProcurementProducts } from "../../../controllers";
+import OrderTrackingService from "../../../services/OrderTrackingService.js";
 
 export const Update = (
   { profile_id, dispatch_id, dispatch_data },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -38,10 +39,27 @@ export const Update = (
       const updated_data = await Dispatches.Update(
         profile_id,
         dispatch_id,
-        dispatch_data
+        dispatch_data,
       );
 
       if (updated_data?.[0] > 0) {
+        // ✅ SYNC ORDER TRACKING: Update order status based on dispatch update
+        // Get the dispatch to retrieve order_id
+        try {
+          const dispatch = await Dispatches.GetById(dispatch_id);
+          if (dispatch?.order_id) {
+            await OrderTrackingService.syncOrderStatus(dispatch.order_id);
+            console.log(
+              `✅ Order tracking synced for dispatch update: ${dispatch.order_id}`,
+            );
+          }
+        } catch (trackingError) {
+          console.warn(
+            `⚠️ Warning: Could not sync order tracking: ${trackingError.message}`,
+          );
+          // Don't fail dispatch update if tracking fails
+        }
+
         return resolve({
           message: "Dispatch data has been updated successfully",
         });
