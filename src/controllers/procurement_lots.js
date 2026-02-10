@@ -194,19 +194,19 @@ export const CountStats = ({ procurement_lot_id }) => {
         attributes: [
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.is_active = true)`,
             ),
             "total_purchased_weight",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id=procurement_product_id and pp.is_active = true WHERE dispatches.is_active = true)`
+              `(SELECT SUM(dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id=procurement_product_id and pp.is_active = true WHERE dispatches.is_active = true)`,
             ),
             "total_dispatched_weight",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(peeling_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = procurement_product_id and pp.is_active = true WHERE peeling.is_active = true)`
+              `(SELECT SUM(peeling_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = procurement_product_id and pp.is_active = true WHERE peeling.is_active = true)`,
             ),
             "total_peeled_weight",
           ],
@@ -218,7 +218,7 @@ export const CountStats = ({ procurement_lot_id }) => {
 	              JOIN peeling p on p.id=pp.peeling_id and p.is_active=true
 	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
 	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
-                )`
+                )`,
             ),
             "total_peeled_dispatched_weight",
           ],
@@ -231,7 +231,7 @@ export const CountStats = ({ procurement_lot_id }) => {
 	              JOIN peeling p on p.id = pp.peeling_id and p.is_active = true
 	              JOIN dispatches d on d.id = p.dispatch_id and d.is_active = true
 	              JOIN procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
-                )`
+                )`,
             ),
             "total_packed_weight",
           ],
@@ -371,7 +371,7 @@ export const GetPaymentLots = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND pp.supplier_master_id = '${supplier_master_id}' AND pp.is_active = true)`
+              `(SELECT SUM(pp.procurement_totalamount) FROM procurement_products pp WHERE pp.procurement_lot_id = "ProcurementLots".id AND pp.supplier_master_id = '${supplier_master_id}' AND pp.is_active = true)`,
             ),
             "total_amount",
           ],
@@ -384,7 +384,7 @@ export const GetPaymentLots = ({
                 purchase_payment_id != ""
                   ? "AND pp.id != '" + purchase_payment_id + "'"
                   : ""
-              } AND pp.is_active = true)`
+              } AND pp.is_active = true)`,
             ),
             "total_paid",
           ],
@@ -437,7 +437,7 @@ export const GetStats = ({
             sequelize.cast(sequelize.col("procurement_date"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_lot: { [Op.iLike]: `%${search}%` } },
         ];
@@ -456,43 +456,43 @@ export const GetStats = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT COUNT(procurement_products.id) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT COUNT(procurement_products.id) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`,
             ),
             "total_product_count",
           ],
           [
             sequelize.literal(
-              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`,
             ),
             "total_dispatched_count",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`,
             ),
             "total_dispatched_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`,
             ),
             "total_purchased_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_totalamount) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.procurement_totalamount) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`,
             ),
             "total_purchased_price",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`,
             ),
             "total_adjusted_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.adjusted_price) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`
+              `(SELECT SUM(procurement_products.adjusted_price) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id and procurement_products.is_active = true)`,
             ),
             "total_adjusted_price",
           ],
@@ -581,7 +581,7 @@ export const GetDispatchStats = ({
             sequelize.cast(sequelize.col("procurement_date"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_lot: { [Op.iLike]: `%${search}%` } },
         ];
@@ -594,27 +594,33 @@ export const GetDispatchStats = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`
+              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`,
             ),
             "total_dispatched_count",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`
+              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`,
             ),
             "total_dispatched_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`
+              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`,
             ),
             "total_purchased_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`
+              `(SELECT SUM(procurement_products.adjusted_quantity) FROM procurement_products WHERE procurement_products.procurement_lot_id = "ProcurementLots".id)`,
             ),
             "total_adjusted_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT ARRAY_AGG(DISTINCT sa.order_id) FROM sales_allocations sa WHERE sa.order_id IS NOT NULL AND sa.id IN (SELECT id FROM sales_allocations LIMIT 100))`,
+            ),
+            "order_ids",
           ],
         ],
         where,
@@ -628,12 +634,12 @@ export const GetDispatchStats = ({
       console.log(
         "GetDispatchStats - procurementRows:",
         procurementRows?.length,
-        "rows fetched"
+        "rows fetched",
       );
       if (procurementRows && procurementRows.length > 0) {
         console.log(
           "GetDispatchStats - First row sample:",
-          JSON.stringify(procurementRows[0], null, 2)
+          JSON.stringify(procurementRows[0], null, 2),
         );
       }
 
@@ -646,7 +652,7 @@ export const GetDispatchStats = ({
       console.log(
         "GetDispatchStats - filteredRows:",
         filteredRows?.length,
-        "rows with dispatches"
+        "rows with dispatches",
       );
 
       const output = {
@@ -744,7 +750,7 @@ export const GetPeelingStats = ({
             sequelize.cast(sequelize.col("procurement_date"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_lot: { [Op.iLike]: `%${search}%` } },
         ];
@@ -771,27 +777,33 @@ export const GetPeelingStats = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`
+              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id and dispatches.is_active = true)`,
             ),
             "total_dispatched_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT COUNT(peeling.id) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`
+              `(SELECT COUNT(peeling.id) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`,
             ),
             "total_peeled_count",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(peeling_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`
+              `(SELECT SUM(peeling_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`,
             ),
             "total_peeled_quantity",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(yield_quantity) FROM peeling_products peps JOIN peeling ON peps.peeling_id = peeling.id and peeling.is_active = true JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peps.is_active = true)`
+              `(SELECT SUM(yield_quantity) FROM peeling_products peps JOIN peeling ON peps.peeling_id = peeling.id and peeling.is_active = true JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peps.is_active = true)`,
             ),
             "total_yield_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT ARRAY_AGG(DISTINCT sa.order_id) FROM sales_allocations sa WHERE sa.order_id IS NOT NULL AND sa.id IN (SELECT id FROM sales_allocations LIMIT 100))`,
+            ),
+            "order_ids",
           ],
         ],
         // include: [
@@ -808,10 +820,10 @@ export const GetPeelingStats = ({
           [Op.and]: [
             Sequelize.where(
               sequelize.literal(
-                `(SELECT COUNT(peeling.id) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`
+                `(SELECT COUNT(peeling.id) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = dp.procurement_product_id and pp.is_active = true WHERE pp.procurement_lot_id = "ProcurementLots".id and peeling.is_active = true)`,
               ),
               ">",
-              0
+              0,
             ),
           ],
         },
@@ -928,10 +940,10 @@ export const GetPeeledDispatchStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             ">",
-            0
+            0,
           ),
         ],
       };
@@ -946,7 +958,7 @@ export const GetPeeledDispatchStats = ({
             sequelize.cast(sequelize.col("peeled_date"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_lot: { [Op.iLike]: `%${search}%` } },
         ];
@@ -972,9 +984,22 @@ export const GetPeeledDispatchStats = ({
                   SELECT DISTINCT product_master_id FROM procurement_products 
                   WHERE procurement_lot_id = "ProcurementLots".id
                 )
-              ) LIMIT 1)`
+              ) LIMIT 1)`,
             ),
             "order_no",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT ARRAY_AGG(DISTINCT o.id) FROM orders o WHERE o.id IN (
+                SELECT DISTINCT order_id FROM order_products op 
+                JOIN product_master pm ON pm.id = op.product_master_id
+                WHERE pm.id IN (
+                  SELECT DISTINCT product_master_id FROM procurement_products 
+                  WHERE procurement_lot_id = "ProcurementLots".id
+                )
+              ))`,
+            ),
+            "order_ids",
           ],
           [
             sequelize.literal(
@@ -985,7 +1010,7 @@ export const GetPeeledDispatchStats = ({
 	              JOIN 
                   procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_peeled_quantity",
           ],
@@ -1000,7 +1025,7 @@ export const GetPeeledDispatchStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_yield_quantity",
           ],
@@ -1017,7 +1042,7 @@ export const GetPeeledDispatchStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_peeled_dispatch_count",
           ],
@@ -1034,7 +1059,7 @@ export const GetPeeledDispatchStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_peeled_dispatch_quantity",
           ],
@@ -1159,10 +1184,10 @@ export const GetPackingStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             ">",
-            0
+            0,
           ),
         ],
       };
@@ -1177,7 +1202,7 @@ export const GetPackingStats = ({
             sequelize.cast(sequelize.col("peeled_dispatched_date"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { procurement_lot: { [Op.iLike]: `%${search}%` } },
         ];
@@ -1205,7 +1230,7 @@ export const GetPackingStats = ({
 	              JOIN 
                   procurement_products prp on prp.id=d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_yield_quantity",
           ],
@@ -1222,7 +1247,7 @@ export const GetPackingStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_peeled_dispatched_quantity",
           ],
@@ -1241,7 +1266,7 @@ export const GetPackingStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_packing_count",
           ],
@@ -1260,9 +1285,15 @@ export const GetPackingStats = ({
 	              JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
-                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`
+                  prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
             ),
             "total_packing_quantity",
+          ],
+          [
+            sequelize.literal(
+              `(SELECT ARRAY_AGG(DISTINCT sa.order_id) FROM sales_allocations sa WHERE sa.order_id IS NOT NULL AND sa.id IN (SELECT id FROM sales_allocations LIMIT 100))`,
+            ),
+            "order_ids",
           ],
         ],
         where,
