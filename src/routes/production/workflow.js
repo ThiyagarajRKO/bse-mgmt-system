@@ -4,6 +4,7 @@
  */
 
 import models from "../../../models";
+import OrderTrackingService from "../../services/OrderTrackingService.js";
 
 export default async (fastify) => {
   // Create Production Order
@@ -430,6 +431,25 @@ export default async (fastify) => {
         // Update production order status
         await productionOrder.update({ status: "COMPLETED" });
 
+        // ✅ SYNC ORDER TRACKING: Update order status based on production completion
+        let orderTrackingUpdate = null;
+        if (productionOrder.order_id) {
+          try {
+            orderTrackingUpdate = await OrderTrackingService.syncOrderStatus(
+              productionOrder.order_id,
+            );
+            console.log(
+              `✅ Order tracking synced for order ${productionOrder.order_id}`,
+              orderTrackingUpdate,
+            );
+          } catch (trackingError) {
+            console.error(
+              `⚠️ Warning: Could not sync order tracking: ${trackingError.message}`,
+            );
+            // Don't fail production completion if tracking fails
+          }
+        }
+
         return reply.send({
           statusCode: 200,
           message: "Production output recorded",
@@ -441,6 +461,9 @@ export default async (fastify) => {
             variance_records: varianceRecords,
             total_gl_entries_posted: glEntriesCount,
             completed_at: new Date(),
+            order_tracking: orderTrackingUpdate || {
+              message: "No linked order",
+            },
           },
         });
       } catch (error) {
