@@ -23,7 +23,7 @@ export const Insert = async (profile_id, peeled_dispatch_data) => {
         peeled_dispatch_data,
         {
           profile_id,
-        }
+        },
       );
       resolve(result);
     } catch (err) {
@@ -71,7 +71,7 @@ export const Update = async (profile_id, id, peeled_dispatch_data) => {
           },
           individualHooks: true,
           profile_id,
-        }
+        },
       );
       resolve(result);
     } catch (err) {
@@ -120,24 +120,24 @@ export const GetAll = ({ start, length, search }) => {
           sequelize.where(
             sequelize.cast(
               sequelize.col("peeled_dispatch_quantity"),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           sequelize.where(
             sequelize.cast(sequelize.col("temperature"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { peeled_delivery_notes: { [Op.iLike]: `%${search}%` } },
           sequelize.where(
             sequelize.cast(sequelize.col("delivery_status"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$PeelingProducts->ProductMaster.product_name$": {
@@ -239,6 +239,7 @@ export const GetAll = ({ start, length, search }) => {
         subQuery: false,
         attributes: [
           "id",
+          "order_id",
           "created_at",
           "peeled_dispatch_quantity",
           "temperature",
@@ -246,13 +247,13 @@ export const GetAll = ({ start, length, search }) => {
           "delivery_status",
           [
             sequelize.literal(
-              `(SELECT procurement_lot FROM procurement_lots WHERE id = (SELECT procurement_lot_id FROM procurement_products WHERE id = (SELECT dispatch_id FROM "peeling" WHERE id = (SELECT peeling_id FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true) AND is_active = true) AND is_active = true) AND is_active = true LIMIT 1)`
+              `(SELECT procurement_lot FROM procurement_lots WHERE id = (SELECT procurement_lot_id FROM procurement_products WHERE id = (SELECT dispatch_id FROM "peeling" WHERE id = (SELECT peeling_id FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true) AND is_active = true) AND is_active = true) AND is_active = true LIMIT 1)`,
             ),
             "procurement_lot",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(yield_quantity) FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true)`
+              `(SELECT SUM(yield_quantity) FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true)`,
             ),
             "total_yield_quantity",
           ],
@@ -411,7 +412,7 @@ export const GetDestinations = ({
           "peeled_dispatch_quantity",
           [
             sequelize.literal(
-              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END)`
+              `(SELECT CASE WHEN SUM(peeled_dispatch_quantity) IS NULL THEN 0 ELSE SUM(peeled_dispatch_quantity) END)`,
             ),
             "peeled_dispatch_quantity",
           ],

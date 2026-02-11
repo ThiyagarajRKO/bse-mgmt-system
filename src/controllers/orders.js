@@ -1156,41 +1156,52 @@ export const GetAllocationData = ({ start, length, search }) => {
             approvedProcurementCount === 0; // ← Only pending if NO approved purchases
 
           // Calculate allocation status based on SalesAllocation records
-          let allocation_status = "Pending";
-          if (orderProducts.length > 0 && salesAllocations.length > 0) {
-            // Check if all order products have allocations
-            const productsWithAllocations = new Set(
-              salesAllocations.map((alloc) => alloc.order_product_id),
-            );
+          let allocation_status = "PENDING";
 
-            const allocatedProductCount = orderProducts.filter((product) =>
-              productsWithAllocations.has(product.id),
-            ).length;
+          if (orderProducts.length > 0) {
+            if (salesAllocations.length > 0) {
+              // Check if all order products have allocations
+              const productsWithAllocations = new Set(
+                salesAllocations.map((alloc) => alloc.order_product_id),
+              );
 
-            if (allocatedProductCount === orderProducts.length) {
-              // Check if all allocations are confirmed (ALLOCATED or COMPLETED)
-              const confirmedAllocations = salesAllocations.filter(
-                (alloc) =>
-                  alloc.allocation_status === "ALLOCATED" ||
-                  alloc.allocation_status === "COMPLETED",
+              const allocatedProductCount = orderProducts.filter((product) =>
+                productsWithAllocations.has(product.id),
               ).length;
 
-              if (confirmedAllocations === salesAllocations.length) {
-                // Only show as "Allocated" if no allocations are pending purchase
-                allocation_status = hasPendingPurchase
-                  ? "Pending Purchase"
-                  : "Allocated";
-              } else {
-                allocation_status = "Partial";
+              if (allocatedProductCount === orderProducts.length) {
+                // Check if all allocations are confirmed (ALLOCATED or COMPLETED)
+                const confirmedAllocations = salesAllocations.filter(
+                  (alloc) =>
+                    alloc.allocation_status === "ALLOCATED" ||
+                    alloc.allocation_status === "COMPLETED",
+                ).length;
+
+                if (confirmedAllocations === salesAllocations.length) {
+                  // Only show as "ALLOCATED" if no allocations are pending purchase
+                  allocation_status = hasPendingPurchase
+                    ? "PENDING_PURCHASE"
+                    : "ALLOCATED";
+                } else {
+                  allocation_status = "PARTIAL";
+                }
+              } else if (allocatedProductCount > 0) {
+                allocation_status = "PARTIAL";
               }
-            } else if (allocatedProductCount > 0) {
-              allocation_status = "Partial";
+            } else if (
+              hasPendingPurchase ||
+              allocationMasters.some(
+                (alloc) => alloc.status === "PENDING_PURCHASE",
+              )
+            ) {
+              // No SalesAllocations but has pending purchase requirement
+              allocation_status = "PENDING_PURCHASE";
             }
           }
 
           // If there are pending purchase allocations, override the status
-          if (hasPendingPurchase && allocation_status === "Allocated") {
-            allocation_status = "Pending Purchase";
+          if (hasPendingPurchase && allocation_status === "ALLOCATED") {
+            allocation_status = "PENDING_PURCHASE";
           }
 
           return {

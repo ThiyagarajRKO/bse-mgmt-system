@@ -1,4 +1,8 @@
-import { PeeledDispatches, PeelingProducts } from "../../../controllers";
+import {
+  PeeledDispatches,
+  PeelingProducts,
+  Peeling,
+} from "../../../controllers";
 
 export const Create = async (
   {
@@ -10,9 +14,10 @@ export const Create = async (
     delivery_notes,
     vehicle_master_id,
     driver_master_id,
+    order_id,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -31,6 +36,19 @@ export const Create = async (
           message: "Dispatched quantity is greater than Procurement quantity",
         });
       }
+
+      // Get order_id from peeling if not provided
+      let final_order_id = order_id;
+      if (!final_order_id) {
+        const peelingProduct = await PeelingProducts.Get({
+          id: peeled_product_id,
+        });
+        if (peelingProduct?.peeling_id) {
+          const peeling = await Peeling.Get({ id: peelingProduct.peeling_id });
+          final_order_id = peeling?.order_id;
+        }
+      }
+
       const dispatch = await PeeledDispatches.Insert(profile_id, {
         peeled_product_id,
         unit_master_id,
@@ -39,6 +57,7 @@ export const Create = async (
         delivery_notes,
         vehicle_master_id,
         driver_master_id,
+        order_id: final_order_id,
         is_active: true,
       });
 

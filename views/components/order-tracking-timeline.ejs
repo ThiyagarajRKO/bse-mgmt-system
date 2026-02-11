@@ -94,7 +94,7 @@
     <!-- Allocation Stage -->
     <div class="timeline-item" style="margin-bottom: 20px; position: relative">
       <div
-        class="allocated-dot"
+        class="allocation-dot"
         style="
           position: absolute;
           left: -30px;
@@ -184,48 +184,6 @@
       </div>
     </div>
 
-    <!-- Ready for QA Stage -->
-    <div class="timeline-item" style="margin-bottom: 20px; position: relative">
-      <div
-        class="ready-qa-dot"
-        style="
-          position: absolute;
-          left: -30px;
-          top: 0;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background-color: #cccccc;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-          border: 2px solid white;
-          box-shadow: 0 0 0 1px #dee2e6;
-        "
-      >
-        <span style="font-size: 8px; color: white">●</span>
-      </div>
-      <div
-        class="ready-qa-connector"
-        style="
-          position: absolute;
-          left: -20px;
-          top: 22px;
-          width: 2px;
-          height: 50px;
-          background-color: #dee2e6;
-        "
-      ></div>
-
-      <h6 class="mb-0"><strong>○ Ready for QA</strong></h6>
-      <div style="margin-top: 8px">
-        <small class="text-muted"
-          >Production completed, ready for quality check</small
-        >
-      </div>
-    </div>
-
     <!-- QA Approved Stage -->
     <div class="timeline-item" style="margin-bottom: 20px; position: relative">
       <div
@@ -305,46 +263,6 @@
       <h6 class="mb-0"><strong>○ Packed</strong></h6>
       <div style="margin-top: 8px">
         <small class="text-muted">Products packed and ready for dispatch</small>
-      </div>
-    </div>
-
-    <!-- Ready for Dispatch Stage -->
-    <div class="timeline-item" style="margin-bottom: 20px; position: relative">
-      <div
-        class="ready-dispatch-dot"
-        style="
-          position: absolute;
-          left: -30px;
-          top: 0;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background-color: #cccccc;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-          border: 2px solid white;
-          box-shadow: 0 0 0 1px #dee2e6;
-        "
-      >
-        <span style="font-size: 8px; color: white">●</span>
-      </div>
-      <div
-        class="ready-dispatch-connector"
-        style="
-          position: absolute;
-          left: -20px;
-          top: 22px;
-          width: 2px;
-          height: 50px;
-          background-color: #dee2e6;
-        "
-      ></div>
-
-      <h6 class="mb-0"><strong>○ Ready for Dispatch</strong></h6>
-      <div style="margin-top: 8px">
-        <small class="text-muted">Order prepared and ready for shipping</small>
       </div>
     </div>
 
@@ -498,10 +416,11 @@
       return;
     }
 
-    const { order, production_tracking, sales_tracking, status_timeline } =
+    const { order, production_tracking, sales_tracking, status_timeline, current_progress } =
       trackingData;
     console.log("📊 Order:", order);
     console.log("🏭 Production tracking:", production_tracking);
+    console.log("📊 Current progress:", current_progress);
     console.log("📅 Status timeline:", status_timeline);
 
     // Calculate total ordered quantity from order products
@@ -531,17 +450,23 @@
 
     // Map order statuses to timeline stage indices
     const statusToStageIndex = {
+      DRAFT: 0,
       ORDER_RECEIVED: 0,
       CONFIRMED: 1,
       ALLOCATED: 2,
       IN_PRODUCTION: 3,
+      PRODUCTION_COMPLETE: 3,
+      PEELING_IN_PROGRESS: 3,
       READY_FOR_QA: 4,
-      QA_APPROVED: 5,
-      PACKED: 6,
-      READY_FOR_DISPATCH: 7,
-      DISPATCHED: 8,
-      INVOICED: 9,
-      CLOSED: 9,
+      QA_APPROVED: 4,
+      PACKED: 5,
+      READY_FOR_DISPATCH: 6,
+      DISPATCHED: 6,
+      READY_FOR_SHIPMENT: 6,
+      SHIPPED: 6,
+      INVOICED: 7,
+      DELIVERED: 8,
+      CLOSED: 8,
     };
 
     // Determine current stage index based on completed statuses
@@ -589,7 +514,7 @@
     );
     updateTimelineStage(
       "allocation-dot",
-      "allocation-connector",
+      "allocated-connector",
       currentStageIndex >= 2,
       currentStageIndex === 2,
     );
@@ -600,47 +525,43 @@
       currentStageIndex === 3,
     );
     updateTimelineStage(
-      "ready-qa-dot",
-      "ready-qa-connector",
+      "qa-approved-dot",
+      "qa-approved-connector",
       currentStageIndex >= 4,
       currentStageIndex === 4,
     );
     updateTimelineStage(
-      "qa-approved-dot",
-      "qa-approved-connector",
+      "packed-dot",
+      "packed-connector",
       currentStageIndex >= 5,
       currentStageIndex === 5,
     );
     updateTimelineStage(
-      "packed-dot",
-      "packed-connector",
+      "dispatch-dot",
+      "dispatch-connector",
       currentStageIndex >= 6,
       currentStageIndex === 6,
     );
     updateTimelineStage(
-      "ready-dispatch-dot",
-      "ready-dispatch-connector",
+      "invoice-dot",
+      null,
       currentStageIndex >= 7,
       currentStageIndex === 7,
     );
-    updateTimelineStage(
-      "dispatch-dot",
-      "dispatch-connector",
-      currentStageIndex >= 8,
-      currentStageIndex === 8,
-    );
-    updateTimelineStage(
-      "invoice-dot",
-      null,
-      currentStageIndex >= 9,
-      currentStageIndex === 9,
-    );
 
     // Update progress bars for stages that have them
-    updateProgressBars(order, production_tracking, currentStageIndex);
+    updateProgressBars(order, production_tracking, currentStageIndex, current_progress);
 
     // Update status message
     updateStatusMessage(orderStatus, currentStageIndex);
+
+    // Update the modal display with the current calculated order status
+    // Update the delivery status display in the modal
+    const deliveryStatusElement = document.querySelector("#view_delivery_status");
+    if (deliveryStatusElement && order?.order_status) {
+      console.log("📝 Updating modal status display from:", deliveryStatusElement.textContent, "to:", order.order_status);
+      deliveryStatusElement.textContent = order.order_status;
+    }
 
     // Sync order status if needed
     if (currentStageIndex >= 9) {
@@ -703,22 +624,52 @@
   /**
    * Update progress bars for stages that have them
    */
-  function updateProgressBars(order, production_tracking, currentStageIndex) {
-    // Update production progress bar
+  function updateProgressBars(order, production_tracking, currentStageIndex, current_progress) {
+    // Use current_progress.progress_percentage if available, otherwise calculate
+    const progressPercent = current_progress?.progress_percentage || 0;
+    
+    console.log("📈 Updating progress bars with:", { progressPercent, currentStageIndex, current_progress });
+    
+    // Update production progress bar (includes peeling as part of production)
     if (currentStageIndex >= 3) {
       const prodBar = document.getElementById("prodBar");
       if (prodBar) {
-        const productionPercent = calculateProductionProgress(
-          production_tracking,
-          order,
-        );
+        let productionPercent = 0;
+        let statusMessage = "Waiting for production";
+        
+        // Check if production is complete (including peeling)
+        const stage = current_progress?.current_stage;
+        if (stage === "PRODUCTION_COMPLETE" || stage === "PACKED" || stage === "READY_FOR_DISPATCH" || stage === "QA_APPROVED" || stage === "DISPATCHED" || stage === "SHIPPED" || stage === "INVOICED" || stage === "DELIVERED") {
+          // Production is complete
+          productionPercent = 100;
+          statusMessage = "100% - Production complete";
+        } else if (stage === "PEELING_IN_PROGRESS") {
+          // Peeling is in progress
+          productionPercent = 50;
+          statusMessage = "50% - Peeling in progress";
+        } else if (stage === "IN_PRODUCTION") {
+          // Manufacturing is in progress
+          productionPercent = production_tracking
+            ? calculateProductionProgress(production_tracking, order)
+            : progressPercent;
+          statusMessage = productionPercent + "% - Manufacturing in progress";
+        } else {
+          // Use calculated progress from quantities
+          productionPercent = production_tracking
+            ? calculateProductionProgress(production_tracking, order)
+            : progressPercent;
+          if (productionPercent > 0) {
+            statusMessage = productionPercent + "% complete";
+          }
+        }
+        
+        console.log("🏭 Setting production progress bar to:", productionPercent + "%");
         prodBar.style.width = productionPercent + "%";
         prodBar.style.backgroundColor =
           productionPercent > 0 ? "#EA5455" : "#cccccc";
-        prodBar.textContent =
-          productionPercent > 0
-            ? productionPercent + "% complete"
-            : "Waiting for production";
+        prodBar.textContent = statusMessage;
+      } else {
+        console.warn("⚠️ Production progress bar element not found");
       }
     }
 
@@ -726,7 +677,11 @@
     if (currentStageIndex >= 8) {
       const dispatchBar = document.getElementById("dispatchBar");
       if (dispatchBar) {
-        const dispatchPercent = calculateDispatchProgress(production_tracking);
+        const dispatchPercent = production_tracking
+          ? calculateDispatchProgress(production_tracking)
+          : (progressPercent >= 75 ? 100 : 0); // If 75%+ progress, consider dispatch complete
+        
+        console.log("📦 Setting dispatch progress bar to:", dispatchPercent + "%");
         dispatchBar.style.width = dispatchPercent + "%";
         dispatchBar.style.backgroundColor =
           dispatchPercent > 0 ? "#EA5455" : "#cccccc";
@@ -734,6 +689,8 @@
           dispatchPercent > 0
             ? dispatchPercent + "% dispatched"
             : "Waiting for dispatch";
+      } else {
+        console.warn("⚠️ Dispatch progress bar element not found");
       }
     }
   }

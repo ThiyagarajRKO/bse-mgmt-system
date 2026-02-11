@@ -6298,61 +6298,6 @@
 
     });
 
-    // ✅ AUTO-REFRESH: Update order tracking every 30 seconds
-    // This ensures progress bar and status info stays current
-    setInterval(async () => {
-      if (current_order_id) {
-        try {
-          const response = await fetch(`/api/orders/${current_order_id}/tracking`);
-          if (!response.ok) {
-            console.warn(`Order tracking fetch failed: ${response.status}`);
-            return;
-          }
-
-          const tracking = await response.json();
-
-          // Update progress bar if it exists
-          if (tracking.current_progress) {
-            const percentage = Math.min(100, tracking.current_progress.progress_percentage || 0);
-            const progressBar = $('#orderProgressBar');
-            const progressText = $('#orderProgressText');
-
-            if (progressBar.length) {
-              progressBar.css('width', percentage + '%');
-              progressBar.attr('aria-valuenow', percentage);
-            }
-
-            if (progressText.length) {
-              const stageName = tracking.current_progress.current_stage || 'IN_PROGRESS';
-              progressText.text(percentage + '% - ' + stageName);
-            }
-          }
-
-          // Update status display if it exists
-          if (tracking.order) {
-            const statusElement = $('#orderStatus');
-            const updatedAtElement = $('#orderUpdatedAt');
-
-            if (statusElement.length && tracking.order.order_status) {
-              const statusBadgeClass = getStatusBadgeClass(tracking.order.order_status);
-              statusElement.html(
-                `<span class="badge ${statusBadgeClass}">${tracking.order.order_status}</span>`
-              );
-            }
-
-            if (updatedAtElement.length && tracking.order.updated_at) {
-              const updatedDate = new Date(tracking.order.updated_at);
-              updatedAtElement.text('Last updated: ' + updatedDate.toLocaleString());
-            }
-          }
-
-          console.log('[Order Tracking Auto-Refresh] Updated at:', new Date().toLocaleTimeString());
-        } catch (error) {
-          console.warn('[Order Tracking Auto-Refresh] Error:', error.message);
-          // Don't show error toast - just log silently for background refresh
-        }
-      }
-    }, 30000); // Refresh every 30 seconds
 
     // Helper function to get Bootstrap badge class based on status
     function getStatusBadgeClass(status) {

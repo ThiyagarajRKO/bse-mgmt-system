@@ -213,20 +213,20 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             sequelize.cast(sequelize.col("dispatch_quantity"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           sequelize.where(
             sequelize.cast(sequelize.col("temperature"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { delivery_notes: { [Op.iLike]: `%${search}%` } },
           sequelize.where(
             sequelize.cast(sequelize.col("delivery_status"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$pp->ProductMaster.product_name$": {
@@ -236,11 +236,11 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
           sequelize.where(
             sequelize.cast(
               sequelize.col("pp.procurement_product_type"),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$pp->SupplierMaster.supplier_name$": {
@@ -256,6 +256,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
       const dispatchs = await models.Dispatches.findAndCountAll({
         attributes: [
           "id",
+          "order_id",
           "procurement_product_id",
           "dispatch_quantity",
           "temperature",
@@ -272,7 +273,7 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
               "procurement_product_type",
               [
                 sequelize.literal(
-                  `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "pp".id and is_active = true)`
+                  `(SELECT SUM(dispatch_quantity) FROM dispatches WHERE procurement_product_id = "pp".id and is_active = true)`,
                 ),
                 "total_dispatched_quantity",
               ],
@@ -339,11 +340,11 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
         console.log("=== DISPATCH DATA ===");
         console.log(
           "First row keys:",
-          Object.keys(dispatchs.rows[0].dataValues || dispatchs.rows[0])
+          Object.keys(dispatchs.rows[0].dataValues || dispatchs.rows[0]),
         );
         console.log(
           "First row:",
-          JSON.stringify(dispatchs.rows[0], null, 2).substring(0, 500)
+          JSON.stringify(dispatchs.rows[0], null, 2).substring(0, 500),
         );
       }
 
@@ -465,7 +466,7 @@ export const GetProductNames = ({
                 peeling_id != "null" && peeling_id != undefined
                   ? "id != '" + peeling_id + "' and"
                   : ""
-              } dispatch_id = "Dispatches".id and peeling.is_active = true)`
+              } dispatch_id = "Dispatches".id and peeling.is_active = true)`,
             ),
             "peeling_quantity",
           ],

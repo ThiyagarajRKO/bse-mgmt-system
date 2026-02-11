@@ -361,7 +361,7 @@ export const GetAll = ({ start, length }) => {
           {
             as: "pd",
             model: models.PeeledDispatches,
-            attributes: ["id", "peeled_dispatch_quantity"],
+            attributes: ["id", "order_id", "peeled_dispatch_quantity"],
             where: {
               is_active: true,
             },

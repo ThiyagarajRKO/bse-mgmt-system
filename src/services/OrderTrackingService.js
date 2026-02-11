@@ -256,20 +256,84 @@ class OrderTrackingService {
           }
 
           if (peelingRecords.length > 0) {
-            // In peeling/processing stage
+            // In peeling/processing stage - but check if packing is done
             console.log(
               `[OrderTracking] ✅ Peeling in progress - ${peelingRecords.length} records`,
             );
+            
+            // Check if packing is already done (packing records exist)
+            let packingRecords = [];
+            if (models.Packing) {
+              try {
+                // Get packing records linked to peeled dispatches of this order
+                packingRecords = await models.Packing.findAll({
+                  include: [
+                    {
+                      model: models.PeeledDispatches,
+                      as: "pd",
+                      where: { order_id: orderId },
+                      attributes: ["id"],
+                    },
+                  ],
+                  attributes: ["id"],
+                  limit: 1,
+                  raw: true,
+                });
+                console.log(
+                  `[OrderTracking] Found ${packingRecords.length} packing records for order`,
+                );
+              } catch (err) {
+                console.warn(
+                  `[OrderTracking] Could not check packing: ${err.message}`,
+                );
+              }
+            }
+
+            // If packing records exist, order has progressed past peeling
+            if (packingRecords.length > 0) {
+              console.log(
+                `[OrderTracking] ✅ Packing in progress - ${packingRecords.length} records`,
+              );
+              return {
+                current_stage: "PACKED",
+                order_status: "PACKED",
+                progress_percentage: 70,
+                details: {
+                  message: "Product in packing stage",
+                  delivery_status: order.delivery_status,
+                  packing_records: packingRecords.length,
+                },
+                next_stage: "READY_FOR_DISPATCH",
+              };
+            }
+
+            // Check if peeling is completed
+            const peelingStatus = peelingRecords[0]?.peeling_status;
+            if (peelingStatus === "Completed") {
+              return {
+                current_stage: "PRODUCTION_COMPLETE",
+                order_status: "PRODUCTION_COMPLETE",
+                progress_percentage: 50,
+                details: {
+                  message: "Production and peeling complete, awaiting packing",
+                  delivery_status: order.delivery_status,
+                  peeling_records: peelingRecords.length,
+                },
+                next_stage: "QA_APPROVED",
+              };
+            }
+
+            // Peeling is in progress
             return {
               current_stage: "PEELING_IN_PROGRESS",
               order_status: "PEELING_IN_PROGRESS",
-              progress_percentage: 60,
+              progress_percentage: 40,
               details: {
                 message: "Product in peeling/processing stage",
                 delivery_status: order.delivery_status,
                 peeling_records: peelingRecords.length,
               },
-              next_stage: "READY_FOR_SHIPMENT",
+              next_stage: "PRODUCTION_COMPLETE",
             };
           }
 
@@ -297,7 +361,57 @@ class OrderTrackingService {
           }
 
           if (peeledDispatches.length > 0) {
-            // Ready for shipment / shipping
+            // Peeled dispatches exist - check if packing is done
+            console.log(
+              `[OrderTracking] ✅ Found ${peeledDispatches.length} peeled_dispatch records`,
+            );
+            
+            // Check if packing records exist for these peeled dispatches
+            let packingRecords = [];
+            if (models.Packing) {
+              try {
+                packingRecords = await models.Packing.findAll({
+                  include: [
+                    {
+                      model: models.PeeledDispatches,
+                      as: "pd",
+                      where: { order_id: orderId },
+                      attributes: ["id"],
+                    },
+                  ],
+                  attributes: ["id"],
+                  limit: 1,
+                  raw: true,
+                });
+                console.log(
+                  `[OrderTracking] Found ${packingRecords.length} packing records`,
+                );
+              } catch (err) {
+                console.warn(
+                  `[OrderTracking] Could not check packing: ${err.message}`,
+                );
+              }
+            }
+
+            // If packing records exist, order has progressed past peeling
+            if (packingRecords.length > 0) {
+              console.log(
+                `[OrderTracking] ✅ Packing in progress - ${packingRecords.length} records`,
+              );
+              return {
+                current_stage: "PACKED",
+                order_status: "PACKED",
+                progress_percentage: 70,
+                details: {
+                  message: "Product in packing stage",
+                  delivery_status: order.delivery_status,
+                  packing_records: packingRecords.length,
+                },
+                next_stage: "READY_FOR_DISPATCH",
+              };
+            }
+
+            // Ready for shipment / shipping (peeled dispatches but no packing yet)
             console.log(
               `[OrderTracking] ✅ Ready for shipment - peeled_dispatches found`,
             );
@@ -842,17 +956,111 @@ class OrderTrackingService {
       // Calculate current progress
       const progress = await this.calculateOrderProgress(orderId, models);
 
+      // Update order_status in the order object to match the current_stage from progress
+      const orderData = {
+        ...order.dataValues,
+        order_status: progress.order_status, // Use the calculated order_status from progress
+      };
+
+      // Get the last logged status from the timeline
+      const lastLoggedStatus =
+        statusTimeline.length > 0
+          ? statusTimeline[statusTimeline.length - 1].to_status
+          : "DRAFT";
+
+      // Build the timeline data
+      let timelineData = statusTimeline.map((log) => log.dataValues);
+
+      // Map all possible order statuses in sequence
+      const statusSequence = [
+        "DRAFT",
+        "CONFIRMED",
+        "ALLOCATED",
+        "IN_PRODUCTION",
+        "PRODUCTION_COMPLETE",
+        "PEELING_IN_PROGRESS",
+        "PACKED",
+        "READY_FOR_DISPATCH",
+        "READY_FOR_SHIPMENT",
+        "DISPATCHED",
+        "SHIPPED",
+        "DELIVERED",
+      ];
+
+      // Find the index of the last logged status
+      const lastLoggedIndex = statusSequence.indexOf(lastLoggedStatus);
+      const currentStatusIndex = statusSequence.indexOf(
+        progress.order_status,
+      );
+
+      // If there are intermediate statuses between the last logged and current status,
+      // add them to the timeline (with calculated transition dates)
+      if (
+        currentStatusIndex > lastLoggedIndex &&
+        progress.order_status !== lastLoggedStatus
+      ) {
+        console.log(
+          `[OrderTracking] Building intermediate transitions from ${lastLoggedStatus} to ${progress.order_status}`,
+        );
+
+        // Get the timestamp of the last logged transition
+        const lastTransitionTime = statusTimeline.length > 0
+          ? new Date(statusTimeline[statusTimeline.length - 1].transition_date)
+          : new Date(order.created_at);
+
+        // Calculate intermediate transitions
+        for (let i = lastLoggedIndex + 1; i <= currentStatusIndex; i++) {
+          const fromStatus = statusSequence[i - 1];
+          const toStatus = statusSequence[i];
+
+          // Calculate transition time (spread them over time or use current time)
+          const transitionTime = new Date(
+            lastTransitionTime.getTime() +
+              (i - lastLoggedIndex) * 60 * 60 * 1000,
+          ); // 1 hour apart
+
+          console.log(
+            `[OrderTracking] Adding transition: ${fromStatus} → ${toStatus}`,
+          );
+
+          timelineData.push({
+            id: null, // Virtual entry
+            from_status: fromStatus,
+            to_status: toStatus,
+            transition_date: transitionTime.toISOString(),
+            transition_reason: `Calculated from production progress - Order progressing through ${toStatus} stage`,
+            created_at: transitionTime.toISOString(),
+          });
+        }
+      } else if (
+        progress.order_status &&
+        progress.order_status !== lastLoggedStatus
+      ) {
+        // Direct transition if no intermediate statuses
+        console.log(
+          `[OrderTracking] Adding direct transition: ${lastLoggedStatus} → ${progress.order_status}`,
+        );
+        timelineData.push({
+          id: null, // Virtual entry
+          from_status: lastLoggedStatus,
+          to_status: progress.order_status,
+          transition_date: new Date().toISOString(),
+          transition_reason: `Calculated from production progress - ${progress.details?.message || "In progress"}`,
+          created_at: new Date().toISOString(),
+        });
+      }
+
       return {
-        order: order.dataValues,
+        order: orderData,
         current_progress: progress,
-        status_timeline: statusTimeline.map((log) => log.dataValues),
+        status_timeline: timelineData,
         summary: {
-          total_transitions: statusTimeline.length,
-          first_status_change: statusTimeline[0]?.transition_date || null,
+          total_transitions: timelineData.length,
+          first_status_change: timelineData[0]?.transition_date || null,
           last_status_change:
-            statusTimeline[statusTimeline.length - 1]?.transition_date || null,
+            timelineData[timelineData.length - 1]?.transition_date || null,
           days_in_current_status: this._calculateDaysSince(
-            statusTimeline[statusTimeline.length - 1]?.created_at ||
+            timelineData[timelineData.length - 1]?.created_at ||
               order.created_at,
           ),
         },
