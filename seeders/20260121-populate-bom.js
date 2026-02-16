@@ -133,10 +133,12 @@ module.exports = {
     // when getRawMaterialsForProduct() summed all purchase_inventory records.
     // Now, procurement products are only created when orders are confirmed
     // and actual purchase requests are generated based on real demand.
-    
+
     // The BOM structure is set up above; procurement data is created on-demand.
-    
-    console.log(`⚠️  Skipping default procurement_products creation (now on-demand only)\n`);
+
+    console.log(
+      `⚠️  Skipping default procurement_products creation (now on-demand only)\n`,
+    );
     const uniqueRawProducts = new Map();
 
     // Build unique set based on product_id to avoid duplicates
@@ -146,16 +148,9 @@ module.exports = {
       }
     }
 
-    const procurementRows = [];
-    // Removed: Default 1000 kg procurement products
-    // These will be created dynamically when orders are confirmed
-    }
-
-    // Insert procurement products in batches
-    
     // Skip inserting default procurement products (now on-demand only)
     // This prevents the hardcoded 1000 kg values from polluting inventory
-    
+
     // Fetch existing procurement_products (if any were created externally)
     const procurementProducts = await queryInterface.sequelize.query(
       `SELECT 

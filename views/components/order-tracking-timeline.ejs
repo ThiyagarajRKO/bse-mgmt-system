@@ -416,8 +416,13 @@
       return;
     }
 
-    const { order, production_tracking, sales_tracking, status_timeline, current_progress } =
-      trackingData;
+    const {
+      order,
+      production_tracking,
+      sales_tracking,
+      status_timeline,
+      current_progress,
+    } = trackingData;
     console.log("📊 Order:", order);
     console.log("🏭 Production tracking:", production_tracking);
     console.log("📊 Current progress:", current_progress);
@@ -550,16 +555,28 @@
     );
 
     // Update progress bars for stages that have them
-    updateProgressBars(order, production_tracking, currentStageIndex, current_progress);
+    updateProgressBars(
+      order,
+      production_tracking,
+      currentStageIndex,
+      current_progress,
+    );
 
     // Update status message
     updateStatusMessage(orderStatus, currentStageIndex);
 
     // Update the modal display with the current calculated order status
     // Update the delivery status display in the modal
-    const deliveryStatusElement = document.querySelector("#view_delivery_status");
+    const deliveryStatusElement = document.querySelector(
+      "#view_delivery_status",
+    );
     if (deliveryStatusElement && order?.order_status) {
-      console.log("📝 Updating modal status display from:", deliveryStatusElement.textContent, "to:", order.order_status);
+      console.log(
+        "📝 Updating modal status display from:",
+        deliveryStatusElement.textContent,
+        "to:",
+        order.order_status,
+      );
       deliveryStatusElement.textContent = order.order_status;
     }
 
@@ -624,22 +641,40 @@
   /**
    * Update progress bars for stages that have them
    */
-  function updateProgressBars(order, production_tracking, currentStageIndex, current_progress) {
+  function updateProgressBars(
+    order,
+    production_tracking,
+    currentStageIndex,
+    current_progress,
+  ) {
     // Use current_progress.progress_percentage if available, otherwise calculate
     const progressPercent = current_progress?.progress_percentage || 0;
-    
-    console.log("📈 Updating progress bars with:", { progressPercent, currentStageIndex, current_progress });
-    
+
+    console.log("📈 Updating progress bars with:", {
+      progressPercent,
+      currentStageIndex,
+      current_progress,
+    });
+
     // Update production progress bar (includes peeling as part of production)
     if (currentStageIndex >= 3) {
       const prodBar = document.getElementById("prodBar");
       if (prodBar) {
         let productionPercent = 0;
         let statusMessage = "Waiting for production";
-        
+
         // Check if production is complete (including peeling)
         const stage = current_progress?.current_stage;
-        if (stage === "PRODUCTION_COMPLETE" || stage === "PACKED" || stage === "READY_FOR_DISPATCH" || stage === "QA_APPROVED" || stage === "DISPATCHED" || stage === "SHIPPED" || stage === "INVOICED" || stage === "DELIVERED") {
+        if (
+          stage === "PRODUCTION_COMPLETE" ||
+          stage === "PACKED" ||
+          stage === "READY_FOR_DISPATCH" ||
+          stage === "QA_APPROVED" ||
+          stage === "DISPATCHED" ||
+          stage === "SHIPPED" ||
+          stage === "INVOICED" ||
+          stage === "DELIVERED"
+        ) {
           // Production is complete
           productionPercent = 100;
           statusMessage = "100% - Production complete";
@@ -662,8 +697,11 @@
             statusMessage = productionPercent + "% complete";
           }
         }
-        
-        console.log("🏭 Setting production progress bar to:", productionPercent + "%");
+
+        console.log(
+          "🏭 Setting production progress bar to:",
+          productionPercent + "%",
+        );
         prodBar.style.width = productionPercent + "%";
         prodBar.style.backgroundColor =
           productionPercent > 0 ? "#EA5455" : "#cccccc";
@@ -679,9 +717,14 @@
       if (dispatchBar) {
         const dispatchPercent = production_tracking
           ? calculateDispatchProgress(production_tracking)
-          : (progressPercent >= 75 ? 100 : 0); // If 75%+ progress, consider dispatch complete
-        
-        console.log("📦 Setting dispatch progress bar to:", dispatchPercent + "%");
+          : progressPercent >= 75
+            ? 100
+            : 0; // If 75%+ progress, consider dispatch complete
+
+        console.log(
+          "📦 Setting dispatch progress bar to:",
+          dispatchPercent + "%",
+        );
         dispatchBar.style.width = dispatchPercent + "%";
         dispatchBar.style.backgroundColor =
           dispatchPercent > 0 ? "#EA5455" : "#cccccc";

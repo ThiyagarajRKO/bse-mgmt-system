@@ -260,7 +260,7 @@ class OrderTrackingService {
             console.log(
               `[OrderTracking] ✅ Peeling in progress - ${peelingRecords.length} records`,
             );
-            
+
             // Check if packing is already done (packing records exist)
             let packingRecords = [];
             if (models.Packing) {
@@ -365,7 +365,7 @@ class OrderTrackingService {
             console.log(
               `[OrderTracking] ✅ Found ${peeledDispatches.length} peeled_dispatch records`,
             );
-            
+
             // Check if packing records exist for these peeled dispatches
             let packingRecords = [];
             if (models.Packing) {
@@ -989,9 +989,7 @@ class OrderTrackingService {
 
       // Find the index of the last logged status
       const lastLoggedIndex = statusSequence.indexOf(lastLoggedStatus);
-      const currentStatusIndex = statusSequence.indexOf(
-        progress.order_status,
-      );
+      const currentStatusIndex = statusSequence.indexOf(progress.order_status);
 
       // If there are intermediate statuses between the last logged and current status,
       // add them to the timeline (with calculated transition dates)
@@ -1004,9 +1002,12 @@ class OrderTrackingService {
         );
 
         // Get the timestamp of the last logged transition
-        const lastTransitionTime = statusTimeline.length > 0
-          ? new Date(statusTimeline[statusTimeline.length - 1].transition_date)
-          : new Date(order.created_at);
+        const lastTransitionTime =
+          statusTimeline.length > 0
+            ? new Date(
+                statusTimeline[statusTimeline.length - 1].transition_date,
+              )
+            : new Date(order.created_at);
 
         // Calculate intermediate transitions
         for (let i = lastLoggedIndex + 1; i <= currentStatusIndex; i++) {
