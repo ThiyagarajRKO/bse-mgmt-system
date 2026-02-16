@@ -246,11 +246,49 @@ module.exports = (sequelize, DataTypes) => {
 
       data.created_by = options.profile_id;
 
-      // Map HSN code from species if not provided
+      // Map HSN code: Check derivative mapping first, then species fallback
       if (!data.hsn_code) {
-        const speciesHsnCode = product_category?.SpeciesMaster?.hsn_code;
-        if (speciesHsnCode) {
-          data.hsn_code = speciesHsnCode;
+        let hsn = null;
+
+        // Step 1: Check if derivative-specific HSN mapping exists
+        if (
+          data.derivative_master_id &&
+          data.species_master_id &&
+          sequelize.models.DerivativeGstMapping
+        ) {
+          try {
+            const derivativeMapping =
+              await sequelize.models.DerivativeGstMapping.findActiveMapping(
+                data.species_master_id,
+                data.derivative_master_id,
+                data.processing_state || "PROCESSED",
+              );
+            if (
+              derivativeMapping?.hsn_code_override ||
+              derivativeMapping?.gst_master?.hsn_code
+            ) {
+              hsn =
+                derivativeMapping.hsn_code_override ||
+                derivativeMapping.gst_master.hsn_code;
+            }
+          } catch (err) {
+            console.warn(
+              "Warning: Error checking derivative GST mapping:",
+              err?.message,
+            );
+          }
+        }
+
+        // Step 2: Fallback to species-level HSN
+        if (!hsn) {
+          const speciesHsnCode = product_category?.SpeciesMaster?.hsn_code;
+          if (speciesHsnCode) {
+            hsn = speciesHsnCode;
+          }
+        }
+
+        if (hsn) {
+          data.hsn_code = hsn;
         }
       }
     } catch (err) {
@@ -352,27 +390,83 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
 
-      // Map HSN code from species if category is being updated
-      if (data?.product_category_master_id && !data.hsn_code) {
-        const product_category =
-          await sequelize.models.ProductCategoryMaster.findOne({
-            required: true,
-            attributes: ["product_category"],
-            include: [
-              {
-                required: true,
-                attributes: ["species_name", "hsn_code"],
-                model: sequelize.models.SpeciesMaster,
-                where: {
-                  is_active: true,
-                },
-              },
-            ],
-            where: { id: data.product_category_master_id, is_active: true },
-          });
+      // Map HSN code: Check derivative mapping first, then species fallback
+      // Update HSN if: derivative changed, processing_state changed, or category changed
+      if (
+        !data.hsn_code &&
+        (data?.derivative_master_id ||
+          data?.processing_state ||
+          data?.product_category_master_id)
+      ) {
+        let hsn = null;
+        let speciesId = data?.species_master_id;
 
-        if (product_category?.SpeciesMaster?.hsn_code) {
-          data.hsn_code = product_category.SpeciesMaster.hsn_code;
+        // Get current species if not being updated
+        if (
+          !speciesId &&
+          (data?.derivative_master_id || data?.processing_state)
+        ) {
+          const existingProduct = await ProductMaster.findByPk(
+            options?.where?.id,
+          );
+          speciesId = existingProduct?.species_master_id;
+        }
+
+        // Step 1: Check if derivative-specific HSN mapping exists
+        if (
+          data?.derivative_master_id &&
+          speciesId &&
+          sequelize.models.DerivativeGstMapping
+        ) {
+          try {
+            const derivativeMapping =
+              await sequelize.models.DerivativeGstMapping.findActiveMapping(
+                speciesId,
+                data.derivative_master_id,
+                data.processing_state || "PROCESSED",
+              );
+            if (
+              derivativeMapping?.hsn_code_override ||
+              derivativeMapping?.gst_master?.hsn_code
+            ) {
+              hsn =
+                derivativeMapping.hsn_code_override ||
+                derivativeMapping.gst_master.hsn_code;
+            }
+          } catch (err) {
+            console.warn(
+              "Warning: Error checking derivative GST mapping:",
+              err?.message,
+            );
+          }
+        }
+
+        // Step 2: Fallback to species-level HSN (for category updates)
+        if (!hsn && data?.product_category_master_id) {
+          const product_category =
+            await sequelize.models.ProductCategoryMaster.findOne({
+              required: true,
+              attributes: ["product_category"],
+              include: [
+                {
+                  required: true,
+                  attributes: ["species_name", "hsn_code"],
+                  model: sequelize.models.SpeciesMaster,
+                  where: {
+                    is_active: true,
+                  },
+                },
+              ],
+              where: { id: data.product_category_master_id, is_active: true },
+            });
+
+          if (product_category?.SpeciesMaster?.hsn_code) {
+            hsn = product_category.SpeciesMaster.hsn_code;
+          }
+        }
+
+        if (hsn) {
+          data.hsn_code = hsn;
         }
       }
 
