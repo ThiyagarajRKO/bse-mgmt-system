@@ -1,7 +1,7 @@
 import QAChecklist from "../../../models/qa_checklist";
-import BatchMaster from "../../../models/batch_master";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async (fastify) => {
   // Update QA record
@@ -10,7 +10,8 @@ export default async (fastify) => {
     handler: async (request, reply) => {
       try {
         const { qa_id } = request.params;
-        const { test_result, remarks } = request.body;
+        const { status, inspection_date, inspector_name, remarks, defects } =
+          request.body;
         const profile_id = request.token_profile_id;
 
         if (!UUID_PATTERN.test(qa_id)) {
@@ -30,24 +31,29 @@ export default async (fastify) => {
 
         const updates = { updated_by: profile_id };
 
-        // Update test result if provided
-        if (test_result && ["PASSED", "FAILED", "CONDITIONAL", "PENDING"].includes(test_result)) {
-          updates.test_result = test_result;
-          
-          // Update batch status accordingly
-          const batch = await BatchMaster.findByPk(qa.batch_id);
-          if (batch) {
-            if (test_result === "PASSED") {
-              await batch.update({ batch_status: "QA_APPROVED", updated_by: profile_id });
-            } else if (test_result === "FAILED") {
-              await batch.update({ batch_status: "QA_REJECTED", updated_by: profile_id });
-            }
-          }
+        // Update status if provided
+        if (status && ["PENDING", "PASS", "FAIL", "ON_HOLD"].includes(status)) {
+          updates.status = status;
+        }
+
+        // Update inspection_date if provided
+        if (inspection_date) {
+          updates.inspection_date = new Date(inspection_date);
+        }
+
+        // Update inspector_name if provided
+        if (inspector_name) {
+          updates.inspector_name = inspector_name;
         }
 
         // Update remarks if provided
         if (remarks) {
           updates.remarks = remarks;
+        }
+
+        // Update defects if provided
+        if (defects) {
+          updates.defects = defects;
         }
 
         await qa.update(updates);

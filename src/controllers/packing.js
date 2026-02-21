@@ -225,6 +225,33 @@ export const Get = ({ id }) => {
           id,
           is_active: true,
         },
+        include: [
+          {
+            association: "pd",
+            model: models.PeeledDispatches,
+            attributes: ["id", "order_id", "peeled_product_id", "qa_id"],
+            include: [
+              {
+                association: "pp",
+                model: models.PeelingProducts,
+                attributes: ["id", "peeling_id", "yield_quantity"],
+              },
+              {
+                model: models.Orders,
+                attributes: ["id", "order_number", "customer_id"],
+              },
+              {
+                association: "qa",
+                model: models.QAChecklist,
+                attributes: ["id", "status", "lot_no"],
+              },
+            ],
+          },
+          {
+            model: models.Orders,
+            attributes: ["id", "order_number", "customer_id"],
+          },
+        ],
       });
 
       resolve(packing);

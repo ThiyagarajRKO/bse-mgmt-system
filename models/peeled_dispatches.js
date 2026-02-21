@@ -56,6 +56,22 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "SET NULL",
       });
 
+      if (models.QAChecklist) {
+        PeeledDispatches.belongsTo(models.QAChecklist, {
+          as: "qaCheck",
+          foreignKey: "qa_checklist_id",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+        });
+
+        PeeledDispatches.belongsTo(models.QAChecklist, {
+          as: "qa",
+          foreignKey: "qa_id",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+        });
+      }
+
       // Has Many
       PeeledDispatches.hasMany(models.Packing, {
         foreignKey: "peeled_dispatch_id",
@@ -89,6 +105,18 @@ module.exports = (sequelize, DataTypes) => {
         comment:
           "Reference to the sales order for which this peeled dispatch is made",
       },
+      qa_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to the QA Checklist record for quality verification",
+      },
+      qa_checklist_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Reference to QA Checklist (new position between PeelingProducts and PeeledDispatches)",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -110,7 +138,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Create Hook
@@ -120,7 +148,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while appending an dispatch data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });

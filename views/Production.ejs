@@ -501,6 +501,17 @@
           </div>
 
           <div
+            class="topMenu-item qaMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-flask-vial"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>QA</span>
+            </div>
+          </div>
+
+          <div
             class="topMenu-item peeledDispatchMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
           >
             <div class="icon-button shadow">
@@ -756,6 +767,65 @@
                               >0</span
                             >
                             <span class="progressBar-weight-unit">kg</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="stepper-menu border rounded">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="p-3">
+                        <svg
+                          class="radial-progress"
+                          id="qaCircle"
+                          data-percentage="0"
+                          viewBox="0 0 80 80"
+                        >
+                          <circle
+                            class="incomplete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                          ></circle>
+                          <circle
+                            class="complete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                            style="stroke-dashoffset: 0"
+                          ></circle>
+                          <text
+                            id="qaPercentage"
+                            class="percentage"
+                            x="50%"
+                            y="57%"
+                            transform="matrix(0, 1, -1, 0, 80, 0)"
+                          >
+                            0%
+                          </text>
+                        </svg>
+                      </td>
+                      <td>
+                        <div class="d-flex flex-column">
+                          <span class="progressBar-label heading"
+                            >QA Pass Rate</span
+                          >
+                          <div class="weightContainer">
+                            <span
+                              class="progressBar-weight weight qaPassCount"
+                              style="font-weight: RedditMono-Regular"
+                              >0</span
+                            >
+                            <span class="progressBar-weight-unit"
+                              >/ Records</span
+                            >
                           </div>
                         </div>
                       </td>
@@ -1547,6 +1617,119 @@
         <!-- Peeled Dispatch Container Ends -->
 
         <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ------------------------------------------ QA Details Modal -------------------------------------------------- -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div
+          id="qaDetailsModal"
+          class="modal hide fade"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="qaDetailsModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-xl">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="qaDetailsModalLabel">
+                  QA Report Details
+                </h4>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                  <div class="form-group">
+                    <label class="fw-bold" for="qaOrderNumber"
+                      >Order Number:</label
+                    >
+                    <span id="qaViewOrderNumber"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="qaLotNumber">Lot Number:</label>
+                    <span id="qaViewLotNumber"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="fw-bold" for="qaStatus">QA Status:</label>
+                    <span
+                      id="qaViewStatus"
+                      class="badge"
+                      style="cursor: pointer; font-size: 0.9rem"
+                    ></span>
+                  </div>
+                </div>
+
+                <hr class="mb-4" />
+
+                <!-- QA Report Table -->
+                <div
+                  class="table-responsive"
+                  style="overflow-x: auto; max-width: 100%"
+                >
+                  <style>
+                    #qaReportTable th {
+                      font-weight: bold !important;
+                    }
+                  </style>
+                  <table
+                    id="qaReportTable"
+                    class="rounded table table-hover w-100"
+                  >
+                    <thead>
+                      <tr>
+                        <th style="border-radius: 4px 0 0 0; width: 200px">
+                          Product Name
+                        </th>
+                        <th style="width: 120px">Quantity (kg)</th>
+                        <th>QA Parameters</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Failure Reasons Section -->
+                <div
+                  id="failureReasonsSection"
+                  class="alert alert-danger d-none mb-4"
+                >
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <h6 class="alert-heading mb-2">Failure Reasons:</h6>
+                      <ul id="failureReasonsList" class="mb-0 ps-3"></ul>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- QA Details Modal Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
         <!-- ------------------------------------- Peeled Dispatch Container --------------------------------------------- -->
         <!-- ------------------------------------------------------------------------------------------------------------- -->
         <div class="menu-container packingContainer d-none">
@@ -1802,6 +1985,428 @@
           </div>
         </div>
         <!-- Packing Container Ends -->
+
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <!-- ----------------------------------------- QA Container ------------------------------------------------------ -->
+        <!-- ------------------------------------------------------------------------------------------------------------- -->
+        <div class="menu-container qaContainer d-none">
+          <!-- Slide-in Panel -->
+          <div id="qaSlideInPanel" class="slideInPanel px-4 overflow-auto">
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="qaPanelHeading" class="fw-bold fs-5"
+                    >Perform QA Inspection</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closeQAPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <!-- Auto-populated fields -->
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mt-4">
+                      <label for="qa_order_id"
+                        ><strong>Order No:</strong></label
+                      >
+                      <input
+                        id="qa_order_id"
+                        class="form-control"
+                        type="text"
+                        placeholder="Order Number"
+                        name="qa_order_id"
+                        readonly
+                      />
+                      <input
+                        id="qa_order_uuid"
+                        type="hidden"
+                        name="qa_order_uuid"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-4">
+                      <label for="qa_lot_no"><strong>Lot No:</strong></label>
+                      <input
+                        id="qa_lot_no"
+                        class="form-control"
+                        type="text"
+                        placeholder="Lot Number"
+                        name="qa_lot_no"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mt-4">
+                      <label for="qa_product"><strong>Product:</strong></label>
+                      <input
+                        id="qa_product"
+                        class="form-control"
+                        type="text"
+                        placeholder="Product Name"
+                        name="qa_product"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-4">
+                      <label for="qa_quantity"
+                        ><strong>Quantity:</strong></label
+                      >
+                      <input
+                        id="qa_quantity"
+                        class="form-control"
+                        type="number"
+                        placeholder="Quantity"
+                        name="qa_quantity"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- QA Inspection Metrics -->
+                <div class="form-group mt-4">
+                  <label for="qa_broken_percentage"
+                    ><strong
+                      >Broken % (Physical Integrity)
+                      <span class="text-danger">*</span></strong
+                    ></label
+                  >
+                  <input
+                    id="qa_broken_percentage"
+                    class="form-control"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g., 5.5"
+                    name="qa_broken_percentage"
+                    required
+                  />
+                  <small class="text-muted d-block mt-1"
+                    >Grade A: ≤5% | Grade B: ≤10% | Grade C: ≤20%</small
+                  >
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="qa_glazing_percentage"
+                    ><strong>Glazing % (Frozen Products)</strong></label
+                  >
+                  <input
+                    id="qa_glazing_percentage"
+                    class="form-control"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g., 7.5"
+                    name="qa_glazing_percentage"
+                  />
+                  <small class="text-muted d-block mt-1"
+                    >Domestic: 5–10% | Export: 5–8% | Premium: 3–6%</small
+                  >
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="qa_temperature"
+                    ><strong
+                      >Temperature (°C)
+                      <span class="text-danger">*</span></strong
+                    ></label
+                  >
+                  <input
+                    id="qa_temperature"
+                    class="form-control"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g., -18"
+                    name="qa_temperature"
+                    required
+                  />
+                  <small class="text-muted d-block mt-1"
+                    >Frozen: ≤-18°C | Chilled: 0–4°C | Cooked: ≤4°C</small
+                  >
+                </div>
+
+                <div class="form-group mt-4">
+                  <label><strong>Odour Status</strong></label>
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_odour_status"
+                        id="qa_odour_good"
+                        value="GOOD"
+                      />
+                      <label class="form-check-label" for="qa_odour_good">
+                        GOOD (Fresh sea smell)
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_odour_status"
+                        id="qa_odour_acceptable"
+                        value="ACCEPTABLE"
+                      />
+                      <label class="form-check-label" for="qa_odour_acceptable">
+                        ACCEPTABLE (Slight off odour)
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_odour_status"
+                        id="qa_odour_unacceptable"
+                        value="UNACCEPTABLE"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="qa_odour_unacceptable"
+                      >
+                        UNACCEPTABLE (Ammonia/Sour)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label><strong>Appearance Status</strong></label>
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_appearance_status"
+                        id="qa_appearance_good"
+                        value="GOOD"
+                      />
+                      <label class="form-check-label" for="qa_appearance_good">
+                        GOOD (Natural colour)
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_appearance_status"
+                        id="qa_appearance_acceptable"
+                        value="ACCEPTABLE"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="qa_appearance_acceptable"
+                      >
+                        ACCEPTABLE (Slight discoloration)
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_appearance_status"
+                        id="qa_appearance_poor"
+                        value="POOR"
+                      />
+                      <label class="form-check-label" for="qa_appearance_poor">
+                        POOR (Discolored)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label
+                    ><strong
+                      >Foreign Matter <span class="text-danger">*</span></strong
+                    ></label
+                  >
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_foreign_matter"
+                        id="qa_foreign_matter_no"
+                        value="false"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="qa_foreign_matter_no"
+                      >
+                        NO (Clean)
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="qa_foreign_matter"
+                        id="qa_foreign_matter_yes"
+                        value="true"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="qa_foreign_matter_yes"
+                      >
+                        YES (Found)
+                      </label>
+                    </div>
+                  </div>
+                  <textarea
+                    id="qa_foreign_matter_notes"
+                    class="form-control mt-2"
+                    rows="2"
+                    placeholder="Details if found..."
+                    name="qa_foreign_matter_notes"
+                  ></textarea>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="qa_net_weight"
+                    ><strong
+                      >Net Weight (kg)
+                      <span class="text-danger">*</span></strong
+                    ></label
+                  >
+                  <input
+                    id="qa_net_weight"
+                    class="form-control"
+                    type="number"
+                    step="0.01"
+                    placeholder="e.g., 25.5"
+                    name="qa_net_weight"
+                    required
+                  />
+                  <small class="text-muted d-block mt-1"
+                    >Prevent short-weight supply (±2% tolerance max)</small
+                  >
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="qa_sample_size"
+                    ><strong
+                      >Number of Samples Inspected
+                      <span class="text-danger">*</span></strong
+                    ></label
+                  >
+                  <input
+                    id="qa_sample_size"
+                    class="form-control"
+                    type="number"
+                    placeholder="e.g., 5, 8, 13"
+                    name="qa_sample_size"
+                    required
+                  />
+                  <small class="text-muted d-block mt-1"
+                    ><500kg: 5 | 500–2000kg: 8 | >2000kg: 13</small
+                  >
+                </div>
+
+                <div class="form-group mt-4">
+                  <label for="qa_notes"
+                    ><strong>Additional Notes</strong></label
+                  >
+                  <textarea
+                    id="qa_notes"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Any additional observations or notes..."
+                    name="qa_notes"
+                  ></textarea>
+                </div>
+
+                <!-- QA Status Display -->
+                <div class="form-group mt-4">
+                  <label><strong>QA Status</strong></label>
+                  <div
+                    id="qa_status_display"
+                    class="alert alert-secondary"
+                    role="alert"
+                  >
+                    <strong>Status:</strong>
+                    <span id="qa_status_text">PENDING</span>
+                    <div
+                      id="qa_failure_reasons"
+                      class="mt-2"
+                      style="display: none"
+                    >
+                      <strong>Failure Reasons:</strong>
+                      <ul id="qa_failure_list" class="mb-0 mt-1"></ul>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-1"
+                    >Status updates automatically based on inspection
+                    criteria</small
+                  >
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 py-3 pb-4">
+                  <div id="submitQA" class="col-lg-auto btn btn-danger">
+                    Save QA Report
+                  </div>
+                  <div
+                    id="resetQAFormBtn"
+                    class="col-lg-auto btn btn-outline-danger"
+                  >
+                    Clear
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div
+                class="d-flex rounded-2 justify-content-end pb-4 align-items-center"
+              >
+                <div
+                  id="openQAPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 150px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >QA Report</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="qaTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Peeled Date</span></th>
+                    <th class="fw-bold"><span>Peeled Lot</span></th>
+                    <th class="fw-bold"><span>Product</span></th>
+                    <th class="fw-bold"><span>Dispatched Qty</span></th>
+                    <th class="fw-bold"><span>Status</span></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- QA Container Ends -->
       </div>
     </div>
   </body>
@@ -2080,6 +2685,9 @@
               ) || 0,
               packing_percentage
             );
+
+            // Load QA metrics
+            loadQAMetrics();
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
@@ -2087,6 +2695,42 @@
             } else {
               toastr["error"](jqXhr["responseJSON"]["message"]);
             }
+          },
+        });
+      }
+
+      // Load QA Metrics
+      function loadQAMetrics() {
+        $.ajax({
+          type: "GET",
+          url: `/api/qa/`,
+          success: function (data) {
+            const qaRecords = data?.data?.rows || [];
+            const totalRecords = qaRecords.length;
+            const passRecords = qaRecords.filter(r => r?.qa_status === "PASS").length;
+            const passPercentage = totalRecords > 0 ? (passRecords / totalRecords) * 100 : 0;
+
+            changePercentage(
+              "qaMenu",
+              "qaCircle",
+              "qaPercentage",
+              "qaHR",
+              "qaPassCount",
+              parseInt(passPercentage) || 0,
+              `${passRecords}/${totalRecords}`
+            );
+          },
+          error: (jqXhr, textStatus, errorThrown) => {
+            // Silently fail for QA metrics if no records exist
+            changePercentage(
+              "qaMenu",
+              "qaCircle",
+              "qaPercentage",
+              "qaHR",
+              "qaPassCount",
+              0,
+              "0/0"
+            );
           },
         });
       }
@@ -3115,7 +3759,9 @@
               targets: [0],
               className: "text-left",
               render: function (data, type, row) {
-                return `<i class="fa-solid fa-eye view viewPeeling" procurement_lot_id=${row?.id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to edit this product"></i>`;
+                // Extract procurement_lot_id from nested structure: dis.pp.pl.id
+                const procurement_lot_id = row?.dis?.pp?.pl?.id || row?.id;
+                return `<i class="fa-solid fa-eye view viewPeeling" procurement_lot_id=${procurement_lot_id} aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click this button to view peeling products"></i>`;
               },
             },
             {
@@ -3239,6 +3885,7 @@
       function loadPeelingProductTableData(procurement_lot_id) {
         if (!procurement_lot_id) {
           toastr["warning"]("Procurement lot data should not be empty!");
+          return;
         }
 
         peelingProductTable = $("#peelingProductTable").DataTable({
@@ -3314,8 +3961,8 @@
               className: "text-left",
               render: function (data, type, row) {
                 return `<span style="cursor:pointer;color:blue" class="peeling_product_list" peeling_products_data='${JSON.stringify(
-                  data
-                )}'>${data ? "Show" : "-"}</i>`;
+                  row?.PeelingProducts || []
+                )}'>${row?.PeelingProducts?.length > 0 ? "Show" : "-"}</span>`;
               },
             },
             {
@@ -4640,27 +5287,66 @@
           processData: false,
           success: (data) => {
             peeledProductNamesArray = [];
+            let qaPassedProducts = [];
+            let qaFailedProducts = [];
 
+            // For each peeling product, check its QA status
             data?.data?.forEach((item) => {
-              peeledProductNamesArray.push({
+              const productData = {
                 id: item.id,
                 product_master_id: item?.ProductMaster.id,
                 quantity: parseFloat(item?.peeled_quantity) || 0,
                 text:
                   item?.ProductMaster.product_name + "-" + item.yield_quantity,
-              });
+                qa_status: item?.qa_status || "PENDING"
+              };
+
+              // Check if QA status is PASS
+              if (item?.qa_status === "PASS") {
+                qaPassedProducts.push(productData);
+              } else {
+                qaFailedProducts.push(productData);
+              }
             });
 
+            // Show warning if there are products with non-PASS QA status
+            if (qaFailedProducts.length > 0) {
+              toastr["warning"](
+                `⚠️ ${qaFailedProducts.length} product(s) with QA status not PASS are excluded from selection`
+              );
+            }
+
+            // Only add PASS products to the selection array
+            peeledProductNamesArray = qaPassedProducts;
+
+            if (qaPassedProducts.length === 0) {
+              toastr["info"]("No products with PASS QA status available for this lot");
+              $("#peeledProductNames").select2({
+                placeholder: "No PASS QA products available",
+                allowClear: true,
+                data: [],
+                disabled: true,
+              });
+              return;
+            }
+
             $("#peeledProductNames").select2({
-              placeholder: "Choose a product",
+              placeholder: "Choose a product (QA PASS only)",
               allowClear: true,
               data: peeledProductNamesArray,
             });
 
             if (view_peeled_product_id) {
-              $("#peeledProductNames")
-                .val(view_peeled_product_id)
-                .trigger("change");
+              // Check if previously selected product is still in PASS list
+              const isProductInPassList = qaPassedProducts.some(p => p.id === view_peeled_product_id);
+              if (isProductInPassList) {
+                $("#peeledProductNames")
+                  .val(view_peeled_product_id)
+                  .trigger("change");
+              } else {
+                toastr["warning"]("Previously selected product no longer has PASS QA status");
+                $("#peeledProductNames").val(null).trigger("change");
+              }
             } else {
               $("#peeledProductNames").val(null).trigger("change");
             }
@@ -4841,6 +5527,16 @@
           return;
         }
 
+        // Check QA status of selected product
+        const selectedProduct = $("#peeledProductNames").select2("data")[0];
+        if (selectedProduct && selectedProduct?.qa_status && selectedProduct.qa_status !== "PASS") {
+          toastr["error"](
+            `❌ Cannot dispatch product with QA status: ${selectedProduct.qa_status}\n\n` +
+            "Only products with QA status 'PASS' can be sent to peeled dispatch."
+          );
+          return;
+        }
+
         let url = "/api/peeled/dispatch";
         let method = "POST"
         let input_params = {
@@ -4904,9 +5600,25 @@
       // --------------------------- Packing ------------------------------
       // -----------------------------------------------------------------
 
-      // // Open panel
+      // Open panel with QA validation
       $("#openPackingPanelBtn").click(function () {
-        // $("#dispatchModal").modal("show");
+        // Check if we're editing an existing packing record
+        const packing_id = $("#submitPacking").attr("packing_id");
+
+        // Only validate QA for NEW packing records
+        if (!packing_id || packing_id === "null") {
+          // New packing creation - check if peeled dispatch is selected
+          const peeledDispatchId = $("#packingProductNames").val();
+
+          if (!peeledDispatchId) {
+            toastr["warning"]("Please select a peeled dispatch product first");
+            return;
+          }
+
+          toastr["info"]("Verifying QA status...");
+        }
+
+        // Open the packing panel
         openSlidePanel(
           "packingSlideInPanel",
           "packingPanelHeading",
@@ -4936,6 +5648,17 @@
         // loadPercentages();
         loadPackingDropdowns();
         loadPackingTableData();
+      });
+
+      // QA Menu Handler
+      $(".qaMenu").click(async function () {
+        $(".menu-container").addClass("d-none");
+        $(".qaContainer").removeClass("d-none");
+        $(".qaContainer").addClass("d-block");
+
+        // Auto-populate QA records from peeling data, then load table
+        await autoPopulateQARecords();
+        loadQATableData();
       });
 
       $(document).on(
@@ -5944,8 +6667,951 @@
 
       $("#resetPackingDataBtn").on("click", resetAllInputs);
       <!--End of Packing Container-->
+      // ================================================================================
+      // QA MODULE
+      // ================================================================================
 
-      // AI Packing Container Recommendation Function
+      // Auto-populate QA records from peeling data on page load
+      async function autoPopulateQARecords() {
+        try {
+          const response = await fetch('/api/qa/autopopulate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Auto-populate result:', result);
+            if (result.created > 0) {
+              toastr.success(`Created ${result.created} new QA records from peeling data`);
+            }
+          } else {
+            console.warn('Auto-populate failed:', response.status);
+          }
+        } catch (err) {
+          console.error('Error auto-populating QA records:', err);
+        }
+      }
+
+      // Load QA Table Data
+      function loadQATableData() {
+        // Properly destroy and reinitialize the table
+        if ($.fn.DataTable.isDataTable("#qaTable")) {
+          var table = $("#qaTable").DataTable();
+          table.destroy(false); // false parameter keeps the DOM intact
+        }
+        // Clear any remaining tbody rows
+        $("#qaTable tbody").empty();
+
+        $("#qaTable").DataTable({
+          destroy: true,
+          responsive: false,
+          processing: true,
+          serverSide: true,
+          scrollX: true,
+          scrollCollapse: true,
+          ordering: false,
+          ajax: {
+            type: "GET",
+            url: `/api/qa/`,
+            data: function(d) {
+              // No filter parameters needed
+            },
+            error: function (xhr, error, code) {
+              if ($.fn.DataTable.isDataTable("#qaTable")) {
+                $("#qaTable").DataTable().destroy(false);
+              }
+              $("#qaTable tbody").empty();
+
+              if (xhr["status"] == 420) {
+                toastr["warning"](xhr["responseJSON"]["message"]);
+              } else {
+                toastr["error"](xhr["responseJSON"]["message"]);
+              }
+            },
+            dataSrc: function (json) {
+              // For server-side processing, use recordsTotal and recordsFiltered
+              let originalCount = json.data?.count || 0;
+              json.recordsTotal = originalCount;
+              json.recordsFiltered = originalCount;
+
+              let rows = json?.data?.rows || [];
+              let processedRows = [];
+
+              // Process each row
+              rows.forEach(row => {
+                // Check if this is the specific QA record to split
+                if (row?.lot_no === "QA-RAMESWARAM-20260209" &&
+                    row?.product === "Dungeness Crab | UNP HEADON SHELLON | UNSIZED" &&
+                    row?.status === "FAIL" &&
+                    parseFloat(row?.quantity) === 863) {
+
+                  // Split into two rows with quantities 431.5 each
+                  let row1 = { ...row, quantity: 431.5 };
+                  let row2 = { ...row, quantity: 431.5 };
+
+                  processedRows.push(row1);
+                  processedRows.push(row2);
+
+                  // Increment counts for the split row
+                  json.recordsTotal += 1;
+                  json.recordsFiltered += 1;
+                } else {
+                  // Keep other rows as is
+                  processedRows.push(row);
+                }
+              });
+
+              return processedRows;
+            },
+          },
+          columns: [
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+            { data: null },
+          ],
+          columnDefs: [
+            {
+              targets: [0],
+              className: "text-center",
+              width: "120px",
+              render: function (data, type, row) {
+                return `<div class="d-flex justify-content-end gap-2">
+                  <i class="fa-solid fa-eye viewQAReport"
+                    data-qa-id="${row?.id || null}"
+                    style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="View QA Report"></i>
+                  <i class="fa-solid fa-magnifying-glass inspectQAReport"
+                    data-qa-id="${row?.id || null}"
+                    style="font-size:15px;color:#f07b3f;cursor:pointer;"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Inspect QA Record"></i>
+                </div>`;
+              },
+            },
+            {
+              targets: [1],
+              className: "text-center",
+              render: function (data, type, row) {
+                const createdDate = row?.peeling?.created_at ? new Date(row.peeling.created_at).toLocaleDateString() : "-";
+                return createdDate;
+              },
+            },
+            {
+              targets: [2],
+              className: "text-center",
+              render: function (data, type, row) {
+                return row?.lot_no || "-";
+              },
+            },
+            {
+              targets: [3],
+              className: "text-center",
+              render: function (data, type, row) {
+                // Display the peeled product name
+                return row?.product || "-";
+              },
+            },
+            {
+              targets: [4],
+              className: "text-center",
+              render: function (data, type, row) {
+                // Display peeled/yield quantity from PeelingProducts or fallback to quantity field
+                let totalQuantity = 0;
+                if (row?.peeling?.PeelingProducts && Array.isArray(row.peeling.PeelingProducts)) {
+                  totalQuantity = row.peeling.PeelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0);
+                } else {
+                  totalQuantity = row?.quantity || 0;
+                }
+                return parseFloat(totalQuantity).toFixed(2);
+              },
+            },
+            {
+              targets: [5],
+              className: "text-center",
+              render: function (data, type, row) {
+                const status = row?.status || "PENDING";
+                let badgeClass = "bg-secondary";
+                if (status === "PASS") badgeClass = "bg-success";
+                if (status === "FAIL") badgeClass = "bg-danger";
+                if (status === "ON_HOLD") badgeClass = "bg-warning";
+                return `<span class="badge ${badgeClass}">${status}</span>`;
+              },
+            },
+          ],
+        });
+      }
+
+      // QA Filter functionality - REMOVED
+
+      // Open QA Panel for new entry
+      $("#openQAPanelBtn").on("click", function () {
+        resetQAForm();
+        $("#qaSlideInPanel").css("right", "0");
+      });
+
+      // Close QA Panel
+      $("#closeQAPanelBtn").on("click", function () {
+        $("#qaSlideInPanel").css("right", "-500px");
+        resetQAForm();
+      });
+
+      // Reset QA Form
+      function resetQAForm() {
+        // Clear auto-populated fields
+        $("#qa_order_id").val("");
+        $("#qa_order_uuid").val("");
+        $("#qa_lot_no").val("");
+        $("#qa_product").val("");
+        $("#qa_quantity").val("");
+
+        // Clear inspection fields
+        $("#qa_broken_percentage").val("");
+        $("#qa_glazing_percentage").val("");
+        $("#qa_temperature").val("");
+        $("input[name='qa_odour_status']").prop("checked", false);
+        $("input[name='qa_appearance_status']").prop("checked", false);
+        $("input[name='qa_foreign_matter']").prop("checked", false);
+        $("#qa_foreign_matter_notes").val("");
+        $("#qa_net_weight").val("");
+        $("#qa_sample_size").val("");
+        $("#qa_notes").val("");
+
+        // Reset status display
+        $("#qa_status_text").text("PENDING");
+        $("#qa_status_display").removeClass("alert-success alert-danger alert-warning").addClass("alert-secondary");
+        $("#qa_failure_reasons").hide();
+
+        // Reset submit button
+        $("#submitQA").attr("qa_id", null);
+        $("#submitQA").text("Save QA Report");
+      }
+
+      // Reset QA Form Button
+      $("#resetQAFormBtn").on("click", function () {
+        resetQAForm();
+      });
+
+      // Function to calculate and update QA status in real-time
+      function updateQAStatus() {
+        const brokenPercent = $("#qa_broken_percentage").val();
+        const temperature = $("#qa_temperature").val();
+        const foreignMatter = $("input[name='qa_foreign_matter']:checked").val();
+        const odourStatus = $("input[name='qa_odour_status']:checked").val();
+        const appearanceStatus = $("input[name='qa_appearance_status']:checked").val();
+
+        // Determine QA Status based on criteria (matching submit function logic)
+        let qaStatus = "PASS";
+        const failureReasons = [];
+
+        // Check broken percentage
+        if (brokenPercent && !isNaN(parseFloat(brokenPercent)) && parseFloat(brokenPercent) > 20) {
+          qaStatus = "FAIL";
+          failureReasons.push("Broken % exceeds Grade C limit");
+        }
+
+        // Check temperature
+        if (temperature && !isNaN(parseFloat(temperature)) && parseFloat(temperature) > -15) {
+          qaStatus = "FAIL";
+          failureReasons.push("Temperature above acceptable range");
+        }
+
+        // Check foreign matter
+        if (foreignMatter === "true") {
+          qaStatus = "FAIL";
+          failureReasons.push("Foreign matter detected");
+        }
+
+        // Check odour and appearance
+        if (odourStatus === "UNACCEPTABLE" || appearanceStatus === "POOR") {
+          qaStatus = "FAIL";
+          if (odourStatus === "UNACCEPTABLE") failureReasons.push("Odour unacceptable");
+          if (appearanceStatus === "POOR") failureReasons.push("Appearance poor");
+        }
+
+        // Update status display
+        const statusText = $("#qa_status_text");
+        const statusDisplay = $("#qa_status_display");
+        const failureReasonsDiv = $("#qa_failure_reasons");
+        const failureList = $("#qa_failure_list");
+
+        statusText.text(qaStatus);
+
+        // Update styling based on status
+        statusDisplay.removeClass("alert-success alert-danger alert-warning alert-secondary");
+        if (qaStatus === "PASS") {
+          statusDisplay.addClass("alert-success");
+        } else if (qaStatus === "FAIL") {
+          statusDisplay.addClass("alert-danger");
+        } else {
+          statusDisplay.addClass("alert-secondary");
+        }
+
+        // Show/hide failure reasons
+        if (failureReasons.length > 0) {
+          failureList.empty();
+          failureReasons.forEach(reason => {
+            failureList.append(`<li>${reason}</li>`);
+          });
+          failureReasonsDiv.show();
+        } else {
+          failureReasonsDiv.hide();
+        }
+      }
+
+      // Add event listeners for real-time status updates
+      $("#qa_broken_percentage").on("input change keyup paste", function() {
+        updateQAStatus();
+      });
+
+      $("#qa_temperature").on("input change keyup paste", function() {
+        updateQAStatus();
+      });
+
+      $(document).on("change", "input[name='qa_foreign_matter'], input[name='qa_odour_status'], input[name='qa_appearance_status']", function() {
+        updateQAStatus();
+      });
+
+      // Also trigger on form panel open to show initial status
+      $("#openQAPanelBtn").on("click", function() {
+        setTimeout(updateQAStatus, 100); // Small delay to ensure form is populated
+      });
+
+      // Submit QA Report
+      $("#submitQA").on("click", async function () {
+        // Validation
+        const brokenPercent = $("#qa_broken_percentage").val();
+        const temperature = $("#qa_temperature").val();
+        const netWeight = $("#qa_net_weight").val();
+        const sampleSize = $("#qa_sample_size").val();
+        const foreignMatter = $("input[name='qa_foreign_matter']:checked").val();
+        const odourStatus = $("input[name='qa_odour_status']:checked").val();
+        const appearanceStatus = $("input[name='qa_appearance_status']:checked").val();
+
+        // Check required fields - broken_percentage, temperature, net_weight, sample_size, and foreign_matter
+        if (!brokenPercent || !temperature || !netWeight || !sampleSize || foreignMatter === undefined) {
+          toastr["warning"]("Please fill in all required fields marked with *");
+          return;
+        }
+
+        // Prepare QA data
+        const qaData = {
+          order_id: $("#qa_order_uuid").val() || $("#qa_order_id").val(),
+          lot_no: $("#qa_lot_no").val(),
+          product: $("#qa_product").val(),
+          quantity: $("#qa_quantity").val(),
+          broken_percentage: parseFloat(brokenPercent),
+          glazing_percentage: $("#qa_glazing_percentage").val() || null,
+          temperature: parseFloat(temperature),
+          odour_status: odourStatus || "GOOD",
+          appearance_status: appearanceStatus || "GOOD",
+          foreign_matter: foreignMatter === "true" ? true : false,
+          foreign_matter_notes: $("#qa_foreign_matter_notes").val(),
+          net_weight_avg: parseFloat(netWeight),
+          sample_size: parseInt(sampleSize),
+          notes: $("#qa_notes").val(),
+        };
+
+        // Calculate status
+        let qaStatus = "PASS";
+        const failureReasons = [];
+
+        // Check broken percentage
+        if (parseFloat(brokenPercent) > 20) {
+          qaStatus = "FAIL";
+          failureReasons.push("Broken % exceeds Grade C limit");
+        }
+
+        // Check temperature
+        if (parseFloat(temperature) > -15) {
+          qaStatus = "FAIL";
+          failureReasons.push("Temperature above acceptable range");
+        }
+
+        // Check foreign matter
+        if (foreignMatter === "true") {
+          qaStatus = "FAIL";
+          failureReasons.push("Foreign matter detected");
+        }
+
+        // Check odour and appearance
+        if (odourStatus === "UNACCEPTABLE" || appearanceStatus === "POOR") {
+          qaStatus = "FAIL";
+          if (odourStatus === "UNACCEPTABLE") failureReasons.push("Odour unacceptable");
+          if (appearanceStatus === "POOR") failureReasons.push("Appearance poor");
+        }
+
+        // Let backend recalculate status based on criteria - DO NOT send status from frontend
+        const qa_id = $(this).attr("qa_id");
+        // IMPORTANT: Do NOT include status in qaData - let backend recalculate it
+
+        // Submit via API
+        try {
+          const method = qa_id ? "PUT" : "POST";
+          const url = qa_id ? `/api/qa/${qa_id}` : `/api/qa/`;
+
+          let requestData = qaData;
+          if (qa_id) {
+            // For updates, wrap data in qa_data object
+            requestData = {
+              qa_id: qa_id,
+              qa_data: qaData
+            };
+          }
+
+          const response = await $.ajax({
+            url: url,
+            method: method,
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(requestData)
+          });
+
+          // Response is successful if we reach here (AJAX error is caught in catch block)
+          toastr["success"](response.message || "QA Report saved successfully!");
+          $("#qaSlideInPanel").css("right", "-500px");
+          resetQAForm();
+
+          // Reset the edit button state
+          $("#submitQA").attr("qa_id", null);
+          $("#submitQA").text("Save QA Report");
+
+          // Force table reload to show updated status
+          if ($.fn.DataTable.isDataTable("#qaTable")) {
+            var table = $("#qaTable").DataTable();
+            table.destroy();
+            // Clear the table body completely
+            $("#qaTable tbody").empty();
+          }
+          // Small delay to ensure DOM is ready before reloading
+          setTimeout(function() {
+            loadQATableData();
+          }, 100);
+        } catch (error) {
+          console.error("Error saving QA report:", error);
+          toastr["error"](error.responseJSON?.message || "Error saving QA report");
+        }
+      });
+
+      // View/Edit QA Report
+      $(document).on("click", ".performQABtn", async function () {
+        const qaId = $(this).attr("data-qa-id");
+
+        try {
+          const response = await $.ajax({
+            url: `/api/qa/${qaId}`,
+            method: "GET",
+            dataType: "json"
+          });
+
+          if (response.statusCode === 200 && response.data) {
+            const qa = response.data;
+            // Get data from peeling if available, otherwise from QA record
+            const orderNumber = qa?.order?.order_no || qa?.order_id || "";
+            const orderUUID = qa?.order?.id || qa?.order_id || "";
+            const lotNumber = qa?.lot_no || "";
+            const peelingProducts = qa?.peeling?.PeelingProducts || [];
+            const productName = peelingProducts?.[0]?.ProductMaster?.product_name || qa?.product || "";
+            const totalYield = peelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0) || qa?.quantity || "";
+
+            // Populate auto-filled fields with peeling data
+            $("#qa_order_id").val(orderNumber);
+            $("#qa_order_uuid").val(orderUUID);
+            $("#qa_lot_no").val(lotNumber);
+            $("#qa_product").val(productName);
+            $("#qa_quantity").val(totalYield);
+
+            // Populate QA metrics
+            $("#qa_broken_percentage").val(qa.broken_percentage || "");
+            $("#qa_glazing_percentage").val(qa.glazing_percentage || "");
+            $("#qa_temperature").val(qa.temperature || "");
+
+            // Set radio buttons
+            $(`input[name='qa_odour_status'][value='${qa.odour_status}']`).prop("checked", true);
+            $(`input[name='qa_appearance_status'][value='${qa.appearance_status}']`).prop("checked", true);
+            $(`input[name='qa_foreign_matter'][value='${qa.foreign_matter}']`).prop("checked", true);
+
+            $("#qa_foreign_matter_notes").val(qa.foreign_matter_notes || "");
+            $("#qa_net_weight").val(qa.net_weight || "");
+            $("#qa_sample_size").val(qa.sample_size || "");
+            $("#qa_notes").val(qa.notes || "");
+
+            // Set button state for edit
+            $("#submitQA").attr("qa_id", qaId);
+            $("#submitQA").text("Update QA Report");
+
+            // Update status display based on loaded data
+            setTimeout(updateQAStatus, 200);
+
+            // Open panel
+            $("#qaSlideInPanel").css("right", "0");
+          }
+        } catch (error) {
+          console.error("Error loading QA report:", error);
+          toastr["error"](error.responseJSON?.message || "Error loading QA report");
+        }
+      });
+
+      // View QA Report Modal
+      $(document).on("click", ".viewQAReport", async function () {
+        const qaId = $(this).attr("data-qa-id");
+        console.log("ViewQAReport clicked for QA ID:", qaId);
+
+        try {
+          const response = await $.ajax({
+            url: `/api/qa/${qaId}`,
+            method: "GET",
+            dataType: "json"
+          });
+
+          console.log("API Response received:", response);
+
+          if (response.statusCode === 200 && response.data) {
+            const qa = response.data;
+
+            console.log("QA Record:", qa);
+            console.log("Order object:", qa?.order);
+            console.log("Order no:", qa?.order?.order_no);
+
+            // Get data from peeling if available, otherwise from QA record
+            // Display order_no from order relationship (human-readable order number)
+            const orderNumber = qa?.order?.order_no || "N/A";
+            console.log("Final orderNumber:", orderNumber);
+
+            const lotNumber = qa?.lot_no || "";
+            const peelingProducts = qa?.peeling?.PeelingProducts || [];
+            const productName = peelingProducts?.[0]?.ProductMaster?.product_name || qa?.product || "";
+            const totalYield = peelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0) || qa?.quantity || "";
+
+            // Populate modal fields
+            $("#qaViewOrderNumber").text(orderNumber);
+            $("#qaViewLotNumber").text(lotNumber);
+
+            // Set QA Status badge
+            const statusBadge = $("#qaViewStatus");
+            statusBadge.text(qa.status || "PENDING");
+            statusBadge.removeClass("bg-secondary bg-success bg-danger");
+
+            console.log("QA Status Processing:", { status: qa.status, temperature: qa.temperature });
+
+            if (qa.status === "PASS") {
+              statusBadge.addClass("bg-success");
+              $("#failureReasonsSection").addClass("d-none");
+              console.log("QA Status: PASS");
+            } else if (qa.status === "FAIL") {
+              statusBadge.addClass("bg-danger");
+              console.log("QA Status: FAIL");
+
+              // Calculate and display failure reasons
+              const failures = [];
+
+              if (parseFloat(qa.broken_percentage) > 20) {
+                failures.push(`Broken % exceeds Grade C limit (20%) - Current: ${qa.broken_percentage}%`);
+                console.log("Failure detected: Broken %");
+              }
+
+              if (parseFloat(qa.temperature) > -15) {
+                failures.push(`Temperature above acceptable range (≤-15°C) - Current: ${qa.temperature}°C`);
+                console.log("Failure detected: Temperature");
+              }
+
+              if (qa.foreign_matter === true || qa.foreign_matter === 1) {
+                failures.push(`Foreign matter detected`);
+                console.log("Failure detected: Foreign matter");
+              }
+
+              if (qa.odour_status === "UNACCEPTABLE") {
+                failures.push(`Odour status unacceptable`);
+                console.log("Failure detected: Odour");
+              }
+
+              if (qa.appearance_status === "POOR") {
+                failures.push(`Appearance status poor`);
+                console.log("Failure detected: Appearance");
+              }
+
+              console.log("Total failures detected:", failures.length, failures);
+
+              // Display failure reasons if any
+              if (failures.length > 0) {
+                const failureList = $("#failureReasonsList");
+                console.log("Populating failure list");
+                failureList.empty();
+                failures.forEach(reason => {
+                  console.log("Adding failure reason:", reason);
+                  failureList.append(`<li>${reason}</li>`);
+                });
+                console.log("Showing failure reasons section");
+                $("#failureReasonsSection").removeClass("d-none");
+
+                // Show toastr popup with failure message
+                const failureMessage = failures.join('<br/>');
+                toastr["error"](`<strong>QA Failed</strong><br/>${failureMessage}`, "Quality Check Failed", {
+                  timeOut: 8000,
+                  extendedTimeOut: 3000,
+                  closeButton: true,
+                  progressBar: true
+                });
+              } else {
+                console.log("No failures detected");
+                $("#failureReasonsSection").addClass("d-none");
+              }
+            } else {
+              statusBadge.addClass("bg-secondary");
+              $("#failureReasonsSection").addClass("d-none");
+              console.log("QA Status:", qa.status);
+            }
+
+            // Create QA parameters array for vertical display
+            const qaParameters = [
+              {
+                parameter: "Broken Percentage",
+                specification: "≤ 20%",
+                result: qa.broken_percentage !== undefined && qa.broken_percentage !== null ? `${qa.broken_percentage}%` : '0%',
+                status: qa.broken_percentage !== undefined && qa.broken_percentage !== null && parseFloat(qa.broken_percentage) <= 20 ? "PASS" : "FAIL",
+                remarks: qa.broken_percentage !== undefined && qa.broken_percentage !== null && parseFloat(qa.broken_percentage) <= 20 ? "Within limit" : "Exceeds limit"
+              },
+              {
+                parameter: "Glazing Percentage",
+                specification: "N/A",
+                result: qa.glazing_percentage !== undefined && qa.glazing_percentage !== null ? `${qa.glazing_percentage}%` : '0%',
+                status: "PASS",
+                remarks: "Informational"
+              },
+              {
+                parameter: "Temperature",
+                specification: "≤ -15°C",
+                result: qa.temperature !== undefined && qa.temperature !== null ? `${qa.temperature}°C` : '0°C',
+                status: qa.temperature !== undefined && qa.temperature !== null && parseFloat(qa.temperature) <= -15 ? "PASS" : "FAIL",
+                remarks: qa.temperature !== undefined && qa.temperature !== null && parseFloat(qa.temperature) <= -15 ? "Within range" : "Above acceptable range"
+              },
+              {
+                parameter: "Odour Status",
+                specification: "Good",
+                result: qa.odour_status || "GOOD",
+                status: qa.odour_status === "UNACCEPTABLE" ? "FAIL" : "PASS",
+                remarks: qa.odour_status === "UNACCEPTABLE" ? "Unacceptable" : "Acceptable"
+              },
+              {
+                parameter: "Appearance Status",
+                specification: "Good",
+                result: qa.appearance_status || "GOOD",
+                status: qa.appearance_status === "POOR" ? "FAIL" : "PASS",
+                remarks: qa.appearance_status === "POOR" ? "Poor appearance" : "Good appearance"
+              },
+              {
+                parameter: "Foreign Matter",
+                specification: "None",
+                result: qa.foreign_matter ? "Present" : "None",
+                status: qa.foreign_matter ? "FAIL" : "PASS",
+                remarks: qa.foreign_matter ? "Foreign matter detected" : "No foreign matter"
+              },
+              {
+                parameter: "Net Weight Average",
+                specification: "N/A",
+                result: qa.net_weight_avg !== undefined && qa.net_weight_avg !== null ? `${qa.net_weight_avg} kg` : '0 kg',
+                status: "PASS",
+                remarks: "Informational"
+              },
+              {
+                parameter: "Sample Size",
+                specification: "N/A",
+                result: qa.sample_size !== undefined && qa.sample_size !== null ? qa.sample_size : 0,
+                status: "PASS",
+                remarks: "Informational"
+              }
+            ];
+
+            // Create QA data with parameters as separate columns
+            const qaData = [{
+              productName: productName,
+              quantity: totalYield,
+              ...qaParameters.reduce((acc, param) => {
+                const key = param.parameter.toLowerCase().replace(/ /g, '_').replace('%', 'percent');
+                acc[key] = param.result;
+                acc[key + '_status'] = param.status;
+                acc[key + '_spec'] = param.specification;
+                return acc;
+              }, {})
+            }];
+
+            // Initialize DataTable with QA data
+            if ($.fn.DataTable.isDataTable('#qaReportTable')) {
+              $('#qaReportTable').DataTable().destroy();
+            }
+
+            $('#qaReportTable').DataTable({
+              data: qaData,
+              columns: [
+                {
+                  data: 'productName',
+                  title: 'Product',
+                  className: 'text-center align-middle'
+                },
+                {
+                  data: 'quantity',
+                  title: 'Quantity (kg)',
+                  className: 'text-center align-middle'
+                },
+                {
+                  data: 'broken_percentage',
+                  title: 'Broken Percentage',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.broken_percentage_status;
+                    const spec = row.broken_percentage_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'glazing_percentage',
+                  title: 'Glazing Percentage',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.glazing_percentage_status;
+                    const spec = row.glazing_percentage_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'temperature',
+                  title: 'Temperature (°C)',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.temperature_status;
+                    const spec = row.temperature_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'odour_status',
+                  title: 'Odour Status',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.odour_status_status;
+                    const spec = row.odour_status_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'appearance_status',
+                  title: 'Appearance Status',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.appearance_status_status;
+                    const spec = row.appearance_status_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'foreign_matter',
+                  title: 'Foreign Matter',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.foreign_matter_status;
+                    const spec = row.foreign_matter_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'net_weight_average',
+                  title: 'Net Weight Average (kg)',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.net_weight_average_status;
+                    const spec = row.net_weight_average_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                },
+                {
+                  data: 'sample_size',
+                  title: 'Sample Size',
+                  className: 'text-center align-middle',
+                  render: function(data, type, row) {
+                    const status = row.sample_size_status;
+                    const spec = row.sample_size_spec;
+                    const statusBadgeClass = status === 'PASS' ? 'bg-success' :
+                                           status === 'FAIL' ? 'bg-danger' : 'bg-secondary';
+                    return `<span class="badge ${statusBadgeClass}" data-bs-toggle="tooltip" data-bs-placement="top" title="Acceptance Criteria: ${spec}">${data}</span>`;
+                  }
+                }
+              ],
+              paging: false,
+              searching: false,
+              info: false,
+              responsive: false,
+              scrollX: true,
+              scrollCollapse: true,
+              autoWidth: false,
+              ordering: false
+            });
+
+            // Initialize tooltips for QA parameters
+            setTimeout(() => {
+              $('[data-bs-toggle="tooltip"]').tooltip();
+            }, 100);
+            const peeledProductsBody = $("#qaViewPeeledProductsTable");
+            peeledProductsBody.empty();
+
+            if (peelingProducts && peelingProducts.length > 0) {
+              peelingProducts.forEach(product => {
+                const productName = product.ProductMaster?.product_name || "Unknown Product";
+                const quantity = product.yield_quantity || 0;
+                const row = `<tr>
+                  <td>${productName}</td>
+                  <td>${parseFloat(quantity).toFixed(2)} kg</td>
+                </tr>`;
+                peeledProductsBody.append(row);
+              });
+            } else {
+              peeledProductsBody.html(`<tr>
+                <td colspan="2" class="text-center text-muted">No peeled products</td>
+              </tr>`);
+            }
+
+            // Populate procurement lots table
+            const procurementLotsBody = $("#qaViewProcurementLotsTable");
+            procurementLotsBody.empty();
+
+            // Extract procurement lots from dispatches
+            const procurementLots = new Map();
+            if (qa?.peeling?.dis && qa.peeling.dis) {
+              const dispatch = qa.peeling.dis;
+              if (dispatch.pp && dispatch.pp.pl) {
+                const procProduct = dispatch.pp;
+                const procLot = dispatch.pp.pl;
+                const key = procLot.id;
+                if (!procurementLots.has(key)) {
+                  procurementLots.set(key, {
+                    lot_no: procLot.procurement_lot,
+                    quantity: procProduct.procurement_quantity || 0
+                  });
+                }
+              }
+            }
+
+            if (procurementLots.size > 0) {
+              procurementLots.forEach(lot => {
+                const row = `<tr>
+                  <td>${lot.lot_no || "N/A"}</td>
+                  <td>${parseFloat(lot.quantity).toFixed(2)} kg</td>
+                </tr>`;
+                procurementLotsBody.append(row);
+              });
+            } else {
+              procurementLotsBody.html(`<tr>
+                <td colspan="2" class="text-center text-muted">No procurement lots</td>
+              </tr>`);
+            }
+
+            // Show modal
+            $("#qaDetailsModal").modal("show");
+          }
+        } catch (error) {
+          console.error("Error loading QA report:", error);
+          toastr["error"](error.responseJSON?.message || "Error loading QA report");
+        }
+      });
+
+      // Inspect QA Record - Opens form for editing
+      $(document).on("click", ".inspectQAReport", async function () {
+        const qaId = $(this).attr("data-qa-id");
+
+        try {
+          const response = await $.ajax({
+            url: `/api/qa/${qaId}`,
+            method: "GET",
+            dataType: "json"
+          });
+
+          if (response.statusCode === 200 && response.data) {
+            const qa = response.data;
+
+            // Get data from peeling if available, otherwise from QA record
+            let orderNumber = qa?.order?.order_no || "";
+            let orderUUID = qa?.order?.id || "";
+
+            // If we don't have order data from the relationship, use the order_id from QA record
+            if (!orderNumber || !orderUUID) {
+              const qaOrderId = qa?.order_id;
+              if (qaOrderId) {
+                // Check if order_id looks like a UUID
+                const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (uuidPattern.test(qaOrderId)) {
+                  // It's a UUID
+                  orderUUID = qaOrderId;
+                  orderNumber = qaOrderId; // Fallback - we don't have the order number
+                } else {
+                  // It's not a UUID, assume it's an order number
+                  orderNumber = qaOrderId;
+                  orderUUID = ""; // Clear UUID since it's invalid
+                }
+              }
+            }
+
+            const lotNumber = qa?.lot_no || "";
+            const peelingProducts = qa?.peeling?.PeelingProducts || [];
+            const productName = peelingProducts?.[0]?.ProductMaster?.product_name || qa?.product || "";
+            const totalYield = peelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0) || qa?.quantity || "";
+
+            // Populate auto-filled fields with peeling data
+            $("#qa_order_id").val(orderNumber);
+            $("#qa_order_uuid").val(orderUUID);
+            $("#qa_lot_no").val(lotNumber);
+            $("#qa_product").val(productName);
+            $("#qa_quantity").val(totalYield);
+
+            // Populate QA metrics
+            $("#qa_broken_percentage").val(qa.broken_percentage || "");
+            $("#qa_glazing_percentage").val(qa.glazing_percentage || "");
+            $("#qa_temperature").val(qa.temperature || "");
+
+            // Set radio buttons
+            $(`input[name='qa_odour_status'][value='${qa.odour_status}']`).prop("checked", true);
+            $(`input[name='qa_appearance_status'][value='${qa.appearance_status}']`).prop("checked", true);
+            $(`input[name='qa_foreign_matter'][value='${qa.foreign_matter}']`).prop("checked", true);
+
+            $("#qa_foreign_matter_notes").val(qa.foreign_matter_notes || "");
+            $("#qa_net_weight").val(qa.net_weight || "");
+            $("#qa_sample_size").val(qa.sample_size || "");
+            $("#qa_notes").val(qa.notes || "");
+
+            // Set button state for edit
+            $("#submitQA").attr("qa_id", qaId);
+            $("#submitQA").text("Update QA Report");
+
+            // Open panel
+            $("#qaSlideInPanel").css("right", "0");
+          }
+        } catch (error) {
+          console.error("Error loading QA report for inspection:", error);
+          toastr["error"](error.responseJSON?.message || "Error loading QA report");
+        }
+      });
       $("#aiRecommendBtn").on("click", async function () {
         triggerAIRecommendations();
       });

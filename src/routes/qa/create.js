@@ -1,7 +1,7 @@
 import QAChecklist from "../../../models/qa_checklist";
-import BatchMaster from "../../../models/batch_master";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async (fastify) => {
   // Create new QA record
@@ -10,51 +10,52 @@ export default async (fastify) => {
     handler: async (request, reply) => {
       try {
         const {
-          batch_id,
-          appearance,
-          odor,
-          texture,
-          temperature_celsius,
-          test_result,
+          batch_no,
+          order_id,
+          peeling_id,
+          species_name,
+          product_form,
+          quantity,
+          status = "PENDING",
+          inspection_date,
+          inspector_name,
           remarks,
+          defects,
         } = request.body;
         const profile_id = request.token_profile_id;
 
-        if (!batch_id || !UUID_PATTERN.test(batch_id)) {
+        if (!batch_no) {
           return reply.code(400).send({
             statusCode: 400,
-            message: "Invalid or missing batch_id",
+            message: "batch_no is required",
           });
         }
 
-        // Check batch exists
-        const batch = await BatchMaster.findByPk(batch_id);
-        if (!batch) {
-          return reply.code(404).send({
-            statusCode: 404,
-            message: "Batch not found",
+        if (
+          status &&
+          !["PENDING", "PASS", "FAIL", "ON_HOLD"].includes(status)
+        ) {
+          return reply.code(400).send({
+            statusCode: 400,
+            message: "Invalid status. Must be PENDING, PASS, FAIL, or ON_HOLD",
           });
         }
 
         // Create QA record
         const qa = await QAChecklist.create({
-          batch_id,
-          appearance,
-          odor,
-          texture,
-          temperature_celsius,
-          test_result: test_result || "PENDING",
+          batch_no,
+          order_id: order_id || null,
+          peeling_id: peeling_id || null,
+          species_name,
+          product_form,
+          quantity: quantity ? parseFloat(quantity) : null,
+          status,
+          inspection_date: inspection_date ? new Date(inspection_date) : null,
+          inspector_name,
           remarks,
-          checked_by: profile_id,
-          checked_at: new Date(),
+          defects,
+          created_by: profile_id,
         });
-
-        // Update batch status based on test result
-        if (test_result === "PASSED") {
-          await batch.update({ batch_status: "QA_APPROVED", updated_by: profile_id });
-        } else if (test_result === "FAILED") {
-          await batch.update({ batch_status: "QA_REJECTED", updated_by: profile_id });
-        }
 
         return reply.code(201).send({
           statusCode: 201,

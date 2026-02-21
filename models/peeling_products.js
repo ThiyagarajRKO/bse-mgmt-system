@@ -39,6 +39,12 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       // Has Many
+      PeelingProducts.hasMany(models.QAChecklist, {
+        foreignKey: "peeled_product_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
       PeelingProducts.hasMany(models.PeeledDispatches, {
         foreignKey: "peeled_product_id",
         onUpdate: "CASCADE",
@@ -84,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Bulk Create Hook
@@ -100,7 +106,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while appending an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -115,7 +121,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while appending an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -128,7 +134,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while updating an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });
@@ -143,7 +149,7 @@ module.exports = (sequelize, DataTypes) => {
     } catch (err) {
       console.log(
         "Error while deleting an peeling products data",
-        err?.message || err
+        err?.message || err,
       );
     }
   });

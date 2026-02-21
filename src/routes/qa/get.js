@@ -1,7 +1,7 @@
 import QAChecklist from "../../../models/qa_checklist";
-import BatchMaster from "../../../models/batch_master";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async (fastify) => {
   // Get single QA record by ID
@@ -18,16 +18,61 @@ export default async (fastify) => {
           });
         }
 
-        const qa = await QAChecklist.findByPk(qa_id, {
-          include: [{ model: BatchMaster, as: "batch" }],
+        console.log("[QA GET] Route called with qa_id:", qa_id);
+        console.log("[QA GET] fastify.models available:", !!fastify.models);
+        console.log(
+          "[QA GET] QAChecklist model available:",
+          !!fastify.models?.QAChecklist,
+        );
+
+        const qa = await fastify.models.QAChecklist.findByPk(qa_id, {
+          include: [
+            {
+              model: fastify.models.Orders,
+              as: "order",
+              attributes: ["id", "order_no"],
+              required: false,
+            },
+            {
+              model: fastify.models.Peeling,
+              as: "peeling",
+              required: false,
+              attributes: [
+                "id",
+                "created_at",
+                "peeling_quantity",
+                "peeling_method",
+              ],
+              include: [
+                {
+                  model: fastify.models.PeelingProducts,
+                  required: false,
+                  include: [
+                    {
+                      model: fastify.models.ProductMaster,
+                      required: false,
+                      attributes: ["id", "product_name"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
 
         if (!qa) {
+          console.log("[QA GET] QA record not found for qa_id:", qa_id);
           return reply.code(404).send({
             statusCode: 404,
             message: "QA record not found",
           });
         }
+
+        console.log("[QA GET] QA record found:", {
+          qa_id,
+          has_order: !!qa.order,
+          order_no: qa.order?.order_no,
+        });
 
         return reply.code(200).send({
           statusCode: 200,

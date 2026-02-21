@@ -1,12 +1,8 @@
-import createRoute from "./create";
-import getAllRoute from "./getAll";
-import getRoute from "./get";
-import updateRoute from "./update";
+import qaHandlers from "./handlers.js";
 
 export default async (fastify) => {
-  // Register all CRUD routes for QA
-  fastify.register(createRoute);
-  fastify.register(getAllRoute);
-  fastify.register(getRoute);
-  fastify.register(updateRoute);
+  // Apply all QA handlers directly to the fastify instance
+  // This allows proper route matching without plugin scope interference
+  // Routes are registered in the order they appear in handlers.js
+  await qaHandlers(fastify);
 };

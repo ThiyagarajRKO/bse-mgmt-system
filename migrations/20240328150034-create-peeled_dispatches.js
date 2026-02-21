@@ -17,6 +17,18 @@ module.exports = {
           key: "id",
         },
       },
+      qa_checklist_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
+        references: {
+          model: { tableName: "qa_checklist" },
+          key: "id",
+        },
+        comment:
+          "Reference to QA Checklist (new position between PeelingProducts and PeeledDispatches)",
+      },
       unit_master_id: {
         type: Sequelize.UUID,
         allowNull: false,

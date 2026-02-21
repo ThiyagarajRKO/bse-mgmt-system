@@ -23,7 +23,7 @@ export const BulkUpsert = async (profile_id, peeling_product_data) => {
             "product_master_id",
           ],
           profile_id,
-        }
+        },
       );
       resolve(result);
     } catch (err) {
@@ -49,31 +49,31 @@ export const GetAll = ({ start, length, search }) => {
             sequelize.cast(sequelize.col("yield_quantity"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           sequelize.where(
             sequelize.cast(sequelize.col("peeling_method"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           { peeling_notes: { [Op.iLike]: `%${search}%` } },
           sequelize.where(
             sequelize.cast(sequelize.col("peeling_status"), "varchar"),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           sequelize.where(
             sequelize.cast(
               sequelize.col(
-                "Dispatches.ProcurementProduct.ProductMaster.product_name"
+                "Dispatches.ProcurementProduct.ProductMaster.product_name",
               ),
-              "varchar"
+              "varchar",
             ),
             {
               [Op.iLike]: `%${search}%`,
-            }
+            },
           ),
           {
             "$ProductMaster.product_name$": {
@@ -167,7 +167,7 @@ export const GetNames = ({
                 peeled_dispatch_id != "null" && peeled_dispatch_id != undefined
                   ? `pd.id != '${peeled_dispatch_id}' AND`
                   : ""
-              } pd.is_active = true), 0)`
+              } pd.is_active = true), 0)`,
             ),
             "peeled_quantity",
           ],
@@ -228,12 +228,25 @@ export const GetNames = ({
           });
 
           if (procProduct?.procurement_lot_id === procurement_lot_id) {
+            // Get QA status for this peeling product
+            const qaRecord = await models.QAChecklist.findOne({
+              where: { peeling_product_id: peeling.id, is_active: true },
+              attributes: ["status"],
+              order: [["created_at", "DESC"]],
+              raw: true,
+            });
+
+            // Add QA status to peeling object
+            peeling.dataValues.qa_status = qaRecord?.status || "PENDING";
+
             filtered.push(peeling);
             console.log(
               "  ✓ Added:",
               peeling.id,
               "Product:",
-              peeling.ProductMaster?.product_name
+              peeling.ProductMaster?.product_name,
+              "QA Status:",
+              peeling.dataValues.qa_status,
             );
           }
         } catch (e) {
