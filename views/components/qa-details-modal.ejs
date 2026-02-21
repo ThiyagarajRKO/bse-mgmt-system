@@ -1,0 +1,449 @@
+<div
+  class="modal fade"
+  id="qaDetailsModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="qaDetailsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="qaDetailsModalLabel">
+          <i class="fas fa-tasks"></i> QA Inspection Details
+        </h5>
+        <button
+          type="button"
+          class="close text-white"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- QA Header Info -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title text-primary">
+                  <i class="fas fa-file-alt"></i> QA Information
+                </h6>
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted" style="width: 40%">Lot Number:</td>
+                      <td><strong id="qaLotNo">-</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">QA Status:</td>
+                      <td>
+                        <span class="badge" id="qaStatus">PENDING</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Inspection Date:</td>
+                      <td id="qaInspectionDate">-</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Inspector Name:</td>
+                      <td id="qaInspectorName">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title text-primary">
+                  <i class="fas fa-box"></i> Product Information
+                </h6>
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted" style="width: 40%">
+                        Product Name:
+                      </td>
+                      <td id="qaProductName">-</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Peeled Quantity:</td>
+                      <td><strong id="qaQuantity">-</strong> kg</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Order ID:</td>
+                      <td id="qaOrderId">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QA Metrics Section -->
+        <div class="card mb-3">
+          <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-chart-bar"></i> QA Metrics</h6>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Broken Percentage:</td>
+                      <td><strong id="qaBrokenPercentage">N/A</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Glazing Percentage:</td>
+                      <td><strong id="qaGlazingPercentage">N/A</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-4">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Temperature:</td>
+                      <td><strong id="qaTemperature">20</strong>°C</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Net Weight:</td>
+                      <td><strong id="qaNetWeight">N/A</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-4">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Sample Size:</td>
+                      <td><strong id="qaSampleSize">100</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quality Assessment Section -->
+        <div class="card mb-3">
+          <div class="card-header bg-light">
+            <h6 class="mb-0">
+              <i class="fas fa-check-circle"></i> Quality Assessment
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Odour Status:</td>
+                      <td>
+                        <span class="badge badge-success" id="qaOdourStatus"
+                          >GOOD</span
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Appearance Status:</td>
+                      <td>
+                        <span
+                          class="badge badge-success"
+                          id="qaAppearanceStatus"
+                          >GOOD</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table table-sm table-borderless">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted">Foreign Matter:</td>
+                      <td id="qaForeignMatter">N/A</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">Foreign Matter Notes:</td>
+                      <td id="qaForeignMatterNotes">N/A</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Peeled Products Table Section -->
+        <div class="card mb-3">
+          <div class="card-header bg-light">
+            <h6 class="mb-0">
+              <i class="fas fa-list-alt"></i> Peeled Products
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover" id="peelProductsTable">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Product Name</th>
+                    <th class="text-right">Quantity (kg)</th>
+                    <th class="text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="peelProductsTableBody">
+                  <tr>
+                    <td colspan="3" class="text-center text-muted">
+                      <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- QA Notes Section -->
+        <div class="card">
+          <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-sticky-note"></i> QA Notes</h6>
+          </div>
+          <div class="card-body">
+            <div id="qaNotesContent" class="text-muted">No notes provided</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fas fa-times"></i> Close
+        </button>
+        <button type="button" class="btn btn-primary" id="editQABtn">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button type="button" class="btn btn-success" id="approveQABtn">
+          <i class="fas fa-check"></i> Approve
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .badge-success {
+    background-color: #28a745;
+  }
+
+  .badge-danger {
+    background-color: #dc3545;
+  }
+
+  .badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+  }
+
+  .badge-secondary {
+    background-color: #6c757d;
+  }
+
+  .table-sm td {
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .text-muted {
+    font-size: 0.9rem;
+  }
+
+  #qaStatus {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .card-header {
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+</style>
+
+<script>
+  /**
+   * QA Details Modal Handler
+   * Displays comprehensive QA inspection details in tabular format
+   */
+
+  function showQADetailsModal(qaData) {
+    // QA Information
+    document.getElementById("qaLotNo").textContent = qaData.lot_no || "-";
+    document.getElementById("qaStatus").textContent =
+      qaData.status || "PENDING";
+    document.getElementById("qaStatus").className = getStatusBadgeClass(
+      qaData.status,
+    );
+    document.getElementById("qaInspectionDate").textContent =
+      qaData.inspection_date
+        ? new Date(qaData.inspection_date).toLocaleDateString()
+        : "-";
+    document.getElementById("qaInspectorName").textContent =
+      qaData.inspector_name || "-";
+
+    // Product Information
+    document.getElementById("qaProductName").textContent =
+      qaData.product || "-";
+    document.getElementById("qaQuantity").textContent = parseFloat(
+      qaData.quantity || 0,
+    ).toFixed(2);
+    document.getElementById("qaOrderId").textContent = qaData.order_id || "-";
+
+    // QA Metrics
+    document.getElementById("qaBrokenPercentage").textContent =
+      qaData.broken_percentage
+        ? `${parseFloat(qaData.broken_percentage).toFixed(2)}%`
+        : "N/A";
+    document.getElementById("qaGlazingPercentage").textContent =
+      qaData.glazing_percentage
+        ? `${parseFloat(qaData.glazing_percentage).toFixed(2)}%`
+        : "N/A";
+    document.getElementById("qaTemperature").textContent =
+      qaData.temperature || "20";
+    document.getElementById("qaNetWeight").textContent = qaData.net_weight_avg
+      ? `${parseFloat(qaData.net_weight_avg).toFixed(2)} kg`
+      : "N/A";
+    document.getElementById("qaSampleSize").textContent =
+      qaData.sample_size || "100";
+
+    // Quality Assessment
+    document.getElementById("qaOdourStatus").textContent =
+      qaData.odour_status || "GOOD";
+    document.getElementById("qaOdourStatus").className = getStatusBadgeClass(
+      qaData.odour_status,
+    );
+
+    document.getElementById("qaAppearanceStatus").textContent =
+      qaData.appearance_status || "GOOD";
+    document.getElementById("qaAppearanceStatus").className =
+      getStatusBadgeClass(qaData.appearance_status);
+
+    document.getElementById("qaForeignMatter").textContent =
+      qaData.foreign_matter ? "Yes" : "No";
+    document.getElementById("qaForeignMatterNotes").textContent =
+      qaData.foreign_matter_notes || "N/A";
+
+    // QA Notes
+    const notesContent = qaData.qa_notes || "No notes provided";
+    document.getElementById("qaNotesContent").innerHTML =
+      `<p>${escapeHtml(notesContent)}</p>`;
+
+    // Peeled Products Table
+    loadPeeledProductsTable(qaData.peeled_product_id);
+
+    // Show Modal
+    $("#qaDetailsModal").modal("show");
+  }
+
+  function loadPeeledProductsTable(peeledProductId) {
+    const tbody = document.getElementById("peelProductsTableBody");
+
+    if (!peeledProductId) {
+      tbody.innerHTML =
+        '<tr><td colspan="3" class="text-center text-muted">No peeled products found</td></tr>';
+      return;
+    }
+
+    // Fetch peeled product details from API
+    fetch(`/api/peeling-products/${peeledProductId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          const product = data.data;
+          tbody.innerHTML = `
+          <tr>
+            <td>${product.ProductMaster?.product_name || "Unknown Product"}</td>
+            <td class="text-right"><strong>${parseFloat(product.yield_quantity || 0).toFixed(2)}</strong></td>
+            <td class="text-center">
+              <span class="badge ${product.peeling_status === "Completed" ? "badge-success" : "badge-warning"}">
+                ${product.peeling_status || "In Progress"}
+              </span>
+            </td>
+          </tr>
+        `;
+        } else {
+          tbody.innerHTML =
+            '<tr><td colspan="3" class="text-center text-muted">No data available</td></tr>';
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading peeled products:", err);
+        tbody.innerHTML =
+          '<tr><td colspan="3" class="text-center text-danger">Error loading data</td></tr>';
+      });
+  }
+
+  function getStatusBadgeClass(status) {
+    if (!status) return "badge badge-secondary";
+
+    status = status.toUpperCase();
+
+    if (status === "PASS" || status === "GOOD" || status === "COMPLETED") {
+      return "badge badge-success";
+    } else if (status === "FAIL" || status === "BAD") {
+      return "badge badge-danger";
+    } else if (
+      status === "PENDING" ||
+      status === "ON_HOLD" ||
+      status === "IN PROGRESS"
+    ) {
+      return "badge badge-warning";
+    } else {
+      return "badge badge-secondary";
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Event Handlers
+  document.addEventListener("DOMContentLoaded", function () {
+    const editQABtn = document.getElementById("editQABtn");
+    const approveQABtn = document.getElementById("approveQABtn");
+
+    if (editQABtn) {
+      editQABtn.addEventListener("click", function () {
+        // TODO: Implement edit QA functionality
+        alert("Edit QA functionality coming soon");
+      });
+    }
+
+    if (approveQABtn) {
+      approveQABtn.addEventListener("click", function () {
+        // TODO: Implement approve QA functionality
+        alert("Approve QA functionality coming soon");
+      });
+    }
+  });
+</script>

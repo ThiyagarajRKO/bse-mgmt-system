@@ -1,0 +1,483 @@
+<div id="qaTab" class="tab-pane fade">
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
+        <!-- QA Header -->
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-tasks"></i> Quality Assurance (QA) Report
+            </h5>
+          </div>
+        </div>
+
+        <!-- QA Filters -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <label class="form-label">Status Filter</label>
+                <select
+                  id="qaStatusFilter"
+                  class="form-control form-control-sm"
+                >
+                  <option value="">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="PASS">Pass</option>
+                  <option value="FAIL">Fail</option>
+                  <option value="ON_HOLD">On Hold</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Lot Number</label>
+                <input
+                  type="text"
+                  id="qaLotFilter"
+                  class="form-control form-control-sm"
+                  placeholder="Search lot number"
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Date Range</label>
+                <input
+                  type="date"
+                  id="qaDateFilter"
+                  class="form-control form-control-sm"
+                />
+              </div>
+              <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button
+                  class="btn btn-primary btn-block btn-sm"
+                  id="qaRefreshBtn"
+                >
+                  <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QA Table -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0">
+              <i class="fas fa-list-alt"></i> QA Records
+              <span
+                class="badge badge-pill badge-info float-right"
+                id="qaCountBadge"
+                >0</span
+              >
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover table-sm" id="qaTable">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Lot Number</th>
+                    <th>Product</th>
+                    <th>Peeled Quantity (kg)</th>
+                    <th>Status</th>
+                    <th>Odour Status</th>
+                    <th>Appearance Status</th>
+                    <th>Inspection Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="qaTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted">
+                      <i class="fas fa-spinner fa-spin"></i> Loading QA
+                      records...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- QA Summary Card -->
+        <div class="row mt-4">
+          <div class="col-md-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <h6 class="text-muted">Total QA Records</h6>
+                <h3 class="text-primary" id="qaTotal">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <h6 class="text-muted">Pending</h6>
+                <h3 class="text-warning" id="qaPending">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <h6 class="text-muted">Passed</h6>
+                <h3 class="text-success" id="qaPassed">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card text-center">
+              <div class="card-body">
+                <h6 class="text-muted">Failed</h6>
+                <h3 class="text-danger" id="qaFailed">0</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #qaTab {
+    padding: 20px 0;
+  }
+
+  #qaTable {
+    margin-bottom: 0;
+  }
+
+  #qaTable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  #qaTable tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .badge-qa {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .text-qa-pending {
+    color: #ffc107;
+  }
+
+  .text-qa-pass {
+    color: #28a745;
+  }
+
+  .text-qa-fail {
+    color: #dc3545;
+  }
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+</style>
+
+<script>
+  /**
+   * QA Tab Handler
+   * Displays QA records and handles modal interactions
+   */
+
+  let qaDataCache = [];
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize QA tab
+    const qaTab = document.getElementById("qaTab");
+    if (qaTab) {
+      loadQARecords();
+      setupQAEventListeners();
+    }
+  });
+
+  function loadQARecords() {
+    const tbody = document.getElementById("qaTableBody");
+    tbody.innerHTML =
+      '<tr><td colspan="8" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+    fetch("/api/qa/")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.rows) {
+          qaDataCache = data.data.rows;
+          renderQATable(qaDataCache);
+          updateQASummary(qaDataCache);
+        } else {
+          tbody.innerHTML =
+            '<tr><td colspan="8" class="text-center text-muted">No QA records found</td></tr>';
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading QA records:", err);
+        tbody.innerHTML =
+          '<tr><td colspan="8" class="text-center text-danger">Error loading records</td></tr>';
+      });
+  }
+
+  function renderQATable(records) {
+    const tbody = document.getElementById("qaTableBody");
+    const countBadge = document.getElementById("qaCountBadge");
+
+    if (!records || records.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="8" class="text-center text-muted">No QA records found</td></tr>';
+      countBadge.textContent = "0";
+      return;
+    }
+
+    countBadge.textContent = records.length;
+
+    tbody.innerHTML = records
+      .map(
+        (record) => `
+    <tr class="qa-row" data-qa-id="${record.id}">
+      <td><strong>${record.lot_no || "-"}</strong></td>
+      <td>${record.product || "-"}</td>
+      <td class="text-right">${parseFloat(record.quantity || 0).toFixed(2)}</td>
+      <td>
+        <span class="badge ${getStatusBadgeClass(record.status)}">
+          ${record.status || "PENDING"}
+        </span>
+      </td>
+      <td>
+        <span class="badge ${getStatusBadgeClass(record.odour_status)}">
+          ${record.odour_status || "-"}
+        </span>
+      </td>
+      <td>
+        <span class="badge ${getStatusBadgeClass(record.appearance_status)}">
+          ${record.appearance_status || "-"}
+        </span>
+      </td>
+      <td>${record.inspection_date ? new Date(record.inspection_date).toLocaleDateString() : "-"}</td>
+      <td>
+        <button class="btn btn-sm btn-info qa-view-btn" title="View Details">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `,
+      )
+      .join("");
+
+    // Attach event listeners
+    document.querySelectorAll(".qa-row").forEach((row) => {
+      row.addEventListener("click", function () {
+        const qaId = this.getAttribute("data-qa-id");
+        const qaRecord = records.find((r) => r.id === qaId);
+        if (qaRecord) {
+          showQADetailsModal(qaRecord);
+        }
+      });
+    });
+
+    document.querySelectorAll(".qa-view-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const row = this.closest(".qa-row");
+        row.click();
+      });
+    });
+  }
+
+  function updateQASummary(records) {
+    const total = records.length;
+    const pending = records.filter((r) => r.status === "PENDING").length;
+    const passed = records.filter((r) => r.status === "PASS").length;
+    const failed = records.filter((r) => r.status === "FAIL").length;
+
+    document.getElementById("qaTotal").textContent = total;
+    document.getElementById("qaPending").textContent = pending;
+    document.getElementById("qaPassed").textContent = passed;
+    document.getElementById("qaFailed").textContent = failed;
+  }
+
+  function getStatusBadgeClass(status) {
+    if (!status) return "badge-secondary";
+
+    status = status.toUpperCase();
+
+    if (status === "PASS" || status === "GOOD" || status === "COMPLETED") {
+      return "badge-success";
+    } else if (status === "FAIL" || status === "BAD") {
+      return "badge-danger";
+    } else if (
+      status === "PENDING" ||
+      status === "ON_HOLD" ||
+      status === "IN PROGRESS"
+    ) {
+      return "badge-warning";
+    } else {
+      return "badge-secondary";
+    }
+  }
+
+  function setupQAEventListeners() {
+    // Status Filter
+    const statusFilter = document.getElementById("qaStatusFilter");
+    if (statusFilter) {
+      statusFilter.addEventListener("change", filterQARecords);
+    }
+
+    // Lot Filter
+    const lotFilter = document.getElementById("qaLotFilter");
+    if (lotFilter) {
+      lotFilter.addEventListener("input", filterQARecords);
+    }
+
+    // Refresh Button
+    const refreshBtn = document.getElementById("qaRefreshBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", loadQARecords);
+    }
+  }
+
+  function filterQARecords() {
+    const statusFilter = document.getElementById("qaStatusFilter")?.value || "";
+    const lotFilter =
+      document.getElementById("qaLotFilter")?.value.toLowerCase() || "";
+
+    const filtered = qaDataCache.filter((record) => {
+      const matchStatus = !statusFilter || record.status === statusFilter;
+      const matchLot =
+        !lotFilter || (record.lot_no || "").toLowerCase().includes(lotFilter);
+      return matchStatus && matchLot;
+    });
+
+    renderQATable(filtered);
+    updateQASummary(filtered);
+  }
+
+  /**
+   * Show QA Details Modal
+   * This function should be called from the QA Details Modal component
+   */
+  function showQADetailsModal(qaData) {
+    // QA Information
+    document.getElementById("qaLotNo").textContent = qaData.lot_no || "-";
+    document.getElementById("qaStatus").textContent =
+      qaData.status || "PENDING";
+    document.getElementById("qaStatus").className =
+      getStatusBadgeClass(qaData.status) + " badge";
+    document.getElementById("qaInspectionDate").textContent =
+      qaData.inspection_date
+        ? new Date(qaData.inspection_date).toLocaleDateString()
+        : "-";
+    document.getElementById("qaInspectorName").textContent =
+      qaData.inspector_name || "-";
+
+    // Product Information
+    document.getElementById("qaProductName").textContent =
+      qaData.product || "-";
+    document.getElementById("qaQuantity").textContent = parseFloat(
+      qaData.quantity || 0,
+    ).toFixed(2);
+    document.getElementById("qaOrderId").textContent = qaData.order_id || "-";
+
+    // QA Metrics
+    document.getElementById("qaBrokenPercentage").textContent =
+      qaData.broken_percentage
+        ? `${parseFloat(qaData.broken_percentage).toFixed(2)}%`
+        : "N/A";
+    document.getElementById("qaGlazingPercentage").textContent =
+      qaData.glazing_percentage
+        ? `${parseFloat(qaData.glazing_percentage).toFixed(2)}%`
+        : "N/A";
+    document.getElementById("qaTemperature").textContent =
+      qaData.temperature || "20";
+    document.getElementById("qaNetWeight").textContent = qaData.net_weight_avg
+      ? `${parseFloat(qaData.net_weight_avg).toFixed(2)} kg`
+      : "N/A";
+    document.getElementById("qaSampleSize").textContent =
+      qaData.sample_size || "100";
+
+    // Quality Assessment
+    const updateBadgeElement = (elementId, value) => {
+      const elem = document.getElementById(elementId);
+      if (elem) {
+        elem.textContent = value || "GOOD";
+        elem.className = "badge " + getStatusBadgeClass(value);
+      }
+    };
+
+    updateBadgeElement("qaOdourStatus", qaData.odour_status);
+    updateBadgeElement("qaAppearanceStatus", qaData.appearance_status);
+
+    document.getElementById("qaForeignMatter").textContent =
+      qaData.foreign_matter ? "Yes" : "No";
+    document.getElementById("qaForeignMatterNotes").textContent =
+      qaData.foreign_matter_notes || "N/A";
+
+    // QA Notes
+    const notesContent = qaData.qa_notes || "No notes provided";
+    document.getElementById("qaNotesContent").innerHTML =
+      `<p>${escapeHtml(notesContent)}</p>`;
+
+    // Peeled Products Table
+    loadPeeledProductsTable(qaData.peeled_product_id, qaData);
+
+    // Show Modal
+    $("#qaDetailsModal").modal("show");
+  }
+
+  function loadPeeledProductsTable(peeledProductId, qaData) {
+    const tbody = document.getElementById("peelProductsTableBody");
+
+    if (!peeledProductId) {
+      tbody.innerHTML = `<tr>
+      <td>${qaData.product || "Unknown Product"}</td>
+      <td class="text-right"><strong>${parseFloat(qaData.quantity || 0).toFixed(2)}</strong></td>
+      <td class="text-center"><span class="badge badge-success">Completed</span></td>
+    </tr>`;
+      return;
+    }
+
+    // Fetch peeled product details
+    fetch(`/api/peeling-products/${peeledProductId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          const product = data.data;
+          tbody.innerHTML = `
+          <tr>
+            <td>${product.ProductMaster?.product_name || qaData.product || "Unknown Product"}</td>
+            <td class="text-right"><strong>${parseFloat(product.yield_quantity || qaData.quantity || 0).toFixed(2)}</strong></td>
+            <td class="text-center">
+              <span class="badge ${product.peeling_status === "Completed" ? "badge-success" : "badge-warning"}">
+                ${product.peeling_status || "Completed"}
+              </span>
+            </td>
+          </tr>
+        `;
+        } else {
+          tbody.innerHTML = `<tr>
+          <td>${qaData.product || "Unknown"}</td>
+          <td class="text-right"><strong>${parseFloat(qaData.quantity || 0).toFixed(2)}</strong></td>
+          <td class="text-center"><span class="badge badge-success">Completed</span></td>
+        </tr>`;
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading peeled products:", err);
+        tbody.innerHTML = `<tr>
+        <td>${qaData.product || "Unknown"}</td>
+        <td class="text-right"><strong>${parseFloat(qaData.quantity || 0).toFixed(2)}</strong></td>
+        <td class="text-center"><span class="badge badge-success">Completed</span></td>
+      </tr>`;
+      });
+  }
+
+  function escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>
