@@ -14,11 +14,11 @@ export const Create = async (
     packing_notes,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Get peeled dispatch with product information
+      // Get peeled dispatch with product information and QA details
       const peeledDispatch = await models.PeeledDispatches.findOne({
         where: { id: peeled_dispatch_id, is_active: true },
         include: [
@@ -33,6 +33,11 @@ export const Create = async (
               },
             ],
           },
+          {
+            model: models.QAChecklist,
+            as: "qa",
+            attributes: ["id", "status"],
+          },
         ],
       });
 
@@ -40,6 +45,22 @@ export const Create = async (
         return reject({
           statusCode: 404,
           message: "Peeled dispatch not found",
+        });
+      }
+
+      // ✅ VALIDATION: Check QA status before allowing packing
+      if (!peeledDispatch.qa) {
+        return reject({
+          statusCode: 420,
+          message:
+            "QA record not found for this peeled dispatch. Please complete QA inspection first.",
+        });
+      }
+
+      if (peeledDispatch.qa.status !== "PASS") {
+        return reject({
+          statusCode: 420,
+          message: `Cannot create packing. QA status is '${peeledDispatch.qa.status}'. Only products with QA status 'PASS' can proceed to packing.`,
         });
       }
 
@@ -74,6 +95,7 @@ export const Create = async (
 
       const packing = await Packing.Insert(profile_id, {
         peeled_dispatch_id,
+        order_id: peeledDispatch.order_id,
         unit_master_id,
         packing_quantity,
         grade_master_id: derivedGradeId,
