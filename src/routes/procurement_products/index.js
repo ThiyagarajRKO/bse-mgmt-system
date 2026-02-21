@@ -17,12 +17,12 @@ import {
   GetMultiCategoryRecommendations,
 } from "./handlers/calculate_requirements";
 
-// Chart Handler
-import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
-import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
-import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
-import { GetProcurementPerformanceBySuppliers } from "./handlers/charts/chart_procurement_performance_by_supplier";
-import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement_age_by_product";
+// Chart Handler - Temporarily disabled due to file read issues
+// import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
+// import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
+// import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
+// import { GetProcurementPerformanceBySuppliers } from "./handlers/charts/chart_procurement_performance_by_supplier";
+// import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement_age_by_product";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -41,12 +41,12 @@ import {
   multiCategoryRecommendationsSchema,
 } from "./schema/calculate_requirements";
 
-// Chart Schema
-import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
-import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
-import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
-import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
-import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
+// Chart Schema - Temporarily disabled due to file read issues
+// import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
+// import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
+// import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
+// import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
+// import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -458,6 +458,8 @@ export const procurementProductsRoute = (fastify, opts, done) => {
   // ------------------------------- Charts -------------------------------
   // ----------------------------------------------------------------------
 
+  // Chart routes temporarily disabled due to file read issues
+  /*
   fastify.get(
     "/chart/spend/by/supplier",
     getProcurementSpendBySuppliersSchema,
@@ -592,6 +594,7 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       }
     },
   );
+  */
 
   // AI-Powered Raw Material Calculator Routes
   fastify.get(
