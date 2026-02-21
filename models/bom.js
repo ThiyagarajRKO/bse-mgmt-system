@@ -184,15 +184,8 @@ module.exports = (sequelize) => {
     },
   );
 
-  // Associations
-  BomMaster.hasMany(BomInput, { foreignKey: "bom_id", as: "inputs" });
-  BomInput.belongsTo(BomMaster, { foreignKey: "bom_id" });
-
-  BomMaster.hasMany(BomOutput, { foreignKey: "bom_id", as: "outputs" });
-  BomOutput.belongsTo(BomMaster, { foreignKey: "bom_id" });
-
-  BomMaster.hasMany(BomCost, { foreignKey: "bom_id", as: "costs" });
-  BomCost.belongsTo(BomMaster, { foreignKey: "bom_id" });
+  // Associations are defined in the individual model files
+  // to avoid circular dependencies and duplicate definitions
 
   // Return only the primary BomMaster model
   // Other models will be loaded separately from their own files
