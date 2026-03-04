@@ -1,0 +1,107 @@
+import { PeeledDispatches, Packing } from "../../../controllers";
+import models from "../../../../models";
+
+export const Update = (
+  { profile_id, packing_id, packing_data },
+  session,
+  fastify
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // If peeled_dispatch_id is being updated, derive grade and size from the new product
+      if (
+        packing_data?.peeled_dispatch_id &&
+        (!packing_data?.grade_master_id || !packing_data?.size_master_id)
+      ) {
+        const peeledDispatch = await models.PeeledDispatches.findOne({
+          where: { id: packing_data.peeled_dispatch_id, is_active: true },
+          include: [
+            {
+              model: models.PeelingProducts,
+              as: "pp",
+              include: [
+                {
+                  model: models.ProductMaster,
+                  include: [
+                    {
+                      model: models.GradeMaster,
+                      attributes: ["id"],
+                    },
+                    {
+                      model: models.SizeMaster,
+                      attributes: ["id"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+
+        if (peeledDispatch) {
+          packing_data.grade_master_id =
+            packing_data.grade_master_id ||
+            peeledDispatch.pp.ProductMaster?.GradeMaster?.id;
+          packing_data.size_master_id =
+            packing_data.size_master_id ||
+            peeledDispatch.pp.ProductMaster?.SizeMaster?.id;
+        }
+      }
+
+      if (!packing_data?.packing_quantity) {
+        // Only validate peeled_dispatch_id if we're not just updating status
+        if (
+          !packing_data?.packing_status &&
+          !packing_data?.peeled_dispatch_id
+        ) {
+          return reject({
+            statusCode: 420,
+            message: "Packed product id must not be empty",
+          });
+        }
+
+        // Only do quantity checks if peeled_dispatch_id exists
+        if (packing_data?.peeled_dispatch_id) {
+          const { peeled_dispatch_quantity } =
+            await PeeledDispatches.GetQuantity({
+              id: packing_data?.peeled_dispatch_id,
+            });
+
+          if (!peeled_dispatch_quantity) {
+            return reject({
+              statusCode: 420,
+              message: "Invalid product quantity",
+            });
+          } else if (
+            peeled_dispatch_quantity < packing_data?.packing_quantity
+          ) {
+            return reject({
+              statusCode: 420,
+              message: "Packed quantity is greater than Dispatched quantity",
+            });
+          }
+        }
+      }
+
+      const updated_data = await Packing.Update(
+        profile_id,
+        packing_id,
+        packing_data
+      );
+
+      if (updated_data?.[0] > 0) {
+        return resolve({
+          message: "Packing data has been updated successfully",
+        });
+      }
+
+      resolve({
+        statusCode: 420,
+        message: "Packing data didn't update",
+      });
+    } catch (err) {
+      fastify.log.error(err);
+      reject(err);
+    }
+  });
+};
