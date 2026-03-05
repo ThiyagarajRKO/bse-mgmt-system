@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "bill_of_materials",
       timestamps: true,
       underscored: true,
-    }
+    },
   );
 
   BillOfMaterials.associate = (models) => {
