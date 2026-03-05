@@ -2519,6 +2519,19 @@
         loadAllocationTableData();
       });
 
+      // Auto-refresh allocation table every 10 seconds
+      let autoRefreshInterval = setInterval(function () {
+        console.log("[AUTO-REFRESH] Refreshing allocation table data...");
+        loadAllocationTableData();
+      }, 10000); // 10 seconds
+
+      // Clean up interval when user navigates away
+      $(window).on("beforeunload", function () {
+        if (autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+        }
+      });
+
       $(document).on("click", ".modal-header .close", () => {
         $("#orderModal").modal("hide");
       });
@@ -3885,6 +3898,7 @@
                       url: `/api/orders/check-inventory/${productMasterId}`,
                       method: "GET",
                       dataType: "json",
+                      async: false,
                       success: function (invResponse) {
                         console.log(
                           `[Order View] Purchase inventory response:`,
