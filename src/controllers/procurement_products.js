@@ -215,7 +215,12 @@ export const GetQuantity = ({ id }) => {
       }
 
       const product = await models.ProcurementProducts.findOne({
-        attributes: ["procurement_quantity", "adjusted_quantity"],
+        // also return product_master_id so callers can aggregate by product
+        attributes: [
+          "procurement_quantity",
+          "adjusted_quantity",
+          "product_master_id",
+        ],
         where: {
           id,
           is_active: true,
@@ -223,6 +228,38 @@ export const GetQuantity = ({ id }) => {
       });
 
       resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// return the total purchased quantity for a given product master across all active
+// procurement_products rows. This is used when validating dispatches against the
+// entire purchased amount rather than a single procurement line.
+export const GetTotalQuantityForProduct = ({ product_master_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!product_master_id) {
+        return reject({
+          statusCode: 420,
+          message: "Product master ID required for total quantity lookup",
+        });
+      }
+
+      // QueryTypes.SELECT returns an array of row objects.  We simply take the
+      // first element and read its `total` field (defaults to 0).
+      const rows = await models.sequelize.query(
+        `SELECT COALESCE(SUM(procurement_quantity),0) as total
+         FROM procurement_products
+         WHERE product_master_id = :pmid AND is_active = true`,
+        {
+          replacements: { pmid: product_master_id },
+          type: models.sequelize.QueryTypes.SELECT,
+        },
+      );
+      const total = rows && rows.length ? rows[0].total : 0;
+      resolve(parseFloat(total) || 0);
     } catch (err) {
       reject(err);
     }
@@ -833,6 +870,13 @@ export const GetNames = ({
               } dispatches.is_active = true)`,
             ),
             "dispatched_quantity",
+          ],
+          // add overall total purchase quantity for this product across all lots
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(SUM(pp2.procurement_quantity),0) FROM procurement_products pp2 WHERE pp2.product_master_id = "ProcurementProducts".product_master_id AND pp2.is_active = true)`,
+            ),
+            "overall_total_quantity",
           ],
         ],
         include: [

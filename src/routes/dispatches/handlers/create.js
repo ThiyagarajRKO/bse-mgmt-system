@@ -22,19 +22,25 @@ export const Create = (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { procurement_quantity, adjusted_quantity } =
-        await ProcurementProducts.GetQuantity({
-          id: procurement_product_id,
-        });
+      // fetch the specific procurement row so we can use its product_master_id
+      const prod = await ProcurementProducts.GetQuantity({
+        id: procurement_product_id,
+      });
 
-      if (!procurement_quantity && !adjusted_quantity) {
+      if (!prod || (!prod.procurement_quantity && !prod.adjusted_quantity)) {
         return reject({
           statusCode: 420,
           message: "Invalid product quantity",
         });
-      } else if (
-        (adjusted_quantity || procurement_quantity) < dispatch_quantity
-      ) {
+      }
+
+      // determine total available quantity for the entire product master
+      const totalPurchased =
+        await ProcurementProducts.GetTotalQuantityForProduct({
+          product_master_id: prod.product_master_id,
+        });
+
+      if (dispatch_quantity > totalPurchased) {
         return reject({
           statusCode: 420,
           message: "Dispatched quantity is grater than Procurement quantity",

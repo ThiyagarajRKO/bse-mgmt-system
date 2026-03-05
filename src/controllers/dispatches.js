@@ -524,6 +524,11 @@ export const GetProductNames = ({
           "pp->SupplierMaster.id",
         ],
       });
+      // DEBUG: ensure dispatch_quantity is present in returned rows
+      console.log("GetProductNames fetched rows:", procurements.length);
+      if (procurements.length) {
+        console.log("GetProductNames sample row:", procurements[0]);
+      }
 
       resolve(procurements);
     } catch (err) {
