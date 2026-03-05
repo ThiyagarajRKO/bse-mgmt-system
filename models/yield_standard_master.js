@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "species_id",
         as: "species",
       });
+      YieldStandardMaster.belongsTo(models.DerivativeMaster, {
+        foreignKey: "derivative_id",
+        as: "derivative",
+      });
     }
   }
 
@@ -27,13 +31,18 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      product_form: {
-        type: DataTypes.ENUM("FROZEN", "COOKED", "RTE", "FRESH"),
-        allowNull: false,
+      derivative_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "derivative_master",
+          key: "id",
+        },
       },
       processing_type: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.ENUM("RAW", "COOKED"),
         allowNull: false,
+        defaultValue: "RAW",
       },
       expected_yield_pct: {
         type: DataTypes.DECIMAL(5, 2),

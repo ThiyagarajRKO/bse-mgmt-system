@@ -89,11 +89,24 @@ export class RawMaterialCalculator {
         );
       }
 
-      const yieldStandard = await models.YieldStandardMaster.findOne({
+      console.log(
+        "[RAW MATERIALS] 🔍 Looking up yield standard with filters:",
+        {
+          species_id: effectiveSpeciesId,
+          derivative_id: product.derivative_master_id,
+          processing_type: processingType,
+          product_form: productForm,
+          is_active: true,
+        },
+      );
+
+      // First try with all filters including product_form if available
+      let yieldStandard = await models.YieldStandardMaster.findOne({
         where: {
           species_id: effectiveSpeciesId,
           derivative_id: product.derivative_master_id,
           processing_type: processingType,
+          ...(productForm && { product_form: productForm }), // Include if provided
           is_active: true,
         },
         attributes: [
@@ -112,9 +125,38 @@ export class RawMaterialCalculator {
         raw: true,
       });
 
+      // If not found with product_form, try without it (backward compatibility)
+      if (!yieldStandard && productForm) {
+        console.log(
+          "[RAW MATERIALS] ℹ️  Yield standard not found with product_form filter, trying without...",
+        );
+        yieldStandard = await models.YieldStandardMaster.findOne({
+          where: {
+            species_id: effectiveSpeciesId,
+            derivative_id: product.derivative_master_id,
+            processing_type: processingType,
+            is_active: true,
+          },
+          attributes: [
+            "id",
+            "species_id",
+            "derivative_id",
+            "processing_type",
+            "expected_yield_pct",
+            "allowed_variance_pct",
+            "min_yield_threshold",
+            "max_yield_threshold",
+            "is_active",
+            "created_by",
+            "updated_by",
+          ],
+          raw: true,
+        });
+      }
+
       if (!yieldStandard) {
         console.warn(
-          `No yield standard found for species=${effectiveSpeciesId}, derivative=${product.derivative_master_id}, type=${processingType}`,
+          `[RAW MATERIALS] ⚠️  No yield standard found for species=${effectiveSpeciesId}, derivative=${product.derivative_master_id}, type=${processingType}`,
         );
         // Default conservative yield if not found
         return this._calculateWithDefaultYield(
@@ -123,6 +165,10 @@ export class RawMaterialCalculator {
           productForm,
         );
       }
+
+      console.log(
+        `[RAW MATERIALS] 📊 Yield standard found for species: ${yieldStandard.expected_yield_pct || 60}%`,
+      );
 
       // Step 4: Calculate raw material needed based on yield percentage
       const yieldPercentage =
@@ -850,10 +896,10 @@ export class RawMaterialCalculator {
 
         // Calculate required quantity based on BOM ratio
         const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
-        const requiredQuantity = quantityRequired * bomQuantity;
+        const requiredQuantity = Math.ceil(quantityRequired * bomQuantity);
 
         console.log(
-          `[RAW MATERIALS] 📐 Quantity calculation: ${quantityRequired} ordered × ${bomQuantity} (BOM ratio) = ${requiredQuantity} required`,
+          `[RAW MATERIALS] 📐 Quantity calculation: ${quantityRequired} ordered × ${bomQuantity} (BOM ratio) = ${requiredQuantity} required (rounded)`,
         );
 
         // Get ALL procurement inventory records for this product_master_id
@@ -883,20 +929,23 @@ export class RawMaterialCalculator {
         // Sum all quantities to get total warehouse stock
         // Use available_stock if initialized, fall back to quantity
         // available_stock = quantity - reserved_quantity
-        const currentStock = allInventoryRecords.reduce((sum, inv) => {
+        const totalStock = allInventoryRecords.reduce((sum, inv) => {
           // If available_stock is set and greater than 0, use it
           // Otherwise, initialize it as total quantity
           const availStock = inv.available_stock || 0;
           const qty = availStock > 0 ? availStock : inv.quantity || 0;
           return sum + qty;
         }, 0);
+        const currentStock = Math.ceil(totalStock);
 
         console.log(
           `[RAW MATERIALS] 📊 Warehouse stock for ${productMaster.product_name}: ${currentStock} (required: ${requiredQuantity})`,
         );
 
         // Calculate inventory gap based on warehouse stock
-        const inventoryGap = Math.max(0, requiredQuantity - currentStock);
+        const inventoryGap = Math.ceil(
+          Math.max(0, requiredQuantity - currentStock),
+        );
 
         rawMaterials.push({
           procurement_product_id: procurementProduct.id,
@@ -908,7 +957,7 @@ export class RawMaterialCalculator {
           total_quantity_required: requiredQuantity,
           current_stock: currentStock,
           inventory_gap: inventoryGap,
-          recommended_order_quantity: inventoryGap,
+          recommended_order_quantity: Math.ceil(inventoryGap),
           unit_of_measure: bomEntry.unit_of_measure || "KG",
         });
 

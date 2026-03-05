@@ -2394,8 +2394,8 @@
         }
       });
 
-      // AI Tooltip functions for quantity field
-      function showQuantityTooltip(inputElement) {
+      // AI Tooltip functions for quantity field - Attach to window for global access
+      window.showQuantityTooltip = function (inputElement) {
         const currentValue = parseFloat($(inputElement).val()) || 0;
         const tooltip = $("#quantityTooltip");
 
@@ -2479,11 +2479,11 @@
           left: rect.left + "px",
           display: "block",
         });
-      }
+      };
 
-      function hideQuantityTooltip() {
+      window.hideQuantityTooltip = function () {
         $("#quantityTooltip").hide();
-      }
+      };
 
       $(".ordersMenu").click(function () {
         $(".menu-container").addClass("d-none");

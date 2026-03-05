@@ -16,24 +16,89 @@ export const ApprovePurchaseRequest = async (
   return new Promise(async (resolve, reject) => {
     try {
       console.log("ApprovePurchaseRequest handler called with id:", id);
+      console.log(
+        "ApprovePurchaseRequest - Looking up procurement product with id:",
+        id,
+      );
 
-      // First, get the procurement product details
-      const procurementProduct = await models.ProcurementProducts.findByPk(id, {
-        include: [
-          {
-            model: models.ProductMaster,
-            as: "ProductMaster",
-          },
-          {
-            model: models.SupplierMaster,
-          },
-        ],
-      });
+      // First, get the procurement product details with enhanced error handling
+      let procurementProduct;
+      try {
+        procurementProduct = await models.ProcurementProducts.findByPk(id, {
+          include: [
+            {
+              model: models.ProductMaster,
+              as: "ProductMaster",
+            },
+            {
+              model: models.SupplierMaster,
+            },
+          ],
+        });
 
-      if (!procurementProduct) {
+        if (!procurementProduct) {
+          console.error(
+            `[APPROVE] ❌ Procurement product not found - id: ${id}`,
+          );
+          console.error(`[APPROVE] Attempted findByPk() returned null`);
+          console.error(`[APPROVE] Checking if record exists in database...`);
+
+          // Additional verification: Try alternative lookup
+          const alternativeLookup = await models.ProcurementProducts.findOne({
+            where: { id },
+            raw: true,
+          });
+
+          if (!alternativeLookup) {
+            console.error(
+              `[APPROVE] ❌ CRITICAL: Record does not exist in database at all - id: ${id}`,
+            );
+            return reject({
+              statusCode: 404,
+              message: `Procurement product not found - id: ${id}`,
+              details: {
+                id,
+                lookupMethod: "findByPk",
+                found: false,
+              },
+            });
+          } else {
+            console.error(
+              `[APPROVE] ⚠️  Record exists but findByPk failed - possible soft-delete issue`,
+            );
+            console.error(
+              `[APPROVE] Found via raw query: ${JSON.stringify(alternativeLookup)}`,
+            );
+            return reject({
+              statusCode: 404,
+              message: `Procurement product found but could not load associations - id: ${id}`,
+              details: {
+                id,
+                exists: true,
+                rawRecord: alternativeLookup,
+              },
+            });
+          }
+        }
+
+        console.log(`[APPROVE] ✅ Successfully found procurement product:`, {
+          id: procurementProduct.id,
+          productMasterId: procurementProduct.ProductMaster?.id,
+          supplierId: procurementProduct.supplier_master_id,
+        });
+      } catch (lookupError) {
+        console.error(
+          `[APPROVE] 💥 Error during procurement product lookup:`,
+          lookupError.message,
+        );
+        console.error(`[APPROVE] Stack trace:`, lookupError.stack);
         return reject({
-          statusCode: 404,
-          message: "Purchase request not found",
+          statusCode: 500,
+          message: `Error looking up procurement product - ${lookupError.message}`,
+          details: {
+            id,
+            error: lookupError.message,
+          },
         });
       }
 
