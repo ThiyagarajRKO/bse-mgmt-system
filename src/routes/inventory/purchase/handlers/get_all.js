@@ -1,16 +1,26 @@
 import { PurchaseInventory } from "../../../../controllers";
 
 export const GetAll = async (
-  { profile_id, procurement_product_id },
+  {
+    profile_id,
+    procurement_product_id,
+    finished_product_id,
+    procurement_product_type,
+    start,
+    length,
+    search,
+  },
   session,
-  fastify
+  fastify,
 ) => {
   try {
     const result = await PurchaseInventory.GetAll({
-      start: 0,
-      length: 1000, // Get all records
-      search: null,
+      start: start || 0,
+      length: length || 1000, // Get all records
+      search: search || null,
       procurement_product_id,
+      finished_product_id,
+      procurement_product_type,
     });
 
     if (!result) {
