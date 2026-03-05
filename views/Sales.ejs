@@ -4824,20 +4824,32 @@
                 );
 
                 // Auto-populate the quantity field with the first raw material's recommended quantity
-                const firstRawMaterial = firstRecommendation.rawMaterials[0];
-                if (firstRawMaterial?.recommended_order_quantity > 0) {
-                  $("#purchaseRequestQuantity").val(
-                    firstRawMaterial.recommended_order_quantity,
-                  );
-                  $("#purchaseRequestQuantityHint").html(
-                    `<small class="text-success">Auto-filled with BOM recommended quantity: ${firstRawMaterial.recommended_order_quantity} kg</small>`,
-                  );
+                // Only use materials that actually need ordering (gap > 0)
+                const itemsNeedingOrder = firstRecommendation.rawMaterials.filter(
+                  (m) => Math.ceil(m.inventory_gap || 0) > 0
+                );
+                
+                if (itemsNeedingOrder.length > 0) {
+                  const firstRawMaterial = itemsNeedingOrder[0];
+                  const recommendedQty = Math.ceil(firstRawMaterial.recommended_order_quantity || 0);
+                  
+                  if (recommendedQty > 0) {
+                    $("#purchaseRequestQuantity").val(recommendedQty);
+                    $("#purchaseRequestQuantityHint").html(
+                      `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQty} kg</small>`,
+                    );
 
-                  // Show tooltip briefly to highlight AI recommendations
-                  setTimeout(() => {
-                    showQuantityTooltip($("#purchaseRequestQuantity")[0]);
-                    setTimeout(() => hideQuantityTooltip(), 4000); // Hide after 4 seconds
-                  }, 1000);
+                    // Show tooltip briefly to highlight AI recommendations
+                    setTimeout(() => {
+                      showQuantityTooltip($("#purchaseRequestQuantity")[0]);
+                      setTimeout(() => hideQuantityTooltip(), 4000); // Hide after 4 seconds
+                    }, 1000);
+                  }
+                } else {
+                  console.log("[RAW MATERIALS] No items need ordering - all materials have sufficient stock");
+                  $("#purchaseRequestQuantityHint").html(
+                    `<small class="text-success">✓ All raw materials are in sufficient stock</small>`,
+                  );
                 }
               } else {
                 console.warn(
@@ -4883,7 +4895,32 @@
         let materialsHtml =
           '<div style="display: flex; flex-direction: column; gap: 10px;">';
 
-        rawMaterials.forEach((material) => {
+        // CRITICAL: Filter out items with zero inventory gap (sufficient stock)
+        const itemsNeedingOrder = rawMaterials.filter((material) => {
+          const inventoryGap = Math.ceil(material.inventory_gap || 0);
+          return inventoryGap > 0; // Only include items with gap > 0
+        });
+
+        if (itemsNeedingOrder.length === 0) {
+          materialsHtml = `
+            <div style="
+              padding: 20px;
+              background: rgba(76, 175, 80, 0.1);
+              border-radius: 6px;
+              border-left: 4px solid #4CAF50;
+              text-align: center;
+            ">
+              <i class="fa-solid fa-check-circle" style="color: #4CAF50; font-size: 24px; margin-bottom: 10px;"></i>
+              <p style="color: #4CAF50; margin: 10px 0; font-weight: bold;">✓ All Raw Materials Sufficient</p>
+              <small style="color: #999;">Current warehouse inventory covers all required raw materials.</small>
+            </div>
+          `;
+          container.html(materialsHtml);
+          console.log("[RAW MATERIALS UI] All items have sufficient stock - showing success message");
+          return;
+        }
+
+        itemsNeedingOrder.forEach((material) => {
           const materialName = material.product_name || "Unknown";
           const procurementProductId = material.procurement_product_id;
 
