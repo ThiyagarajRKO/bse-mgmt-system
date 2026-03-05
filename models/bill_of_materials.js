@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       procurement_product_id: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "procurement_products",
           key: "id",
