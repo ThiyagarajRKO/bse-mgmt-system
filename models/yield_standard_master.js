@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "yield_standard_master",
       timestamps: true,
       paranoid: false,
-    }
+    },
   );
 
   return YieldStandardMaster;

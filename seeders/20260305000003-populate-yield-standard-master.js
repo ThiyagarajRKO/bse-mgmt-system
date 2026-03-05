@@ -10,19 +10,21 @@ module.exports = {
     try {
       // Get all species
       const species = await queryInterface.sequelize.query(
-        'SELECT id, species_name FROM species_master WHERE is_active = true',
-        { type: Sequelize.QueryTypes.SELECT }
+        "SELECT id, species_name FROM species_master WHERE is_active = true",
+        { type: Sequelize.QueryTypes.SELECT },
       );
 
       console.log(`[YIELD STANDARDS] Found ${species.length} active species`);
 
       // Get all derivatives
       const derivatives = await queryInterface.sequelize.query(
-        'SELECT id, derivative_name FROM derivative_master WHERE is_active = true',
-        { type: Sequelize.QueryTypes.SELECT }
+        "SELECT id, derivative_name FROM derivative_master WHERE is_active = true",
+        { type: Sequelize.QueryTypes.SELECT },
       );
 
-      console.log(`[YIELD STANDARDS] Found ${derivatives.length} active derivatives`);
+      console.log(
+        `[YIELD STANDARDS] Found ${derivatives.length} active derivatives`,
+      );
 
       const yieldData = [];
 
@@ -35,23 +37,47 @@ module.exports = {
           let yieldPct = 85.0; // Default conservative yield
 
           // Specific rules
-          if (spec.species_name && spec.species_name.toLowerCase().includes("chicken")) {
-            if (deriv.derivative_name && deriv.derivative_name.toLowerCase().includes("breast")) {
+          if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("chicken")
+          ) {
+            if (
+              deriv.derivative_name &&
+              deriv.derivative_name.toLowerCase().includes("breast")
+            ) {
               yieldPct = 90.0; // Chicken breast: high yield
-            } else if (deriv.derivative_name && deriv.derivative_name.toLowerCase().includes("thigh")) {
+            } else if (
+              deriv.derivative_name &&
+              deriv.derivative_name.toLowerCase().includes("thigh")
+            ) {
               yieldPct = 88.0; // Chicken thigh: good yield
-            } else if (deriv.derivative_name && deriv.derivative_name.toLowerCase().includes("leg")) {
+            } else if (
+              deriv.derivative_name &&
+              deriv.derivative_name.toLowerCase().includes("leg")
+            ) {
               yieldPct = 87.0; // Chicken leg: moderate yield
             } else {
               yieldPct = 85.0; // Default chicken yield
             }
-          } else if (spec.species_name && spec.species_name.toLowerCase().includes("fish")) {
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("fish")
+          ) {
             yieldPct = 75.0; // Fish: lower yield due to bones, scales
-          } else if (spec.species_name && spec.species_name.toLowerCase().includes("shrimp")) {
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("shrimp")
+          ) {
             yieldPct = 70.0; // Shrimp: lower yield due to shell processing
-          } else if (spec.species_name && spec.species_name.toLowerCase().includes("mutton")) {
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("mutton")
+          ) {
             yieldPct = 82.0; // Mutton: lower than chicken due to bone content
-          } else if (spec.species_name && spec.species_name.toLowerCase().includes("goat")) {
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("goat")
+          ) {
             yieldPct = 83.0; // Goat: similar to mutton
           }
 
@@ -89,21 +115,25 @@ module.exports = {
       }
 
       if (yieldData.length === 0) {
-        console.warn("[YIELD STANDARDS] ⚠️  No yield data generated - check species/derivative availability");
+        console.warn(
+          "[YIELD STANDARDS] ⚠️  No yield data generated - check species/derivative availability",
+        );
         return;
       }
 
-      console.log(`[YIELD STANDARDS] 📊 Generated ${yieldData.length} yield standard records`);
+      console.log(
+        `[YIELD STANDARDS] 📊 Generated ${yieldData.length} yield standard records`,
+      );
 
       // Check if yield standards already exist
       const existingCount = await queryInterface.sequelize.query(
-        'SELECT COUNT(*) as count FROM yield_standard_master WHERE is_active = true',
-        { type: Sequelize.QueryTypes.SELECT }
+        "SELECT COUNT(*) as count FROM yield_standard_master WHERE is_active = true",
+        { type: Sequelize.QueryTypes.SELECT },
       );
 
       if (existingCount[0].count > 0) {
         console.log(
-          `[YIELD STANDARDS] ℹ️  Yield standards already exist (${existingCount[0].count} records). Skipping insertion to avoid duplicates.`
+          `[YIELD STANDARDS] ℹ️  Yield standards already exist (${existingCount[0].count} records). Skipping insertion to avoid duplicates.`,
         );
         return;
       }
@@ -111,7 +141,9 @@ module.exports = {
       // Insert yield standards
       await queryInterface.bulkInsert("yield_standard_master", yieldData, {});
 
-      console.log(`[YIELD STANDARDS] ✅ Successfully populated ${yieldData.length} yield standards`);
+      console.log(
+        `[YIELD STANDARDS] ✅ Successfully populated ${yieldData.length} yield standards`,
+      );
 
       // Log summary
       const summary = await queryInterface.sequelize.query(
@@ -122,17 +154,20 @@ module.exports = {
          FROM yield_standard_master 
          WHERE is_active = true
          GROUP BY processing_type`,
-        { type: Sequelize.QueryTypes.SELECT }
+        { type: Sequelize.QueryTypes.SELECT },
       );
 
       console.log("[YIELD STANDARDS] 📈 Population Summary:");
       for (const row of summary) {
         console.log(
-          `  • ${row.processing_type}: ${row.count} records (avg yield: ${parseFloat(row.avg_yield).toFixed(2)}%)`
+          `  • ${row.processing_type}: ${row.count} records (avg yield: ${parseFloat(row.avg_yield).toFixed(2)}%)`,
         );
       }
     } catch (error) {
-      console.error("[YIELD STANDARDS] 💥 Error populating yield standards:", error.message);
+      console.error(
+        "[YIELD STANDARDS] 💥 Error populating yield standards:",
+        error.message,
+      );
       throw error;
     }
   },
@@ -142,11 +177,14 @@ module.exports = {
     try {
       // Delete all yield standards (or only recently added ones to be safe)
       await queryInterface.sequelize.query(
-        'DELETE FROM yield_standard_master WHERE created_at >= NOW() - INTERVAL 1 DAY'
+        "DELETE FROM yield_standard_master WHERE created_at >= NOW() - INTERVAL 1 DAY",
       );
       console.log("[YIELD STANDARDS] ✅ Yield standards removed");
     } catch (error) {
-      console.error("[YIELD STANDARDS] Error removing yield standards:", error.message);
+      console.error(
+        "[YIELD STANDARDS] Error removing yield standards:",
+        error.message,
+      );
     }
   },
 };
