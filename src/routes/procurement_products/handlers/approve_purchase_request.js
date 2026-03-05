@@ -197,6 +197,24 @@ export const ApprovePurchaseRequest = async (
         );
       }
 
+      // Trigger a full reconciliation after approval so that any other
+      // inventory views/totals remain consistent.  This is lightweight and
+      // intentionally asynchronous here; if it fails we don't want to prevent
+      // the approval response from going back to the client.
+      try {
+        const InventoryReconciliationService = require("../../../services/InventoryReconciliationService.js");
+        new InventoryReconciliationService()
+          .reconcileAllInventory()
+          .catch((err) => {
+            fastify.log.error(
+              "Inventory reconciliation after approval failed:",
+              err,
+            );
+          });
+      } catch (e) {
+        fastify.log.error("Could not load reconciliation service:", e);
+      }
+
       // ALLOCATION: If this procurement is for an order, allocate the purchased inventory
       let allocationResult = null;
       if (procurementProduct.order_id) {
