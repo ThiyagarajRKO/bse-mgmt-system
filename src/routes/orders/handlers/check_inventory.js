@@ -498,8 +498,10 @@ const CheckInventory = async (
       }
 
       // Calculate available stock from purchase_inventory
+      // We need BOTH total quantity and available stock
       const inventoryQuery = `
-        SELECT COALESCE(SUM(pi.available_stock), 0) as available_qty
+        SELECT COALESCE(SUM(pi.quantity), 0) as total_qty,
+               COALESCE(SUM(pi.available_stock), 0) as available_qty
         FROM purchase_inventory pi
         WHERE pi.product_master_id = :product_id
         AND pi.is_active = true
@@ -510,6 +512,7 @@ const CheckInventory = async (
         type: models.sequelize.QueryTypes.SELECT,
       });
 
+      const totalRawMaterialStockKg = inventoryResult?.total_qty || 0;
       const rawMaterialStockKg = inventoryResult?.available_qty || 0;
 
       // Get yield data from product mapping
@@ -582,12 +585,14 @@ const CheckInventory = async (
           unit_of_measure: unitOfMeasure,
           breakdown: {
             raw_material_stock: Math.round(rawMaterialStockKg),
+            total_raw_material_stock: Math.round(totalRawMaterialStockKg),
             effective_finished_goods: Math.round(effectiveFinishedGoodsQty),
             yield_percent: yieldData.base_yield_percent,
           },
           raw_material_details: {
             product_name: rawMaterialProduct.product_name,
-            raw_material_quantity: Math.round(rawMaterialStockKg),
+            raw_material_quantity: Math.round(totalRawMaterialStockKg),
+            available_raw_material_quantity: Math.round(rawMaterialStockKg),
             yield_percent: yieldData.base_yield_percent,
             effective_yield_used: true,
           },

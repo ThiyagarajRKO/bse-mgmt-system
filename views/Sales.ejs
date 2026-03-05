@@ -3961,15 +3961,15 @@
                           purchaseInventory = 0; // Raw materials
                           salesInventory = tempPurchase; // Finished goods
                         } else if (inventoryType === "raw_materials") {
-                          // For raw materials: available_quantity is now yield-adjusted effective finished goods
+                          // For raw materials: available_quantity is yield-adjusted effective finished goods
                           netInventory = purchaseInventory; // This is now the effective finished goods quantity
-                          // Keep raw material quantity for display
-                          const rawMaterialQty =
+                          // Display the TOTAL raw material quantity (not available after reservations)
+                          const totalRawMaterialQty =
                             invResponse?.data?.raw_material_details
                               ?.raw_material_quantity || purchaseInventory;
                           salesInventory = 0; // No finished goods for raw materials
-                          // Update purchaseInventory to show actual raw material stock
-                          purchaseInventory = rawMaterialQty;
+                          // Update purchaseInventory to show total raw material stock (not reserved)
+                          purchaseInventory = totalRawMaterialQty;
                         } else {
                           // Fallback
                           netInventory = Math.max(
