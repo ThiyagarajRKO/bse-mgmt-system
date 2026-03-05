@@ -1,5 +1,10 @@
 import { Op } from "sequelize";
 import models, { sequelize } from "../../models";
+// inventory checking helper used when deducing allocation status
+// InventoryCheckService lives in the top‑level `services` directory (not src/services)
+// add explicit .js extension for Node module resolution
+// require instead of import for a CommonJS service module
+const InventoryCheckService = require("../../services/InventoryCheckService.js");
 
 // UUID regex pattern for validation
 const UUID_PATTERN =
@@ -1234,6 +1239,55 @@ export const GetAllocationData = ({ start, length, search }) => {
           // If there are pending purchase allocations, override the status
           if (hasPendingPurchase && allocation_status === "ALLOCATED") {
             allocation_status = "PENDING_PURCHASE";
+          }
+
+          // Regardless of the current computed status (which may have been
+          // set to "PENDING_PURCHASE" due to a purchase request), if the
+          // inventory check shows every product is available we want to
+          // treat the order as allocated.  This prevents orders with a
+          // leftover procured‑item flag from remaining stuck in
+          // Pending/Purchase state when stock is already on hand.
+          if (
+            (allocation_status === "PENDING" ||
+              allocation_status === "PENDING_PURCHASE") &&
+            orderProducts.length > 0
+          ) {
+            let allAvailable = true;
+            for (const prod of orderProducts) {
+              try {
+                const inv =
+                  await InventoryCheckService.checkInventoryForOrderProduct(
+                    prod.id,
+                    prod.product_master_id,
+                    prod.quantity,
+                  );
+                console.log(
+                  `[ALLOCATION CHECK] productId=${prod.product_master_id}, qty=${prod.quantity} ->`,
+                  inv,
+                );
+                if (inv.allocationStatus !== "ALLOCATED") {
+                  console.warn(
+                    `[ALLOCATION CHECK] product ${prod.product_master_id} not available: allocationStatus=${inv.allocationStatus}, details=${inv.details || ""}`,
+                  );
+                  allAvailable = false;
+                  break;
+                }
+              } catch (e) {
+                console.log(
+                  `[ALLOCATION CHECK ERROR] productId=${prod.product_master_id}:`,
+                  e,
+                );
+                allAvailable = false;
+                break;
+              }
+            }
+            if (allAvailable) {
+              allocation_status = "ALLOCATED";
+              // log to console for debugging
+              console.info(
+                `[ALLOCATION STATUS] Order ${orderJson.order_no} auto-marked ALLOCATED based on inventory`,
+              );
+            }
           }
 
           return {

@@ -184,7 +184,33 @@ export default async (fastify) => {
             fastify,
           );
 
-          availableQuantity = inventoryCheck?.data?.available_quantity || 0;
+          // the API returns the quantity based on total raw stock; for
+          // decision-making we need the effective amount from *available*
+          // (unreserved) stock, which is provided in the breakdown.  keep
+          // both values so we can log and message appropriately.
+          // Determine various inventory measures returned by the API
+          const effectiveFromAvailable =
+            inventoryCheck?.data?.breakdown?.effective_from_available || 0;
+          const rawMaterialQty =
+            inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
+
+          // reportedAvailable is what we show in user-facing messages; it's
+          // still the yield-adjusted value based on total stock (was required
+          // by earlier UI changes).
+          const reportedAvailable =
+            inventoryCheck?.data?.available_quantity || effectiveFromAvailable;
+          availableQuantity = reportedAvailable;
+
+          // For allocation decisions we want to treat either the yield-from-
+          // available quantity *or* the raw material physical quantity as
+          // satisfying demand.  This makes sure an order is marked allocated
+          // as long as there is raw material in the warehouse, regardless of
+          // the yield calculation.
+          const effectiveForAllocation = Math.max(
+            effectiveFromAvailable,
+            rawMaterialQty,
+          );
+          inventoryCheck.effective_available_quantity = effectiveForAllocation;
           inventoryType = inventoryCheck?.data?.inventory_type;
           rawMaterialStock =
             inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
@@ -222,13 +248,11 @@ export default async (fastify) => {
             }
           }
 
-          // Verify that the effective yield allows for the required quantity
-          if (allocation_qty > availableQuantity) {
-            return reply.code(400).send({
-              statusCode: 400,
-              message: `Insufficient effective inventory after yield calculation. Requested: ${allocation_qty}, Effective available: ${availableQuantity}`,
-            });
-          }
+          // We no longer reject early when the requested quantity exceeds the
+          // currently computed effective availability.  instead we allow the
+          // allocation record to be created with the appropriate
+          // PENDING_PURCHASE status.  this keeps the UI responsive and lets
+          // the user manually override or review shortages if necessary.
         } catch (inventoryError) {
           fastify.log.error("Inventory check failed:", inventoryError);
           return reply.code(500).send({
@@ -242,7 +266,7 @@ export default async (fastify) => {
         let allocationRemarks = "";
 
         console.log(
-          `🎯 Allocation Debug - Product: ${orderProduct.product_master_id}, Requested: ${allocation_qty}, Available: ${availableQuantity}, FG: ${finishedGoodsAvailable}, Raw: ${rawMaterialStock}`,
+          `🎯 Allocation Debug - Product: ${orderProduct.product_master_id}, Requested: ${allocation_qty}, Reported available: ${availableQuantity}, Effective available: ${inventoryCheck.effective_available_quantity}, FG: ${finishedGoodsAvailable}, Raw: ${rawMaterialStock}`,
         );
 
         if (finishedGoodsAvailable >= allocation_qty) {
@@ -252,7 +276,9 @@ export default async (fastify) => {
           console.log(
             `✅ Setting status to ALLOCATED - finished goods available`,
           );
-        } else if (availableQuantity >= allocation_qty) {
+        } else if (
+          inventoryCheck.effective_available_quantity >= allocation_qty
+        ) {
           // Can produce required quantity from raw materials (yield-adjusted)
           allocationStatus = "ALLOCATED";
           allocationRemarks = `Raw materials sufficient for production (${rawMaterialStock}kg raw material, yields ${availableQuantity}kg finished product). Ready for production.`;
@@ -262,7 +288,7 @@ export default async (fastify) => {
         } else {
           // Insufficient inventory - needs purchase
           allocationStatus = "PENDING_PURCHASE";
-          allocationRemarks = `Insufficient raw materials (${rawMaterialStock}kg available, ${allocation_qty - availableQuantity}kg shortage). Purchase request ${purchaseRequestCreated ? "created" : "already exists"}.`;
+          allocationRemarks = `Insufficient raw materials (${rawMaterialStock}kg available, ${allocation_qty - inventoryCheck.effective_available_quantity}kg shortage). Purchase request ${purchaseRequestCreated ? "created" : "already exists"}.`;
           console.log(
             `⚠️ Setting status to PENDING_PURCHASE - insufficient inventory`,
           );

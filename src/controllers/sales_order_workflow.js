@@ -371,8 +371,13 @@ export const AllocateInventory = async (profile_id, allocation_data) => {
           inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
         const alreadyCreatedPurchaseRequest =
           inventoryCheck?.data?.purchase_request_created || false;
+        // the API now returns total-stock yield in available_quantity; the
+        // true available quantity (unreserved stock) is stored in the
+        // breakdown field.
         const effectiveAvailableQuantity =
-          inventoryCheck?.data?.available_quantity || 0;
+          inventoryCheck?.data?.breakdown?.effective_from_available ||
+          inventoryCheck?.data?.available_quantity ||
+          0;
 
         // Determine allocation status based on inventory availability
         if (finishedGoodsAvailable >= allocated_quantity) {
