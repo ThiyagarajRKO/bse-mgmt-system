@@ -315,10 +315,16 @@ export const AllocateStock = async (
                 { transaction },
               );
 
-              // Update purchase inventory (reduce quantity - preparing for production)
+              // Update purchase inventory (reserve quantity for production)
+              // Reserve the allocated quantity, reducing available_stock
               await models.PurchaseInventory.update(
                 {
-                  quantity: parseFloat(inventory.quantity) - allocateQty,
+                  reserved_quantity:
+                    parseFloat(inventory.reserved_quantity || 0) + allocateQty,
+                  available_stock: Math.max(
+                    0,
+                    parseFloat(inventory.available_stock || 0) - allocateQty,
+                  ),
                   updated_at: new Date(),
                 },
                 {

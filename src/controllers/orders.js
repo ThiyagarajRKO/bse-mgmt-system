@@ -1183,6 +1183,8 @@ export const GetAllocationData = ({ start, length, search }) => {
                     ? "PENDING_PURCHASE"
                     : "ALLOCATED";
                 } else {
+                  // Some allocations are not confirmed yet
+                  allocation_status = "PARTIAL";
                   allocation_status = "PARTIAL";
                 }
               } else if (allocatedProductCount > 0) {
