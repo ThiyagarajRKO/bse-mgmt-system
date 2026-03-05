@@ -89,6 +89,44 @@ export const PublicRouters = (fastify, opts, done) => {
     // ignore if not present
   }
 
+  // Backwards-compatible aliases for legacy AJAX calls that still hit
+  // /api/products or /api/suppliers. These were causing 404s in the console
+  // when various procurement pages tried to load dropdowns. The real
+  // endpoints today live under /api/master/product and /api/master/supplier
+  // so we provide lightweight wrappers here to avoid noise.
+  fastify.get("/products", async (req, reply) => {
+    try {
+      // use models directly to avoid potential decoration timing issues
+      const models = require("../../models").default || require("../../models");
+      const products = await models.ProductMaster.findAll({
+        attributes: ["id", "product_name"],
+        where: { is_active: true },
+      });
+      return reply.send({ success: true, data: products });
+    } catch (err) {
+      fastify.log.error("Error in legacy /products route:", err);
+      return reply
+        .code(500)
+        .send({ success: false, message: "Unable to fetch products" });
+    }
+  });
+
+  fastify.get("/suppliers", async (req, reply) => {
+    try {
+      const models = require("../../models").default || require("../../models");
+      const suppliers = await models.SupplierMaster.findAll({
+        attributes: ["id", "supplier_name"],
+        where: { is_active: true },
+      });
+      return reply.send({ success: true, data: suppliers });
+    } catch (err) {
+      fastify.log.error("Error in legacy /suppliers route:", err);
+      return reply
+        .code(500)
+        .send({ success: false, message: "Unable to fetch suppliers" });
+    }
+  });
+
   // DROPDOWN ENDPOINTS MOVED TO src/index.js - registered at top level for proper route matching priority
 
   done();

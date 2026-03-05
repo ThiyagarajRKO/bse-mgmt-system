@@ -18,12 +18,12 @@ import {
 } from "./handlers/calculate_requirements";
 import { RawMaterialCalculator } from "../../services/raw_material_calculator";
 
-// Chart Handler - Temporarily disabled due to file read issues
-// import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
-// import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
-// import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
-// import { GetProcurementPerformanceBySuppliers } from "./handlers/charts/chart_procurement_performance_by_supplier";
-// import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement_age_by_product";
+// Chart Handler - restore after earlier temporary disable
+import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
+import { GetProcurementSpendByProducts } from "./handlers/charts/chart_procurement_spend_by_products";
+import { GetProcurementSpendByDate } from "./handlers/charts/chart_procurement_spend_by_date";
+import { GetProcurementPerformanceBySuppliers } from "./handlers/charts/chart_procurement_performance_by_supplier";
+import { GetProcurementAgeByProducts } from "./handlers/charts/chart_procurement_age_by_product";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -42,12 +42,12 @@ import {
   multiCategoryRecommendationsSchema,
 } from "./schema/calculate_requirements";
 
-// Chart Schema - Temporarily disabled due to file read issues
-// import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
-// import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
-// import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
-// import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
-// import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
+// Chart Schema
+import { getProcurementSpendBySuppliersSchema } from "./schema/charts/chart_procurement_spend_by_suppliers";
+import { getProcurementSpendByProductsSchema } from "./schema/charts/chart_procurement_spend_by_products";
+import { getProcurementSpendByDateSchema } from "./schema/charts/chart_procurement_spend_by_date";
+import { getProcurementPerformanceBySuppliersSchema } from "./schema/charts/chart_procurement_performance_by_supplier";
+import { getProcurementAgeByProductsSchema } from "./schema/charts/chart_procurement_age_by_products";
 
 export const procurementProductsRoute = (fastify, opts, done) => {
   fastify.post("/", createSchema, async (req, reply) => {
@@ -260,6 +260,134 @@ export const procurementProductsRoute = (fastify, opts, done) => {
     },
   );
   // ================ END PURCHASE REQUESTS ROUTES ================
+
+  // ===================== CHART ROUTES =====================
+  // these were previously disabled; frontend still references them so re-enable
+  fastify.get(
+    "/chart/spend/by/supplier",
+    getProcurementSpendBySuppliersSchema,
+    async (req, reply) => {
+      try {
+        const params = req.query;
+        const result = await GetProcurementSpendBySuppliers(
+          params,
+          req?.session,
+          fastify,
+        );
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.get(
+    "/chart/spend/by/products",
+    getProcurementSpendByProductsSchema,
+    async (req, reply) => {
+      try {
+        const params = req.query;
+        const result = await GetProcurementSpendByProducts(
+          params,
+          req?.session,
+          fastify,
+        );
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.get(
+    "/chart/spend/by/date",
+    getProcurementSpendByDateSchema,
+    async (req, reply) => {
+      try {
+        const params = req.query;
+        const result = await GetProcurementSpendByDate(
+          params,
+          req?.session,
+          fastify,
+        );
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.get(
+    "/chart/performance/by/supplier",
+    getProcurementPerformanceBySuppliersSchema,
+    async (req, reply) => {
+      try {
+        const params = req.query;
+        const result = await GetProcurementPerformanceBySuppliers(
+          params,
+          req?.session,
+          fastify,
+        );
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  fastify.get(
+    "/chart/age/by/product",
+    getProcurementAgeByProductsSchema,
+    async (req, reply) => {
+      try {
+        const params = req.query;
+        const result = await GetProcurementAgeByProducts(
+          params,
+          req?.session,
+          fastify,
+        );
+        return reply.code(result.statusCode || 200).send({
+          success: true,
+          message: result.message,
+          data: result?.data,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+  // ===================== END CHART ROUTES =====================
 
   fastify.get("/:procurement_product_id", getSchema, async (req, reply) => {
     try {
