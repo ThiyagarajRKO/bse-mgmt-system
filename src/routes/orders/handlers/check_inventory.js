@@ -167,6 +167,7 @@ const CheckInventory = async (
             has_stock: false,
             inventory_type: "none",
             unit_of_measure: "kg", // Default unit
+            effective_available_quantity: 0,
           },
         });
       }
@@ -365,6 +366,7 @@ const CheckInventory = async (
             available_quantity: 0,
             has_stock: false,
             inventory_type: "none",
+            effective_available_quantity: 0,
           },
         });
       }
@@ -493,6 +495,7 @@ const CheckInventory = async (
             available_quantity: 0,
             has_stock: false,
             inventory_type: "none",
+            effective_available_quantity: 0,
           },
         });
       }
@@ -546,9 +549,13 @@ const CheckInventory = async (
       // Check if purchase request is needed
       // previously we returned the yield‑adjusted quantity based on the
       // available (unreserved) stock; change to use the total raw stock
-      // per the user's request.
-      const finalAvailableQuantity = Math.round(
-        // compute from the total stock using the same yield function
+      // per the user's request.  In addition, the value returned as
+      // `available_quantity` to callers should now reflect this total‑stock
+      // yield.  The old value (based on available_stock) is still preserved
+      // in the breakdown under `effective_from_available` so callers can
+      // inspect the reservation impact if necessary.
+      const yieldFromAvailable = Math.round(effectiveFinishedGoodsQty);
+      const yieldFromTotal = Math.round(
         await YieldBasedInventoryCalculator.calculateEffectiveInventory(
           product.id,
           totalRawMaterialStockKg,
@@ -585,21 +592,25 @@ const CheckInventory = async (
       resolve({
         statusCode: 200,
         message:
-          effectiveFinishedGoodsQty > 0
-            ? "Raw materials inventory available (yield-adjusted)"
+          yieldFromTotal > 0
+            ? "Raw materials inventory available (yield-adjusted from total stock)"
             : "No raw materials available",
         data: {
           product_master_id,
-          available_quantity: Math.round(effectiveFinishedGoodsQty),
-          has_stock: effectiveFinishedGoodsQty > 0,
-          inventory_type:
-            effectiveFinishedGoodsQty > 0 ? "raw_materials" : "none",
+          // use the yield calculated from *total* raw stock so the caller
+          // sees a value even if some inventory has been reserved
+          available_quantity: yieldFromTotal,
+          // convenience field for callers who need the unreserved/yield
+          // quantity without digging into the breakdown
+          effective_available_quantity: yieldFromAvailable,
+          has_stock: yieldFromTotal > 0,
+          inventory_type: yieldFromTotal > 0 ? "raw_materials" : "none",
           unit_of_measure: unitOfMeasure,
           breakdown: {
             raw_material_stock: Math.round(rawMaterialStockKg),
             total_raw_material_stock: Math.round(totalRawMaterialStockKg),
-            effective_finished_goods: Math.round(finalAvailableQuantity),
-            effective_from_available: Math.round(effectiveFinishedGoodsQty),
+            effective_finished_goods: yieldFromTotal,
+            effective_from_available: yieldFromAvailable,
             yield_percent: yieldData.base_yield_percent,
           },
           raw_material_details: {
@@ -611,8 +622,8 @@ const CheckInventory = async (
           },
           purchase_request_created: purchaseRequestCreated,
           shortage_amount:
-            required_quantity && finalAvailableQuantity < required_quantity
-              ? Math.round(required_quantity - finalAvailableQuantity)
+            required_quantity && yieldFromTotal < required_quantity
+              ? Math.round(required_quantity - yieldFromTotal)
               : 0,
         },
       });

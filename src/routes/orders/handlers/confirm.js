@@ -1,7 +1,7 @@
 const { Orders } = require("../../../controllers");
 const models = require("../../../../models");
 const AutoAllocateStock = require("./auto_allocate_stock");
-const InventoryCheckService = require("../../../../services/InventoryCheckService");
+const InventoryCheckService = require("../../../../services/InventoryCheckService.js");
 const PurchaseRequestService = require("../../../../services/PurchaseRequestService");
 
 export const Confirm = async ({ profile_id, order_id }, session, fastify) => {

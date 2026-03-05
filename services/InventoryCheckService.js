@@ -339,7 +339,10 @@ class InventoryCheckService {
 
         // keep track of the scarcest physical capacity as well, so callers can
         // show a yield-unadjusted availability if desired
-        totalAvailablePhysical = Math.min(totalAvailablePhysical, physicalFinishedGoods);
+        totalAvailablePhysical = Math.min(
+          totalAvailablePhysical,
+          physicalFinishedGoods,
+        );
       }
 
       console.log(
