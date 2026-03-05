@@ -497,8 +497,11 @@ const CheckInventory = async (
         });
       }
 
-      // Calculate available stock from purchase_inventory
-      // We need BOTH total quantity and available stock
+      // Calculate stock from purchase_inventory
+      // We return both the total quantity (all lots) and the currently
+      // available quantity (after reservations).  However, the UI that
+      // displays "available stock" should use the total‑stock figure
+      // adjusted by yield, as per the new requirement.
       const inventoryQuery = `
         SELECT COALESCE(SUM(pi.quantity), 0) as total_qty,
                COALESCE(SUM(pi.available_stock), 0) as available_qty
@@ -541,7 +544,16 @@ const CheckInventory = async (
       unitOfMeasure = cleanUOM(unitOfMeasure);
 
       // Check if purchase request is needed
-      const finalAvailableQuantity = effectiveFinishedGoodsQty;
+      // previously we returned the yield‑adjusted quantity based on the
+      // available (unreserved) stock; change to use the total raw stock
+      // per the user's request.
+      const finalAvailableQuantity = Math.round(
+        // compute from the total stock using the same yield function
+        await YieldBasedInventoryCalculator.calculateEffectiveInventory(
+          product.id,
+          totalRawMaterialStockKg,
+        ),
+      );
       let purchaseRequestCreated = false;
 
       // Check if an approved purchase request already exists for this product/order
@@ -586,7 +598,8 @@ const CheckInventory = async (
           breakdown: {
             raw_material_stock: Math.round(rawMaterialStockKg),
             total_raw_material_stock: Math.round(totalRawMaterialStockKg),
-            effective_finished_goods: Math.round(effectiveFinishedGoodsQty),
+            effective_finished_goods: Math.round(finalAvailableQuantity),
+            effective_from_available: Math.round(effectiveFinishedGoodsQty),
             yield_percent: yieldData.base_yield_percent,
           },
           raw_material_details: {

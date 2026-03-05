@@ -3736,10 +3736,15 @@
                           const rawMaterialQty =
                             response?.data?.raw_material_details
                               ?.raw_material_quantity || 0;
+                          // calculate effective yield percent based on actual numbers
+                          const effectiveFinished =
+                            response?.data?.breakdown
+                              ?.effective_finished_goods || quantity;
                           const yieldPercent =
-                            response?.data?.raw_material_details
-                              ?.yield_percent || "0.00";
-                          stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${rawMaterialQty}kg raw @ ${yieldPercent}%)`;
+                            rawMaterialQty > 0
+                              ? ((effectiveFinished / rawMaterialQty) * 100).toFixed(2)
+                              : "0.00";
+                          stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${rawMaterialQty}kg raw @ ${yieldPercent}% effective yield)`;
                           shortStockText = `${quantity}${unitOfMeasure}`;
                         } else {
                           stockText = `${quantity} ${unitOfMeasure}`;
