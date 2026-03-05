@@ -213,28 +213,19 @@ export const AllocateStock = async (
             item.ProcurementProduct?.procurement_product_type === "UNPROCESSED",
         );
 
+        // by default consider entire purchase inventory availability
         let effectiveAvailableQuantity = availableInPurchase;
         let requiredRawMaterials = parsedQuantity;
 
         if (isRawMaterial) {
-          // For raw materials, calculate effective finished goods considering yield
-          const YieldBasedInventoryCalculator = require("../../../services/yield_based_inventory_calculator");
-          effectiveAvailableQuantity =
-            await YieldBasedInventoryCalculator.calculateEffectiveInventory(
-              product_id,
-              availableInPurchase,
-            );
-          // Calculate required raw materials for the requested finished goods quantity
-          requiredRawMaterials =
-            await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
-              product_id,
-              parsedQuantity,
-            );
+          // Treat raw material stock directly as usable units for allocation
+          // (do **not** convert via yield here - allocation is based on physical
+          // raw material quantity rather than yield-adjusted finished goods).
+          effectiveAvailableQuantity = availableInPurchase;
+          requiredRawMaterials = parsedQuantity;
+
           console.log(
-            `Raw material yield adjustment: ${availableInPurchase}${unitOfMeasure} raw → ${effectiveAvailableQuantity}${unitOfMeasure} effective finished goods`,
-          );
-          console.log(
-            `Required raw materials for ${parsedQuantity}${unitOfMeasure} finished goods: ${requiredRawMaterials}${unitOfMeasure} raw materials`,
+            `[AllocateStock] Raw material allocation logic - using physical stock: ${availableInPurchase}${unitOfMeasure} available, need ${parsedQuantity}${unitOfMeasure}`,
           );
         }
 
@@ -300,7 +291,8 @@ export const AllocateStock = async (
 
               const productionOrderNo = `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-              await models.ProductionOrder.create(
+              // `production_orders` is the actual model name registered in db/index
+              await models.production_orders.create(
                 {
                   order_no: productionOrderNo,
                   order_id: order_id,
@@ -437,7 +429,8 @@ export const AllocateStock = async (
             console.error("Error allocating from purchase inventory:", error);
             return reject({
               statusCode: 500,
-              message: "Error allocating stock from purchase inventory",
+              message: `Error allocating stock from purchase inventory: ${error.message}`,
+              debug: error.stack,
             });
           }
         } else {
