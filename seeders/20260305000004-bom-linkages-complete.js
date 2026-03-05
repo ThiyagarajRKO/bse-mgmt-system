@@ -24,11 +24,11 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     console.log("\n");
     console.log(
-      "═══════════════════════════════════════════════════════════════"
+      "═══════════════════════════════════════════════════════════════",
     );
     console.log("📦 BOM LINKAGES SEEDER - Raw Materials to Products");
     console.log(
-      "═══════════════════════════════════════════════════════════════\n"
+      "═══════════════════════════════════════════════════════════════\n",
     );
 
     try {
@@ -97,7 +97,9 @@ module.exports = {
         }
         procByProduct.get(proc.product_master_id).push(proc.id);
       }
-      console.log(`  ✅ Found ${procurementProducts.length} procurement products\n`);
+      console.log(
+        `  ✅ Found ${procurementProducts.length} procurement products\n`,
+      );
 
       // Step 5: Check for existing BOM entries to avoid duplicates
       console.log("Step 5️⃣  Checking for existing BOM entries...");
@@ -111,7 +113,7 @@ module.exports = {
 
       if (existingCount > 0) {
         console.log(
-          "  ℹ️  BOM entries already exist. Skipping to avoid duplicates.\n"
+          "  ℹ️  BOM entries already exist. Skipping to avoid duplicates.\n",
         );
         return;
       }
@@ -153,7 +155,7 @@ module.exports = {
         if (rawsForSpecies.length === 0 || finishedForSpecies.length === 0) {
           if (rawsForSpecies.length === 0) {
             console.log(
-              `  ⚠️  No raw materials for species: ${spec.species_name}`
+              `  ⚠️  No raw materials for species: ${spec.species_name}`,
             );
           }
           skippedCount += finishedForSpecies.length;
@@ -171,16 +173,28 @@ module.exports = {
             const rawNameLower = raw.product_name.toLowerCase();
 
             // Prefer exact matches
-            if (productNameLower.includes("breast") && rawNameLower.includes("breast")) {
+            if (
+              productNameLower.includes("breast") &&
+              rawNameLower.includes("breast")
+            ) {
               selectedRaw = raw;
               break;
-            } else if (productNameLower.includes("thigh") && rawNameLower.includes("thigh")) {
+            } else if (
+              productNameLower.includes("thigh") &&
+              rawNameLower.includes("thigh")
+            ) {
               selectedRaw = raw;
               break;
-            } else if (productNameLower.includes("wing") && rawNameLower.includes("wing")) {
+            } else if (
+              productNameLower.includes("wing") &&
+              rawNameLower.includes("wing")
+            ) {
               selectedRaw = raw;
               break;
-            } else if (productNameLower.includes("leg") && rawNameLower.includes("leg")) {
+            } else if (
+              productNameLower.includes("leg") &&
+              rawNameLower.includes("leg")
+            ) {
               selectedRaw = raw;
               break;
             }
@@ -192,10 +206,7 @@ module.exports = {
           // Adjust based on known yields and processing
           if (finished.product_category) {
             const category = finished.product_category.toLowerCase();
-            if (
-              category.includes("breast") ||
-              category.includes("fillet")
-            ) {
+            if (category.includes("breast") || category.includes("fillet")) {
               quantityRequired = 1.1; // Slightly more due to trimming
             } else if (category.includes("thigh") || category.includes("leg")) {
               quantityRequired = 1.15;
@@ -229,7 +240,9 @@ module.exports = {
       console.log(`  ✅ Created ${linkedCount} BOM linkages\n`);
 
       if (skippedCount > 0) {
-        console.log(`  ⚠️  Skipped ${skippedCount} products (no matching raw materials)\n`);
+        console.log(
+          `  ⚠️  Skipped ${skippedCount} products (no matching raw materials)\n`,
+        );
       }
 
       // Step 8: Bulk insert BOM entries
@@ -258,21 +271,23 @@ module.exports = {
       `);
 
       console.log("\n✅ BOM Seeding Complete!");
-      console.log("═══════════════════════════════════════════════════════════════");
+      console.log(
+        "═══════════════════════════════════════════════════════════════",
+      );
       console.log("📊 Results:");
       console.log(
-        `  • Total BOM Entries: ${verifyResult[0].total_bom_entries}`
+        `  • Total BOM Entries: ${verifyResult[0].total_bom_entries}`,
+      );
+      console.log(`  • Unique Products: ${verifyResult[0].unique_products}`);
+      console.log(
+        `  • Linked to Procurement: ${verifyResult[0].with_procurement_product}`,
       );
       console.log(
-        `  • Unique Products: ${verifyResult[0].unique_products}`
+        `  • Awaiting Procurement Link: ${verifyResult[0].without_procurement_product}`,
       );
       console.log(
-        `  • Linked to Procurement: ${verifyResult[0].with_procurement_product}`
+        "═══════════════════════════════════════════════════════════════\n",
       );
-      console.log(
-        `  • Awaiting Procurement Link: ${verifyResult[0].without_procurement_product}`
-      );
-      console.log("═══════════════════════════════════════════════════════════════\n");
     } catch (error) {
       console.error("❌ Error in BOM Linkages seeder:", error.message);
       throw error;
@@ -281,7 +296,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     console.log(
-      "🔄 Rolling back BOM linkages (deleting bill_of_materials entries)..."
+      "🔄 Rolling back BOM linkages (deleting bill_of_materials entries)...",
     );
     try {
       await queryInterface.sequelize.query(`
