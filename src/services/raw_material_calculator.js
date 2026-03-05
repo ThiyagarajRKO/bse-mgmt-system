@@ -1148,10 +1148,9 @@ export class RawMaterialCalculator {
             raw: true,
           });
 
+          // use total quantity (raw material stock) rather than only available_stock
           const totalStock = allInventoryRecords.reduce((sum, inv) => {
-            const availStock = inv.available_stock || 0;
-            const qty = availStock > 0 ? availStock : inv.quantity || 0;
-            return sum + qty;
+            return sum + (parseFloat(inv.quantity) || 0);
           }, 0);
 
           const currentStock = Math.ceil(totalStock);
@@ -1160,6 +1159,10 @@ export class RawMaterialCalculator {
           );
 
           // IMPORTANT: Include this item REGARDLESS of gap (gap can be 0)
+          // compute effective yield used to derive raw requirement
+          const effectiveYieldPct =
+            finishedQty > 0 ? (finishedQty / rawQtyRequired) * 100 : 0;
+
           rawMaterials.push({
             procurement_product_id: procProduct.id,
             procurement_product_type:
@@ -1169,6 +1172,9 @@ export class RawMaterialCalculator {
             bom_quantity_required: bomQuantity,
             // report the raw material quantity that needs to be purchased
             total_quantity_required: rawQtyRequired,
+            // also keep the finished goods requirement for reference
+            finished_quantity_required: finishedQty,
+            effective_yield_percent: +effectiveYieldPct.toFixed(2),
             current_stock: currentStock,
             inventory_gap: inventoryGap,
             recommended_order_quantity:
