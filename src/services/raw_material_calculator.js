@@ -947,23 +947,30 @@ export class RawMaterialCalculator {
           Math.max(0, requiredQuantity - currentStock),
         );
 
-        rawMaterials.push({
-          procurement_product_id: procurementProduct.id,
-          procurement_product_type:
-            procurementProduct.procurement_product_type || "UNPROCESSED",
-          product_master_id: productMaster.id,
-          product_name: productMaster.product_name,
-          bom_quantity_required: bomQuantity,
-          total_quantity_required: requiredQuantity,
-          current_stock: currentStock,
-          inventory_gap: inventoryGap,
-          recommended_order_quantity: Math.ceil(inventoryGap),
-          unit_of_measure: bomEntry.unit_of_measure || "KG",
-        });
+        // Only include items that need ordering (inventory gap > 0)
+        if (inventoryGap > 0) {
+          rawMaterials.push({
+            procurement_product_id: procurementProduct.id,
+            procurement_product_type:
+              procurementProduct.procurement_product_type || "UNPROCESSED",
+            product_master_id: productMaster.id,
+            product_name: productMaster.product_name,
+            bom_quantity_required: bomQuantity,
+            total_quantity_required: requiredQuantity,
+            current_stock: currentStock,
+            inventory_gap: inventoryGap,
+            recommended_order_quantity: Math.ceil(inventoryGap),
+            unit_of_measure: bomEntry.unit_of_measure || "KG",
+          });
 
-        console.log(
-          `[RAW MATERIALS] ✅ INCLUDED: "${productMaster.product_name}" (Gap: ${inventoryGap})`,
-        );
+          console.log(
+            `[RAW MATERIALS] ✅ INCLUDED: "${productMaster.product_name}" (Gap: ${inventoryGap})`,
+          );
+        } else {
+          console.log(
+            `[RAW MATERIALS] ✅ SUFFICIENT: "${productMaster.product_name}" (Stock: ${currentStock}, Required: ${requiredQuantity}, Gap: 0)`,
+          );
+        }
       }
 
       console.log(
