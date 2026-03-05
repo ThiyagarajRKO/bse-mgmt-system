@@ -237,12 +237,29 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
       });
 
       const reservedQty = currentRecord?.reserved_quantity || 0;
-      const availableQty = 0; // Keep at 0 until purchase is approved
+      // available_stock should only be positive when the purchase request is
+      // approved.  This mirrors the logic in ApprovePurchaseRequest handler and
+      // prevents raw materials from being exposed before approval.
+      // The hook is invoked on every update, but not every update includes the
+      // `status` field.  If `status` is omitted we must NOT assume it has been
+      // un-approved – instead fallback to the previous value stored on the
+      // instance so that unrelated edits (price change, supplier change, etc.)
+      // do not wipe out available_stock.  We also honour transitions away from
+      // Approved by resetting the stock.
+      let isApproved;
+      if (data.status !== undefined) {
+        isApproved = data.status === "Approved";
+      } else {
+        // `data._previousDataValues` is provided by Sequelize in hooks and
+        // contains the values prior to the update operation.
+        isApproved = data._previousDataValues?.status === "Approved";
+      }
+      const availableQty = isApproved ? currentQuantity : 0;
 
       await sequelize.models.PurchaseInventory.update(
         {
           quantity: currentQuantity,
-          available_stock: availableQty, // Keep at 0 until purchase is approved
+          available_stock: availableQty,
           updated_at: new Date(),
           updated_by: options?.profile_id,
         },
@@ -262,13 +279,14 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
       console.log(
         `[INVENTORY UPDATE] Creating new individual procurement product inventory for ${data?.id} with quantity ${currentQuantity}`,
       );
+      const availableQty = data?.status === "Approved" ? currentQuantity : 0;
       await sequelize.models.PurchaseInventory.create({
         id: uuidv4(),
         procurement_product_id: data?.id,
         product_master_id: data?.product_master_id,
         procurement_product_type: data?.procurement_product_type,
         quantity: currentQuantity,
-        available_stock: 0, // DO NOT make available until purchase is approved
+        available_stock: availableQty,
         reserved_quantity: 0, // No reservations initially
         is_active: true,
         created_by: options?.profile_id,

@@ -82,24 +82,37 @@ class SalesAllocationService {
       null, // fastify
     );
 
+    const reportedAvailable = inventoryCheck?.data?.available_quantity || 0;
+    const fromAvailable =
+      inventoryCheck?.data?.breakdown?.effective_from_available || 0;
+    const rawQuantity =
+      inventoryCheck?.data?.breakdown?.raw_material_stock || 0;
+    const effectiveAvailable = Math.max(
+      reportedAvailable,
+      fromAvailable,
+      rawQuantity,
+    );
     console.log(`📊 Inventory check result:`, {
-      available_quantity: inventoryCheck?.data?.available_quantity,
+      reportedAvailable,
+      fromAvailable,
+      rawQuantity,
+      effectiveAvailable,
       inventory_type: inventoryCheck?.data?.inventory_type,
       shortage_amount: inventoryCheck?.data?.shortage_amount,
       required_quantity: allocated_quantity,
     });
 
-    // Determine allocation status based on inventory check
-    // If available_quantity >= required_quantity, it's ALLOCATED
-    // If there's a shortage, it's PENDING_PURCHASE (needs to buy more)
-    let allocationStatus = "PENDING"; // Default
-    const availableQty = inventoryCheck?.data?.available_quantity || 0;
+    // Determine allocation status based on the most generous measure of
+    // availability: either the yield-adjusted figure, the unreserved
+    // quantity, or the raw material physical quantity.  This ensures that
+    // having the raw material in inventory is sufficient.
+    let allocationStatus = "PENDING";
     const shortageAmount = inventoryCheck?.data?.shortage_amount || 0;
 
-    if (availableQty >= allocated_quantity && shortageAmount === 0) {
+    if (effectiveAvailable >= allocated_quantity && shortageAmount === 0) {
       allocationStatus = "ALLOCATED";
       console.log(
-        `✅ Setting allocation status to ALLOCATED - sufficient inventory (${availableQty}kg available)`,
+        `✅ Setting allocation status to ALLOCATED - sufficient inventory (${effectiveAvailable}kg available)`,
       );
     } else if (shortageAmount > 0) {
       allocationStatus = "PENDING_PURCHASE";
@@ -158,14 +171,20 @@ class SalesAllocationService {
 
     console.log(`📊 Inventory check result for confirmation:`, {
       available_quantity: inventoryCheck.available_quantity,
-      effective_available_quantity: inventoryCheck.effective_available_quantity,
+      effective_available_quantity:
+        inventoryCheck?.data?.breakdown?.effective_from_available ||
+        inventoryCheck.available_quantity,
       required_quantity: allocation.allocated_quantity,
       allocationStatus: inventoryCheck.allocationStatus,
     });
 
+    const effectiveAvailQty =
+      inventoryCheck?.data?.breakdown?.effective_from_available ||
+      inventoryCheck.available_quantity ||
+      0;
     if (inventoryCheck.allocationStatus !== "ALLOCATED") {
       throw new Error(
-        `Cannot confirm allocation: insufficient inventory. Required: ${allocation.allocated_quantity}, Effective available: ${inventoryCheck.effective_available_quantity}`,
+        `Cannot confirm allocation: insufficient inventory. Required: ${allocation.allocated_quantity}, Effective available: ${effectiveAvailQty}`,
       );
     }
 
@@ -467,7 +486,7 @@ class SalesAllocationService {
     }
 
     // Reduce sales inventory
-    const InventoryCheckService = require("./InventoryCheckService");
+    const InventoryCheckService = require("./InventoryCheckService.js");
     await InventoryCheckService.reduceSalesInventory(
       productMasterId,
       dispatchQuantity,

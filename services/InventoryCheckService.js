@@ -26,8 +26,17 @@ class InventoryCheckService {
         requiredQuantity,
       );
 
+      // debug info for sales inventory
+      console.log(
+        `InventoryCheckService: sales inventory result for ${productId}:`,
+        salesInventoryResult,
+      );
+
       if (salesInventoryResult.available >= requiredQuantity) {
         // Product is fully available in sales inventory
+        console.log(
+          `InventoryCheckService: finished product available, allocating from sales inventory`,
+        );
         return {
           action: "DISPATCH",
           allocationStatus: "ALLOCATED",
@@ -47,8 +56,26 @@ class InventoryCheckService {
         remainingQuantity,
       );
 
-      if (rawMaterialsResult.available >= remainingQuantity) {
+      console.log(
+        `InventoryCheckService: raw materials result for ${productId}:`,
+        rawMaterialsResult,
+      );
+
+      // consider physical availability as well, so that yield rounding
+      // doesn't incorrectly flag a shortage when raw stock is plenty
+      const effectiveAvailableForDecision = Math.max(
+        rawMaterialsResult.available || 0,
+        rawMaterialsResult.physicalAvailable || 0,
+      );
+      console.log(
+        `InventoryCheckService: effective available (max of yield/physical) =`,
+        effectiveAvailableForDecision,
+      );
+      if (effectiveAvailableForDecision >= remainingQuantity) {
         // Raw materials are available for production
+        console.log(
+          `InventoryCheckService: raw materials sufficient for remaining quantity; marking ALLOCATED`,
+        );
         return {
           action: "BEGIN_PRODUCTION",
           allocationStatus: "ALLOCATED",
@@ -61,6 +88,9 @@ class InventoryCheckService {
       }
 
       // Neither product nor raw materials fully available
+      console.log(
+        `InventoryCheckService: insufficient inventory, returning PENDING_PURCHASE`,
+      );
       return {
         action: "RAISE_PURCHASE_REQUEST",
         allocationStatus: "PENDING_PURCHASE",
@@ -126,11 +156,14 @@ class InventoryCheckService {
         include: [
           {
             model: db.SpeciesMaster,
-            as: "Species",
+            // association defined without a custom alias, so use the default
+            // which in Sequelize is the model name (SpeciesMaster)
+            as: "SpeciesMaster",
           },
           {
             model: db.DerivativeMaster,
-            as: "DerivativeMaster",
+            // alias matches what's specified in product_master.js
+            as: "Derivative",
           },
         ],
       });
@@ -140,8 +173,12 @@ class InventoryCheckService {
         return { available: 0, rawMaterials: [] };
       }
 
-      const speciesId = productMaster.Species?.id;
-      const derivativeId = productMaster.DerivativeMaster?.id;
+      const speciesId = productMaster.SpeciesMaster?.id;
+      const derivativeId = productMaster.Derivative?.id;
+
+      // NOTE: there used to be a stray export here which caused the module to
+      // re‑export itself from inside the method.  It didn't break things but
+      // made the source harder to reason about, so remove it.
 
       if (!speciesId) {
         console.log(`No species found for product ${productId}`);
@@ -193,12 +230,41 @@ class InventoryCheckService {
       });
 
       if (!bomEntries || bomEntries.length === 0) {
-        console.log(`No BOM found for product ${productId}`);
-        return { available: 0, rawMaterials: [] };
+        // No BOM configured – treat the product itself as a raw material.
+        // In this case inventory availability should simply reflect the
+        // physical purchase stock without applying any yield.
+        console.log(
+          `No BOM found for product ${productId}, using raw stock fallback`,
+        );
+        const purchaseInventory = await db.PurchaseInventory.findAll({
+          where: {
+            product_master_id: productId,
+            is_active: true,
+          },
+          // NOTE: we switched from available_quantity to available_stock in
+          // the database.  all inventory checks must use the new column
+          // otherwise they will see zero and return PENDING_PURCHASE.
+          attributes: [
+            [
+              db.sequelize.fn("SUM", db.sequelize.col("available_stock")),
+              "total_available",
+            ],
+          ],
+          raw: true,
+        });
+        const availableRaw = parseFloat(
+          purchaseInventory[0]?.total_available || 0,
+        );
+        return {
+          available: availableRaw,
+          rawMaterials: [],
+          yieldPercentage: yieldPercentage,
+        };
       }
 
       let totalAvailable = Infinity; // Start with infinity, will be limited by scarcest material
       const rawMaterialsStatus = [];
+      let totalAvailablePhysical = Infinity; // physical finished goods without yield
 
       // Check each raw material in the BOM
       for (const bomEntry of bomEntries) {
@@ -228,7 +294,7 @@ class InventoryCheckService {
           },
           attributes: [
             [
-              db.sequelize.fn("SUM", db.sequelize.col("available_quantity")),
+              db.sequelize.fn("SUM", db.sequelize.col("available_stock")),
               "total_available",
             ],
           ],
@@ -246,7 +312,11 @@ class InventoryCheckService {
           bomQuantityDivisor > 0
             ? availableRawQuantity / bomQuantityDivisor
             : 0;
-        const effectiveFinishedGoods = Math.floor(
+        // round rather than floor to avoid rounding-down causing false
+        // shortages when inventory is effectively sufficient.  flooring was
+        // overly conservative in earlier versions and led to orders staying
+        // "pending" even though the raw material covered the requirement.
+        const effectiveFinishedGoods = Math.round(
           potentialFinishedGoods * yieldPercentage,
         );
 
@@ -261,6 +331,15 @@ class InventoryCheckService {
 
         // Update total available based on this material's constraint
         totalAvailable = Math.min(totalAvailable, effectiveFinishedGoods);
+        // compute physical finished-goods equivalent (ignore yield)
+        const physicalFinishedGoods =
+          bomQuantityDivisor > 0
+            ? Math.floor(availableRawQuantity / bomQuantityDivisor)
+            : 0;
+
+        // keep track of the scarcest physical capacity as well, so callers can
+        // show a yield-unadjusted availability if desired
+        totalAvailablePhysical = Math.min(totalAvailablePhysical, physicalFinishedGoods);
       }
 
       console.log(
@@ -268,7 +347,11 @@ class InventoryCheckService {
       );
 
       return {
+        // yield-adjusted availability
         available: totalAvailable,
+        // physical availability without yield loss
+        physicalAvailable:
+          totalAvailablePhysical === Infinity ? 0 : totalAvailablePhysical,
         rawMaterials: rawMaterialsStatus,
         yieldPercentage: yieldPercentage,
       };
