@@ -1093,23 +1093,52 @@ export class RawMaterialCalculator {
           // first compute finished goods requirement based on BOM quantity
           const finishedQty = Math.ceil(quantityRequired * bomQuantity);
 
-          // determine raw material requirement using yield standards
-          let rawQtyRequired = finishedQty;
+          // determine raw material requirement using *effective* yield
+          // base calculator returns finished goods from raw; we need the inverse.
+          const YieldBasedInventoryCalculator = require("./yield_based_inventory_calculator");
+          let rawQtyRequired = finishedQty; // fallback
           try {
-            const YieldBasedInventoryCalculator = require("./yield_based_inventory_calculator");
-            rawQtyRequired = Math.ceil(
+            // start estimate using base yield
+            const baseRequirement = Math.ceil(
               await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
                 productId,
                 finishedQty,
               ),
             );
+            // now adjust using effective yield by iterating near estimate
+            let candidate = baseRequirement;
+            let effective =
+              await YieldBasedInventoryCalculator.calculateEffectiveInventory(
+                productId,
+                candidate,
+              );
+            // if effective is too low, increment until we reach finishedQty
+            const maxIter = 20;
+            let iter = 0;
+            while (effective < finishedQty && iter < maxIter) {
+              candidate += Math.ceil((finishedQty - effective) / 0.5); // coarse step
+              effective =
+                await YieldBasedInventoryCalculator.calculateEffectiveInventory(
+                  productId,
+                  candidate,
+                );
+              iter++;
+            }
+            rawQtyRequired = candidate;
           } catch (err) {
-            // if yield calculator fails for any reason, fall back to finished quantity
             console.warn(
-              "[RAW MATERIALS WITH STATUS] Yield calc failed, using finished qty as raw requirement:",
+              "[RAW MATERIALS WITH STATUS] Effective yield calc failed, using base requirement:",
               err.message,
             );
-            rawQtyRequired = finishedQty;
+            // fall back to base requirement calculation
+            try {
+              rawQtyRequired = Math.ceil(
+                await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
+                  productId,
+                  finishedQty,
+                ),
+              );
+            } catch {}
           }
 
           // Get ALL inventory records (don't filter by gap)
