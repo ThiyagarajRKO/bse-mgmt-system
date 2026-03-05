@@ -357,6 +357,70 @@ export const AllocateStock = async (
               },
             );
 
+            // Create or update SalesAllocation to mark as ALLOCATED
+            const orderProduct = await models.OrderProducts.findOne({
+              where: {
+                order_id: order_id,
+                product_master_id: product_id,
+                is_active: true,
+              },
+              attributes: ["id"],
+              transaction,
+            });
+
+            if (orderProduct) {
+              // Check if SalesAllocation already exists
+              const existingSalesAllocation =
+                await models.SalesAllocation.findOne({
+                  where: {
+                    order_id: order_id,
+                    order_product_id: orderProduct.id,
+                  },
+                  transaction,
+                });
+
+              if (existingSalesAllocation) {
+                // Update existing allocation
+                await models.SalesAllocation.update(
+                  {
+                    allocation_status: "ALLOCATED",
+                    allocated_quantity: parsedQuantity,
+                    allocation_date: new Date(),
+                    updated_at: new Date(),
+                  },
+                  {
+                    where: { id: existingSalesAllocation.id },
+                    transaction,
+                  },
+                );
+                console.log(
+                  `Updated SalesAllocation ${existingSalesAllocation.id} to ALLOCATED status`,
+                );
+              } else {
+                // Create new SalesAllocation
+                await models.SalesAllocation.create(
+                  {
+                    order_id: order_id,
+                    order_product_id: orderProduct.id,
+                    allocation_status: "ALLOCATED",
+                    allocated_quantity: parsedQuantity,
+                    ordered_quantity: parsedQuantity,
+                    allocation_date: new Date(),
+                    allocated_by: session?.pid || "system",
+                    inventory_details: {
+                      allocation_type: "raw_materials",
+                      allocated_from: "purchase_inventory",
+                      total_allocated: parsedQuantity,
+                    },
+                  },
+                  { transaction },
+                );
+                console.log(
+                  `Created new SalesAllocation for order ${order_id} with ALLOCATED status`,
+                );
+              }
+            }
+
             await transaction.commit();
 
             return resolve({
