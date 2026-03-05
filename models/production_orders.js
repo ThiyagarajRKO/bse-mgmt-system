@@ -14,6 +14,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(50),
         unique: true,
         allowNull: false,
+        field: "order_number", // actual column name in DB
       },
       order_type: {
         type: DataTypes.ENUM("PRIMARY", "SECONDARY", "VALUE_ADDED", "REWORK"),

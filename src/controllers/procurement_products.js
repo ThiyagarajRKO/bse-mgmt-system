@@ -256,6 +256,10 @@ export const GetAll = ({
       if (procurement_lot_id) {
         where.procurement_lot_id = procurement_lot_id;
       }
+      // filter by order id if provided (useful for purchase request history etc.)
+      if (order_id) {
+        where.order_id = order_id;
+      }
 
       if (product_master_id) {
         where.product_master_id = product_master_id;
