@@ -48,13 +48,27 @@ module.exports = {
       console.log(`✓ Found ${products.length} active products`);
 
       // Get all derivatives
-      const derivatives = await queryInterface.sequelize.query(
-        `SELECT id, derivative_code, derivative_name
-         FROM derivative_master
-         WHERE is_active = true AND deleted_at IS NULL
-         ORDER BY derivative_code`,
-        { type: Sequelize.QueryTypes.SELECT },
-      );
+      let derivatives = [];
+      try {
+        const derivResults = await queryInterface.sequelize.query(
+          `SELECT id, derivative_code, derivative_name
+           FROM derivative_master
+           WHERE is_active = true AND deleted_at IS NULL
+           ORDER BY derivative_code`,
+          { type: Sequelize.QueryTypes.SELECT },
+        );
+        derivatives = derivResults;
+      } catch (err) {
+        // Fallback: derivative_master might not have deleted_at column
+        const derivResults = await queryInterface.sequelize.query(
+          `SELECT id, derivative_code, derivative_name
+           FROM derivative_master
+           WHERE is_active = true
+           ORDER BY derivative_code`,
+          { type: Sequelize.QueryTypes.SELECT },
+        );
+        derivatives = derivResults;
+      }
 
       console.log(`✓ Found ${derivatives.length} active derivatives\n`);
 
@@ -202,26 +216,12 @@ module.exports = {
 
       console.log(`✓ Added ${inputsAdded} UNSIZED inputs to BOMs\n`);
 
-      // ========== PHASE 4: POPULATE LEGACY BILL_OF_MATERIALS ==========
-      console.log("📋 PHASE 4: Populating legacy bill_of_materials table...\n");
+      // ========== PHASE 4: POPULATE LEGACY BILL_OF_MATERIALS WITH ON-DEMAND PROCUREMENT CREATION ==========
+      console.log(
+        "📋 PHASE 4: Populating legacy bill_of_materials table with on-demand procurement creation...\n",
+      );
 
-      // Use the existing BOM seeder logic for bill_of_materials
       const now = new Date();
-
-      console.log("🧹 Cleaning up existing data...");
-      try {
-        await queryInterface.sequelize.query(
-          `DELETE FROM bill_of_materials WHERE procurement_product_id IN (
-            SELECT id FROM procurement_products WHERE procurement_product_type = 'UNPROCESSED'
-          )`,
-        );
-        await queryInterface.sequelize.query(
-          `DELETE FROM procurement_products WHERE procurement_product_type = 'UNPROCESSED'`,
-        );
-        console.log("✓ Cleaned old records\n");
-      } catch (err) {
-        console.log("⚠️  No existing records to clean\n");
-      }
 
       // Fetch all PROCESSED products with their mappings
       const processedProducts = await queryInterface.sequelize.query(
@@ -245,52 +245,95 @@ module.exports = {
 
       console.log(`✓ Found ${processedProducts.length} PROCESSED products`);
 
-      // Get procurement products for raw materials
-      const procurementProducts = await queryInterface.sequelize.query(
-        `SELECT pp.id, pp.product_master_id, pp.procurement_product_type,
-                pm.product_name, pm.species_derivative_size_grade_mapping_id
+      // Pre-load existing procurement products
+      const existingProcurementProducts = await queryInterface.sequelize.query(
+        `SELECT pp.id, pp.product_master_id, pp.procurement_product_type
          FROM procurement_products pp
-         JOIN product_master pm ON pp.product_master_id = pm.id
          WHERE pp.is_active = true`,
         { type: Sequelize.QueryTypes.SELECT },
       );
 
-      console.log(
-        `✓ Found ${procurementProducts.length} procurement products\n`,
-      );
-
-      // Create BOM linkages
-      const bomRows = [];
-      let linkagesCreated = 0;
-
-      for (const processed of processedProducts) {
-        // Find matching raw procurement product
-        const matchingRaw = procurementProducts.find(
-          (pp) =>
-            pp.species_derivative_size_grade_mapping_id ===
-              processed.species_derivative_size_grade_mapping_id &&
-            pp.procurement_product_type === "RAW",
-        );
-
-        if (matchingRaw) {
-          // Calculate quantity required based on yield
-          const yieldPercent = processed.expected_yield_percent || 60;
-          const quantityRequired = 100 / yieldPercent; // Inverse of yield
-
-          bomRows.push({
-            id: uuidv4(),
-            product_master_id: processed.product_id,
-            procurement_product_id: matchingRaw.id,
-            quantity_required: quantityRequired,
-            created_at: now,
-            updated_at: now,
-          });
-
-          linkagesCreated++;
-        }
+      const procurementMap = {};
+      for (const proc of existingProcurementProducts) {
+        procurementMap[proc.product_master_id] = proc.id;
       }
 
-      console.log(`✓ Created ${linkagesCreated} BOM linkages`);
+      console.log(
+        `✓ Found ${existingProcurementProducts.length} existing procurement products\n`,
+      );
+
+      // Get raw/unsized products that need procurement mappings - mapped by species_master_id
+      const rawProducts = await queryInterface.sequelize.query(
+        `SELECT pm.id, pm.product_name, sdsm.species_master_id
+         FROM product_master pm
+         LEFT JOIN species_derivative_size_grade_mapping sdsm ON pm.species_derivative_size_grade_mapping_id = sdsm.id
+         WHERE (pm.processing_state != 'PROCESSED' OR pm.processing_state IS NULL)
+         AND pm.is_active = true
+         AND pm.deleted_at IS NULL
+         AND (pm.product_name LIKE '%Raw%' OR pm.product_name LIKE '%UNSIZED%')`,
+        { type: Sequelize.QueryTypes.SELECT },
+      );
+
+      // Map raw products by species_master_id for quick lookup
+      const rawProductsBySpecies = {};
+      for (const raw of rawProducts) {
+        if (!rawProductsBySpecies[raw.species_master_id]) {
+          rawProductsBySpecies[raw.species_master_id] = [];
+        }
+        rawProductsBySpecies[raw.species_master_id].push(raw);
+      }
+
+      console.log(
+        `✓ Found ${rawProducts.length} raw/unsized products for procurement mapping\n`,
+      );
+
+      // Create BOM linkages - only use existing procurement products
+      const bomRows = [];
+      let linkagesCreated = 0;
+      let linkagesSkipped = 0;
+
+      for (const processed of processedProducts) {
+        // Find matching raw products based on species_master_id
+        const rawsForSpecies =
+          rawProductsBySpecies[processed.species_master_id];
+        const matchingRaw = rawsForSpecies ? rawsForSpecies[0] : null;
+
+        if (!matchingRaw) {
+          linkagesSkipped++;
+          continue;
+        }
+
+        // Check if procurement product exists for this raw material
+        const procurementId = procurementMap[matchingRaw.id];
+
+        if (!procurementId) {
+          // No procurement product for this raw material - skip
+          linkagesSkipped++;
+          continue;
+        }
+
+        // Calculate quantity required based on yield
+        const yieldPercent = processed.expected_yield_percent || 60;
+        const quantityRequired = 100 / yieldPercent; // Inverse of yield
+
+        bomRows.push({
+          id: uuidv4(),
+          product_master_id: processed.product_id,
+          procurement_product_id: procurementId,
+          quantity_required: quantityRequired,
+          created_at: now,
+          updated_at: now,
+        });
+
+        linkagesCreated++;
+      }
+
+      console.log(
+        `✓ Created ${linkagesCreated} BOM linkages using existing procurement products`,
+      );
+      console.log(
+        `⚠️  Skipped ${linkagesSkipped} products (no procurement product for raw material)\n`,
+      );
 
       // Bulk insert BOM data
       if (bomRows.length > 0) {
