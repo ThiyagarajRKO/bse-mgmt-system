@@ -202,7 +202,7 @@
   color: red !important;
 }
 
-/* Make pending status red */
+/* Make pending-allocation status red (labelled "Pending Allocation" in UI) */
 .pending-status {
   color: red !important;
 }
