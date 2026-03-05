@@ -3961,12 +3961,12 @@
                           purchaseInventory = 0; // Raw materials
                           salesInventory = tempPurchase; // Finished goods
                         } else if (inventoryType === "raw_materials") {
-                          // For raw materials: available_quantity is yield-adjusted effective finished goods
-                          netInventory = purchaseInventory; // This is now the effective finished goods quantity
-                          // Display the TOTAL raw material quantity (not available after reservations)
+                          // For raw materials: Get TOTAL raw material quantity for status check
                           const totalRawMaterialQty =
                             invResponse?.data?.raw_material_details
                               ?.raw_material_quantity || purchaseInventory;
+                          // Use total raw material for status (not yield-adjusted)
+                          netInventory = totalRawMaterialQty;
                           salesInventory = 0; // No finished goods for raw materials
                           // Update purchaseInventory to show total raw material stock (not reserved)
                           purchaseInventory = totalRawMaterialQty;
