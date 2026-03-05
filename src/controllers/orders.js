@@ -1109,7 +1109,6 @@ export const GetAllocationData = ({ start, length, search }) => {
           const salesAllocations = await models.SalesAllocation.findAll({
             where: {
               order_id: order.id,
-              is_active: true,
             },
             attributes: [
               "id",
@@ -1159,6 +1158,13 @@ export const GetAllocationData = ({ start, length, search }) => {
           let allocation_status = "PENDING";
 
           if (orderProducts.length > 0) {
+            console.log(`[ALLOCATION STATUS] Order ${orderJson.order_no}:`, {
+              orderProductCount: orderProducts.length,
+              salesAllocationCount: salesAllocations.length,
+              allocationMasterCount: allocationMasters.length,
+              hasPendingPurchase,
+            });
+
             if (salesAllocations.length > 0) {
               // Check if all order products have allocations
               const productsWithAllocations = new Set(
@@ -1169,6 +1175,11 @@ export const GetAllocationData = ({ start, length, search }) => {
                 productsWithAllocations.has(product.id),
               ).length;
 
+              console.log(`[ALLOCATION STATUS] Allocated products: ${allocatedProductCount}/${orderProducts.length}`);
+              console.log(`[ALLOCATION STATUS] SalesAllocations statuses:`, 
+                salesAllocations.map(a => ({ id: a.id, status: a.allocation_status, product_id: a.order_product_id }))
+              );
+
               if (allocatedProductCount === orderProducts.length) {
                 // Check if all allocations are confirmed (ALLOCATED or COMPLETED)
                 const confirmedAllocations = salesAllocations.filter(
@@ -1177,18 +1188,22 @@ export const GetAllocationData = ({ start, length, search }) => {
                     alloc.allocation_status === "COMPLETED",
                 ).length;
 
+                console.log(`[ALLOCATION STATUS] Confirmed allocations: ${confirmedAllocations}/${salesAllocations.length}`);
+
                 if (confirmedAllocations === salesAllocations.length) {
                   // Only show as "ALLOCATED" if no allocations are pending purchase
                   allocation_status = hasPendingPurchase
                     ? "PENDING_PURCHASE"
                     : "ALLOCATED";
+                  console.log(`[ALLOCATION STATUS] Setting to: ${allocation_status}`);
                 } else {
                   // Some allocations are not confirmed yet
                   allocation_status = "PARTIAL";
-                  allocation_status = "PARTIAL";
+                  console.log(`[ALLOCATION STATUS] Not all confirmed, setting to PARTIAL`);
                 }
               } else if (allocatedProductCount > 0) {
                 allocation_status = "PARTIAL";
+                console.log(`[ALLOCATION STATUS] Only some products allocated, setting to PARTIAL`);
               }
             } else if (
               hasPendingPurchase ||

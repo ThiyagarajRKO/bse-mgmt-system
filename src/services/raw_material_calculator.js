@@ -1089,7 +1089,28 @@ export class RawMaterialCalculator {
 
           const productMaster = procProduct.ProductMaster;
           const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
-          const requiredQuantity = Math.ceil(quantityRequired * bomQuantity);
+          // quantityRequired refers to finished goods needed for the order
+          // first compute finished goods requirement based on BOM quantity
+          const finishedQty = Math.ceil(quantityRequired * bomQuantity);
+
+          // determine raw material requirement using yield standards
+          let rawQtyRequired = finishedQty;
+          try {
+            const YieldBasedInventoryCalculator = require("./yield_based_inventory_calculator");
+            rawQtyRequired = Math.ceil(
+              await YieldBasedInventoryCalculator.calculateRequiredRawMaterials(
+                productId,
+                finishedQty,
+              ),
+            );
+          } catch (err) {
+            // if yield calculator fails for any reason, fall back to finished quantity
+            console.warn(
+              "[RAW MATERIALS WITH STATUS] Yield calc failed, using finished qty as raw requirement:",
+              err.message,
+            );
+            rawQtyRequired = finishedQty;
+          }
 
           // Get ALL inventory records (don't filter by gap)
           const allInventoryRecords = await models.PurchaseInventory.findAll({
@@ -1106,7 +1127,7 @@ export class RawMaterialCalculator {
 
           const currentStock = Math.ceil(totalStock);
           const inventoryGap = Math.ceil(
-            Math.max(0, requiredQuantity - currentStock),
+            Math.max(0, rawQtyRequired - currentStock),
           );
 
           // IMPORTANT: Include this item REGARDLESS of gap (gap can be 0)
@@ -1117,7 +1138,8 @@ export class RawMaterialCalculator {
             product_master_id: productMaster.id,
             product_name: productMaster.product_name,
             bom_quantity_required: bomQuantity,
-            total_quantity_required: requiredQuantity,
+            // report the raw material quantity that needs to be purchased
+            total_quantity_required: rawQtyRequired,
             current_stock: currentStock,
             inventory_gap: inventoryGap,
             recommended_order_quantity:
