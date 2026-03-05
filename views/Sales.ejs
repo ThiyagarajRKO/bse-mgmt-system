@@ -1920,7 +1920,6 @@
                 "
               ></div>
             </div>
-
             <!-- AI Analysis Section -->
             <div
               id="purchaseRequestAIAnalysis"
@@ -1962,9 +1961,11 @@
               <input
                 type="number"
                 id="purchaseRequestQuantity"
-                class="form-control"
+                name="purchaseRequestQuantity"
+                class="form-control product_quantity"
                 placeholder="eg. 100"
                 min="1"
+                step="1"
                 title="Hover for AI recommendations and calculation details"
                 onmouseover="showQuantityTooltip(this)"
                 onmouseout="hideQuantityTooltip()"
@@ -2049,6 +2050,30 @@
             keyRight: [39], // Right key code
           },
         });
+      });
+
+      // global AJAX hook: whenever a procurement request endpoint is hit (create/update/approve),
+      // refresh our local allocation table immediately.  This covers the case where the
+      // procurement module (in another tab or section) modifies a request while the sales
+      // page is open.
+      $(document).ajaxSuccess(function (event, xhr, settings) {
+        try {
+          if (
+            settings.url &&
+            settings.url.includes(
+              "/api/procurement/product/procurement-requests",
+            )
+          ) {
+            console.log(
+              "[GLOBAL AJAX] procurement request changed - refreshing allocation table",
+            );
+            if (typeof loadAllocationTableData === "function") {
+              loadAllocationTableData();
+            }
+          }
+        } catch (e) {
+          console.error("Error in global ajaxSuccess handler:", e);
+        }
       });
 
       // Menu navigation
@@ -2690,7 +2715,7 @@
 
                                   <div class="form-group mt-2">
                                     <label for="product_price">Price per KG</label>
-                                    <input
+                                    <input type="number" class="form-control product_quantity" id="purchaseQuantity" value="${quantity}" min="1" step="1">
                                       current_index="${index}"
                                       class="form-control product_price product_price_${index}"
                                       type="number"
@@ -3516,6 +3541,18 @@
         $("#shippingMethods").val(null).trigger("change");
       }
 
+      // Helper to convert raw allocation status values to user-friendly labels
+      function displayAllocationStatus(rawStatus) {
+        if (!rawStatus) return "Pending Allocation";
+        if (String(rawStatus).toUpperCase() === "PENDING")
+          return "Pending Allocation";
+        if (rawStatus === "Pending Purchase") return "Pending Purchase";
+        if (rawStatus === "Allocated" || rawStatus === "ALLOCATED")
+          return "Allocated";
+        if (rawStatus === "Partial") return "Partial";
+        return rawStatus;
+      }
+
       function loadAllocationTableData() {
         console.log("📋 Loading allocation table data...");
         $("#allocationTable").DataTable({
@@ -3648,21 +3685,21 @@
               targets: [5],
               className: "text-left",
               render: (data, type, row) => {
-                // Show allocation status with appropriate styling
-                let statusText = "Pending";
+                // Show allocation status with appropriate styling.  default
+                // label for the generic "PENDING" state has been changed to
+                // "Pending Allocation".
+                const rawStatus = data || "";
+                let statusText = displayAllocationStatus(rawStatus);
                 let statusClass = "pending-status";
                 let statusIcon = "fa-hourglass-half";
 
-                if (data === "Allocated" || data === "ALLOCATED") {
-                  statusText = "Allocated";
+                if (rawStatus === "Allocated" || rawStatus === "ALLOCATED") {
                   statusClass = "allocated-status";
                   statusIcon = "fa-circle-check";
-                } else if (data === "Pending Purchase") {
-                  statusText = "Pending Purchase";
+                } else if (rawStatus === "Pending Purchase") {
                   statusClass = "pending-purchase-status";
                   statusIcon = "fa-shopping-cart";
-                } else if (data === "Partial") {
-                  statusText = "Partial";
+                } else if (rawStatus === "Partial") {
                   statusClass = "partial-status";
                   statusIcon = "fa-clock";
                 }
@@ -3733,18 +3770,30 @@
                           }
                         } else if (inventoryType === "raw_materials") {
                           // For raw materials: available_quantity is yield-adjusted effective finished goods
-                          const rawMaterialQty =
+                          const totalRawMaterialQty =
                             response?.data?.raw_material_details
                               ?.raw_material_quantity || 0;
+                          const availRawQty =
+                            response?.data?.breakdown?.raw_material_stock || 0;
                           // calculate effective yield percent based on actual numbers
                           const effectiveFinished =
                             response?.data?.breakdown
                               ?.effective_finished_goods || quantity;
                           const yieldPercent =
-                            rawMaterialQty > 0
-                              ? ((effectiveFinished / rawMaterialQty) * 100).toFixed(2)
+                            totalRawMaterialQty > 0
+                              ? (
+                                  (effectiveFinished / totalRawMaterialQty) *
+                                  100
+                                ).toFixed(2)
                               : "0.00";
-                          stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${rawMaterialQty}kg raw @ ${yieldPercent}% effective yield)`;
+                          stockText = `${quantity} ${unitOfMeasure} (Effective FG from ${totalRawMaterialQty}kg raw @ ${yieldPercent}% effective yield`;
+                          // if there is a difference between total and available raw stock,
+                          // mention the unreserved amount so users understand why quantity
+                          // may be zero even when raw material exists.
+                          if (availRawQty !== totalRawMaterialQty) {
+                            stockText += `; ${availRawQty}kg unreserved raw`;
+                          }
+                          stockText += `)`;
                           shortStockText = `${quantity}${unitOfMeasure}`;
                         } else {
                           stockText = `${quantity} ${unitOfMeasure}`;
@@ -3966,15 +4015,29 @@
                           purchaseInventory = 0; // Raw materials
                           salesInventory = tempPurchase; // Finished goods
                         } else if (inventoryType === "raw_materials") {
-                          // For raw materials: Get TOTAL raw material quantity for status check
+                          // For raw materials we use two numbers:
+                          //   totalRawMaterialQty = physical raw inventory on hand
+                          //   effectiveQty       = yield‑adjusted finished‑goods equivalent
                           const totalRawMaterialQty =
                             invResponse?.data?.raw_material_details
                               ?.raw_material_quantity || purchaseInventory;
-                          // Use total raw material for status (not yield-adjusted)
-                          netInventory = totalRawMaterialQty;
+                          // breakdown.effective_finished_goods holds the yield‑adjusted
+                          // quantity computed from *total* stock (not just available)
+                          const effectiveQty =
+                            invResponse?.data?.breakdown
+                              ?.effective_finished_goods !== undefined
+                              ? invResponse.data.breakdown
+                                  .effective_finished_goods
+                              : totalRawMaterialQty;
+                          // use the yield‑adjusted value for status comparison
+                          netInventory = effectiveQty;
                           salesInventory = 0; // No finished goods for raw materials
-                          // Update purchaseInventory to show total raw material stock (not reserved)
+                          // Update purchaseInventory field shown to user to display
+                          // the raw material stock itself (unadjusted)
                           purchaseInventory = totalRawMaterialQty;
+                          console.log(
+                            `[Order View] Raw materials total: ${totalRawMaterialQty}, yield-adjusted: ${effectiveQty}`,
+                          );
                         } else {
                           // Fallback
                           netInventory = Math.max(
@@ -4286,15 +4349,15 @@
 
                     <div class="form-group">
                       <label class="fw-bold" for="allocation_status">Allocation Status:</label>
-                      <span class="${
-                        allocationStatus === "Allocated"
-                          ? "badge badge-success"
-                          : allocationStatus === "Pending Purchase"
-                            ? "badge badge-info"
-                            : allocationStatus === "Partial"
-                              ? "badge badge-warning"
-                              : "badge badge-secondary"
-                      }">${allocationStatus}</span>
+                          <span class="${
+                            allocationStatus === "Allocated"
+                              ? "badge badge-success"
+                              : allocationStatus === "Pending Purchase"
+                                ? "badge badge-info"
+                                : allocationStatus === "Partial"
+                                  ? "badge badge-warning"
+                                  : "badge badge-secondary"
+                          }">${displayAllocationStatus(allocationStatus)}</span>
                     </div>
                   </div>
 
@@ -4343,28 +4406,37 @@
 
                 </div>
                 <div class="modal-footer">
-                  ${
-                    allocationStatus === "Allocated"
-                      ? `<div class="alert alert-success w-100 mb-0">
+                  ${(() => {
+                    // prioritize explicit status values before stock check
+                    if (allocationStatus === "Allocated") {
+                      return `<div class="alert alert-success w-100 mb-0">
                           <i class="fa-solid fa-check-circle"></i> This order has already been allocated and is ready for production.
                         </div>
                         <button type="button" class="btn btn-success" onclick="window.location.href='/Production?order_id=${order.id}'">
                           <i class="fa-solid fa-industry"></i> Go to Production
-                        </button>`
-                      : parseFloat(netInventory) >= parseFloat(quantityRequired)
-                        ? `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-allocation-id="${allocationId || ""}" data-quantity="${quantityRequired}">
+                        </button>`;
+                    }
+
+                    if (allocationStatus === "Pending Purchase") {
+                      // show a request button even if inventory may later be sufficient
+                      return `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${order.id}" data-product-id="${productMasterId}" data-species-id="${speciesMasterId || ""}" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${order.order_no}">
+                          <i class="fa-solid fa-plus"></i> Raise Purchase Request
+                        </button>`;
+                    }
+
+                    if (
+                      parseFloat(netInventory) >= parseFloat(quantityRequired)
+                    ) {
+                      return `<button type="button" class="btn" id="beginProductionBtn" style="background-color: #EA5455; color: white; border-color: #EA5455;" data-order-id="${order.id}" data-product-id="${productMasterId}" data-order-no="${order.order_no}" data-allocation-id="${allocationId || ""}" data-quantity="${quantityRequired}">
                           <i class="fa-solid fa-industry"></i> Begin Production
-                        </button>`
-                        : `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${
-                            order.id
-                          }" data-product-id="${productMasterId}" data-species-id="${
-                            speciesMasterId || ""
-                          }" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${
-                            order.order_no
-                          }">
+                        </button>`;
+                    }
+
+                    // default case: insufficient stock
+                    return `<button type="button" class="btn btn-danger" id="raisePurchaseRequestBtn" data-order-id="${order.id}" data-product-id="${productMasterId}" data-species-id="${speciesMasterId || ""}" data-product-name="${productName}" data-quantity="${quantityRequired}" data-order-no="${order.order_no}">
                           <i class="fa-solid fa-plus"></i> Raise Purchase Order
-                        </button>`
-                  }
+                        </button>`;
+                  })()}
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
@@ -4576,91 +4648,6 @@
       });
 
       // Load Purchase Request History for an order
-      function loadPurchaseRequestHistory(orderId) {
-        const $container = $(`#purchaseRequestHistoryTable_${orderId}`);
-
-        // Fetch purchase requests for this order from the API
-        $.ajax({
-          url: `/api/procurement/product/procurement-requests?order_id=${orderId}`,
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            console.log("Purchase request history:", response);
-
-            if (
-              response.success &&
-              response.data &&
-              response.data.rows.length > 0
-            ) {
-              const requests = response.data.rows;
-
-              // Build table HTML
-              let tableHtml = `
-                <table class="table table-sm table-hover mb-0">
-                  <thead style="background-color: #f8f9fa;">
-                    <tr>
-                      <th style="text-align: center;">Date</th>
-                      <th style="text-align: center;">Product</th>
-                      <th style="text-align: center;">Quantity</th>
-                      <th style="text-align: center;">Supplier</th>
-                      <th style="text-align: center;">Status</th>
-                      <th style="text-align: center;">Approver</th>
-                      <th style="text-align: center;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-              `;
-
-              requests.forEach(function (pr) {
-                const date = new Date(pr.created_at).toLocaleDateString();
-                const statusBadge =
-                  pr.status === "Approved"
-                    ? `<span class="badge badge-success">${pr.status}</span>`
-                    : pr.status === "Rejected"
-                      ? `<span class="badge badge-danger">${pr.status}</span>`
-                      : `<span class="badge badge-warning">${pr.status}</span>`;
-
-                tableHtml += `
-                  <tr>
-                    <td style="text-align: center; font-size: 0.9rem;">${date}</td>
-                    <td style="text-align: center; font-size: 0.9rem;">${pr.product_name || "N/A"}</td>
-                    <td style="text-align: center; font-size: 0.9rem;">${pr.procurement_quantity || 0}</td>
-                    <td style="text-align: center; font-size: 0.9rem;">${pr.supplier_name || "N/A"}</td>
-                    <td style="text-align: center;">${statusBadge}</td>
-                    <td style="text-align: center; font-size: 0.9rem;">${pr.approver_name || "-"}</td>
-                    <td style="text-align: center;">
-                      <button class="btn btn-sm btn-outline-primary" title="View details" onclick="alert('View PR #${pr.id}')">
-                        <i class="fa-solid fa-eye"></i>
-                      </button>
-                    </td>
-                  </tr>
-                `;
-              });
-
-              tableHtml += `
-                  </tbody>
-                </table>
-              `;
-
-              $container.html(tableHtml);
-            } else {
-              $container.html(`
-                <p style="color: #999; text-align: center; margin: 20px 0;">
-                  <i class="fa-solid fa-info-circle"></i> No purchase requests raised yet for this order.
-                </p>
-              `);
-            }
-          },
-          error: function (error) {
-            console.error("Error loading purchase request history:", error);
-            $container.html(`
-              <p style="color: #d32f2f; text-align: center; margin: 20px 0;">
-                <i class="fa-solid fa-exclamation-triangle"></i> Error loading purchase request history
-              </p>
-            `);
-          },
-        });
-      }
 
       // Check if purchase request already exists
       function checkExistingPurchaseRequest(
@@ -4676,13 +4663,18 @@
           productId,
         );
 
+        // include order_id so we only consider requests for the current order
+        // use the purchase-requests endpoint which respects order_id filtering
         $.ajax({
-          url: `/api/procurement/product?product_master_id=${productId}`,
+          url: `/api/procurement/product/procurement-requests?order_id=${orderId}&product_master_id=${productId}`,
           method: "GET",
           dataType: "json",
           success: function (response) {
             console.log("API Response:", response);
             const products = response?.data?.rows || [];
+
+            // any products returned are for this order only; show history
+            // history feature removed; ignore returned items here
 
             // Check if there's any procurement product for this product with auto-generated note
             const autoGenerated = products.some(
@@ -4905,6 +4897,9 @@
           return inventoryGap > 0; // Only include items with gap > 0
         });
 
+        // cache previous stock levels to prevent transient 0 values
+        const previousStocks = window.lastMaterialStocks || {};
+
         if (itemsNeedingOrder.length === 0) {
           materialsHtml = `
             <div style="
@@ -4958,6 +4953,19 @@
             material.total_quantity_required || 0,
           );
           const currentStock = Math.ceil(material.current_stock || 0);
+          // if backend returned zero but we previously had a positive number,
+          // keep the old value until refresh stabilizes
+          let adjustedStock = currentStock;
+          if (
+            currentStock === 0 &&
+            previousStocks[procurementProductId] &&
+            previousStocks[procurementProductId] > 0
+          ) {
+            console.warn(
+              `[RAW MATERIALS UI] retaining previous stock for ${procurementProductId}: ${previousStocks[procurementProductId]}`,
+            );
+            adjustedStock = previousStocks[procurementProductId];
+          }
           const inventoryGap = Math.ceil(material.inventory_gap || 0);
           const recommendedOrderQuantity = Math.ceil(
             material.recommended_order_quantity || 0,
@@ -5009,8 +5017,7 @@
                         <span class="badge" style="background-color: #6c757d; color: white;">${bomQuantityRequired} ${unitOfMeasure}</span>
                       </div>
                       <div>
-                        <span style="color: #999;">In Warehouse:</span>
-                        <span class="badge" style="background-color: #28a745; color: white;">${currentStock} ${unitOfMeasure}</span>
+                                      <span class="badge" style="background-color: #28a745; color: white;">${adjustedStock} ${unitOfMeasure}</span>
                       </div>
                     </div>
                   </div>
@@ -5034,6 +5041,14 @@
               </div>
             </div>
           `;
+        });
+
+        // update cache after rendering
+        window.lastMaterialStocks = window.lastMaterialStocks || {};
+        itemsNeedingOrder.forEach((m) => {
+          window.lastMaterialStocks[m.procurement_product_id] = Math.ceil(
+            m.current_stock || 0,
+          );
         });
 
         materialsHtml += "</div>";
@@ -6909,32 +6924,37 @@
                   updatedQuantity,
                 );
                 if (window.currentPurchaseRequest) {
-                  setTimeout(() => {
-                    // Clear the container completely first
-                    console.log("[REFRESH] Clearing container...");
-                    $("#purchaseRequestRawMaterials")
-                      .empty()
-                      .html(
-                        '<p style="color: #999; text-align: center;">✓ Refreshing inventory... (just ordered ' +
-                          materialRounded +
-                          " units)</p>",
-                      );
+                  // instead of a single delayed refresh, poll a few times so that
+                  // transient 0 values (due to DB lag) don't linger.
+                  let attempts = 0;
+                  const maxAttempts = 5;
+                  const reloadInterval = 1200;
 
-                    // Then reload with fresh data
+                  const doReload = () => {
+                    attempts++;
                     console.log(
-                      "[REFRESH] Calling loadRawMaterialsForPurchaseRequest with productId:",
-                      window.currentPurchaseRequest.productId,
-                      "quantityRequired:",
-                      window.currentPurchaseRequest.quantityRequired,
-                      "speciesId:",
-                      window.currentPurchaseRequest.speciesId,
+                      `[REFRESH] Polling inventory (attempt ${attempts}/${maxAttempts})`,
                     );
                     loadRawMaterialsForPurchaseRequest(
                       window.currentPurchaseRequest.productId,
                       window.currentPurchaseRequest.quantityRequired,
                       window.currentPurchaseRequest.speciesId,
                     );
-                  }, 1200); // Increased delay to allow DB to fully sync
+                    if (attempts < maxAttempts) {
+                      setTimeout(doReload, reloadInterval);
+                    }
+                  };
+
+                  // show temporary message while polling
+                  console.log("[REFRESH] Starting inventory poll...");
+                  $("#purchaseRequestRawMaterials")
+                    .empty()
+                    .html(
+                      '<p style="color: #999; text-align: center;">✓ Refreshing inventory... (just ordered ' +
+                        materialRounded +
+                        " units)</p>",
+                    );
+                  setTimeout(doReload, reloadInterval);
                 }
 
                 if (successCount === totalCount) {
