@@ -294,7 +294,8 @@ export const AllocateStock = async (
               // `production_orders` is the actual model name registered in db/index
               await models.production_orders.create(
                 {
-                  order_no: productionOrderNo,
+                  // table uses "order_number" column instead of order_no
+                  order_number: productionOrderNo,
                   order_id: order_id,
                   plant_id: "PLANT_001",
                   input_species_id: inventory.product_master_id || product_id,
