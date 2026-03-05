@@ -192,6 +192,11 @@ export class RawMaterialCalculator {
         await this._getInventoryLevels(effectiveSpeciesId);
 
       // Step 7: Compile intelligent calculation results
+      const inventoryGap = Math.max(
+        0,
+        rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
+      );
+
       const calculations = {
         finishedProductRequired: quantityRequired,
         yieldPercentage: (yieldPercentage * 100).toFixed(2) + "%",
@@ -201,14 +206,8 @@ export class RawMaterialCalculator {
         safetyBuffer: bufferQuantity,
         totalWithBuffer: rawMaterialNeeded + bufferQuantity,
         currentInventory: inventoryLevels.totalAvailable,
-        inventoryGap: Math.max(
-          0,
-          rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
-        ),
-        recommendedOrderQuantity: Math.max(
-          rawMaterialNeeded + bufferQuantity - inventoryLevels.totalAvailable,
-          0,
-        ),
+        inventoryGap: inventoryGap,
+        recommendedOrderQuantity: inventoryGap > 0 ? inventoryGap : 0,
         totalRequiredQuantity: rawMaterialNeeded + bufferQuantity, // Add total required regardless of inventory
         processingType: processingType,
         productForm: productForm,
