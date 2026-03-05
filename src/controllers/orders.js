@@ -1175,9 +1175,16 @@ export const GetAllocationData = ({ start, length, search }) => {
                 productsWithAllocations.has(product.id),
               ).length;
 
-              console.log(`[ALLOCATION STATUS] Allocated products: ${allocatedProductCount}/${orderProducts.length}`);
-              console.log(`[ALLOCATION STATUS] SalesAllocations statuses:`, 
-                salesAllocations.map(a => ({ id: a.id, status: a.allocation_status, product_id: a.order_product_id }))
+              console.log(
+                `[ALLOCATION STATUS] Allocated products: ${allocatedProductCount}/${orderProducts.length}`,
+              );
+              console.log(
+                `[ALLOCATION STATUS] SalesAllocations statuses:`,
+                salesAllocations.map((a) => ({
+                  id: a.id,
+                  status: a.allocation_status,
+                  product_id: a.order_product_id,
+                })),
               );
 
               if (allocatedProductCount === orderProducts.length) {
@@ -1188,22 +1195,30 @@ export const GetAllocationData = ({ start, length, search }) => {
                     alloc.allocation_status === "COMPLETED",
                 ).length;
 
-                console.log(`[ALLOCATION STATUS] Confirmed allocations: ${confirmedAllocations}/${salesAllocations.length}`);
+                console.log(
+                  `[ALLOCATION STATUS] Confirmed allocations: ${confirmedAllocations}/${salesAllocations.length}`,
+                );
 
                 if (confirmedAllocations === salesAllocations.length) {
                   // Only show as "ALLOCATED" if no allocations are pending purchase
                   allocation_status = hasPendingPurchase
                     ? "PENDING_PURCHASE"
                     : "ALLOCATED";
-                  console.log(`[ALLOCATION STATUS] Setting to: ${allocation_status}`);
+                  console.log(
+                    `[ALLOCATION STATUS] Setting to: ${allocation_status}`,
+                  );
                 } else {
                   // Some allocations are not confirmed yet
                   allocation_status = "PARTIAL";
-                  console.log(`[ALLOCATION STATUS] Not all confirmed, setting to PARTIAL`);
+                  console.log(
+                    `[ALLOCATION STATUS] Not all confirmed, setting to PARTIAL`,
+                  );
                 }
               } else if (allocatedProductCount > 0) {
                 allocation_status = "PARTIAL";
-                console.log(`[ALLOCATION STATUS] Only some products allocated, setting to PARTIAL`);
+                console.log(
+                  `[ALLOCATION STATUS] Only some products allocated, setting to PARTIAL`,
+                );
               }
             } else if (
               hasPendingPurchase ||
