@@ -1,34 +1,44 @@
 const fs = require("fs");
 const path = require("path");
 
-// Utility function to copy files/directories
-function copyRecursive(src, dest) {
+// Utility function to copy files/directories (with depth limit to prevent infinite recursion)
+function copyRecursive(src, dest, maxDepth = 5, currentDepth = 0) {
+  // Prevent infinite recursion
+  if (currentDepth > maxDepth) {
+    console.warn(`⚠️  Max depth (${maxDepth}) reached at: ${src}`);
+    return;
+  }
+
   // Skip if source doesn't exist
   if (!fs.existsSync(src)) {
     console.warn(`⚠️  Skipping missing source: ${src}`);
     return;
   }
 
-  const stats = fs.statSync(src);
+  try {
+    const stats = fs.statSync(src);
 
-  if (stats.isDirectory()) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
+    if (stats.isDirectory()) {
+      if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true });
+      }
 
-    const files = fs.readdirSync(src);
-    files.forEach((file) => {
-      const srcFile = path.join(src, file);
-      const destFile = path.join(dest, file);
-      copyRecursive(srcFile, destFile);
-    });
-  } else {
-    // Ensure destination directory exists
-    const destDir = path.dirname(dest);
-    if (!fs.existsSync(destDir)) {
-      fs.mkdirSync(destDir, { recursive: true });
+      const files = fs.readdirSync(src);
+      files.forEach((file) => {
+        const srcFile = path.join(src, file);
+        const destFile = path.join(dest, file);
+        copyRecursive(srcFile, destFile, maxDepth, currentDepth + 1);
+      });
+    } else {
+      // Ensure destination directory exists
+      const destDir = path.dirname(dest);
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+      fs.copyFileSync(src, dest);
     }
-    fs.copyFileSync(src, dest);
+  } catch (err) {
+    console.warn(`⚠️  Error copying ${src}: ${err.message}`);
   }
 }
 
