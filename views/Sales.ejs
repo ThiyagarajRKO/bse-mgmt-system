@@ -4796,77 +4796,62 @@
           speciesId,
         );
 
-        // First, try to get raw materials from BOM using the new API
+        // Call the panel-specific endpoint that returns ALL materials (including sufficient stock)
         $.ajax({
-          url: `/api/procurement/product/calculate/multi-category?productId=${productId}&quantityRequired=${quantityRequired}&t=${Date.now()}`,
+          url: `/api/procurement/product/raw-materials-for-panel?productId=${productId}&quantityRequired=${quantityRequired}&speciesId=${speciesId || ""}&t=${Date.now()}`,
           method: "GET",
           dataType: "json",
           cache: false,
           success: function (response) {
-            console.log("BOM-based raw materials API response:", response);
+            console.log("Panel raw materials API response:", response);
 
             if (response?.data && response.data.length > 0) {
-              // Get the first recommendation (usually FRESH/RAW)
-              const firstRecommendation = response.data[0];
-              if (
-                firstRecommendation?.rawMaterials &&
-                firstRecommendation.rawMaterials.length > 0
-              ) {
-                console.log(
-                  "✓ Found raw materials from BOM:",
-                  firstRecommendation.rawMaterials,
-                );
-                // Process the BOM-based raw materials
-                processBOMRawMaterials(
-                  firstRecommendation.rawMaterials,
-                  quantityRequired,
-                  $("#purchaseRequestRawMaterials"),
+              console.log(
+                "✓ Found raw materials from panel API:",
+                response.data,
+              );
+              // Process the raw materials including those with sufficient stock
+              processBOMRawMaterials(
+                response.data,
+                quantityRequired,
+                $("#purchaseRequestRawMaterials"),
+              );
+
+              // Auto-populate the quantity field with the first raw material that needs ordering
+              // Only use materials that actually need ordering (gap > 0)
+              const itemsNeedingOrder = response.data.filter(
+                (m) => Math.ceil(m.inventory_gap || 0) > 0,
+              );
+
+              if (itemsNeedingOrder.length > 0) {
+                const firstRawMaterial = itemsNeedingOrder[0];
+                const recommendedQty = Math.ceil(
+                  firstRawMaterial.recommended_order_quantity || 0,
                 );
 
-                // Auto-populate the quantity field with the first raw material's recommended quantity
-                // Only use materials that actually need ordering (gap > 0)
-                const itemsNeedingOrder = firstRecommendation.rawMaterials.filter(
-                  (m) => Math.ceil(m.inventory_gap || 0) > 0
-                );
-                
-                if (itemsNeedingOrder.length > 0) {
-                  const firstRawMaterial = itemsNeedingOrder[0];
-                  const recommendedQty = Math.ceil(firstRawMaterial.recommended_order_quantity || 0);
-                  
-                  if (recommendedQty > 0) {
-                    $("#purchaseRequestQuantity").val(recommendedQty);
-                    $("#purchaseRequestQuantityHint").html(
-                      `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQty} kg</small>`,
-                    );
-
-                    // Show tooltip briefly to highlight AI recommendations
-                    setTimeout(() => {
-                      showQuantityTooltip($("#purchaseRequestQuantity")[0]);
-                      setTimeout(() => hideQuantityTooltip(), 4000); // Hide after 4 seconds
-                    }, 1000);
-                  }
-                } else {
-                  console.log("[RAW MATERIALS] No items need ordering - all materials have sufficient stock");
+                if (recommendedQty > 0) {
+                  $("#purchaseRequestQuantity").val(recommendedQty);
                   $("#purchaseRequestQuantityHint").html(
-                    `<small class="text-success">✓ All raw materials are in sufficient stock</small>`,
+                    `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQty} kg</small>`,
                   );
+
+                  // Show tooltip briefly to highlight AI recommendations
+                  setTimeout(() => {
+                    showQuantityTooltip($("#purchaseRequestQuantity")[0]);
+                    setTimeout(() => hideQuantityTooltip(), 4000); // Hide after 4 seconds
+                  }, 1000);
                 }
               } else {
-                console.warn(
-                  "⚠ No raw materials found in BOM response, falling back to species filtering",
+                console.log(
+                  "[RAW MATERIALS] No items need ordering - all materials have sufficient stock",
                 );
-                // Fall back to the original logic if BOM doesn't have data
-                fallbackToSpeciesFiltering(
-                  productId,
-                  quantityRequired,
-                  speciesId,
+                $("#purchaseRequestQuantityHint").html(
+                  `<small class="text-success">✓ All raw materials are in sufficient stock</small>`,
                 );
               }
             } else {
-              console.warn(
-                "⚠ No recommendations found in BOM response, falling back to species filtering",
-              );
-              // Fall back to the original logic if BOM doesn't have data
+              console.warn("⚠ No raw materials found in panel response");
+              // Fall back to the original logic if panel doesn't have data
               fallbackToSpeciesFiltering(
                 productId,
                 quantityRequired,
@@ -4876,7 +4861,7 @@
           },
           error: function (xhr, status, error) {
             console.error(
-              "BOM API error, falling back to species filtering:",
+              "Panel API error, falling back to species filtering:",
               status,
               error,
             );
@@ -4916,7 +4901,32 @@
             </div>
           `;
           container.html(materialsHtml);
-          console.log("[RAW MATERIALS UI] All items have sufficient stock - showing success message");
+          console.log(
+            "[RAW MATERIALS UI] All items have sufficient stock - showing success message",
+          );
+
+          // Grey out and disable the quantity input since nothing needs to be ordered
+          $("#purchaseRequestQuantity").val(0);
+          $("#purchaseRequestQuantity").prop("disabled", true);
+          $("#purchaseRequestQuantity").css({
+            "background-color": "#f5f5f5",
+            color: "#999",
+            cursor: "not-allowed",
+            opacity: "0.6",
+          });
+          $("#purchaseRequestQuantityHint").html(
+            `<small class="text-success">✓ No purchase order needed - all materials are in sufficient stock</small>`,
+          );
+
+          // Also disable the Save button
+          $("#purchaseRequestCreateBtn").prop("disabled", true);
+          $("#purchaseRequestCreateBtn").css({
+            "background-color": "#f5f5f5",
+            color: "#999",
+            cursor: "not-allowed",
+            opacity: "0.6",
+          });
+
           return;
         }
 
@@ -5010,6 +5020,23 @@
         materialsHtml += "</div>";
         container.html(materialsHtml);
         console.log("BOM-based raw materials HTML rendered");
+
+        // Enable the quantity input and Save button since items need ordering
+        $("#purchaseRequestQuantity").prop("disabled", false);
+        $("#purchaseRequestQuantity").css({
+          "background-color": "#fff",
+          color: "#333",
+          cursor: "auto",
+          opacity: "1",
+        });
+
+        $("#purchaseRequestCreateBtn").prop("disabled", false);
+        $("#purchaseRequestCreateBtn").css({
+          "background-color": "",
+          color: "",
+          cursor: "pointer",
+          opacity: "1",
+        });
       }
 
       // Fallback function for species-based filtering

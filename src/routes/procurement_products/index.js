@@ -16,6 +16,7 @@ import {
   CalculateRequirements,
   GetMultiCategoryRecommendations,
 } from "./handlers/calculate_requirements";
+import { RawMaterialCalculator } from "../../services/raw_material_calculator";
 
 // Chart Handler - Temporarily disabled due to file read issues
 // import { GetProcurementSpendBySuppliers } from "./handlers/charts/chart_procurement_spend_by_suppliers";
@@ -623,6 +624,38 @@ export const procurementProductsRoute = (fastify, opts, done) => {
       }
     },
   );
+
+  fastify.get("/raw-materials-for-panel", async (req, reply) => {
+    try {
+      const { productId, quantityRequired, speciesId } = req.query;
+
+      if (!productId || !quantityRequired) {
+        return reply.code(400).send({
+          success: false,
+          message: "Missing productId or quantityRequired",
+        });
+      }
+
+      // Get ALL raw materials with their status (including sufficient stock items)
+      const rawMaterials =
+        await RawMaterialCalculator.getRawMaterialsForProductWithStatus({
+          productId,
+          quantityRequired: parseInt(quantityRequired),
+          speciesId: speciesId || null,
+        });
+
+      return reply.code(200).send({
+        success: true,
+        data: rawMaterials || [],
+      });
+    } catch (err) {
+      console.error("[RAW MATERIALS PANEL] Error:", err.message);
+      return reply.code(500).send({
+        success: false,
+        message: err?.message || "Failed to load raw materials",
+      });
+    }
+  });
 
   fastify.get(
     "/calculate/multi-category",

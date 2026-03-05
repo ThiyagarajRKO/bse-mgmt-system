@@ -995,6 +995,162 @@ export class RawMaterialCalculator {
   }
 
   /**
+   * Get ALL raw materials for a product INCLUDING those with sufficient stock
+   * Returns items with inventory_gap set (can be 0 for sufficient items)
+   * Used by UI to display complete inventory status
+   */
+  static async getRawMaterialsForProductWithStatus(params) {
+    try {
+      const { productId, quantityRequired, speciesId } = params;
+
+      console.log(
+        "[RAW MATERIALS WITH STATUS] Getting all raw materials (including sufficient stock):",
+        {
+          productId,
+          quantityRequired,
+          speciesId,
+        },
+      );
+
+      // Get product details
+      const product = await models.ProductMaster.findOne({
+        where: { id: productId, is_active: true },
+        attributes: ["id", "product_name", "species_master_id"],
+        raw: true,
+      });
+
+      if (!product) {
+        console.warn(
+          "[RAW MATERIALS WITH STATUS] Product not found:",
+          productId,
+        );
+        return [];
+      }
+
+      const effectiveSpeciesId = product.species_master_id || speciesId;
+
+      if (
+        effectiveSpeciesId &&
+        product.species_master_id !== effectiveSpeciesId
+      ) {
+        console.log(
+          "[RAW MATERIALS WITH STATUS] Using provided speciesId override:",
+          speciesId,
+        );
+      }
+
+      // Get BOM entries
+      const simpleBomEntries = await models.BillOfMaterials.findAll({
+        where: { product_master_id: productId, is_active: true },
+        attributes: [
+          "id",
+          "product_master_id",
+          "procurement_product_id",
+          "quantity_required",
+          "unit_of_measure",
+        ],
+        raw: true,
+      });
+
+      console.log(
+        `[RAW MATERIALS WITH STATUS] Found ${simpleBomEntries.length} BOM entries`,
+      );
+
+      if (!simpleBomEntries || simpleBomEntries.length === 0) {
+        console.warn(
+          `[RAW MATERIALS WITH STATUS] No BOM entries for product ${productId}`,
+        );
+        return [];
+      }
+
+      const rawMaterials = [];
+
+      for (const bomEntry of simpleBomEntries) {
+        try {
+          const procProduct = await models.ProcurementProducts.findOne({
+            where: { id: bomEntry.procurement_product_id, is_active: true },
+            attributes: ["id", "product_master_id", "procurement_product_type"],
+            include: [
+              {
+                model: models.ProductMaster,
+                as: "ProductMaster",
+                attributes: ["id", "product_name", "species_master_id"],
+              },
+            ],
+            raw: false,
+          });
+
+          if (!procProduct || !procProduct.ProductMaster) {
+            console.warn(
+              `[RAW MATERIALS WITH STATUS] No procurement product or master: ${bomEntry.procurement_product_id}`,
+            );
+            continue;
+          }
+
+          const productMaster = procProduct.ProductMaster;
+          const bomQuantity = parseFloat(bomEntry.quantity_required) || 1;
+          const requiredQuantity = Math.ceil(quantityRequired * bomQuantity);
+
+          // Get ALL inventory records (don't filter by gap)
+          const allInventoryRecords = await models.PurchaseInventory.findAll({
+            where: { product_master_id: productMaster.id },
+            attributes: ["quantity", "available_stock", "reserved_quantity"],
+            raw: true,
+          });
+
+          const totalStock = allInventoryRecords.reduce((sum, inv) => {
+            const availStock = inv.available_stock || 0;
+            const qty = availStock > 0 ? availStock : inv.quantity || 0;
+            return sum + qty;
+          }, 0);
+
+          const currentStock = Math.ceil(totalStock);
+          const inventoryGap = Math.ceil(
+            Math.max(0, requiredQuantity - currentStock),
+          );
+
+          // IMPORTANT: Include this item REGARDLESS of gap (gap can be 0)
+          rawMaterials.push({
+            procurement_product_id: procProduct.id,
+            procurement_product_type:
+              procProduct.procurement_product_type || "UNPROCESSED",
+            product_master_id: productMaster.id,
+            product_name: productMaster.product_name,
+            bom_quantity_required: bomQuantity,
+            total_quantity_required: requiredQuantity,
+            current_stock: currentStock,
+            inventory_gap: inventoryGap,
+            recommended_order_quantity:
+              inventoryGap > 0 ? Math.ceil(inventoryGap) : 0,
+            unit_of_measure: bomEntry.unit_of_measure || "KG",
+          });
+
+          console.log(
+            `[RAW MATERIALS WITH STATUS] ✅ Added: ${productMaster.product_name} (Gap: ${inventoryGap})`,
+          );
+        } catch (err) {
+          console.error(
+            `[RAW MATERIALS WITH STATUS] Error processing BOM entry:`,
+            err.message,
+          );
+        }
+      }
+
+      console.log(
+        `[RAW MATERIALS WITH STATUS] Returning ${rawMaterials.length} materials (including sufficient stock items)`,
+      );
+
+      return rawMaterials;
+    } catch (error) {
+      console.error(
+        "[RAW MATERIALS WITH STATUS] Error getting raw materials:",
+        error,
+      );
+      return [];
+    }
+  }
+
+  /**
    * Get multi-category raw material recommendations
    * Returns arrays of raw materials grouped by category/type
    */
@@ -1008,8 +1164,8 @@ export class RawMaterialCalculator {
         speciesId,
       });
 
-      // Use the existing getRawMaterialsForProduct method
-      const rawMaterials = await this.getRawMaterialsForProduct({
+      // Get ALL raw materials INCLUDING sufficient stock items
+      const rawMaterials = await this.getRawMaterialsForProductWithStatus({
         productId,
         quantityRequired,
         speciesId,
