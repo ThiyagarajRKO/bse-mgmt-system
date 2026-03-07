@@ -2,10 +2,24 @@
 
 const { v4: uuidv4 } = require("uuid");
 
-/** @type {import('sequelize-cli').Migration} */
+/**
+ * CONSOLIDATED YIELD STANDARD SEEDER
+ *
+ * Consolidates both population and species-specific fixes (shark/ray) into one file.
+ * Handles initial population and ensures shark/ray species have correct yields.
+ *
+ * Yield Standards by Species:
+ * - Shark: 65% RAW, 55% COOKED (thick skin, cartilage, high bone content)
+ * - Ray: 68% RAW, 58% COOKED (wing structure, similar waste to shark)
+ * - Fish (general): 75% RAW, 65% COOKED (bones, scales)
+ * - Shrimp: 70% RAW, 60% COOKED (shell processing)
+ * - Default: 85% RAW, 75% COOKED
+ */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    console.log("[YIELD STANDARDS] 🌾 Starting yield standard population...");
+    console.log(
+      "[YIELD STANDARDS] 🌾 Starting consolidated yield standard population...",
+    );
 
     try {
       // Get all species
@@ -28,15 +42,13 @@ module.exports = {
 
       const yieldData = [];
 
-      // Create yield standards for all combinations
-      // Most poultry/meat products have 85-95% yield for raw processing
-      // Some may have lower yields if processing involves more waste
+      // Create yield standards for all species x derivative combinations
       for (const spec of species) {
         for (const deriv of derivatives) {
-          // Determine yield percentage based on species and derivative
+          // Determine yield percentage based on species
           let yieldPct = 85.0; // Default conservative yield
 
-          // Specific rules
+          // Species-specific rules (order matters: most specific first)
           if (
             spec.species_name &&
             spec.species_name.toLowerCase().includes("chicken")
@@ -59,6 +71,16 @@ module.exports = {
             } else {
               yieldPct = 85.0; // Default chicken yield
             }
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("shark")
+          ) {
+            yieldPct = 65.0; // Shark: low yield due to thick skin, cartilage, high bone content
+          } else if (
+            spec.species_name &&
+            spec.species_name.toLowerCase().includes("ray")
+          ) {
+            yieldPct = 68.0; // Ray: similar to shark, lower yield due to wing structure
           } else if (
             spec.species_name &&
             spec.species_name.toLowerCase().includes("fish")
@@ -89,15 +111,15 @@ module.exports = {
             processing_type: "RAW",
             expected_yield_pct: yieldPct,
             allowed_variance_pct: 2.0,
-            min_yield_threshold: Math.max(60, yieldPct - 10),
+            min_yield_threshold: Math.max(50, yieldPct - 15),
             max_yield_threshold: Math.min(99, yieldPct + 10),
             is_active: true,
             created_at: new Date(),
             updated_at: new Date(),
           });
 
-          // For COOKED processing type (usually 5-15% less yield due to moisture loss)
-          const cookedYield = Math.max(60, yieldPct - 10);
+          // For COOKED processing type (usually 10% less yield due to moisture loss)
+          const cookedYield = Math.max(55, yieldPct - 10);
           yieldData.push({
             id: uuidv4(),
             species_id: spec.id,
@@ -105,7 +127,7 @@ module.exports = {
             processing_type: "COOKED",
             expected_yield_pct: cookedYield,
             allowed_variance_pct: 3.0,
-            min_yield_threshold: Math.max(50, cookedYield - 10),
+            min_yield_threshold: Math.max(45, cookedYield - 15),
             max_yield_threshold: Math.min(99, cookedYield + 10),
             is_active: true,
             created_at: new Date(),
@@ -133,39 +155,110 @@ module.exports = {
 
       if (existingCount[0].count > 0) {
         console.log(
-          `[YIELD STANDARDS] ℹ️  Yield standards already exist (${existingCount[0].count} records). Skipping insertion to avoid duplicates.`,
+          `[YIELD STANDARDS] ℹ️  Yield standards already exist (${existingCount[0].count} records). Applying updates...`,
         );
-        return;
+
+        // Update shark yields to correct values
+        const sharkSpecies = await queryInterface.sequelize.query(
+          `SELECT id FROM species_master WHERE species_name ILIKE '%shark%' AND is_active = true`,
+          { type: Sequelize.QueryTypes.SELECT },
+        );
+
+        if (sharkSpecies.length > 0) {
+          const sharkIds = sharkSpecies.map((s) => s.id);
+          await queryInterface.sequelize.query(
+            `UPDATE yield_standard_master 
+             SET expected_yield_pct = 65.0, min_yield_threshold = 55, max_yield_threshold = 75, updated_at = NOW()
+             WHERE species_id IN (:sharkIds) AND processing_type = 'RAW' AND is_active = true`,
+            {
+              replacements: { sharkIds },
+              type: Sequelize.QueryTypes.UPDATE,
+            },
+          );
+
+          await queryInterface.sequelize.query(
+            `UPDATE yield_standard_master 
+             SET expected_yield_pct = 55.0, min_yield_threshold = 45, max_yield_threshold = 65, updated_at = NOW()
+             WHERE species_id IN (:sharkIds) AND processing_type = 'COOKED' AND is_active = true`,
+            {
+              replacements: { sharkIds },
+              type: Sequelize.QueryTypes.UPDATE,
+            },
+          );
+
+          console.log(
+            `[YIELD STANDARDS] ✅ Updated ${sharkSpecies.length} shark species`,
+          );
+        }
+
+        // Update ray yields to correct values
+        const raySpecies = await queryInterface.sequelize.query(
+          `SELECT id FROM species_master WHERE species_name ILIKE '%ray%' AND is_active = true`,
+          { type: Sequelize.QueryTypes.SELECT },
+        );
+
+        if (raySpecies.length > 0) {
+          const rayIds = raySpecies.map((r) => r.id);
+          await queryInterface.sequelize.query(
+            `UPDATE yield_standard_master 
+             SET expected_yield_pct = 68.0, min_yield_threshold = 58, max_yield_threshold = 78, updated_at = NOW()
+             WHERE species_id IN (:rayIds) AND processing_type = 'RAW' AND is_active = true`,
+            {
+              replacements: { rayIds },
+              type: Sequelize.QueryTypes.UPDATE,
+            },
+          );
+
+          await queryInterface.sequelize.query(
+            `UPDATE yield_standard_master 
+             SET expected_yield_pct = 58.0, min_yield_threshold = 48, max_yield_threshold = 68, updated_at = NOW()
+             WHERE species_id IN (:rayIds) AND processing_type = 'COOKED' AND is_active = true`,
+            {
+              replacements: { rayIds },
+              type: Sequelize.QueryTypes.UPDATE,
+            },
+          );
+
+          console.log(
+            `[YIELD STANDARDS] ✅ Updated ${raySpecies.length} ray species`,
+          );
+        }
+
+        console.log(`[YIELD STANDARDS] ✅ Yield standards synchronized`);
+      } else {
+        // Insert yield standards
+        await queryInterface.bulkInsert("yield_standard_master", yieldData, {});
+        console.log(
+          `[YIELD STANDARDS] ✅ Successfully populated ${yieldData.length} yield standards`,
+        );
       }
-
-      // Insert yield standards
-      await queryInterface.bulkInsert("yield_standard_master", yieldData, {});
-
-      console.log(
-        `[YIELD STANDARDS] ✅ Successfully populated ${yieldData.length} yield standards`,
-      );
 
       // Log summary
       const summary = await queryInterface.sequelize.query(
         `SELECT 
           processing_type,
           COUNT(*) as count,
-          AVG(CAST(expected_yield_pct AS DECIMAL)) as avg_yield
+          ROUND(AVG(CAST(expected_yield_pct AS DECIMAL(5,2))), 2) as avg_yield,
+          MIN(CAST(expected_yield_pct AS DECIMAL(5,2))) as min_yield,
+          MAX(CAST(expected_yield_pct AS DECIMAL(5,2))) as max_yield
          FROM yield_standard_master 
          WHERE is_active = true
-         GROUP BY processing_type`,
+         GROUP BY processing_type
+         ORDER BY processing_type`,
         { type: Sequelize.QueryTypes.SELECT },
       );
 
-      console.log("[YIELD STANDARDS] 📈 Population Summary:");
+      console.log("[YIELD STANDARDS] 📈 Final Summary:");
       for (const row of summary) {
         console.log(
-          `  • ${row.processing_type}: ${row.count} records (avg yield: ${parseFloat(row.avg_yield).toFixed(2)}%)`,
+          `  • ${row.processing_type}: ${row.count} records | Avg: ${row.avg_yield}% | Range: ${row.min_yield}%-${row.max_yield}%`,
         );
       }
+
+      console.log("[YIELD STANDARDS] ✅ Consolidated seeding complete");
     } catch (error) {
       console.error(
-        "[YIELD STANDARDS] 💥 Error populating yield standards:",
+        "[YIELD STANDARDS] 💥 Error in consolidated seeding:",
         error.message,
       );
       throw error;
@@ -173,12 +266,9 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    console.log("[YIELD STANDARDS] Removing yield standard population...");
+    console.log("[YIELD STANDARDS] Removing yield standard data...");
     try {
-      // Delete all yield standards (or only recently added ones to be safe)
-      await queryInterface.sequelize.query(
-        "DELETE FROM yield_standard_master WHERE created_at >= NOW() - INTERVAL 1 DAY",
-      );
+      await queryInterface.sequelize.query("DELETE FROM yield_standard_master");
       console.log("[YIELD STANDARDS] ✅ Yield standards removed");
     } catch (error) {
       console.error(
