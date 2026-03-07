@@ -374,7 +374,7 @@ export const GetAll = ({
                       {
                         // join orders so that client can display order_no instead
                         model: models.Orders,
-                        attributes: ["order_no"],
+                        attributes: ["id", "order_no"],
                         required: false,
                       },
                     ],
