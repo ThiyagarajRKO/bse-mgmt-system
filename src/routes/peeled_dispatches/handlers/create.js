@@ -37,18 +37,24 @@ export const Create = async (
         });
       }
 
-      // Get order_id from peeling if not provided
+      // Get peeling product to retrieve order_id and peeling_id
       let final_order_id = order_id;
-      if (!final_order_id) {
-        const peelingProduct = await PeelingProducts.Get({
-          id: peeled_product_id,
-        });
-        if (peelingProduct?.peeling_id) {
-          const peeling = await Peeling.Get({ id: peelingProduct.peeling_id });
+      let peeling_id = null;
+      
+      const peelingProduct = await PeelingProducts.Get({
+        id: peeled_product_id,
+      });
+      
+      if (peelingProduct?.peeling_id) {
+        peeling_id = peelingProduct.peeling_id;
+        
+        if (!final_order_id) {
+          const peeling = await Peeling.Get({ id: peeling_id });
           final_order_id = peeling?.order_id;
         }
       }
 
+      // Create the peeled dispatch
       const dispatch = await PeeledDispatches.Insert(profile_id, {
         peeled_product_id,
         unit_master_id,
@@ -60,6 +66,29 @@ export const Create = async (
         order_id: final_order_id,
         is_active: true,
       });
+
+      // Link QA record to the peeled dispatch if a QA record exists for this peeling
+      if (peeling_id && fastify?.models?.QAChecklist) {
+        try {
+          const qaRecord = await fastify.models.QAChecklist.findOne({
+            where: { peeling_id, is_active: true },
+            order: [["created_at", "DESC"]],
+            raw: true,
+          });
+
+          if (qaRecord) {
+            // Update the peeled dispatch with the QA record link
+            await dispatch.update({
+              qa_checklist_id: qaRecord.id,
+            });
+          }
+        } catch (qaErr) {
+          fastify.log.warn(
+            `[Peeled Dispatch] Could not link QA record: ${qaErr.message}`,
+          );
+          // Continue - QA link is optional
+        }
+      }
 
       resolve({
         message: "Dispatch data has been inserted successfully",
