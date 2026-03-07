@@ -369,6 +369,8 @@
       }
 
       .qa-dropdown + .select2-container .select2-selection__rendered {
+        /* use the same white text that other slide‑panel dropdowns use so the
+           order selector visually matches the rest of the app */
         color: #f7f9fc !important;
         padding-left: 0.5rem;
       }
@@ -382,22 +384,28 @@
         cursor: pointer;
       }
 
-      /* QA Metrics Section Styling */
+      /* QA Metrics Section Styling - keep font sizing/color consistent with
+         the generic slideInPanel styles used elsewhere in the app.  most
+         of the panel text should simply inherit the panel's base color
+         (#e3e3e3) and use the normal 1rem font size.  only tweak weight
+         slightly to keep labels legible. */
       #qaSlideInPanel .form-group {
         margin-bottom: 1.25rem;
       }
 
       #qaSlideInPanel .form-group label {
-        color: #f7f9fc;
+        /* match generic side‑panel label color/size */
+        color: #e3e3e3;
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 1rem;
         margin-bottom: 0.5rem;
       }
 
       #qaSlideInPanel .form-control:focus {
         background-color: rgba(98, 114, 147, 0.1);
         border-color: #627293;
-        color: #f7f9fc;
+        /* keep focus text color same as regular panel text */
+        color: #e3e3e3;
       }
 
       #qaSlideInPanel .form-check-input:checked {
@@ -406,7 +414,8 @@
       }
 
       #qaSlideInPanel .form-check-label {
-        color: #f7f9fc;
+        /* match other panels */
+        color: #e3e3e3;
         font-weight: 500;
         margin-left: 0.5rem;
       }
@@ -414,7 +423,8 @@
       #qaSlideInPanel textarea.form-control {
         background-color: transparent;
         border-color: rgba(98, 114, 147, 0.6);
-        color: #f7f9fc;
+        /* regular panel text color */
+        color: #e3e3e3;
       }
 
       #qaSlideInPanel textarea.form-control:focus {
@@ -425,12 +435,79 @@
       #qaSlideInPanel .alert {
         background-color: rgba(98, 114, 147, 0.15) !important;
         border-color: rgba(98, 114, 147, 0.3) !important;
-        color: #f7f9fc;
+        color: #e3e3e3;
       }
 
       #qaSlideInPanel .text-muted {
-        color: #8192b3 !important;
+        /* use the standard bootstrap muted color so it doesn't look
+           like a bespoke scheme just for QA */
+        color: #6c757d !important;
         font-size: 0.85rem;
+      }
+
+      /* enforce 14px base for entire QA panel and its inputs
+         as the global body font-size is 14px but bootstrap inputs default
+         to 1rem (16px) so we need explicit overrides here */
+      #qaSlideInPanel {
+        font-size: 14px !important;
+        /* ensure panel text colour is the standard grey used elsewhere */
+        color: #e3e3e3;
+      }
+
+      /* catch any descendants including headings or utility classes that
+         might inflate font-size; kicker to 14px with !important */
+      #qaSlideInPanel,
+      #qaSlideInPanel * {
+        font-size: 14px !important;
+      }
+
+      /* override bootstrap size utility used on the panel heading */
+      #qaSlideInPanel .fs-5 {
+        font-size: 14px !important;
+      }
+
+      #qaSlideInPanel .form-control,
+      #qaSlideInPanel select,
+      #qaSlideInPanel textarea,
+      #qaSlideInPanel .form-check-label,
+      #qaSlideInPanel .select2-selection__rendered {
+        font-size: 14px !important;
+      }
+
+      /* Peeling panel should mirror the QA/other slide panels styling as well */
+      #peelingSlideInPanel .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      #peelingSlideInPanel .form-group label {
+        color: #e3e3e3;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      #peelingSlideInPanel .form-control:focus {
+        background-color: rgba(98, 114, 147, 0.1);
+        border-color: #627293;
+        color: #e3e3e3;
+      }
+
+      #peelingSlideInPanel .form-check-label {
+        color: #e3e3e3;
+        font-weight: 500;
+        margin-left: 0.5rem;
+      }
+
+      #peelingSlideInPanel textarea.form-control {
+        background-color: transparent;
+        border-color: rgba(98, 114, 147, 0.6);
+        color: #e3e3e3;
+      }
+
+      #peelingSlideInPanel .alert {
+        background-color: rgba(98, 114, 147, 0.15) !important;
+        border-color: rgba(98, 114, 147, 0.3) !important;
+        color: #e3e3e3;
       }
 
       table.dataTable th {
@@ -2137,6 +2214,11 @@
                           type="hidden"
                           name="qa_order_uuid"
                         />
+                        <input
+                          id="qa_peeled_dispatch_id"
+                          type="hidden"
+                          name="qa_peeled_dispatch_id"
+                        />
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -3182,11 +3264,26 @@
                 targets: [4],
                 className: "text-left",
                 render: function (data, type, row) {
-                  const qaStatus = row?.qa_status || 'Pending';
-                  const statusClass = qaStatus === 'Passed' ? 'text-success' :
-                                     qaStatus === 'Failed' ? 'text-danger' :
-                                     qaStatus === 'Conditional' ? 'text-warning' : 'text-secondary';
-                  return `<span class="qa-status-link ${statusClass}" style="cursor: pointer; text-decoration: underline;" peeled_dispatch_id="${row?.id}">${qaStatus}</span>`;
+                  // status values are stored as PASS/FAIL/PENDING (maybe CONDITIONAL)
+                  const qaStatusRaw = row?.qa_status || 'PENDING';
+                  const qaStatus =
+                    qaStatusRaw === 'PASS'
+                      ? 'Passed'
+                      : qaStatusRaw === 'FAIL'
+                      ? 'Failed'
+                      : qaStatusRaw === 'CONDITIONAL'
+                      ? 'Conditional'
+                      : 'Pending';
+                  const statusClass = qaStatusRaw === 'PASS'
+                    ? 'text-success'
+                    : qaStatusRaw === 'FAIL'
+                    ? 'text-danger'
+                    : qaStatusRaw === 'CONDITIONAL'
+                    ? 'text-warning'
+                    : 'text-secondary';
+                  // use peeled_dispatch_id computed by server (may be null)
+                  const pdId = row?.peeled_dispatch_id || '';
+                  return `<span class="qa-status-link ${statusClass}" style="cursor: pointer; text-decoration: underline;" peeled_dispatch_id="${pdId}">${qaStatus}</span>`;
                 },
               },
               {
@@ -5371,6 +5468,7 @@
               { data: "pp.ProductMaster.product_name" },
               { data: "pp.yield_quantity" },
               { data: "peeled_dispatch_quantity" },
+              { data: null }, // QA status link
               { data: "temperature" },
               { data: "UnitMaster.unit_code" },
               { data: "VehicleMaster.vehicle_number" },
@@ -5393,6 +5491,30 @@
                 className: "text-left",
                 render: function (data, type, row) {
                   return `<span peeled_product_id='${row["pp"]?.id}'>${data}-${row?.["pp"]?.yield_quantity}</i>`;
+                },
+              },
+              {
+                // QA status link column for peeled dispatch products
+                targets: [4],
+                className: "text-left",
+                render: function (data, type, row) {
+                  const qaStatusRaw = row?.qa_status || 'PENDING';
+                  const qaStatus =
+                    qaStatusRaw === 'PASS'
+                      ? 'Passed'
+                      : qaStatusRaw === 'FAIL'
+                      ? 'Failed'
+                      : qaStatusRaw === 'CONDITIONAL'
+                      ? 'Conditional'
+                      : 'Pending';
+                  const statusClass = qaStatusRaw === 'PASS'
+                    ? 'text-success'
+                    : qaStatusRaw === 'FAIL'
+                    ? 'text-danger'
+                    : qaStatusRaw === 'CONDITIONAL'
+                    ? 'text-warning'
+                    : 'text-secondary';
+                  return `<span class="qa-status-link ${statusClass}" style="cursor: pointer; text-decoration: underline;" peeled_dispatch_id="${row?.id}">${qaStatus}</span>`;
                 },
               },
               {
@@ -7243,6 +7365,7 @@
           // Clear auto-populated fields and trigger Select2 update
           $("#qa_order_id").val("").trigger("change");
           $("#qa_order_uuid").val("");
+          $("#qa_peeled_dispatch_id").val("");
           $("#qa_lot_no").val("").trigger("change");
           $("#qa_product").val("").trigger("change");
           $("#qa_quantity").val("");
@@ -7272,8 +7395,15 @@
         // Load QA data for dropdown population
         async function loadQADropdownData() {
           try {
-            // Fetch peeling data to get only products with peeled records
-            const peelingResponse = await fetch('/api/peeling/');
+            // Fetch peeling data to get only products with peeled records.  If
+            // the page was loaded with an `order_id` query parameter we
+            // forward that along so the API can restrict results to a single
+            // order and the dropdowns on the QA panel don’t get overwhelmed.
+            let apiUrl = '/api/peeling/';
+            if (current_order_id) {
+              apiUrl += `?order_id=${encodeURIComponent(current_order_id)}`;
+            }
+            const peelingResponse = await fetch(apiUrl);
             const peelingResult = await peelingResponse.json();
 
             console.log("[QA] Peeling API Response:", peelingResult);
@@ -7294,6 +7424,9 @@
             console.log("[QA] Found " + peelingRecords.length + " peeling records");
 
             // Extract unique orders, lots, and products from peeling data
+            // orderIdMap: order UUID -> order number (string)
+            const orderIdMap = new Map();
+            // also keep a simple set of order IDs for quick size checks
             const orders = new Set();
             const lots = new Set();
             const products = new Set();
@@ -7308,23 +7441,41 @@
               const procurementProduct = dispatch?.pp;
               const procurementLot = procurementProduct?.pl;
 
-              const orderNo = procurementLot?.order_id || "";
+              // procurementLot.order_id will be the FK; we prefer the human friendly
+              // order number if the include pulled it back.
+              const orderNo =
+                procurementLot?.order?.order_no ||
+                procurementLot?.order_id ||
+                dispatch?.order?.order_no ||
+                "";
               const lotNo = procurementLot?.procurement_lot || "";
               const lotId = procurementLot?.id || "";
+              // orderId must be the UUID (not the human-readable number) so we
+              // can populate the dropdown value correctly.  procurementLot may
+              // include a joined order record when the API returns it, otherwise
+              // fall back to the raw FK.
+              const orderId =
+                procurementLot?.order?.id ||
+                procurementLot?.order_id ||
+                dispatch?.order_id ||
+                "";
 
               // Get products from PeelingProducts array
               if (Array.isArray(peeling.PeelingProducts)) {
                 peeling.PeelingProducts.forEach(peeledProduct => {
                   const productName = peeledProduct?.ProductMaster?.product_name || "";
 
-                  // Add order
-                  if (orderNo) {
-                    orders.add(orderNo);
-                    if (!orderLotMap.has(orderNo)) {
-                      orderLotMap.set(orderNo, new Set());
+                  // Add order (store id->number mapping). only include when we
+                  // were able to derive an identifier. previously the variable
+                  // was undefined so the dropdown remained empty.
+                  if (orderId) {
+                        orderIdMap.set(orderId, orderNo);
+                        orders.add(orderId);
+                    if (!orderLotMap.has(orderId)) {
+                      orderLotMap.set(orderId, new Set());
                     }
                     if (lotNo) {
-                      orderLotMap.get(orderNo).add(lotNo);
+                      orderLotMap.get(orderId).add(lotNo);
                     }
                   }
 
@@ -7354,13 +7505,16 @@
             window.qaOrderLotMap = orderLotMap;
             window.qaLotProductMap = lotProductMap;
             window.qaLotIdMap = lotIdMap;
+            window.qaOrderIdMap = orderIdMap;
 
             // Populate Order dropdown
             const orderSelect = $("#qa_order_id");
             orderSelect.html('<option value="">Select Order Number</option>');
-            Array.from(orders).sort().forEach(order => {
-              orderSelect.append(`<option value="${order}">${order}</option>`);
-            });
+            Array.from(orderIdMap.entries())
+              .sort((a, b) => a[1].localeCompare(b[1]))
+              .forEach(([id, no]) => {
+                orderSelect.append(`<option value="${id}">${no}</option>`);
+              });
 
             // Populate Lot dropdown
             const lotSelect = $("#qa_lot_no");
@@ -7375,6 +7529,21 @@
             Array.from(products).sort().forEach(product => {
               productSelect.append(`<option value="${product}">${product}</option>`);
             });
+
+            // debug/logging so we can see what actually populated
+            console.log("[QA] built sets - orders:", Array.from(orderIdMap.entries()));
+            console.log("[QA] built sets - lots:", Array.from(lots));
+            console.log("[QA] built sets - products:", Array.from(products));
+
+            if (orderIdMap.size === 0 && peelingRecords.length > 0) {
+              toastr["warning"]("QA orders dropdown empty - check that procurement lots include order info");
+            }
+            if (lots.size === 0 && peelingRecords.length > 0) {
+              toastr["warning"]("QA lots dropdown empty - no lot numbers found in peeling records");
+            }
+            if (products.size === 0 && peelingRecords.length > 0) {
+              toastr["warning"]("QA product dropdown empty - no peeled products detected");
+            }
 
             // Initialize Select2 for QA dropdowns
             $(".qa-dropdown").select2({
@@ -7392,7 +7561,9 @@
 
         // Handle Order selection - filter lots by order
         $("#qa_order_id").on("change", function() {
-          const selectedOrder = $(this).val();
+          const selectedOrder = $(this).val(); // this is now order UUID
+          // mirror into hidden field for submission
+          $("#qa_order_uuid").val(selectedOrder);
           const lotSelect = $("#qa_lot_no");
 
           if (!selectedOrder) {
@@ -7428,7 +7599,7 @@
 
         // Handle Product selection - autopopulate quantity and order UUID
         $("#qa_product").on("change", function() {
-          const selectedOrder = $("#qa_order_id").val();
+          const selectedOrder = $("#qa_order_id").val(); // order UUID value
           const selectedLot = $("#qa_lot_no").val();
           const selectedProduct = $(this).val();
 
@@ -7456,9 +7627,16 @@
               return;
             }
 
-            // Fetch peeling data using lot ID
+            // Fetch peeling data using lot ID (and order if available)
             try {
-              const peelingResponse = await fetch(`/api/peeling?procurement_lot_id=${lotId}`, {
+              let url = `/api/peeling?procurement_lot_id=${lotId}`;
+              if (orderNo) {
+                // the API now supports filtering by order_id so we can reduce
+                // the payload when the user has already chosen an order in the
+                // QA panel.  orderNo at this point is the UUID value.
+                url += `&order_id=${orderNo}`;
+              }
+              const peelingResponse = await fetch(url, {
                 method: 'GET'
               });
 
@@ -7617,10 +7795,12 @@
 
           // Prepare QA data
           const qaData = {
+            // always send actual UUID; order_uuid field may contain it when editing
             order_id: $("#qa_order_uuid").val() || $("#qa_order_id").val(),
             lot_no: $("#qa_lot_no").val(),
             product: $("#qa_product").val(),
             quantity: $("#qa_quantity").val(),
+            peeled_dispatch_id: $("#qa_peeled_dispatch_id").val() || null,
             broken_percentage: parseFloat(brokenPercent),
             glazing_percentage: $("#qa_glazing_percentage").val() || null,
             temperature: parseFloat(temperature),
@@ -7735,8 +7915,9 @@
               const productName = peelingProducts?.[0]?.ProductMaster?.product_name || qa?.product || "";
               const totalYield = peelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0) || qa?.quantity || "";
 
-              // Populate auto-filled fields with peeling data
-              $("#qa_order_id").val(orderNumber);
+              // Populate auto-filled fields with peeling data.  the select value
+              // must be the UUID; set the hidden field if we also have it.
+              $("#qa_order_id").val(orderUUID).trigger("change");
               $("#qa_order_uuid").val(orderUUID);
               $("#qa_lot_no").val(lotNumber);
               $("#qa_product").val(productName);
@@ -7746,6 +7927,9 @@
               $("#qa_broken_percentage").val(qa.broken_percentage || "");
               $("#qa_glazing_percentage").val(qa.glazing_percentage || "");
               $("#qa_temperature").val(qa.temperature || "");
+
+              // keep track of which peeled dispatch this QA pertains to
+              $("#qa_peeled_dispatch_id").val(qa.peeled_dispatch_id || "");
 
               // Set radio buttons
               $(`input[name='qa_odour_status'][value='${qa.odour_status}']`).prop("checked", true);
@@ -8147,6 +8331,55 @@
             toastr["error"](error.responseJSON?.message || "Error loading QA report");
           }
         });
+
+          // Clicking the status text should either open the existing QA record or
+          // start a new inspection for that dispatch.
+          $(document).on("click", ".qa-status-link", async function () {
+            const pdId = $(this).attr("peeled_dispatch_id");
+            if (!pdId) return;
+            try {
+              // try to find an existing QA for this dispatch
+              const resp = await $.ajax({
+                url: `/api/qa?peeled_dispatch_id=${encodeURIComponent(pdId)}&limit=1`,
+                method: "GET",
+                dataType: "json",
+              });
+              if (resp?.data?.rows && resp.data.rows.length > 0) {
+                const qaId = resp.data.rows[0].id;
+                // delegate to the inspect handler by triggering a click on the
+                // hidden inspect icon (it will fetch and populate the form).
+                $(`.inspectQAReport[data-qa-id="${qaId}"]`).click();
+              } else {
+                // no existing QA – open blank form tied to this dispatch
+                resetQAForm();
+                $("#qa_peeled_dispatch_id").val(pdId);
+                // optionally prefill order/lot/product based on dispatch
+                const dispatchResp = await $.ajax({
+                  url: `/api/peeled_dispatches/${pdId}`,
+                  method: "GET",
+                  dataType: "json",
+                });
+                const disp = dispatchResp.data;
+                if (disp) {
+                  // fill some of the auto fields from the dispatch
+                  const orderUUID = disp.order_id || "";
+                  $("#qa_order_id").val(orderUUID).trigger("change");
+                  $("#qa_order_uuid").val(orderUUID);
+                  const lotNo = disp.pp?.pl?.procurement_lot || "";
+                  $("#qa_lot_no").val(lotNo).trigger("change");
+                  const prodName = disp.pp?.ProductMaster?.product_name || "";
+                  $("#qa_product").val(prodName).trigger("change");
+                  const qty = disp.yield_quantity || "";
+                  $("#qa_quantity").val(qty);
+                }
+                // open panel for new QA entry
+                $("#qaSlideInPanel").css("right", "0");
+              }
+            } catch (err) {
+              console.error("Error opening QA for dispatch", err);
+              toastr["error"]("Unable to load QA data");
+            }
+          });
 
         // Inspect QA Record - Opens form for editing
         $(document).on("click", ".inspectQAReport", async function () {
