@@ -241,7 +241,12 @@ export const Get = ({ id }) => {
           {
             association: "pd",
             model: models.PeeledDispatches,
-            attributes: ["id", "order_id", "peeled_product_id", "qa_id"],
+            attributes: [
+              "id",
+              "order_id",
+              "peeled_product_id",
+              "qa_checklist_id",
+            ],
             include: [
               {
                 association: "pp",
@@ -253,7 +258,7 @@ export const Get = ({ id }) => {
                 attributes: ["id", "order_number", "customer_id"],
               },
               {
-                association: "qa",
+                association: "qaCheck",
                 model: models.QAChecklist,
                 attributes: ["id", "status", "lot_no"],
               },

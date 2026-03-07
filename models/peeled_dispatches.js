@@ -63,13 +63,6 @@ module.exports = (sequelize, DataTypes) => {
           onUpdate: "CASCADE",
           onDelete: "SET NULL",
         });
-
-        PeeledDispatches.belongsTo(models.QAChecklist, {
-          as: "qa",
-          foreignKey: "qa_id",
-          onUpdate: "CASCADE",
-          onDelete: "SET NULL",
-        });
       }
 
       // Has Many
@@ -104,12 +97,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         comment:
           "Reference to the sales order for which this peeled dispatch is made",
-      },
-      qa_id: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        comment:
-          "Reference to the QA Checklist record for quality verification",
       },
       qa_checklist_id: {
         type: DataTypes.UUID,

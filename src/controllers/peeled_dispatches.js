@@ -287,8 +287,8 @@ export const GetAll = ({ start, length, search }) => {
           [
             sequelize.literal(`(
               SELECT qc.status
-              FROM qa_checklists qc
-              WHERE qc.peeled_dispatch_id = "PeeledDispatches".id
+              FROM qa_checklist qc
+              WHERE qc.id = "PeeledDispatches".qa_checklist_id
               ORDER BY qc.created_at DESC
               LIMIT 1
             )`),
