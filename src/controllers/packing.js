@@ -18,6 +18,18 @@ export const Insert = async (profile_id, packing_data) => {
         });
       }
 
+      // copy order_id from peeled dispatch if available and not supplied
+      if (!packing_data.order_id && packing_data.peeled_dispatch_id) {
+        const pd = await models.PeeledDispatches.findOne({
+          attributes: ["order_id"],
+          where: { id: packing_data.peeled_dispatch_id, is_active: true },
+          raw: true,
+        });
+        if (pd && pd.order_id) {
+          packing_data.order_id = pd.order_id;
+        }
+      }
+
       const result = await models.Packing.create(packing_data, {
         profile_id,
       });

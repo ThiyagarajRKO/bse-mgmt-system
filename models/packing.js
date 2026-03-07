@@ -115,12 +115,23 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
       paranoid: true,
       deletedAt: "deleted_at",
-    }
+    },
   );
 
   // Create Hook
   Packing.beforeCreate(async (data, options) => {
     try {
+      // set order_id from linked peeled dispatch if missing
+      if (!data.order_id && data.peeled_dispatch_id) {
+        const pd = await Packing.sequelize.models.PeeledDispatches.findOne({
+          attributes: ["order_id"],
+          where: { id: data.peeled_dispatch_id, is_active: true },
+          raw: true,
+        });
+        if (pd && pd.order_id) {
+          data.order_id = pd.order_id;
+        }
+      }
       data.created_by = options.profile_id;
     } catch (err) {
       console.log("Error while appending a packing data", err?.message || err);
@@ -223,7 +234,7 @@ const updateInvenoryQuantity = async (sequelize, data, options) => {
             id: inventoryData?.id,
             is_active: true,
           },
-        }
+        },
       ).catch(console.log);
     } else {
       await sequelize.models.SalesInventory.create({

@@ -114,6 +114,19 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   Dispatches.beforeCreate(async (data, options) => {
     try {
+      // ensure order_id flows through tracing chain; infer from procurement
+      // product if it wasn't explicitly set by the caller
+      if (!data.order_id && data.procurement_product_id) {
+        const pp =
+          await Dispatches.sequelize.models.ProcurementProducts.findOne({
+            attributes: ["order_id"],
+            where: { id: data.procurement_product_id, is_active: true },
+            raw: true,
+          });
+        if (pp && pp.order_id) {
+          data.order_id = pp.order_id;
+        }
+      }
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(

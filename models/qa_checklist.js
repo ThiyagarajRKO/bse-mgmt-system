@@ -254,6 +254,54 @@ module.exports = (sequelize, DataTypes) => {
     },
   );
 
+  // before create we try to populate order_id based on any linked entities so
+  // downstream reporting/filters can use the column without needing to
+  // traverse the entire join tree.
+  QAChecklist.beforeCreate(async (data, options) => {
+    try {
+      if (!data.order_id) {
+        let inferred = null;
+        const { peeled_dispatch_id, peeled_product_id, peeling_id } = data;
+        const seq = QAChecklist.sequelize;
+
+        if (peeled_dispatch_id) {
+          const pd = await seq.models.PeeledDispatches.findOne({
+            attributes: ["order_id"],
+            where: { id: peeled_dispatch_id, is_active: true },
+            raw: true,
+          });
+          if (pd && pd.order_id) inferred = pd.order_id;
+        }
+
+        if (!inferred && peeled_product_id) {
+          // find the peeled dispatch record which references this product
+          const pd2 = await seq.models.PeeledDispatches.findOne({
+            attributes: ["order_id"],
+            where: { peeled_product_id: peeled_product_id, is_active: true },
+            raw: true,
+          });
+          if (pd2 && pd2.order_id) inferred = pd2.order_id;
+        }
+
+        if (!inferred && peeling_id) {
+          const p = await seq.models.Peeling.findOne({
+            attributes: ["order_id"],
+            where: { id: peeling_id, is_active: true },
+            raw: true,
+          });
+          if (p && p.order_id) inferred = p.order_id;
+        }
+
+        if (inferred) {
+          data.order_id = inferred;
+        }
+      }
+      data.created_by = options.profile_id;
+    } catch (err) {
+      console.log("Error populating QA order_id:", err?.message || err);
+    }
+  });
+
   // Static methods
   QAChecklist.findByBatchNo = async function (batchNo) {
     return this.findOne({

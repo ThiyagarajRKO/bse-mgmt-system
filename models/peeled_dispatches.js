@@ -144,6 +144,39 @@ module.exports = (sequelize, DataTypes) => {
   // Create Hook
   PeeledDispatches.beforeCreate(async (data, options) => {
     try {
+      // infer order_id from peeled_product/peeling chain if not provided
+      if (!data.order_id && data.peeled_product_id) {
+        const pp =
+          await PeeledDispatches.sequelize.models.PeelingProducts.findOne({
+            attributes: ["order_id"],
+            where: { id: data.peeled_product_id, is_active: true },
+            raw: true,
+          });
+        if (pp && pp.order_id) {
+          data.order_id = pp.order_id;
+        } else {
+          // if product doesn't have order, try to look at parent dispatch via
+          // peeling -> dispatch relationship
+          const dispatchInfo =
+            await PeeledDispatches.sequelize.models.Peeling.findOne({
+              attributes: [],
+              where: { id: pp?.peeling_id },
+              include: [
+                {
+                  model: PeeledDispatches.sequelize.models.Dispatches,
+                  attributes: ["order_id"],
+                  as: "dis",
+                  required: false,
+                },
+              ],
+              raw: true,
+              nest: true,
+            });
+          if (dispatchInfo && dispatchInfo.dis && dispatchInfo.dis.order_id) {
+            data.order_id = dispatchInfo.dis.order_id;
+          }
+        }
+      }
       data.created_by = options.profile_id;
     } catch (err) {
       console.log(

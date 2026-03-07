@@ -11,6 +11,32 @@ export const BulkUpsert = async (profile_id, peeling_product_data) => {
         });
       }
 
+      // before inserting/updating records, try to populate order_id if it's
+      // missing on any item by looking up the related peeling record and
+      // following the dispatch->procurement_product->procurement_lot chain.
+      if (Array.isArray(peeling_product_data)) {
+        for (const item of peeling_product_data) {
+          if (!item.order_id && item.peeling_id) {
+            const [[{ order_id }]] = await sequelize.query(
+              `SELECT pl.order_id
+               FROM procurement_lots pl
+               JOIN procurement_products prp ON prp.procurement_lot_id = pl.id AND prp.is_active = true
+               JOIN dispatches d ON d.procurement_product_id = prp.id AND d.is_active = true
+               JOIN peeling p ON p.dispatch_id = d.id AND p.is_active = true
+               WHERE p.id = :peelingId
+               LIMIT 1`,
+              {
+                replacements: { peelingId: item.peeling_id },
+                type: sequelize.QueryTypes.SELECT,
+              },
+            );
+            if (order_id) {
+              item.order_id = order_id;
+            }
+          }
+        }
+      }
+
       const result = await models.PeelingProducts.bulkCreate(
         peeling_product_data,
         {
@@ -21,6 +47,7 @@ export const BulkUpsert = async (profile_id, peeling_product_data) => {
             "peeling_status",
             "peeling_notes",
             "product_master_id",
+            "order_id", // ensure order link is kept up-to-date on upsert
           ],
           profile_id,
         },

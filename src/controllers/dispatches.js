@@ -39,6 +39,18 @@ export const Insert = async (profile_id, dispatch_data) => {
         });
       }
 
+      // try to set order_id from procurement product if not part of payload
+      if (!dispatch_data.order_id && dispatch_data.procurement_product_id) {
+        const pp = await models.ProcurementProducts.findOne({
+          attributes: ["order_id"],
+          where: { id: dispatch_data.procurement_product_id, is_active: true },
+          raw: true,
+        });
+        if (pp && pp.order_id) {
+          dispatch_data.order_id = pp.order_id;
+        }
+      }
+
       const result = await models.Dispatches.create(dispatch_data, {
         profile_id,
       });
@@ -105,6 +117,33 @@ export const Get = ({ id }) => {
         where: {
           id,
           is_active: true,
+        },
+        attributes: {
+          include: [
+            // bring over same helpers as GetAll so the single record can drive
+            // QA / peeled dispatch interactions in the UI
+            [
+              sequelize.literal(`(
+                SELECT pd.id
+                FROM peeled_dispatches pd
+                WHERE pd.dispatch_id = "Dispatches".id
+                ORDER BY pd.created_at DESC
+                LIMIT 1
+              )`),
+              "peeled_dispatch_id",
+            ],
+            [
+              sequelize.literal(`(
+                SELECT qc.status
+                FROM qa_checklists qc
+                JOIN peeled_dispatches pd ON pd.id = qc.peeled_dispatch_id
+                WHERE pd.dispatch_id = "Dispatches".id
+                ORDER BY qc.created_at DESC
+                LIMIT 1
+              )`),
+              "qa_status",
+            ],
+          ],
         },
         include: [
           {
@@ -263,6 +302,29 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
           "delivery_notes",
           "delivery_status",
           "created_at",
+          // derive peeled_dispatch_id for any downstream associations
+          [
+            sequelize.literal(`(
+              SELECT pd.id
+              FROM peeled_dispatches pd
+              WHERE pd.dispatch_id = "Dispatches".id
+              ORDER BY pd.created_at DESC
+              LIMIT 1
+            )`),
+            "peeled_dispatch_id",
+          ],
+          // lookup latest QA status through peeled_dispatch -> qa_checklist
+          [
+            sequelize.literal(`(
+              SELECT qc.status
+              FROM qa_checklists qc
+              JOIN peeled_dispatches pd ON pd.id = qc.peeled_dispatch_id
+              WHERE pd.dispatch_id = "Dispatches".id
+              ORDER BY qc.created_at DESC
+              LIMIT 1
+            )`),
+            "qa_status",
+          ],
         ],
         include: [
           {

@@ -69,6 +69,12 @@ module.exports = (sequelize, DataTypes) => {
       peeling_notes: {
         type: DataTypes.TEXT,
       },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        comment:
+          "Denormalised reference to the sales order for this peeled product",
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
       },
@@ -103,6 +109,33 @@ module.exports = (sequelize, DataTypes) => {
 
         item.created_by = options?.profile_id;
       });
+      // infer order_id from parent peeling if not already provided
+      data?.map((item) => {
+        if (!item.order_id && item.peeling_id) {
+          // we intentionally do _not_ await inside map; we'll fetch below
+        }
+      });
+
+      // second pass to fill order_id once we know which peeling_ids are needed
+      const peelingIds = [
+        ...new Set(data.map((i) => i.peeling_id).filter(Boolean)),
+      ];
+      if (peelingIds.length) {
+        const peelings = await sequelize.models.Peeling.findAll({
+          attributes: ["id", "order_id"],
+          where: { id: peelingIds },
+          raw: true,
+        });
+        const orderMap = peelings.reduce((m, p) => {
+          m[p.id] = p.order_id;
+          return m;
+        }, {});
+        data.forEach((item) => {
+          if (!item.order_id && item.peeling_id) {
+            item.order_id = orderMap[item.peeling_id] || null;
+          }
+        });
+      }
     } catch (err) {
       console.log(
         "Error while appending an peeling products data",
@@ -123,6 +156,14 @@ module.exports = (sequelize, DataTypes) => {
         "Error while appending an peeling products data",
         err?.message || err,
       );
+    }
+    if (!data.order_id && data.peeling_id) {
+      const p = await sequelize.models.Peeling.findOne({
+        attributes: ["order_id"],
+        where: { id: data.peeling_id },
+        raw: true,
+      });
+      if (p) data.order_id = p.order_id;
     }
   });
 

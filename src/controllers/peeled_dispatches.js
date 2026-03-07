@@ -19,6 +19,24 @@ export const Insert = async (profile_id, peeled_dispatch_data) => {
         });
       }
 
+      // infer order_id from peeled product if caller did not provide one
+      if (
+        !peeled_dispatch_data.order_id &&
+        peeled_dispatch_data.peeled_product_id
+      ) {
+        const pp = await models.PeelingProducts.findOne({
+          attributes: ["order_id"],
+          where: {
+            id: peeled_dispatch_data.peeled_product_id,
+            is_active: true,
+          },
+          raw: true,
+        });
+        if (pp && pp.order_id) {
+          peeled_dispatch_data.order_id = pp.order_id;
+        }
+      }
+
       const result = await models.PeeledDispatches.create(
         peeled_dispatch_data,
         {
@@ -95,6 +113,14 @@ export const Get = ({ id }) => {
           id,
           is_active: true,
         },
+        include: [
+          {
+            model: models.QAChecklist,
+            as: "qa",
+            required: false,
+            attributes: ["id", "status", "qa_record_no", "inspection_date"],
+          },
+        ],
       });
 
       resolve(peeling);
@@ -256,6 +282,17 @@ export const GetAll = ({ start, length, search }) => {
               `(SELECT SUM(yield_quantity) FROM peeling_products WHERE id = "PeeledDispatches"."peeled_product_id" AND is_active = true)`,
             ),
             "total_yield_quantity",
+          ],
+          // add latest QA status so front-end can color/link
+          [
+            sequelize.literal(`(
+              SELECT qc.status
+              FROM qa_checklists qc
+              WHERE qc.peeled_dispatch_id = "PeeledDispatches".id
+              ORDER BY qc.created_at DESC
+              LIMIT 1
+            )`),
+            "qa_status",
           ],
         ],
         include: [
