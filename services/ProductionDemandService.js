@@ -18,7 +18,7 @@ class ProductionDemandService {
     const seconds = String(now.getSeconds()).padStart(2, "0");
     const randomSuffix = String(Math.floor(Math.random() * 10000)).padStart(
       4,
-      "0"
+      "0",
     );
 
     return `DEM-${year}${month}${day}-${hours}${minutes}${seconds}-${randomSuffix}`;
@@ -46,7 +46,7 @@ class ProductionDemandService {
       !required_date
     ) {
       throw new Error(
-        "Missing required fields: sales_allocation_id, product_master_id, demanded_quantity, required_date"
+        "Missing required fields: sales_allocation_id, product_master_id, demanded_quantity, required_date",
       );
     }
 
@@ -69,7 +69,7 @@ class ProductionDemandService {
     // Check if demand quantity matches or is less than allocated quantity
     if (demanded_quantity > allocation.allocated_quantity) {
       throw new Error(
-        `Demanded quantity (${demanded_quantity}) exceeds allocated quantity (${allocation.allocated_quantity})`
+        `Demanded quantity (${demanded_quantity}) exceeds allocated quantity (${allocation.allocated_quantity})`,
       );
     }
 
@@ -87,11 +87,8 @@ class ProductionDemandService {
       required_date: new Date(required_date),
     });
 
-    // Update allocation status to ALLOCATED if it's still PENDING
-    if (allocation.allocation_status === "PENDING") {
-      allocation.allocation_status = "ALLOCATED";
-      await allocation.save();
-    }
+    // Keep allocation status as PENDING until explicitly confirmed
+    // (removed auto-advancement to ALLOCATED)
 
     return demand;
   }
@@ -111,9 +108,8 @@ class ProductionDemandService {
     }
 
     // Verify production order exists
-    const productionOrder = await db.ProductionOrder.findByPk(
-      productionOrderId
-    );
+    const productionOrder =
+      await db.ProductionOrder.findByPk(productionOrderId);
     if (!productionOrder) {
       throw new Error(`ProductionOrder not found: ${productionOrderId}`);
     }
@@ -162,7 +158,7 @@ class ProductionDemandService {
     if (fulfilledQty !== undefined && fulfilledQty !== null) {
       if (fulfilledQty < 0 || fulfilledQty > demand.demanded_quantity) {
         throw new Error(
-          `Fulfilled quantity (${fulfilledQty}) must be between 0 and demanded quantity (${demand.demanded_quantity})`
+          `Fulfilled quantity (${fulfilledQty}) must be between 0 and demanded quantity (${demand.demanded_quantity})`,
         );
       }
       demand.fulfilled_quantity = fulfilledQty;
@@ -213,7 +209,7 @@ class ProductionDemandService {
 
     if (completedQty < 0 || completedQty > demand.demanded_quantity) {
       throw new Error(
-        `Completed quantity (${completedQty}) must be between 0 and demanded quantity (${demand.demanded_quantity})`
+        `Completed quantity (${completedQty}) must be between 0 and demanded quantity (${demand.demanded_quantity})`,
       );
     }
 
@@ -239,7 +235,7 @@ class ProductionDemandService {
 
     if (demand.fulfilled_quantity !== demand.demanded_quantity) {
       throw new Error(
-        `Cannot fulfill demand. Fulfilled (${demand.fulfilled_quantity}) does not match demanded (${demand.demanded_quantity})`
+        `Cannot fulfill demand. Fulfilled (${demand.fulfilled_quantity}) does not match demanded (${demand.demanded_quantity})`,
       );
     }
 
@@ -357,7 +353,7 @@ class ProductionDemandService {
         demand_status: ["CREATED", "WAITING_FOR_PRODUCTION", "IN_PRODUCTION"],
       },
       limit,
-      offset
+      offset,
     );
   }
 
@@ -399,10 +395,10 @@ class ProductionDemandService {
     allocation.productionDemands.forEach((demand) => {
       summary.demands[demand.demand_status]++;
       summary.total_demanded_quantity += parseFloat(
-        demand.demanded_quantity || 0
+        demand.demanded_quantity || 0,
       );
       summary.total_fulfilled_quantity += parseFloat(
-        demand.fulfilled_quantity || 0
+        demand.fulfilled_quantity || 0,
       );
     });
 
