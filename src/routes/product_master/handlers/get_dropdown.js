@@ -80,7 +80,7 @@ export const GetDropdown = async (params, session, fastify) => {
       ) {
         includes.push({
           model: models.PurchaseInventory,
-          required: true,
+          required: false, // Changed from true to false - don't require purchase inventory
           attributes: [],
           where: {
             deleted_at: null,
