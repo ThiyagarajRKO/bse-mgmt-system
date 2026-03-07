@@ -7,10 +7,10 @@
  * 4. Current inventory levels
  */
 
-import models from "../../models";
-import { Op } from "sequelize";
+const models = require("../../models");
+const { Op } = require("sequelize");
 
-export class RawMaterialCalculator {
+class RawMaterialCalculator {
   /**
    * Calculate raw material requirements based on finished product needs
    * @param {Object} params - { productId, quantityRequired, speciesId, productCategoryId }
@@ -605,6 +605,7 @@ export class RawMaterialCalculator {
             "id",
             "product_name",
             "species_master_id",
+            "derivative_master_id",
             "product_category_master_id",
           ],
           raw: false,
@@ -718,6 +719,15 @@ export class RawMaterialCalculator {
             `[RAW MATERIALS] 🔗 Processing BOM entry ${simpleBom.id}: procurement_product_id=${simpleBom.procurement_product_id}`,
           );
 
+          // HANDLE NULL procurement_product_id (not yet created from purchase request)
+          if (!simpleBom.procurement_product_id) {
+            console.warn(
+              `[RAW MATERIALS] ℹ️  NULL procurement_product_id: BOM entry ${simpleBom.id} - will skip (procurement product not yet created)`,
+            );
+            orphanedCount++;
+            continue;
+          }
+
           // First try without include to see if it exists at all
           // NOTE: paranoid: false is needed because ProcurementProducts uses soft deletes
           const procProductBasic = await models.ProcurementProducts.findOne({
@@ -790,25 +800,25 @@ export class RawMaterialCalculator {
         `[RAW MATERIALS] 📊 BOM Enrichment Summary: ${bomEntries.length} valid, ${orphanedCount} orphaned/broken out of ${simpleBomEntries.length} total`,
       );
 
+      // If no valid BOMs found, log it but DON'T return yet - proceed to fallback
       if (bomEntries.length === 0) {
-        console.error(
-          `[RAW MATERIALS] ❌ CRITICAL: All BOM entries for product ${productId} are orphaned or broken!`,
+        console.warn(
+          `[RAW MATERIALS] ⚠️  All BOM entries for product ${productId} are orphaned or broken!`,
         );
-        console.error(
-          `[RAW MATERIALS] This means the BOM references procurement products that don't exist.`,
+        console.warn(
+          `[RAW MATERIALS] BOMs have null/invalid procurement_product_ids - will attempt species-based fallback.`,
         );
-        console.error(
-          `[RAW MATERIALS] Action: Regenerate BOM or create the missing procurement products.`,
+        // Don't return - continue to fallback logic below
+      } else {
+        console.log(
+          `[RAW MATERIALS] ✅ Proceeding with ${bomEntries.length} valid BOM entries, filtering by species: ${effectiveSpeciesId}`,
         );
-        return [];
       }
-      console.log(
-        `[RAW MATERIALS] ✅ Proceeding with ${bomEntries.length} valid BOM entries, filtering by species: ${effectiveSpeciesId}`,
-      );
 
       const rawMaterials = [];
       let skippedCount = 0;
 
+      // Process valid BOM entries if any
       for (const bomEntry of bomEntries) {
         console.log(
           `[RAW MATERIALS] 🔄 Processing BOM entry ${bomEntry.id}: qty_required=${bomEntry.quantity_required}`,
@@ -984,11 +994,171 @@ export class RawMaterialCalculator {
           gap: m.inventory_gap,
         })),
       );
+
+      // FALLBACK: If no BOM materials found, try species-based lookup
+      // This handles cases where BOMs are incomplete or null procurement_product_ids
+      if (rawMaterials.length === 0 && effectiveSpeciesId) {
+        console.log(
+          `[RAW MATERIALS] ⚠️  FALLBACK: No valid BOM entries found. Attempting species-based lookup for species ${effectiveSpeciesId}...`,
+        );
+
+        const speciesFallbackMaterials = await this._findRawMaterialsBySpecies({
+          speciesId: effectiveSpeciesId,
+          quantityRequired,
+          orderedProductId: productId,
+          derivativeId: orderedProduct?.derivative_master_id,
+          processingType: "RAW",
+        });
+
+        if (speciesFallbackMaterials.length > 0) {
+          console.log(
+            `[RAW MATERIALS] ✅ FALLBACK SUCCESSFUL: Found ${speciesFallbackMaterials.length} procurement products for species`,
+          );
+          return speciesFallbackMaterials;
+        } else {
+          console.warn(
+            `[RAW MATERIALS] ❌ FALLBACK FAILED: No procurement products found for species ${effectiveSpeciesId}`,
+          );
+        }
+      }
+
       return rawMaterials;
     } catch (error) {
       console.error(
         "[RAW MATERIALS] Error getting raw materials for product:",
         error,
+      );
+      return [];
+    }
+  }
+
+  /**
+   * FALLBACK: Find raw materials by species when BOMs are incomplete
+   * Queries ProductMaster directly for UNPROCESSED raw materials
+   * Used when procurement_product_ids in BOMs are null (not yet created)
+   * @private
+   */
+  static async _findRawMaterialsBySpecies(params) {
+    try {
+      const {
+        speciesId,
+        quantityRequired,
+        orderedProductId,
+        derivativeId,
+        processingType = "RAW",
+      } = params;
+
+      console.log(
+        `[RAW MATERIALS FALLBACK] 🔍 Searching for UNPROCESSED ProductMaster records with species ${speciesId}...`,
+      );
+
+      // Fetch yield standard for this species/derivative to calculate proper raw material quantity
+      let yieldPercentage = 0.6; // Default 60% yield
+      if (speciesId && derivativeId) {
+        const yieldStandard = await models.YieldStandardMaster.findOne({
+          where: {
+            species_id: speciesId,
+            derivative_id: derivativeId,
+            processing_type: processingType,
+            is_active: true,
+          },
+          attributes: ["expected_yield_pct"],
+          raw: true,
+        });
+        if (yieldStandard) {
+          yieldPercentage = parseFloat(yieldStandard.expected_yield_pct) / 100;
+          console.log(
+            `[RAW MATERIALS FALLBACK] 📊 Using yield standard: ${(yieldPercentage * 100).toFixed(2)}%`,
+          );
+        }
+      }
+
+      // Find ALL UNPROCESSED RAW raw materials (ProductMaster with processing_state=RAW and UNP in product name)
+      // Note: UNPROCESSED products have processing_state='RAW' and typically contain 'UNP' in product_name
+      const rawMaterials = await models.ProductMaster.findAll({
+        where: {
+          species_master_id: speciesId,
+          processing_state: "RAW", // Only unprocessed raw materials
+          is_active: true,
+        },
+        attributes: ["id", "product_name", "species_master_id", "product_role"],
+        raw: true,
+      });
+
+      console.log(
+        `[RAW MATERIALS FALLBACK] 📦 Found ${rawMaterials.length} UNPROCESSED raw material products for species`,
+      );
+
+      if (rawMaterials.length === 0) {
+        return [];
+      }
+
+      const resultMaterials = [];
+
+      for (const rawProduct of rawMaterials) {
+        try {
+          console.log(
+            `[RAW MATERIALS FALLBACK] 🔍 Processing raw material: ${rawProduct.product_name}`,
+          );
+
+          // Get inventory for this raw product
+          const inventory = await models.PurchaseInventory.findAll({
+            where: {
+              product_master_id: rawProduct.id,
+              is_active: true,
+            },
+            attributes: ["quantity", "available_stock"],
+            raw: true,
+          });
+
+          const totalStock = inventory.reduce((sum, inv) => {
+            const availStock = inv.available_stock || 0;
+            return sum + (availStock > 0 ? availStock : inv.quantity || 0);
+          }, 0);
+
+          const currentStock = Math.ceil(totalStock);
+
+          // Calculate required quantity based on yield percentage
+          // Raw Material Needed = Finished Product Qty / Yield %
+          const requiredQuantity = Math.ceil(
+            quantityRequired / yieldPercentage,
+          );
+          const inventoryGap = Math.max(0, requiredQuantity - currentStock);
+
+          resultMaterials.push({
+            product_master_id: rawProduct.id,
+            product_name: rawProduct.product_name,
+            processing_state: "RAW",
+            product_role: rawProduct.product_role,
+            bom_quantity_required: 1, // Default 1:1 ratio for species-based
+            total_quantity_required: requiredQuantity,
+            current_stock: currentStock,
+            inventory_gap: inventoryGap,
+            recommended_order_quantity: inventoryGap > 0 ? inventoryGap : 0,
+            unit_of_measure: "KG",
+            is_fallback: true, // Mark as fallback to distinguish from BOM-based
+          });
+
+          console.log(
+            `[RAW MATERIALS FALLBACK] ✅ Added ${rawProduct.product_name} (Stock: ${currentStock}, Gap: ${inventoryGap})`,
+          );
+        } catch (err) {
+          console.error(
+            `[RAW MATERIALS FALLBACK] ⚠️  Error processing raw material ${rawProduct.product_name}:`,
+            err.message,
+          );
+        }
+      }
+
+      console.log(
+        `[RAW MATERIALS FALLBACK] ✅ Species-based fallback returned ${resultMaterials.length} materials`,
+      );
+
+      return resultMaterials;
+    } catch (error) {
+      console.error(
+        "[RAW MATERIALS FALLBACK] Error in species-based lookup:",
+        error.message,
       );
       return [];
     }
@@ -1058,8 +1228,23 @@ export class RawMaterialCalculator {
 
       if (!simpleBomEntries || simpleBomEntries.length === 0) {
         console.warn(
-          `[RAW MATERIALS WITH STATUS] No BOM entries for product ${productId}`,
+          `[RAW MATERIALS WITH STATUS] No BOM entries for product ${productId}. Attempting species-based fallback...`,
         );
+
+        // Fallback to species-based filtering when no BOM exists
+        if (effectiveSpeciesId) {
+          console.log(
+            `[RAW MATERIALS WITH STATUS] Falling back to species-based filtering for species ${effectiveSpeciesId}`,
+          );
+
+          // Use the main getRawMaterialsForProduct which handles species fallback
+          return await this.getRawMaterialsForProduct({
+            productId,
+            quantityRequired,
+            speciesId: effectiveSpeciesId,
+          });
+        }
+
         return [];
       }
 
@@ -1282,4 +1467,4 @@ export class RawMaterialCalculator {
   }
 }
 
-export default RawMaterialCalculator;
+module.exports = { RawMaterialCalculator };
