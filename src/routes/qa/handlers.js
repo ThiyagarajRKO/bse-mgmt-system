@@ -16,7 +16,15 @@ export default async (fastify) => {
     preHandler: [fastify.authenticate],
     handler: async (request, reply) => {
       try {
-        const { page = 1, limit = 10, lot_no, status, product } = request.query;
+        const {
+          page = 1,
+          limit = 10,
+          lot_no,
+          status,
+          product,
+          order_id,
+          peeled_dispatch_id,
+        } = request.query;
         const offset = (page - 1) * limit;
 
         // Build where clause for QA records
@@ -41,77 +49,189 @@ export default async (fastify) => {
           };
         }
 
+        // If peeled_dispatch_id is provided, filter by it as well
+        if (peeled_dispatch_id) {
+          whereClause.peeled_dispatch_id = peeled_dispatch_id;
+        }
+
+        // allow filtering by order_id directly on the checklist table
+        if (order_id) {
+          whereClause.order_id = order_id;
+        }
+
         // Fetch all QA records from qa_checklists table
-        const { count, rows } =
-          await fastify.models.QAChecklist.findAndCountAll({
-            where: whereClause,
-            limit: parseInt(limit),
-            offset: offset,
-            order: [["created_at", "DESC"]],
+        // Sequelizes selects all attributes of peeling_products by default when
+        // included with no `attributes` array. That means our recently-added
+        // order_id column will be referenced in the generated SQL.  On databases
+        // that have not yet been migrated this column does not exist, and
+        // Sequelize throws a 42703 error which would crash the request.  To
+        // be resilient we attempt the query normally and if we hit that
+        // specific error we retry without selecting peeling_products at all.
+
+        const buildIncludes = (includeProducts = true) => {
+          const includes = [
+            {
+              model: fastify.models.Orders,
+              as: "order",
+              required: false,
+              attributes: ["id", "order_no"],
+            },
+            {
+              model: fastify.models.Peeling,
+              as: "peeling",
+              required: false,
+              attributes: [
+                "id",
+                "created_at",
+                "peeling_quantity",
+                "peeling_method",
+                "dispatch_id",
+              ],
+              include: [],
+            },
+          ];
+
+          if (includeProducts) {
+            includes[1].include.push({
+              model: fastify.models.PeelingProducts,
+              required: false,
+              include: [
+                {
+                  model: fastify.models.ProductMaster,
+                  required: false,
+                  attributes: ["id", "product_name"],
+                },
+              ],
+            });
+          }
+
+          // always add the dispatch -> procurement path
+          includes[1].include.push({
+            model: fastify.models.Dispatches,
+            as: "dis",
+            required: false,
+            attributes: ["id", "dispatch_quantity", "procurement_product_id"],
             include: [
               {
-                model: fastify.models.Orders,
-                as: "order",
-                required: false,
-                attributes: ["id", "order_no"],
-              },
-              {
-                model: fastify.models.Peeling,
-                as: "peeling",
+                model: fastify.models.ProcurementProducts,
+                as: "pp",
                 required: false,
                 attributes: [
                   "id",
-                  "created_at",
-                  "peeling_quantity",
-                  "peeling_method",
-                  "dispatch_id",
+                  "procurement_quantity",
+                  "procurement_lot_id",
                 ],
                 include: [
                   {
-                    model: fastify.models.PeelingProducts,
+                    model: fastify.models.ProcurementLots,
+                    as: "pl",
                     required: false,
-                    include: [
-                      {
-                        model: fastify.models.ProductMaster,
-                        required: false,
-                        attributes: ["id", "product_name"],
-                      },
-                    ],
-                  },
-                  {
-                    model: fastify.models.Dispatches,
-                    as: "dis",
-                    required: false,
-                    attributes: [
-                      "id",
-                      "dispatch_quantity",
-                      "procurement_product_id",
-                    ],
-                    include: [
-                      {
-                        model: fastify.models.ProcurementProducts,
-                        as: "pp",
-                        required: false,
-                        attributes: [
-                          "id",
-                          "procurement_quantity",
-                          "procurement_lot_id",
-                        ],
-                        include: [
-                          {
-                            model: fastify.models.ProcurementLots,
-                            as: "pl",
-                            required: false,
-                            attributes: ["id", "procurement_lot"],
-                          },
-                        ],
-                      },
-                    ],
+                    attributes: ["id", "procurement_lot"],
                   },
                 ],
               },
             ],
           });
+
+          return includes;
+        };
+
+        let count, rows;
+        try {
+          ({ count, rows } = await fastify.models.QAChecklist.findAndCountAll({
+            where: whereClause,
+            limit: parseInt(limit),
+            offset: offset,
+            order: [["created_at", "DESC"]],
+            include: buildIncludes(true),
+          }));
+        } catch (err) {
+          // if the error indicates the order_id column is missing, retry
+          if (
+            err?.parent?.code === "42703" &&
+            (/PeelingProducts\.order_id/.test(err.parent.message) ||
+              /qa_checklist\.order_id/.test(err.parent.message))
+          ) {
+            fastify.log.warn(
+              "QA handler: order_id column missing, retrying without product include",
+            );
+            ({ count, rows } = await fastify.models.QAChecklist.findAndCountAll(
+              {
+                where: whereClause,
+                limit: parseInt(limit),
+                offset: offset,
+                order: [["created_at", "DESC"]],
+                include: buildIncludes(false),
+              },
+            ));
+          } else {
+            throw err;
+          }
+        }
+
+        // recalculate status for any records still marked PENDING (old data)
+        // we also persist the recalculated value so that subsequent fetches
+        // don't keep returning PENDING rows.
+        const recalcRow = async (row) => {
+          if (row.status && row.status !== "PENDING") return;
+          // simple criteria matching create/update logic
+          let calculated = "PASS";
+          const bp = parseFloat(row.broken_percentage) || 0;
+          const temp = parseFloat(row.temperature) || 0;
+          const fm =
+            row.foreign_matter === true || row.foreign_matter === "true";
+          if (
+            bp > 20 ||
+            temp > -15 ||
+            fm ||
+            row.odour_status === "UNACCEPTABLE" ||
+            row.appearance_status === "POOR"
+          ) {
+            calculated = "FAIL";
+          }
+          if (calculated !== row.status) {
+            row.status = calculated;
+            try {
+              await fastify.models.QAChecklist.update(
+                { status: calculated },
+                { where: { id: row.id } },
+              );
+            } catch (e) {
+              fastify.log.error(
+                `[QA] error persisting recalculated status for ${row.id}: ${e.message}`,
+              );
+            }
+          }
+        };
+        await Promise.all(rows.map(recalcRow));
+
+        // ensure each row has an order_id property for easier tracing/filtering
+        rows = rows.map((row) => {
+          if (!row.order_id) {
+            // try the direct association first
+            if (row.order && row.order.id) {
+              row.order_id = row.order.id;
+            } else if (row.peeling && row.peeling.order_id) {
+              row.order_id = row.peeling.order_id;
+            } else if (
+              row.peeling &&
+              row.peeling.dis &&
+              row.peeling.dis.order_id
+            ) {
+              row.order_id = row.peeling.dis.order_id;
+            }
+            // finally fall back to products path if available
+            if (!row.order_id && row.peeling && row.peeling.PeelingProducts) {
+              for (const pp of row.peeling.PeelingProducts) {
+                if (pp.order_id) {
+                  row.order_id = pp.order_id;
+                  break;
+                }
+              }
+            }
+          }
+          return row;
+        });
 
         return reply.code(200).send({
           statusCode: 200,
@@ -219,7 +339,9 @@ export default async (fastify) => {
             continue;
           }
 
-          // Create QA record with status set to PENDING
+          // compute default status based on some safe defaults (all good)
+          let defaultStatus = "PASS";
+          // if we ever want to auto-fail based on any criteria we can adjust here
           const qa = await fastify.models.QAChecklist.create({
             lot_no: lot_no,
             order_id: peeling.order_id,
@@ -234,7 +356,7 @@ export default async (fastify) => {
             foreign_matter: false,
             sample_size: 100,
             net_weight_avg: 95,
-            status: "PENDING",
+            status: defaultStatus,
             inspection_date: new Date(),
           });
 
@@ -287,7 +409,7 @@ export default async (fastify) => {
           foreign_matter,
           sample_size,
           net_weight_avg,
-          status = "PENDING",
+          // status may come from client but will be ignored
           inspection_date,
           inspector_name,
           remarks,
@@ -312,6 +434,30 @@ export default async (fastify) => {
           });
         }
 
+        // calculate status server-side rather than trusting client
+        let computedStatus = "PASS";
+        const reasons = [];
+        const bp = parseFloat(broken_percentage) || 0;
+        const temp = parseFloat(temperature) || 0;
+        if (bp > 20) {
+          computedStatus = "FAIL";
+          reasons.push("Broken % exceeds Grade C limit");
+        }
+        if (temp > -15) {
+          computedStatus = "FAIL";
+          reasons.push("Temperature above acceptable range");
+        }
+        if (foreign_matter === true || foreign_matter === "true") {
+          computedStatus = "FAIL";
+          reasons.push("Foreign matter detected");
+        }
+        if (odour_status === "UNACCEPTABLE" || appearance_status === "POOR") {
+          computedStatus = "FAIL";
+          if (odour_status === "UNACCEPTABLE")
+            reasons.push("Odour unacceptable");
+          if (appearance_status === "POOR") reasons.push("Appearance poor");
+        }
+
         // Create QA record
         const qa = await fastify.models.QAChecklist.create({
           lot_no,
@@ -331,7 +477,7 @@ export default async (fastify) => {
           foreign_matter: foreign_matter === true || foreign_matter === "true",
           sample_size: sample_size ? parseFloat(sample_size) : null,
           net_weight_avg: net_weight_avg ? parseFloat(net_weight_avg) : null,
-          status,
+          status: computedStatus,
           inspection_date: inspection_date ? new Date(inspection_date) : null,
           inspector_name,
           remarks,
@@ -402,6 +548,34 @@ export default async (fastify) => {
             statusCode: 404,
             message: "QA record not found",
           });
+        }
+
+        // recalc status for fetched record if it is still pending
+        if (qa.status === "PENDING") {
+          let calc = "PASS";
+          const bp = parseFloat(qa.broken_percentage) || 0;
+          const temp = parseFloat(qa.temperature) || 0;
+          const fm = qa.foreign_matter === true || qa.foreign_matter === "true";
+          if (
+            bp > 20 ||
+            temp > -15 ||
+            fm ||
+            qa.odour_status === "UNACCEPTABLE" ||
+            qa.appearance_status === "POOR"
+          ) {
+            calc = "FAIL";
+          }
+          if (calc !== qa.status) {
+            qa.status = calc;
+            // persist so database doesn't remain stuck in PENDING
+            try {
+              await qa.update({ status: calc });
+            } catch (e) {
+              fastify.log.error(
+                `[QA] error persisting recalculated status for single fetch ${qa.id}: ${e.message}`,
+              );
+            }
+          }
         }
 
         return reply.code(200).send({

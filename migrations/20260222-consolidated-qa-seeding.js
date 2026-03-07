@@ -123,10 +123,20 @@ module.exports = {
       // ============================================
       console.log("\nStep 3️⃣  Creating QA records for peeled products...");
 
-      // Get all peeling records with their products
-      const [peelingRecords] = await queryInterface.sequelize.query(
-        `SELECT id, product_id, peeled_quantity FROM peeling LIMIT 20`,
-      );
+      // Get all peeling records with their products.  older versions of the
+      // schema used a column named product_id; newer ones may not, so we catch
+      // the error and skip seeding if it isn't present.
+      let peelingRecords = [];
+      try {
+        const result = await queryInterface.sequelize.query(
+          `SELECT id, product_id, peeled_quantity FROM peeling LIMIT 20`,
+        );
+        peelingRecords = result[0] || [];
+      } catch (err) {
+        console.log(
+          "  ⚠️  Unable to query peeling.product_id (maybe column removed); skipping QA seed step",
+        );
+      }
 
       let qaRecordsCreated = 0;
       let qaRecordsSkipped = 0;

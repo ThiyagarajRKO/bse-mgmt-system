@@ -58,6 +58,24 @@ export default async (fastify) => {
 
         await qa.update(updates);
 
+        // if this QA record is tied to a peeled dispatch, update the dispatch
+        // so that it reflects the current QA id (useful when status changes)
+        if (qa.peeled_dispatch_id) {
+          try {
+            await fastify.models.PeeledDispatches.update(
+              {
+                qa_id: qa.id,
+                qa_checklist_id: qa.id,
+              },
+              { where: { id: qa.peeled_dispatch_id, is_active: true } },
+            );
+          } catch (err) {
+            fastify.log.error(
+              `[QA] failed to sync updated QA ${qa.id} to peeled dispatch ${qa.peeled_dispatch_id}: ${err.message}`,
+            );
+          }
+        }
+
         return reply.code(200).send({
           statusCode: 200,
           message: "QA record updated successfully",
