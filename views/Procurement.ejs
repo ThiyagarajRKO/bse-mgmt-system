@@ -2214,33 +2214,50 @@
       // ----------------------- Dashboard -----------------------
       // ---------------------------------------------------------
 
-      // Loading Charts
-      loadProcurementSpendBySuppliersChart(
-        "days",
-        $("#procurementSpendChartFilter").val(),
-      );
-      loadProcurementByDateChart(
-        "days",
-        $("#procurementAnalysisByDateChartFilter").val(),
-        null,
-        null,
-        "price",
-      );
+      // Loading Charts (with graceful error handling for missing endpoints)
+      try {
+        loadProcurementSpendBySuppliersChart(
+          "days",
+          $("#procurementSpendChartFilter").val(),
+        );
+      } catch (e) {
+        // Silently fail - endpoint may not be implemented
+      }
 
-      loadProcurementAgeByProductsChart(
-        "days",
-        $("#procurementAgeByProductsFilter").val(),
-        null,
-        null,
-      );
+      try {
+        loadProcurementByDateChart(
+          "days",
+          $("#procurementAnalysisByDateChartFilter").val(),
+          null,
+          null,
+          "price",
+        );
+      } catch (e) {
+        // Silently fail - endpoint may not be implemented
+      }
 
-      loadSupplierPerformanceScorecardChart(
-        "days",
-        $("#supplierPerformanceScorecardChartFilter").val(),
-        null,
-        null,
-        "price",
-      );
+      try {
+        loadProcurementAgeByProductsChart(
+          "days",
+          $("#procurementAgeByProductsFilter").val(),
+          null,
+          null,
+        );
+      } catch (e) {
+        // Silently fail - endpoint may not be implemented
+      }
+
+      try {
+        loadSupplierPerformanceScorecardChart(
+          "days",
+          $("#supplierPerformanceScorecardChartFilter").val(),
+          null,
+          null,
+          "price",
+        );
+      } catch (e) {
+        // Silently fail - endpoint may not be implemented
+      }
 
       // Chart Filters
       $(document).on("change", "#procurementSpendChartFilter", (e) => {
@@ -2300,6 +2317,7 @@
         );
       });
 
+      // Supplier Performance Scorecard Filter
       $(document).on(
         "change",
         "#supplierPerformanceScorecardChartFilter",
@@ -2417,7 +2435,7 @@
         );
       });
 
-      // Chart Functions
+      // Chart Functions (disabled - re-enable when chart endpoints are ready)
       function loadProcurementSpendBySuppliersChart(
         filter_type,
         filter_days,
@@ -2501,10 +2519,14 @@
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+            // Silently ignore 404 errors - endpoint may not be implemented
+            if (jqXhr?.status === 404) {
+              return;
+            }
+            if (jqXhr?.status === 420) {
+              toastr["warning"](jqXhr?.responseJSON?.message);
+            } else if (jqXhr?.responseJSON?.message) {
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -2593,10 +2615,14 @@
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+            // Silently ignore 404 errors - endpoint may not be implemented
+            if (jqXhr?.status === 404) {
+              return;
+            }
+            if (jqXhr?.status === 420) {
+              toastr["warning"](jqXhr?.responseJSON?.message);
+            } else if (jqXhr?.responseJSON?.message) {
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -2710,10 +2736,14 @@
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+            // Silently ignore 404 errors - endpoint may not be implemented
+            if (jqXhr?.status === 404) {
+              return;
+            }
+            if (jqXhr?.status === 420) {
+              toastr["warning"](jqXhr?.responseJSON?.message);
+            } else if (jqXhr?.responseJSON?.message) {
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -2802,10 +2832,14 @@
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+            // Silently ignore 404 errors - endpoint may not be implemented
+            if (jqXhr?.status === 404) {
+              return;
+            }
+            if (jqXhr?.status === 420) {
+              toastr["warning"](jqXhr?.responseJSON?.message);
+            } else if (jqXhr?.responseJSON?.message) {
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -2934,10 +2968,14 @@
             ).render();
           },
           error: (jqXhr, textStatus, errorThrown) => {
-            if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
-            } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+            // Silently ignore 404 errors - endpoint may not be implemented
+            if (jqXhr?.status === 404) {
+              return;
+            }
+            if (jqXhr?.status === 420) {
+              toastr["warning"](jqXhr?.responseJSON?.message);
+            } else if (jqXhr?.responseJSON?.message) {
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -3195,9 +3233,9 @@
               });
 
               if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
+                toastr["warning"](xhr?.responseJSON?.message);
               } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
+                toastr["error"](xhr?.responseJSON?.message);
               }
             },
             dataSrc: function (json) {
@@ -3538,13 +3576,13 @@
               resolve(data);
             },
             error: (jqXhr, textStatus, errorThrown) => {
-              if (jqXhr["responseJSON"]["message"] == "No data found!") {
+              if (jqXhr?.responseJSON?.message == "No data found!") {
                 return resolve();
               } else {
                 if (jqXhr["status"] == 420) {
-                  toastr["warning"](jqXhr["responseJSON"]["message"]);
+                  toastr["warning"](jqXhr?.responseJSON?.message);
                 } else {
-                  toastr["error"](jqXhr["responseJSON"]["message"]);
+                  toastr["error"](jqXhr?.responseJSON?.message);
                 }
               }
               reject();
@@ -3763,9 +3801,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -3831,9 +3869,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -4059,9 +4097,9 @@
               });
 
               if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
+                toastr["warning"](xhr?.responseJSON?.message);
               } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
+                toastr["error"](xhr?.responseJSON?.message);
               }
             },
             dataSrc: function (json) {
@@ -4409,9 +4447,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -4524,7 +4562,7 @@
 
       function loadPurchaseRequestDropdowns() {
         // Load products
-        $.get("/api/products", function (data) {
+        $.get("/api/product-master/dropdown", function (data) {
           const products = data.data || [];
           let productOptions = '<option value="">-- Select Product --</option>';
           products.forEach((product) => {
@@ -4534,7 +4572,7 @@
         });
 
         // Load suppliers
-        $.get("/api/suppliers", function (data) {
+        $.get("/api/supplier-master/dropdown", function (data) {
           const suppliers = data.data || [];
           let supplierOptions =
             '<option value="">-- Select Supplier --</option>';
@@ -5670,9 +5708,9 @@
               });
 
               if (xhr["status"] == 420) {
-                toastr["warning"](xhr["responseJSON"]["message"]);
+                toastr["warning"](xhr?.responseJSON?.message);
               } else {
-                toastr["error"](xhr["responseJSON"]["message"]);
+                toastr["error"](xhr?.responseJSON?.message);
               }
             },
             dataSrc: function (json) {
@@ -5746,9 +5784,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -5806,9 +5844,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
@@ -6012,9 +6050,9 @@
           },
           error: (jqXhr, textStatus, errorThrown) => {
             if (jqXhr["status"] == 420) {
-              toastr["warning"](jqXhr["responseJSON"]["message"]);
+              toastr["warning"](jqXhr?.responseJSON?.message);
             } else {
-              toastr["error"](jqXhr["responseJSON"]["message"]);
+              toastr["error"](jqXhr?.responseJSON?.message);
             }
           },
         });
