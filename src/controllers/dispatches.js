@@ -126,7 +126,9 @@ export const Get = ({ id }) => {
               sequelize.literal(`(
                 SELECT pd.id
                 FROM peeled_dispatches pd
-                WHERE pd.dispatch_id = "Dispatches".id
+                JOIN peeling_products pp ON pp.id = pd.peeled_product_id
+                JOIN peeling pln ON pln.id = pp.peeling_id
+                WHERE pln.dispatch_id = "Dispatches"."id"
                 ORDER BY pd.created_at DESC
                 LIMIT 1
               )`),
@@ -135,9 +137,11 @@ export const Get = ({ id }) => {
             [
               sequelize.literal(`(
                 SELECT qc.status
-                FROM qa_checklists qc
+                FROM qa_checklist qc
                 JOIN peeled_dispatches pd ON pd.id = qc.peeled_dispatch_id
-                WHERE pd.dispatch_id = "Dispatches".id
+                JOIN peeling_products pp ON pp.id = pd.peeled_product_id
+                JOIN peeling pln ON pln.id = pp.peeling_id
+                WHERE pln.dispatch_id = "Dispatches"."id"
                 ORDER BY qc.created_at DESC
                 LIMIT 1
               )`),
@@ -307,7 +311,9 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
             sequelize.literal(`(
               SELECT pd.id
               FROM peeled_dispatches pd
-              WHERE pd.dispatch_id = "Dispatches".id
+              JOIN peeling_products pp ON pp.id = pd.peeled_product_id
+              JOIN peeling pln ON pln.id = pp.peeling_id
+              WHERE pln.dispatch_id = "Dispatches"."id"
               ORDER BY pd.created_at DESC
               LIMIT 1
             )`),
@@ -317,9 +323,11 @@ export const GetAll = ({ procurement_lot_id, start, length, search }) => {
           [
             sequelize.literal(`(
               SELECT qc.status
-              FROM qa_checklists qc
+              FROM qa_checklist qc
               JOIN peeled_dispatches pd ON pd.id = qc.peeled_dispatch_id
-              WHERE pd.dispatch_id = "Dispatches".id
+              JOIN peeling_products pp ON pp.id = pd.peeled_product_id
+              JOIN peeling pln ON pln.id = pp.peeling_id
+              WHERE pln.dispatch_id = "Dispatches"."id"
               ORDER BY qc.created_at DESC
               LIMIT 1
             )`),
