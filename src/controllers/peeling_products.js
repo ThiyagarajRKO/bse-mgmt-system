@@ -256,8 +256,9 @@ export const GetNames = ({
 
           if (procProduct?.procurement_lot_id === procurement_lot_id) {
             // Get QA status for this peeling product
+            // Note: QA records are linked to peeling_id (header), not peeled_product_id
             const qaRecord = await models.QAChecklist.findOne({
-              where: { peeling_product_id: peeling.id, is_active: true },
+              where: { peeling_id: peeling.peeling_id },
               attributes: ["status"],
               order: [["created_at", "DESC"]],
               raw: true,
