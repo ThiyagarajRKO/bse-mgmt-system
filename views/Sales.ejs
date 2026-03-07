@@ -4807,30 +4807,33 @@
           speciesId,
         );
 
-        // Call the panel-specific endpoint that returns ALL materials (including sufficient stock)
+        // Call the AI-powered calculate/requirements endpoint for raw material recommendations
         $.ajax({
-          url: `/api/procurement/product/raw-materials-for-panel?productId=${productId}&quantityRequired=${quantityRequired}&speciesId=${speciesId || ""}&t=${Date.now()}`,
+          url: `/api/procurement/product/calculate/requirements?productId=${productId}&quantityRequired=${quantityRequired}&speciesId=${speciesId || ""}&t=${Date.now()}`,
           method: "GET",
           dataType: "json",
           cache: false,
           success: function (response) {
-            console.log("Panel raw materials API response:", response);
+            console.log("Raw material recommendations API response:", response);
 
-            if (response?.data && response.data.length > 0) {
+            // Extract raw materials from response - API returns them in response.data.raw_materials
+            const rawMaterialsList = response?.data?.raw_materials || [];
+
+            if (rawMaterialsList && rawMaterialsList.length > 0) {
               console.log(
-                "✓ Found raw materials from panel API:",
-                response.data,
+                "✓ Found raw materials from AI recommendations endpoint:",
+                rawMaterialsList,
               );
               // Process the raw materials including those with sufficient stock
               processBOMRawMaterials(
-                response.data,
+                rawMaterialsList,
                 quantityRequired,
                 $("#purchaseRequestRawMaterials"),
               );
 
               // Auto-populate the quantity field with the first raw material that needs ordering
               // Only use materials that actually need ordering (gap > 0)
-              const itemsNeedingOrder = response.data.filter(
+              const itemsNeedingOrder = rawMaterialsList.filter(
                 (m) => Math.ceil(m.inventory_gap || 0) > 0,
               );
 
@@ -4843,7 +4846,7 @@
                 if (recommendedQty > 0) {
                   $("#purchaseRequestQuantity").val(recommendedQty);
                   $("#purchaseRequestQuantityHint").html(
-                    `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQty} kg</small>`,
+                    `<small class="text-success">Auto-filled with AI-recommended quantity: ${recommendedQty} kg</small>`,
                   );
 
                   // Show tooltip briefly to highlight AI recommendations
@@ -4861,8 +4864,10 @@
                 );
               }
             } else {
-              console.warn("⚠ No raw materials found in panel response");
-              // Fall back to the original logic if panel doesn't have data
+              console.warn(
+                "⚠ No raw materials found in recommendation response",
+              );
+              // Fall back to the original logic if recommendations don't have data
               fallbackToSpeciesFiltering(
                 productId,
                 quantityRequired,
@@ -4872,7 +4877,7 @@
           },
           error: function (xhr, status, error) {
             console.error(
-              "Panel API error, falling back to species filtering:",
+              "AI recommendations API error, falling back to species filtering:",
               status,
               error,
             );
@@ -5198,6 +5203,7 @@
         rawMaterials.forEach((material) => {
           const materialName =
             material.procurement_product_name ||
+            material.product_name ||
             (material.ProductMaster && material.ProductMaster.product_name) ||
             "Unknown";
           const supplierName =
@@ -5564,17 +5570,18 @@
         );
 
         let apiUrl;
-        if (productId) {
-          // Priority: Use BOM-filtered endpoint when product ID is available
-          apiUrl = `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED&finished_product_id=${productId}`;
-          console.log(
-            "✓ Using BOM-filtered endpoint for product. Fetching raw materials with URL:",
-            apiUrl,
-          );
-        } else if (speciesMasterId) {
+        // PRIORITY: Always filter by species first if available (requirement: display raw materials based on species)
+        if (speciesMasterId) {
           apiUrl = `/api/inventory/purchase/by-species/${speciesMasterId}?start=0&length=1000`;
           console.log(
-            "✓ Using species-filtered endpoint. Fetching raw materials with URL:",
+            "✓ Loading raw materials filtered by SPECIES. Fetching from URL:",
+            apiUrl,
+          );
+        } else if (productId) {
+          // Fallback: Use raw material recommendation endpoint for product-based recommendations if no species
+          apiUrl = `/api/procurement/product/calculate/requirements?productId=${productId}&quantityRequired=${quantityRequired || 1}&t=${Date.now()}`;
+          console.log(
+            "✓ No species provided. Using AI-powered recommendation endpoint for product. Fetching recommendations from URL:",
             apiUrl,
           );
         } else {
@@ -5596,8 +5603,27 @@
             let rawMaterials = [];
 
             if (response?.data) {
-              if (response.data.rows && Array.isArray(response.data.rows)) {
+              // Check for calculate/requirements endpoint response (has raw_materials field)
+              if (
+                response.data.raw_materials &&
+                Array.isArray(response.data.raw_materials)
+              ) {
+                rawMaterials = response.data.raw_materials;
+                console.log(
+                  "✓ Extracted raw_materials from calculate/requirements endpoint:",
+                  rawMaterials.length,
+                );
+              }
+              // Check for by-species endpoint or generic endpoint response
+              else if (
+                response.data.rows &&
+                Array.isArray(response.data.rows)
+              ) {
                 rawMaterials = response.data.rows;
+                console.log(
+                  "✓ Extracted raw_materials from rows array (species/inventory endpoint):",
+                  rawMaterials.length,
+                );
               } else if (Array.isArray(response.data)) {
                 rawMaterials = response.data;
               } else if (typeof response.data === "object") {
@@ -5611,31 +5637,36 @@
               );
             } else {
               console.warn(
-                `⚠ NO FILTER - ALL raw materials returned: ${rawMaterials.length}`,
+                `⚠ NO SPECIES FILTER - ALL raw materials returned: ${rawMaterials.length}`,
               );
             }
 
             if (rawMaterials.length === 0) {
-              // If no species-specific raw materials found, try to filter by product ID
+              // If no species-specific raw materials found, try fallback to product ID if available
               if (productId) {
                 console.warn(
                   `⚠ No raw materials found for species ${speciesMasterId}. Trying to filter by product ID ${productId}.`,
                 );
-                // Try filtering by the specific product ID
+                // Try using AI recommendations for the specific product
                 $.ajax({
-                  url: `/api/inventory/purchase?start=0&length=1000&procurement_product_type=UNPROCESSED&finished_product_id=${productId}`,
+                  url: `/api/procurement/product/calculate/requirements?productId=${productId}&quantityRequired=${quantityRequired || 1}&t=${Date.now()}`,
                   method: "GET",
                   dataType: "json",
                   timeout: 5000,
                   success: function (productResponse) {
                     console.log(
-                      "Product-filtered API response:",
+                      "Product-based AI recommendation response:",
                       productResponse,
                     );
                     let productMaterials = [];
 
                     if (productResponse?.data) {
                       if (
+                        productResponse.data.raw_materials &&
+                        Array.isArray(productResponse.data.raw_materials)
+                      ) {
+                        productMaterials = productResponse.data.raw_materials;
+                      } else if (
                         productResponse.data.rows &&
                         Array.isArray(productResponse.data.rows)
                       ) {
@@ -5707,6 +5738,7 @@
         rawMaterials.forEach((material) => {
           const materialName =
             material.procurement_product_name ||
+            material.product_name ||
             (material.ProductMaster && material.ProductMaster.product_name) ||
             "Unknown";
           const supplierName =
@@ -6885,7 +6917,9 @@
               procurement_quantity: materialRounded,
               procurement_price: 0, // Default price, can be updated later
               procurement_purchaser: `System Auto-Generated - ${
-                material.procurement_product_name || "Unknown"
+                material.procurement_product_name ||
+                material.product_name ||
+                "Unknown"
               }`,
             };
 
@@ -6989,7 +7023,7 @@
                   errorMsg = xhr.responseJSON.message;
                 }
                 toastr.error(
-                  `${material.procurement_product_name}: ${errorMsg}`,
+                  `${material.procurement_product_name || material.product_name || "Material"}: ${errorMsg}`,
                   "Error",
                 );
               },

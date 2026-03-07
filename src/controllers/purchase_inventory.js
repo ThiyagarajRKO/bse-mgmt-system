@@ -85,10 +85,22 @@ export const GetAll = ({
             // Fall back to species filtering when BOM is not available
             const finishedProduct = await models.ProductMaster.findOne({
               where: { id: finished_product_id },
-              attributes: ["id", "product_category_master_id"],
+              attributes: [
+                "id",
+                "product_category_master_id",
+                "species_master_id",
+              ],
             });
 
-            if (finishedProduct?.product_category_master_id) {
+            // Try direct species_master_id first
+            if (finishedProduct?.species_master_id) {
+              targetSpeciesId = finishedProduct.species_master_id;
+              console.log(
+                `📋 Falling back to species filtering for species ${targetSpeciesId} (from ProductMaster.species_master_id)`,
+              );
+            }
+            // Otherwise, try to get it from product category
+            else if (finishedProduct?.product_category_master_id) {
               const category = await models.ProductCategoryMaster.findOne({
                 where: { id: finishedProduct.product_category_master_id },
                 attributes: ["id", "species_master_id"],
@@ -97,7 +109,7 @@ export const GetAll = ({
               if (category?.species_master_id) {
                 targetSpeciesId = category.species_master_id;
                 console.log(
-                  `📋 Falling back to species filtering for species ${targetSpeciesId}`,
+                  `📋 Falling back to species filtering for species ${targetSpeciesId} (from ProductCategoryMaster.species_master_id)`,
                 );
               }
             }
@@ -116,14 +128,22 @@ export const GetAll = ({
           });
 
           if (procProduct?.product_master_id) {
-            // Fetch the product master
+            // Fetch the product master with species info
             const productMaster = await models.ProductMaster.findOne({
               where: { id: procProduct.product_master_id },
-              attributes: ["id", "product_category_master_id"],
+              attributes: [
+                "id",
+                "product_category_master_id",
+                "species_master_id",
+              ],
             });
 
-            if (productMaster?.product_category_master_id) {
-              // Fetch the category to get species_master_id
+            // Try direct species_master_id first
+            if (productMaster?.species_master_id) {
+              targetSpeciesId = productMaster.species_master_id;
+            }
+            // Otherwise try product category
+            else if (productMaster?.product_category_master_id) {
               const category = await models.ProductCategoryMaster.findOne({
                 where: { id: productMaster.product_category_master_id },
                 attributes: ["id", "species_master_id"],
@@ -177,6 +197,7 @@ export const GetAll = ({
               "product_name",
               "product_category_master_id",
               "size_master_id",
+              "species_master_id",
             ],
             as: "ProductMaster",
             model: models.ProductMaster,
@@ -195,7 +216,16 @@ export const GetAll = ({
         inventories.rows.map(async (row) => {
           const plainRow = row.get ? row.get({ plain: true }) : row;
 
-          if (plainRow.ProductMaster?.product_category_master_id) {
+          // First, try to get species_id directly from ProductMaster
+          if (plainRow.ProductMaster?.species_master_id) {
+            plainRow.species_id = plainRow.ProductMaster.species_master_id;
+          }
+
+          // If not found on ProductMaster, try ProductCategoryMaster
+          if (
+            !plainRow.species_id &&
+            plainRow.ProductMaster?.product_category_master_id
+          ) {
             try {
               const category = await models.ProductCategoryMaster.findOne({
                 where: {
@@ -261,6 +291,23 @@ export const GetAll = ({
         filteredRows = enrichedRows.filter(
           (row) => row.species_id === targetSpeciesId,
         );
+        console.log(
+          `📋 Filtered ${filteredRows.length} raw materials by species ${targetSpeciesId} out of ${enrichedRows.length} total`,
+        );
+      }
+      // Priority 3: If finished_product_id was provided but no BOM or species filtering worked, show empty
+      else if (finished_product_id) {
+        console.warn(
+          `⚠️  Could not filter raw materials for product ${finished_product_id} - no BOM entries and species not found. Returning empty list.`,
+        );
+        filteredRows = [];
+      }
+      // If NO filtering criteria provided at all, return all materials (this maintains backward compatibility)
+      else {
+        console.log(
+          `📋 No filtering criteria provided - returning all ${enrichedRows.length} raw materials`,
+        );
+        // filteredRows already set to enrichedRows
       }
 
       // Apply pagination AFTER filtering by species

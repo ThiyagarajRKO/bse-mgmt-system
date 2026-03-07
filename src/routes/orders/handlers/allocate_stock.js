@@ -383,7 +383,6 @@ export const AllocateStock = async (
                 // Update existing allocation
                 await models.SalesAllocation.update(
                   {
-                    allocation_status: "ALLOCATED",
                     allocated_quantity: parsedQuantity,
                     allocation_date: new Date(),
                     updated_at: new Date(),
@@ -394,15 +393,14 @@ export const AllocateStock = async (
                   },
                 );
                 console.log(
-                  `Updated SalesAllocation ${existingSalesAllocation.id} to ALLOCATED status`,
+                  `Updated SalesAllocation ${existingSalesAllocation.id}`,
                 );
               } else {
-                // Create new SalesAllocation
+                // Create new SalesAllocation (defaults to PENDING status)
                 await models.SalesAllocation.create(
                   {
                     order_id: order_id,
                     order_product_id: orderProduct.id,
-                    allocation_status: "ALLOCATED",
                     allocated_quantity: parsedQuantity,
                     ordered_quantity: parsedQuantity,
                     allocation_date: new Date(),
@@ -416,7 +414,7 @@ export const AllocateStock = async (
                   { transaction },
                 );
                 console.log(
-                  `Created new SalesAllocation for order ${order_id} with ALLOCATED status`,
+                  `Created new SalesAllocation for order ${order_id}`,
                 );
               }
             }
@@ -778,7 +776,6 @@ export const AllocateStock = async (
             // Update existing allocation
             await models.SalesAllocation.update(
               {
-                allocation_status: "ALLOCATED",
                 allocated_quantity: parsedQuantity,
                 allocation_date: new Date(),
                 updated_at: new Date(),
@@ -789,15 +786,14 @@ export const AllocateStock = async (
               },
             );
             console.log(
-              `Updated SalesAllocation ${existingSalesAllocation.id} to ALLOCATED status`,
+              `Updated SalesAllocation ${existingSalesAllocation.id}`,
             );
           } else {
-            // Create new SalesAllocation
+            // Create new SalesAllocation (defaults to PENDING status)
             await models.SalesAllocation.create(
               {
                 order_id: order_id,
                 order_product_id: orderProduct.id,
-                allocation_status: "ALLOCATED",
                 allocated_quantity: parsedQuantity,
                 ordered_quantity: parsedQuantity,
                 allocation_date: new Date(),
@@ -810,9 +806,7 @@ export const AllocateStock = async (
               },
               { transaction },
             );
-            console.log(
-              `Created new SalesAllocation for order ${order_id} with ALLOCATED status`,
-            );
+            console.log(`Created new SalesAllocation for order ${order_id}`);
           }
         }
 

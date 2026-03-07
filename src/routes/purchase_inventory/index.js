@@ -14,7 +14,7 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
       // VERY FIRST LINE - log that route was hit
       fs.appendFileSync(
         "/tmp/purchase-test.log",
-        `ROUTE HIT AT ${new Date().toISOString()}\n`
+        `ROUTE HIT AT ${new Date().toISOString()}\n`,
       );
 
       // Log raw query object
@@ -22,7 +22,7 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
       fs.appendFileSync(
         "/tmp/purchase-inventory-debug.log",
         `[Route] Query keys: ${JSON.stringify(queryKeys)}, hasProc: ${!!req
-          .query?.procurement_product_id}\n`
+          .query?.procurement_product_id}\n`,
       );
 
       // Explicitly extract query parameters instead of spreading
@@ -31,6 +31,7 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
         length,
         "search[value]": search,
         procurement_product_id,
+        finished_product_id,
       } = req.query;
       const params = {
         profile_id: req?.token_profile_id,
@@ -38,10 +39,11 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
         length,
         "search[value]": search,
         procurement_product_id,
+        finished_product_id,
       };
       fs.appendFileSync(
         "/tmp/purchase-inventory-debug.log",
-        `[Route] Final params: ${JSON.stringify(params)}\n`
+        `[Route] Final params: ${JSON.stringify(params)}\n`,
       );
       let result = await GetAll(params, req?.session, fastify);
 
@@ -68,7 +70,7 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
           ...req.query,
         },
         req?.session,
-        fastify
+        fastify,
       );
 
       return reply.code(result.statusCode || 200).send({
@@ -89,7 +91,7 @@ export const purchaseInventoryRoute = (fastify, opts, done) => {
       let result = await Get(
         { profile_id: req?.token_profile_id, ...req.params },
         req?.session,
-        fastify
+        fastify,
       );
 
       return reply.code(result.statusCode || 200).send({
