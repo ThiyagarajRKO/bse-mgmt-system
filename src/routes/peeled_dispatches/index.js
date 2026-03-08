@@ -4,6 +4,7 @@ import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { Delete } from "./handlers/delete";
 import { GetProductNames } from "./handlers/get_product_names";
+import { GetDispatchQAMetrics } from "../../controllers/peeling_products";
 
 // Schema
 import { createSchema } from "./schema/create";
@@ -24,14 +25,14 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.put("/", updateSchema, async (req, reply) => {
     try {
@@ -43,14 +44,33 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
+
+  fastify.get("/qa-metrics/:peeled_dispatch_id", async (req, reply) => {
+    try {
+      const { peeled_dispatch_id } = req.params;
+
+      const result = await GetDispatchQAMetrics({ peeled_dispatch_id });
+
+      return reply.code(200).send({
+        success: true,
+        message: "Dispatch QA metrics retrieved successfully",
+        data: result,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
 
   fastify.get("/:peeled_dispatch_id", getSchema, async (req, reply) => {
     try {
@@ -62,14 +82,14 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/", getAllSchema, async (req, reply) => {
     try {
@@ -81,14 +101,14 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.get("/names", getProductNamesSchema, async (req, reply) => {
     try {
@@ -100,14 +120,14 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
@@ -119,14 +139,14 @@ export const peeledDispatchRoute = (fastify, opts, done) => {
         success: true,
         message: result.message,
         data: result?.data,
-      });;
+      });
     } catch (err) {
       return reply.code(err?.statusCode || 400).send({
         success: false,
         message: err?.message || err,
-      });;
+      });
     }
-      });;
+  });
 
   done();
 };

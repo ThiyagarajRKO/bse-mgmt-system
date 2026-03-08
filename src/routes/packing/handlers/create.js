@@ -35,7 +35,7 @@ export const Create = async (
           },
           {
             model: models.QAChecklist,
-            as: "qa",
+            as: "qaCheck",
             attributes: ["id", "status"],
           },
         ],

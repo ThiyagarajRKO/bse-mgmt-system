@@ -40,14 +40,14 @@ export const Create = async (
       // Get peeling product to retrieve order_id and peeling_id
       let final_order_id = order_id;
       let peeling_id = null;
-      
+
       const peelingProduct = await PeelingProducts.Get({
         id: peeled_product_id,
       });
-      
+
       if (peelingProduct?.peeling_id) {
         peeling_id = peelingProduct.peeling_id;
-        
+
         if (!final_order_id) {
           const peeling = await Peeling.Get({ id: peeling_id });
           final_order_id = peeling?.order_id;

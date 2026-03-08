@@ -64,7 +64,6 @@ export default async (fastify) => {
           try {
             await fastify.models.PeeledDispatches.update(
               {
-                qa_id: qa.id,
                 qa_checklist_id: qa.id,
               },
               { where: { id: qa.peeled_dispatch_id, is_active: true } },

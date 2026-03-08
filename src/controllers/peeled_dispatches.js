@@ -116,7 +116,7 @@ export const Get = ({ id }) => {
         include: [
           {
             model: models.QAChecklist,
-            as: "qa",
+            as: "qaCheck",
             required: false,
             attributes: ["id", "status", "qa_record_no", "inspection_date"],
           },
