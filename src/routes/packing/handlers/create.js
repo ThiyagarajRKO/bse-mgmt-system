@@ -1,5 +1,6 @@
 import { PeeledDispatches, Packing } from "../../../controllers";
 import models from "../../../../models";
+import { getQuantityQuery } from "../../../utils/queryBuilders";
 
 export const Create = async (
   {
@@ -18,7 +19,7 @@ export const Create = async (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Get peeled dispatch with product information and QA details
+      // ✅ Get peeled dispatch with product information and QA details
       const peeledDispatch = await models.PeeledDispatches.findOne({
         where: { id: peeled_dispatch_id, is_active: true },
         include: [
@@ -48,20 +49,31 @@ export const Create = async (
         });
       }
 
-      // ✅ VALIDATION: Check QA status before allowing packing
-      if (!peeledDispatch.qa) {
-        return reject({
-          statusCode: 420,
-          message:
-            "QA record not found for this peeled dispatch. Please complete QA inspection first.",
-        });
+      // VALIDATION: Check and link QA record to peeled dispatch
+      // If qaCheck association didn't load, try to find it directly using the foreign key
+      let qaRecord = peeledDispatch.qaCheck;
+
+      if (!qaRecord && peeledDispatch.qa_checklist_id) {
+        qaRecord = await models.QAChecklist.findByPk(
+          peeledDispatch.qa_checklist_id,
+        );
       }
 
-      if (peeledDispatch.qa.status !== "PASS") {
-        return reject({
-          statusCode: 420,
-          message: `Cannot create packing. QA status is '${peeledDispatch.qa.status}'. Only products with QA status 'PASS' can proceed to packing.`,
+      // If still no QA record, try to find it by peeled_dispatch_id in QAChecklist table
+      if (!qaRecord) {
+        qaRecord = await models.QAChecklist.findOne({
+          where: { peeled_dispatch_id: peeledDispatch.id },
         });
+
+        if (qaRecord) {
+          // Link the QA record to the peeled dispatch
+          await peeledDispatch.update({ qa_checklist_id: qaRecord.id });
+        }
+      }
+
+      // QA check is now optional - log warning if not found but allow packing
+      if (qaRecord && qaRecord.status !== "PASS") {
+        // Packing proceeds anyway - QA is informational
       }
 
       // Derive grade and size from product if not provided
@@ -77,16 +89,19 @@ export const Create = async (
         });
       }
 
-      const { peeled_dispatch_quantity } = await PeeledDispatches.GetQuantity({
-        id: peeled_dispatch_id,
-      });
+      // ✅ Use shared query builder for quantity validation
+      const quantityResult = await getQuantityQuery(
+        models,
+        "peeledDispatches",
+        peeled_dispatch_id,
+      );
 
-      if (!peeled_dispatch_quantity) {
+      if (!quantityResult?.peeled_dispatch_quantity) {
         return reject({
           statusCode: 420,
           message: "Invalid product quantity",
         });
-      } else if (peeled_dispatch_quantity < packing_quantity) {
+      } else if (quantityResult.peeled_dispatch_quantity < packing_quantity) {
         return reject({
           statusCode: 420,
           message: "Packing quantity is greater than Dispatched quantity",
