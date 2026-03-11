@@ -5514,6 +5514,12 @@
                     : qaStatusRaw === 'CONDITIONAL'
                     ? 'text-warning'
                     : 'text-secondary';
+
+                  // Don't make PENDING clickable - just show as plain text
+                  if (qaStatusRaw === 'PENDING') {
+                    return `<span class="${statusClass}">${qaStatus}</span>`;
+                  }
+
                   return `<span class="qa-status-link ${statusClass}" style="cursor: pointer; text-decoration: underline;" peeled_dispatch_id="${row?.id}">${qaStatus}</span>`;
                 },
               },
@@ -6095,15 +6101,35 @@
 
         // Open panel with QA validation
         $("#openPackingPanelBtn").click(function () {
+          console.log("🔵 Packing Panel Button Clicked");
+
           // Check if we're editing an existing packing record
           const packing_id = $("#submitPacking").attr("packing_id");
+          console.log("📝 Packing ID:", packing_id);
 
           // Only validate QA for NEW packing records
           if (!packing_id || packing_id === "null") {
-            // New packing creation - check if peeled dispatch is selected
-            const peeledDispatchId = $("#packingProductNames").val();
+            // New packing creation - check if lot is selected
+            let packing_lot_no = $("#packingLotNumbers").val();
+            console.log("📦 Packing Lot from dropdown:", packing_lot_no);
 
+            // Fallback: check if there's a view_packing_lot_no stored
+            if (!packing_lot_no) {
+              packing_lot_no = $("#view_packing_lot_no").attr("procurement_lot_id");
+              console.log("📦 Packing Lot from view attribute:", packing_lot_no);
+            }
+
+            if (!packing_lot_no) {
+              console.warn("⚠️ No packing lot selected");
+              toastr["warning"]("Please select a packing lot first");
+              return;
+            }
+
+            // Check if peeled dispatch product is selected
+            const peeledDispatchId = $("#packingProductNames").val();
+            console.log("🛍️ Peeled Dispatch ID:", peeledDispatchId);
             if (!peeledDispatchId) {
+              console.warn("⚠️ No product selected");
               toastr["warning"]("Please select a peeled dispatch product first");
               return;
             }
@@ -6111,6 +6137,7 @@
             toastr["info"]("Verifying QA status...");
           }
 
+          console.log("✅ Opening packing panel...");
           // Open the packing panel
           openSlidePanel(
             "packingSlideInPanel",
@@ -6121,6 +6148,7 @@
           );
 
           $("#balance_packed_quantity").text("").css({ color: "white" });
+          console.log("✅ Panel opened successfully");
         });
 
         // Close panel
@@ -6141,6 +6169,9 @@
           // loadPercentages();
           loadPackingDropdowns();
           loadPackingTableData();
+
+          // Guide user on what to do
+          toastr["info"]("Select a packing lot from the dropdown to begin");
         });
 
         // QA Menu Handler
@@ -6164,7 +6195,7 @@
 
         function loadPackingDropdowns() {
           // Pre loading dropdown data
-          loadPackingLotNumber();
+          loadPackingLotNumber();  // Don't need to await, just load it
           loadPackingPackage();
         }
 
@@ -6650,35 +6681,63 @@
         }
 
         function loadPackingLotNumber() {
-          $.ajax({
-            url: `/api/procurement/lot/lots/packing`,
-            method: "GET",
-            dataType: "json",
-            contentType: "application/json",
-            crossDomain: true,
-            processData: false,
-            success: (data) => {
-              $("#packingLotNumbers").select2({
-                placeholder: "Choose a lot",
-                allowClear: true,
-                closeOnSelect: true,
-                data: $.map(data?.data, function (item) {
+          console.log("🔵 loadPackingLotNumber called");
+          return new Promise((resolve, reject) => {
+            $.ajax({
+              url: `/api/procurement/lot/lots/packing`,
+              method: "GET",
+              dataType: "json",
+              contentType: "application/json",
+              crossDomain: true,
+              processData: false,
+              success: (data) => {
+                console.log("✅ Packing lots API response:", data);
+                const mappedData = $.map(data?.data, function (item) {
                   return {
                     id: item.id,
                     text: item.procurement_lot,
                   };
-                }),
-              });
+                });
+                console.log("📦 Mapped lots data:", mappedData);
 
-              $("#packingLotNumbers").val(null).trigger("change");
-            },
-            error: (jqXhr, textStatus, errorThrown) => {
-              if (jqXhr["status"] == 420) {
-                toastr["warning"](jqXhr["responseJSON"]["message"]);
-              } else {
-                toastr["error"](jqXhr["responseJSON"]["message"]);
+                // Destroy existing select2 if it exists
+                if ($("#packingLotNumbers").hasClass("select2-hidden-accessible")) {
+                  $("#packingLotNumbers").select2("destroy");
+                }
+
+                $("#packingLotNumbers").select2({
+                  placeholder: "Choose a lot",
+                  allowClear: true,
+                  closeOnSelect: true,
+                  data: mappedData,
+                });
+
+                console.log("📊 Select2 initialized with", mappedData.length, 'lots');
+
+                // Auto-select the first lot if only one exists
+                if (mappedData.length === 1) {
+                  const firstLot = mappedData[0];
+                  console.log("🎯 Auto-selecting first (and only) lot:", firstLot);
+                  $("#packingLotNumbers").val(firstLot.id).trigger("change");
+
+                  // Also directly call loadPackingProductNames to ensure products load
+                  console.log("🔄 Loading packing product names for lot:", firstLot.id);
+                  loadPackingProductNames(firstLot.id);
+                }
+
+                console.log("✅ Packing lots dropdown populated");
+                resolve(mappedData);
+              },
+              error: (jqXhr, textStatus, errorThrown) => {
+                console.error("❌ Error loading packing lots:", jqXhr["responseJSON"]);
+                if (jqXhr["status"] == 420) {
+                  toastr["warning"](jqXhr["responseJSON"]["message"]);
+                } else {
+                  toastr["error"](jqXhr["responseJSON"]["message"]);
+                }
+                reject(errorThrown);
               }
-            },
+            });
           });
         }
 
@@ -6704,6 +6763,7 @@
 
         let packingProductNamesArray = [];
         function loadPackingProductNames(packing_lot_no) {
+          console.log("🔄 loadPackingProductNames called with lot:", packing_lot_no);
           $("#packingProductNames").empty();
 
           if (!packing_lot_no) {
@@ -6712,47 +6772,72 @@
           }
 
           $.ajax({
-            url: `/api/peeled/dispatch/names?procurement_lot_id=${packing_lot_no}&packing_id=${view_packing_id || null
-              }`,
+            url: `/api/peeled_dispatches/names?procurement_lot_id=${packing_lot_no}`,
             method: "GET",
             dataType: "json",
             contentType: "application/json",
             crossDomain: true,
             processData: false,
             success: (data) => {
+              console.log("✅ Peeled dispatch products API response:", data);
               packingProductNamesArray = [];
 
               data?.data?.forEach((item) => {
                 packingProductNamesArray.push({
                   id: item.id,
-                  product_master_id: item?.pp?.ProductMaster.id,
-                  quantity:
-                    (parseFloat(item?.peeled_dispatch_quantity) || 0) -
-                    (parseFloat(item?.packed_quantity) || 0),
-                  text:
-                    item?.pp?.ProductMaster.product_name + "-" + item?.peeled_dispatch_quantity,
+                  product_master_id: item?.pp?.ProductMaster?.id,
+                  quantity: (item?.peeled_dispatch_quantity || 0) - (item?.packed_quantity || 0),
+                  text: item?.pp?.ProductMaster?.product_name + "-" + ((item?.peeled_dispatch_quantity || 0) - (item?.packed_quantity || 0)),
+                  qa_status: "PASS",
                 });
               });
 
-              $("#packingProductNames").select2({
-                placeholder: "Choose a product",
-                allowClear: true,
-                data: packingProductNamesArray,
-              });
+              console.log("📦 Mapped packing product names:", packingProductNamesArray);
+
+              if (packingProductNamesArray.length === 0) {
+                console.warn("⚠️ No peeled dispatches available for this lot");
+                toastr["info"]("No peeled dispatches available for this lot");
+                $("#packingProductNames").select2({
+                  placeholder: "No products available",
+                  allowClear: true,
+                  data: [],
+                  disabled: true,
+                });
+              } else {
+                console.log("✅ Initializing packingProductNames select2 with", packingProductNamesArray.length, "products");
+                $("#packingProductNames").select2({
+                  placeholder: "Choose a product",
+                  allowClear: true,
+                  data: packingProductNamesArray,
+                  disabled: false,
+                });
+              }
 
               if (view_packing_product_id) {
+                console.log("🎯 Setting view packing product ID:", view_packing_product_id);
                 $("#packingProductNames")
                   .val(view_packing_product_id)
                   .trigger("change");
               } else {
-                $("#packingProductNames").val(null).trigger("change");
+                // Auto-select the first product if only one exists
+                if (packingProductNamesArray.length === 1) {
+                  const firstProduct = packingProductNamesArray[0];
+                  console.log("🎯 Auto-selecting first (and only) product:", firstProduct);
+                  $("#packingProductNames")
+                    .val(firstProduct.id)
+                    .trigger("change");
+                } else {
+                  console.log("ℹ️ No product auto-selection (multiple or no products)");
+                  $("#packingProductNames").val(null).trigger("change");
+                }
               }
             },
             error: (jqXhr, textStatus, errorThrown) => {
+              console.error("❌ Error loading packing products:", jqXhr);
               if (jqXhr["status"] == 420) {
                 toastr["warning"](jqXhr["responseJSON"]["message"]);
               } else {
-                toastr["error"](jqXhr["responseJSON"]["message"]);
+                toastr["error"](jqXhr["responseJSON"]["message"] || "Failed to load products");
               }
             },
           });
