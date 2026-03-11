@@ -554,103 +554,24 @@ export const GetProductNames = ({
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
+      const { getProductNamesQuery } =
+        await import("../utils/queryBuilders.js");
 
-      let procurementLotsWhere = {
-        is_active: true,
-      };
+      const queryOptions = await getProductNamesQuery(
+        models,
+        "peeledDispatches",
+        {
+          procurement_lot_id,
+          packing_id,
+          start,
+          length,
+          search,
+        },
+      );
 
-      if (procurement_lot_id) {
-        procurementLotsWhere.id = procurement_lot_id;
-      }
-      const packings = await models.PeeledDispatches.findAll({
-        subQuery: false,
-        attributes: [
-          "id",
-          "created_at",
-          "peeled_dispatch_quantity",
-          [
-            sequelize.literal(`
-            (SELECT
-              CASE
-                WHEN SUM(packing_quantity) IS NULL THEN 0
-                ELSE SUM(packing_quantity)
-              END
-            FROM "packing"
-            WHERE
-              peeled_dispatch_id = "PeeledDispatches"."id" AND
-              ${
-                packing_id != "null" && packing_id != undefined
-                  ? "id != '" + packing_id + "' and"
-                  : ""
-              }
-              is_active = true
-          )
-          `),
-            "packed_quantity",
-          ],
-        ],
-        include: [
-          {
-            attributes: ["id"],
-            as: "pp",
-            model: models.PeelingProducts,
-            where: { is_active: true },
-            include: [
-              {
-                attributes: [],
-                as: "pln",
-                model: models.Peeling,
-                where: { is_active: true },
-                include: [
-                  {
-                    as: "dis",
-                    model: models.Dispatches,
-                    attributes: [],
-                    where: { is_active: true },
-                    include: [
-                      {
-                        as: "pp",
-                        model: models.ProcurementProducts,
-                        attributes: [],
-                        include: [
-                          {
-                            as: "pl",
-                            model: models.ProcurementLots,
-                            attributes: [],
-                            where: procurementLotsWhere,
-                          },
-                        ],
-                        where: {
-                          is_active: true,
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                attributes: ["id", "product_name"],
-                model: models.ProductMaster,
-                where: { is_active: true },
-              },
-            ],
-          },
-        ],
-        where,
-        group: [
-          "PeeledDispatches.id",
-          "pp.id",
-          "pp->pln.id",
-          "pp->pln->dis.id",
-          "pp->pln->dis->pp.id",
-          "pp->ProductMaster.id",
-        ],
-      });
+      const result = await models.PeeledDispatches.findAll(queryOptions);
 
-      resolve(packings);
+      resolve(result);
     } catch (err) {
       reject(err);
     }

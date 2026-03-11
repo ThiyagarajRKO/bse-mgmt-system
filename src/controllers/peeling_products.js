@@ -167,6 +167,31 @@ export const GetQuantity = ({ id }) => {
   });
 };
 
+export const Get = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        return reject({
+          statusCode: 420,
+          message: "Peeling product ID field must not be empty!",
+        });
+      }
+
+      const product = await models.PeelingProducts.findOne({
+        attributes: ["id", "peeling_id", "product_master_id", "yield_quantity"],
+        where: {
+          id,
+          is_active: true,
+        },
+      });
+
+      resolve(product);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const GetNames = ({
   procurement_lot_id,
   peeled_dispatch_id,
@@ -319,6 +344,112 @@ export const Delete = ({ profile_id, id }) => {
       });
 
       resolve(peeling);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetQAMetrics = ({ procurement_lot_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!procurement_lot_id) {
+        return reject({
+          statusCode: 420,
+          message: "Procurement lot ID is required!",
+        });
+      }
+
+      // Get QA metrics for peeling products in this lot
+      const metrics = await sequelize.query(
+        `
+        SELECT 
+          COUNT(DISTINCT pp.id) as total_peeling_products,
+          COALESCE(SUM(pp.yield_quantity), 0) as total_quantity_qa,
+          COUNT(DISTINCT CASE WHEN qa.status = 'PASS' THEN qa.id END) as passed_qa,
+          COUNT(DISTINCT CASE WHEN qa.status = 'FAIL' THEN qa.id END) as failed_qa,
+          COUNT(DISTINCT CASE WHEN qa.status = 'PENDING' THEN qa.id END) as pending_qa,
+          COUNT(DISTINCT CASE WHEN qa.status = 'ON_HOLD' THEN qa.id END) as on_hold_qa,
+          CASE 
+            WHEN COUNT(DISTINCT qa.id) > 0 
+            THEN ROUND(
+              (COUNT(DISTINCT CASE WHEN qa.status = 'PASS' THEN qa.id END)::FLOAT / COUNT(DISTINCT qa.id)) * 100, 
+              2
+            )
+            ELSE 0 
+          END as pass_rate_percent
+        FROM peeling_products pp
+        LEFT JOIN peeling p ON p.id = pp.peeling_id
+        LEFT JOIN dispatches d ON d.id = p.dispatch_id
+        LEFT JOIN procurement_products pprod ON pprod.id = d.procurement_product_id
+        LEFT JOIN qa_checklist qa ON qa.peeling_id = p.id
+        WHERE pprod.procurement_lot_id = :procurement_lot_id
+        AND pp.is_active = true;
+      `,
+        {
+          replacements: { procurement_lot_id },
+          type: sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if (!metrics || metrics.length === 0) {
+        return resolve({
+          total_peeling_products: 0,
+          total_quantity_qa: 0,
+          passed_qa: 0,
+          failed_qa: 0,
+          pending_qa: 0,
+          on_hold_qa: 0,
+          pass_rate_percent: 0,
+        });
+      }
+
+      resolve(metrics[0]);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const GetDispatchQAMetrics = ({ peeled_dispatch_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!peeled_dispatch_id) {
+        return reject({
+          statusCode: 420,
+          message: "Peeled dispatch ID is required!",
+        });
+      }
+
+      // Get QA metrics for a specific peeled dispatch
+      const metrics = await sequelize.query(
+        `
+        SELECT 
+          pd.id as peeled_dispatch_id,
+          pd.peeled_dispatch_quantity as dispatch_quantity,
+          COALESCE(qa.status, 'UNKNOWN') as qa_status,
+          COALESCE(qa.id, NULL) as qa_checklist_id,
+          pp.yield_quantity as peeling_product_quantity
+        FROM peeled_dispatches pd
+        LEFT JOIN peeling_products pp ON pp.id = pd.peeled_product_id
+        LEFT JOIN qa_checklist qa ON qa.id = pd.qa_checklist_id
+        WHERE pd.id = :peeled_dispatch_id
+        AND pd.is_active = true;
+      `,
+        {
+          replacements: { peeled_dispatch_id },
+          type: sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if (!metrics || metrics.length === 0) {
+        return reject({
+          statusCode: 404,
+          message: "Peeled dispatch not found",
+        });
+      }
+
+      resolve(metrics[0]);
     } catch (err) {
       reject(err);
     }
