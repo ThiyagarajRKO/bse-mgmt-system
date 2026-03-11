@@ -16,6 +16,15 @@ import { PrivateRouters, PublicRouters } from "./routes";
 // Configure the framework and instantiate it
 const fastify = Fastify({
   logger: true,
+  // Configure AJV to coerce query/body params where appropriate so
+  // clients that send numbers as strings (e.g. select2/datatable) don't
+  // fail validation with a 400.
+  ajv: {
+    customOptions: {
+      coerceTypes: true,
+      removeAdditional: false,
+    },
+  },
 });
 
 // Decorate fastify with models
@@ -26,9 +35,16 @@ const start = async () => {
     // Register session plugin with database persistence
     // This plugin uses connect-session-sequelize to store sessions in the database
     // Located in src/plugins/session.js
-    await fastify.register(AutoLoad, {
-      dir: path.join(process.cwd(), "/src/plugins"),
-    });
+    try {
+      await fastify.register(AutoLoad, {
+        dir: path.join(process.cwd(), "/src/plugins"),
+      });
+    } catch (pluginErr) {
+      fastify.log.warn(
+        "Some plugins failed to register (continuing):",
+        pluginErr.message,
+      );
+    }
 
     //Configuring the routes
     fastify.register(PublicRouters, { prefix: "/api" });
@@ -52,8 +68,14 @@ const start = async () => {
 
     // attempt DB connection (models.authenticate is a helper exposed by models/index.js)
     if (models && typeof models.authenticate === "function") {
-      await models.authenticate();
-      fastify.log.info("Database connection verified");
+      try {
+        await models.authenticate();
+      } catch (dbErr) {
+        fastify.log.warn(
+          "Database connection failed (continuing anyway):",
+          dbErr.message,
+        );
+      }
     }
 
     await fastify.listen({ port: process.env.PORT, host: "0.0.0.0" });
