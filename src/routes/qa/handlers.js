@@ -95,11 +95,17 @@ export default async (fastify) => {
             includes[1].include.push({
               model: fastify.models.PeelingProducts,
               required: false,
+              separate: true, // Fetch separately to avoid row multiplication
               include: [
                 {
                   model: fastify.models.ProductMaster,
                   required: false,
                   attributes: ["id", "product_name"],
+                },
+                {
+                  model: fastify.models.PeeledDispatches,
+                  required: false,
+                  attributes: ["id", "peeled_dispatch_quantity"],
                 },
               ],
             });
@@ -144,6 +150,7 @@ export default async (fastify) => {
             offset: offset,
             order: [["created_at", "DESC"]],
             include: buildIncludes(true),
+            distinct: true, // Prevent row multiplication from nested JOINs
           }));
         } catch (err) {
           // if the error indicates the order_id column is missing, retry
@@ -162,6 +169,7 @@ export default async (fastify) => {
                 offset: offset,
                 order: [["created_at", "DESC"]],
                 include: buildIncludes(false),
+                distinct: true, // Prevent row multiplication from nested JOINs
               },
             ));
           } else {

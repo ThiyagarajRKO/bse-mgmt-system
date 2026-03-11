@@ -421,20 +421,42 @@ export const GetDispatchQAMetrics = ({ peeled_dispatch_id }) => {
         });
       }
 
-      // Get QA metrics for a specific peeled dispatch
+      // Get comprehensive QA metrics tracking quantity passed across peeling and dispatch
       const metrics = await sequelize.query(
         `
         SELECT 
           pd.id as peeled_dispatch_id,
           pd.peeled_dispatch_quantity as dispatch_quantity,
-          COALESCE(qa.status, 'UNKNOWN') as qa_status,
-          COALESCE(qa.id, NULL) as qa_checklist_id,
-          pp.yield_quantity as peeling_product_quantity
+          pp.yield_quantity as peeling_product_quantity,
+          COALESCE(qa_peeling.status, 'UNKNOWN') as peeling_qa_status,
+          COALESCE(qa_peeling.quantity, 0) as peeling_qa_quantity,
+          COALESCE(qa_peeling.id, NULL) as peeling_qa_checklist_id,
+          COALESCE(qa_dispatch.status, 'UNKNOWN') as dispatch_qa_status,
+          COALESCE(qa_dispatch.id, NULL) as dispatch_qa_checklist_id,
+          -- Calculate total quantity that passed QA (from peeling stage)
+          CASE 
+            WHEN qa_peeling.status = 'PASS' 
+            THEN COALESCE(qa_peeling.quantity, pp.yield_quantity)
+            ELSE 0
+          END as quantity_passed_peeling,
+          -- Calculate total quantity to dispatch (before packing)
+          pd.peeled_dispatch_quantity as quantity_to_dispatch,
+          -- Calculate pass rate from peeling QA
+          CASE 
+            WHEN COALESCE(qa_peeling.quantity, 0) > 0 
+            THEN ROUND(
+              (CASE WHEN qa_peeling.status = 'PASS' THEN 1 ELSE 0 END::FLOAT) * 100, 
+              2
+            )
+            ELSE 0 
+          END as peeling_pass_rate_percent
         FROM peeled_dispatches pd
         LEFT JOIN peeling_products pp ON pp.id = pd.peeled_product_id
-        LEFT JOIN qa_checklist qa ON qa.id = pd.qa_checklist_id
+        LEFT JOIN qa_checklist qa_peeling ON qa_peeling.peeled_product_id = pp.id
+        LEFT JOIN qa_checklist qa_dispatch ON qa_dispatch.peeled_dispatch_id = pd.id
         WHERE pd.id = :peeled_dispatch_id
-        AND pd.is_active = true;
+        AND pd.is_active = true
+        LIMIT 1;
       `,
         {
           replacements: { peeled_dispatch_id },
@@ -450,6 +472,195 @@ export const GetDispatchQAMetrics = ({ peeled_dispatch_id }) => {
       }
 
       resolve(metrics[0]);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Get aggregate QA metrics between Peeling and Dispatch stages
+ * Tracks total quantity passed from peeling through to dispatch
+ * Useful for yield analysis and quality tracking across production stages
+ */
+export const GetPeelingToDispatchQAMetrics = ({ procurement_lot_id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!procurement_lot_id) {
+        return reject({
+          statusCode: 420,
+          message: "Procurement lot ID is required!",
+        });
+      }
+
+      // Aggregate QA metrics from peeling through dispatch
+      const metrics = await sequelize.query(
+        `
+        SELECT 
+          :procurement_lot_id as procurement_lot_id,
+          -- Peeling stage metrics
+          COUNT(DISTINCT pp.id) as total_peeling_products,
+          COALESCE(SUM(pp.yield_quantity), 0) as total_yield_quantity,
+          COUNT(DISTINCT CASE WHEN qa_p.status = 'PASS' THEN qa_p.id END) as peeling_passed_count,
+          COALESCE(
+            SUM(CASE WHEN qa_p.status = 'PASS' THEN qa_p.quantity ELSE 0 END),
+            0
+          ) as total_quantity_passed_peeling,
+          -- Total quantity passed at dispatch stage
+          COALESCE(SUM(CASE WHEN qa_d.status = 'PASS' THEN qa_d.quantity ELSE 0 END), 0) as total_quantity_passed_dispatch,
+          COUNT(DISTINCT CASE WHEN qa_p.status = 'FAIL' THEN qa_p.id END) as peeling_failed_count,
+          COUNT(DISTINCT CASE WHEN qa_p.status = 'PENDING' THEN qa_p.id END) as peeling_pending_count,
+          COUNT(DISTINCT CASE WHEN qa_p.status = 'ON_HOLD' THEN qa_p.id END) as peeling_on_hold_count,
+          -- Dispatch stage metrics
+          COUNT(DISTINCT pd.id) as total_peeled_dispatches,
+          COALESCE(SUM(pd.peeled_dispatch_quantity), 0) as total_dispatch_quantity,
+          COUNT(DISTINCT CASE WHEN qa_d.status = 'PASS' THEN qa_d.id END) as dispatch_passed_count,
+          COUNT(DISTINCT CASE WHEN qa_d.status = 'FAIL' THEN qa_d.id END) as dispatch_failed_count,
+          -- Pass rates
+          CASE 
+            WHEN COUNT(DISTINCT qa_p.id) > 0 
+            THEN ROUND(CAST((COUNT(DISTINCT CASE WHEN qa_p.status = 'PASS' THEN qa_p.id END)::FLOAT / COUNT(DISTINCT qa_p.id)) * 100 AS NUMERIC), 2)
+            ELSE 0 
+          END as peeling_pass_rate_percent,
+          CASE 
+            WHEN COUNT(DISTINCT qa_d.id) > 0 
+            THEN ROUND(CAST((COUNT(DISTINCT CASE WHEN qa_d.status = 'PASS' THEN qa_d.id END)::FLOAT / COUNT(DISTINCT qa_d.id)) * 100 AS NUMERIC), 2)
+            ELSE 0 
+          END as dispatch_pass_rate_percent,
+          -- Overall yield from peeling to dispatch
+          CASE 
+            WHEN COALESCE(SUM(pp.yield_quantity), 0) > 0
+            THEN ROUND(CAST((COALESCE(SUM(pd.peeled_dispatch_quantity), 0)::FLOAT / COALESCE(SUM(pp.yield_quantity), 1)) * 100 AS NUMERIC), 2)
+            ELSE 0
+          END as peeling_to_dispatch_yield_percent
+        FROM peeling_products pp
+        LEFT JOIN peeling p ON p.id = pp.peeling_id
+        LEFT JOIN dispatches d ON d.id = p.dispatch_id
+        LEFT JOIN procurement_products pprod ON pprod.id = d.procurement_product_id
+        LEFT JOIN qa_checklist qa_p ON qa_p.peeling_id = p.id
+        LEFT JOIN peeled_dispatches pd ON pd.peeled_product_id = pp.id
+        LEFT JOIN qa_checklist qa_d ON qa_d.peeled_dispatch_id = pd.id
+        WHERE pprod.procurement_lot_id = :procurement_lot_id
+        AND pp.is_active = true
+        GROUP BY pprod.procurement_lot_id;
+      `,
+        {
+          replacements: { procurement_lot_id },
+          type: sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if (!metrics || metrics.length === 0) {
+        return resolve({
+          procurement_lot_id,
+          total_peeling_products: 0,
+          total_yield_quantity: 0,
+          peeling_passed_count: 0,
+          total_quantity_passed_peeling: 0,
+          total_quantity_passed_dispatch: 0,
+          peeling_failed_count: 0,
+          peeling_pending_count: 0,
+          peeling_on_hold_count: 0,
+          total_peeled_dispatches: 0,
+          total_dispatch_quantity: 0,
+          dispatch_passed_count: 0,
+          dispatch_failed_count: 0,
+          peeling_pass_rate_percent: 0,
+          dispatch_pass_rate_percent: 0,
+          peeling_to_dispatch_yield_percent: 0,
+        });
+      }
+
+      // Convert all numeric fields to actual numbers
+      const result = metrics[0];
+      return resolve({
+        procurement_lot_id: result.procurement_lot_id,
+        total_peeling_products: Number(result.total_peeling_products || 0),
+        total_yield_quantity: Number(result.total_yield_quantity || 0),
+        peeling_passed_count: Number(result.peeling_passed_count || 0),
+        total_quantity_passed_peeling: Number(
+          result.total_quantity_passed_peeling || 0,
+        ),
+        total_quantity_passed_dispatch: Number(
+          result.total_quantity_passed_dispatch || 0,
+        ),
+        peeling_failed_count: Number(result.peeling_failed_count || 0),
+        peeling_pending_count: Number(result.peeling_pending_count || 0),
+        peeling_on_hold_count: Number(result.peeling_on_hold_count || 0),
+        total_peeled_dispatches: Number(result.total_peeled_dispatches || 0),
+        total_dispatch_quantity: Number(result.total_dispatch_quantity || 0),
+        dispatch_passed_count: Number(result.dispatch_passed_count || 0),
+        dispatch_failed_count: Number(result.dispatch_failed_count || 0),
+        peeling_pass_rate_percent: Number(
+          result.peeling_pass_rate_percent || 0,
+        ),
+        dispatch_pass_rate_percent: Number(
+          result.dispatch_pass_rate_percent || 0,
+        ),
+        peeling_to_dispatch_yield_percent: Number(
+          result.peeling_to_dispatch_yield_percent || 0,
+        ),
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// Get aggregated QA metrics across all procurement lots
+export const GetAllQAMetrics = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get aggregated QA metrics from all procurement lots
+      // Calculate percentage as: (QA Passed Quantity) / (Total Peeled Quantity from all peeling_products) * 100
+      const metrics = await sequelize.query(
+        `
+        SELECT 
+          COUNT(DISTINCT CASE WHEN qa.status = 'PASS' THEN qa.id END) as total_passed_count,
+          COALESCE(
+            SUM(CASE WHEN qa.status = 'PASS' THEN qa.quantity ELSE 0 END),
+            0
+          ) as total_quantity_passed,
+          COUNT(DISTINCT CASE WHEN qa.status = 'FAIL' THEN qa.id END) as total_failed_count,
+          COUNT(DISTINCT CASE WHEN qa.status = 'PENDING' THEN qa.id END) as total_pending_count,
+          COUNT(DISTINCT qa.id) as total_qa_records,
+          COALESCE((SELECT SUM(yield_quantity) FROM peeling_products WHERE is_active = true), 0) as total_yield_quantity,
+          CASE 
+            WHEN COALESCE((SELECT SUM(yield_quantity) FROM peeling_products WHERE is_active = true), 0) > 0
+            THEN ROUND(CAST((COALESCE(SUM(CASE WHEN qa.status = 'PASS' THEN qa.quantity ELSE 0 END), 0)::FLOAT / COALESCE((SELECT SUM(yield_quantity) FROM peeling_products WHERE is_active = true), 1)) * 100 AS NUMERIC), 2)
+            ELSE 0 
+          END as overall_pass_rate_percent
+        FROM qa_checklist qa
+      `,
+        {
+          type: sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if (!metrics || metrics.length === 0) {
+        return resolve({
+          total_passed_count: 0,
+          total_quantity_passed: 0,
+          total_failed_count: 0,
+          total_pending_count: 0,
+          total_qa_records: 0,
+          total_yield_quantity: 0,
+          overall_pass_rate_percent: 0,
+        });
+      }
+
+      const result = metrics[0];
+      return resolve({
+        total_passed_count: Number(result.total_passed_count || 0),
+        total_quantity_passed: Number(result.total_quantity_passed || 0),
+        total_failed_count: Number(result.total_failed_count || 0),
+        total_pending_count: Number(result.total_pending_count || 0),
+        total_qa_records: Number(result.total_qa_records || 0),
+        total_yield_quantity: Number(result.total_yield_quantity || 0),
+        overall_pass_rate_percent: Number(
+          result.overall_pass_rate_percent || 0,
+        ),
+      });
     } catch (err) {
       reject(err);
     }

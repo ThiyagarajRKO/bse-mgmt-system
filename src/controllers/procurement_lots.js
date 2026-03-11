@@ -181,65 +181,38 @@ export const GetAll = ({
 export const CountStats = ({ procurement_lot_id }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let where = {
-        is_active: true,
-      };
-
+      // Build where clause for filtering
+      let whereClause = `WHERE 1=1`;
       if (procurement_lot_id) {
-        where.id = procurement_lot_id;
+        whereClause += ` AND procurement_lot_id = '${procurement_lot_id}'`;
       }
 
-      const procurement = await models.ProcurementLots.findOne({
-        subQuery: false,
-        attributes: [
-          [
-            sequelize.literal(
-              `(SELECT SUM(procurement_products.procurement_quantity) FROM procurement_products WHERE procurement_products.is_active = true)`,
-            ),
-            "total_purchased_weight",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id=procurement_product_id and pp.is_active = true WHERE dispatches.is_active = true)`,
-            ),
-            "total_dispatched_weight",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(peeling_quantity) FROM peeling JOIN dispatches dp ON dp.id = peeling.dispatch_id and dp.is_active = true JOIN procurement_products pp ON pp.id = procurement_product_id and pp.is_active = true WHERE peeling.is_active = true)`,
-            ),
-            "total_peeled_weight",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(pd.peeled_dispatch_quantity)
-                FROM peeled_dispatches pd
-	              JOIN peeling_products pp on pp.id=pd.peeled_product_id and pp.is_active=true
-	              JOIN peeling p on p.id=pp.peeling_id and p.is_active=true
-	              JOIN dispatches d on d.id=p.dispatch_id and d.is_active=true
-	              JOIN procurement_products prp on prp.id=d.procurement_product_id and prp.is_active=true
-                )`,
-            ),
-            "total_peeled_dispatched_weight",
-          ],
-          [
-            sequelize.literal(
-              `(SELECT SUM(pkg.packing_quantity)
-                FROM packing pkg
-	              JOIN peeled_dispatches pd on pd.id = pkg.peeled_dispatch_id and pd.is_active = true
-                JOIN peeling_products pp on pp.id = pd.peeled_product_id and pp.is_active = true
-	              JOIN peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
-                )`,
-            ),
-            "total_packed_weight",
-          ],
-        ],
-        where,
+      // Use subqueries with DISTINCT d.id to avoid JOIN multiplication
+      const statsQuery = `
+        SELECT 
+          COALESCE((SELECT SUM(procurement_quantity) FROM procurement_products pp ${whereClause} AND pp.is_active = true), 0) as total_purchased_weight,
+          COALESCE((SELECT SUM(d.dispatch_quantity) FROM (SELECT DISTINCT d.id, d.dispatch_quantity FROM dispatches d JOIN procurement_products pp ON pp.id = d.procurement_product_id WHERE d.dispatch_quantity IS NOT NULL ${procurement_lot_id ? `AND pp.procurement_lot_id = '${procurement_lot_id}'` : ""} AND d.is_active = true) d), 0) as total_dispatched_weight,
+          COALESCE((SELECT SUM(p.peeling_quantity) FROM (SELECT DISTINCT p.id, p.peeling_quantity FROM peeling p JOIN dispatches d ON p.dispatch_id = d.id JOIN procurement_products pp ON pp.id = d.procurement_product_id WHERE p.peeling_quantity IS NOT NULL ${procurement_lot_id ? `AND pp.procurement_lot_id = '${procurement_lot_id}'` : ""} AND p.is_active = true AND d.is_active = true) p), 0) as total_peeled_weight,
+          COALESCE((SELECT SUM(pd.peeled_dispatch_quantity) FROM (SELECT DISTINCT pd.id, pd.peeled_dispatch_quantity FROM peeled_dispatches pd JOIN peeling_products pp2 ON pp2.id = pd.peeled_product_id JOIN peeling p ON p.id = pp2.peeling_id JOIN dispatches d ON d.id = p.dispatch_id JOIN procurement_products pp ON pp.id = d.procurement_product_id WHERE pd.peeled_dispatch_quantity IS NOT NULL ${procurement_lot_id ? `AND pp.procurement_lot_id = '${procurement_lot_id}'` : ""} AND pd.is_active = true AND pp2.is_active = true AND p.is_active = true AND d.is_active = true) pd), 0) as total_peeled_dispatched_weight,
+          COALESCE((SELECT SUM(pkg.packing_quantity) FROM (SELECT DISTINCT pkg.id, pkg.packing_quantity FROM packing pkg JOIN peeled_dispatches pd ON pd.id = pkg.peeled_dispatch_id JOIN peeling_products pp2 ON pp2.id = pd.peeled_product_id JOIN peeling p ON p.id = pp2.peeling_id JOIN dispatches d ON d.id = p.dispatch_id JOIN procurement_products pp ON pp.id = d.procurement_product_id WHERE pkg.packing_quantity IS NOT NULL ${procurement_lot_id ? `AND pp.procurement_lot_id = '${procurement_lot_id}'` : ""} AND pkg.is_active = true AND pd.is_active = true AND pp2.is_active = true AND p.is_active = true AND d.is_active = true) pkg), 0) as total_packed_weight
+      `;
+
+      const stats = await sequelize.query(statsQuery, {
+        type: sequelize.QueryTypes.SELECT,
       });
 
-      resolve(procurement);
+      const result =
+        stats && stats.length > 0
+          ? stats[0]
+          : {
+              total_purchased_weight: 0,
+              total_dispatched_weight: 0,
+              total_peeled_weight: 0,
+              total_peeled_dispatched_weight: 0,
+              total_packed_weight: 0,
+            };
+
+      resolve(result);
     } catch (err) {
       reject(err);
     }

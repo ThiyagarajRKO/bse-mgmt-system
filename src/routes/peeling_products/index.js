@@ -1,6 +1,10 @@
 import { Delete } from "./handlers/delete";
 import { GetNames } from "./handlers/get_names";
-import { GetQAMetrics } from "../../controllers/peeling_products";
+import {
+  GetQAMetrics,
+  GetPeelingToDispatchQAMetrics,
+  GetAllQAMetrics,
+} from "../../controllers/peeling_products";
 
 // Schema
 import { deleteSchema } from "./schema/delete";
@@ -35,6 +39,50 @@ export const peelingProductRoute = (fastify, opts, done) => {
       return reply.code(200).send({
         success: true,
         message: "QA metrics retrieved successfully",
+        data: result,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
+  // QA metrics aggregated between peeling and dispatch stages
+  fastify.get(
+    "/qa-metrics-pipeline/:procurement_lot_id",
+    async (req, reply) => {
+      try {
+        const { procurement_lot_id } = req.params;
+
+        const result = await GetPeelingToDispatchQAMetrics({
+          procurement_lot_id,
+        });
+
+        return reply.code(200).send({
+          success: true,
+          message:
+            "QA metrics between peeling and dispatch retrieved successfully",
+          data: result,
+        });
+      } catch (err) {
+        return reply.code(err?.statusCode || 400).send({
+          success: false,
+          message: err?.message || err,
+        });
+      }
+    },
+  );
+
+  // QA metrics aggregated across all procurement lots
+  fastify.get("/qa-metrics-all", async (req, reply) => {
+    try {
+      const result = await GetAllQAMetrics();
+
+      return reply.code(200).send({
+        success: true,
+        message: "QA metrics across all lots retrieved successfully",
         data: result,
       });
     } catch (err) {

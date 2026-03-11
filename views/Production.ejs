@@ -838,6 +838,63 @@
                       <td class="p-3">
                         <svg
                           class="radial-progress"
+                          id="qaCircle"
+                          data-percentage="0"
+                          viewBox="0 0 80 80"
+                        >
+                          <circle
+                            class="incomplete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                          ></circle>
+                          <circle
+                            class="complete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                            style="stroke-dashoffset: 0"
+                          ></circle>
+                          <text
+                            id="qaPercentage"
+                            class="percentage"
+                            x="50%"
+                            y="57%"
+                            transform="matrix(0, 1, -1, 0, 80, 0)"
+                          >
+                            0%
+                          </text>
+                        </svg>
+                      </td>
+                      <td>
+                        <div class="d-flex flex-column">
+                          <span class="progressBar-label heading"
+                            >QA Quantity Passed</span
+                          >
+                          <div class="weightContainer">
+                            <span
+                              class="progressBar-weight weight qaPassCount"
+                              style="font-weight: RedditMono-Regular"
+                              >0</span
+                            >
+                            <span class="progressBar-weight-unit">kg</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="stepper-menu border rounded">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="p-3">
+                        <svg
+                          class="radial-progress"
                           id="peeledDispatchCircle"
                           data-percentage="0"
                           viewBox="0 0 80 80"
@@ -933,65 +990,6 @@
                               >0</span
                             >
                             <span class="progressBar-weight-unit">kg</span>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="col">
-              <div class="stepper-menu border rounded">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td class="p-3">
-                        <svg
-                          class="radial-progress"
-                          id="qaCircle"
-                          data-percentage="0"
-                          viewBox="0 0 80 80"
-                        >
-                          <circle
-                            class="incomplete"
-                            cx="40"
-                            cy="40"
-                            r="35"
-                          ></circle>
-                          <circle
-                            class="complete"
-                            cx="40"
-                            cy="40"
-                            r="35"
-                            style="stroke-dashoffset: 0"
-                          ></circle>
-                          <text
-                            id="qaPercentage"
-                            class="percentage"
-                            x="50%"
-                            y="57%"
-                            transform="matrix(0, 1, -1, 0, 80, 0)"
-                          >
-                            0%
-                          </text>
-                        </svg>
-                      </td>
-                      <td>
-                        <div class="d-flex flex-column">
-                          <span class="progressBar-label heading"
-                            >QA Pass Rate</span
-                          >
-                          <div class="weightContainer">
-                            <span
-                              class="progressBar-weight weight qaPassCount"
-                              style="font-weight: RedditMono-Regular"
-                              >0</span
-                            >
-                            <span class="progressBar-weight-unit"
-                              >/ Records</span
-                            >
                           </div>
                         </div>
                       </td>
@@ -2916,43 +2914,107 @@
           });
         }
 
-        // Load QA Metrics
+        // Load QA Metrics - use pipeline metrics for a selected lot when available
         function loadQAMetrics() {
-          $.ajax({
-            type: "GET",
-            url: `/api/qa/`,
-            success: function (data) {
-              const qaRecords = data?.data?.rows || [];
-              const totalRecords = qaRecords.length;
-              const passRecords = qaRecords.filter(r => r?.qa_status === "PASS").length;
-              const passPercentage = totalRecords > 0 ? (passRecords / totalRecords) * 100 : 0;
+          // try to find a selected procurement lot from visible view elements
+          const procurement_lot_id = $("#view_lot_no").attr("procurement_lot_id") || $("#view_peeling_lot_no").attr("procurement_lot_id") || $("#view_packing_lot_no").attr("procurement_lot_id");
 
-              changePercentage(
-                "qaMenu",
-                "qaCircle",
-                "qaPercentage",
-                "qaHR",
-                "qaPassCount",
-                parseInt(passPercentage) || 0,
-                `${passRecords}/${totalRecords}`
-              );
-            },
-            error: (jqXhr, textStatus, errorThrown) => {
-              // Silently fail for QA metrics if no records exist
-              changePercentage(
-                "qaMenu",
-                "qaCircle",
-                "qaPercentage",
-                "qaHR",
-                "qaPassCount",
-                0,
-                "0/0"
-              );
-            },
-          });
-        }
+          console.log('loadQAMetrics called - procurement_lot_id:', procurement_lot_id);
 
-        // Open Location on load (default)
+          if (procurement_lot_id) {
+            // Specific lot selected - get QA metrics for that lot
+            $.ajax({
+              type: "GET",
+              url: `/api/peeling/product/qa-metrics-pipeline/${procurement_lot_id}`,
+              success: function (resp) {
+                const d = resp?.data || {};
+                // Calculate percentage: (QA Passed Quantity) / (Total Yield Quantity) * 100
+                const qaPassedQuantity = parseFloat(d.total_quantity_passed_peeling) || 0;
+                const totalYieldQuantity = parseFloat(d.total_yield_quantity) || 0;
+                let passPercentage = totalYieldQuantity > 0
+                  ? Math.round((qaPassedQuantity / totalYieldQuantity) * 100)
+                  : 0;
+                const displayQuantity = qaPassedQuantity > 0 ? `${qaPassedQuantity.toFixed(2)} kg` : "0 kg";
+
+                console.log('QA Metrics API Success:', {
+                  procurement_lot_id,
+                  qaPassedQuantity,
+                  totalYieldQuantity,
+                  passPercentage,
+                  fullData: d
+                });
+
+                changePercentage(
+                  "qaMenu",
+                  "qaCircle",
+                  "qaPercentage",
+                  "qaHR",
+                  "qaPassCount",
+                  passPercentage,
+                  displayQuantity,
+                  true
+                );
+              },
+              error: function (xhr, status, error) {
+                console.error('QA Metrics API Error:', { error, status, xhr });
+                // Show 0 if API fails
+                changePercentage(
+                  "qaMenu",
+                  "qaCircle",
+                  "qaPercentage",
+                  "qaHR",
+                  "qaPassCount",
+                  0,
+                  "0 kg",
+                  true
+                );
+              }
+            });
+          } else {
+            console.warn('No procurement_lot_id found - loading QA metrics for all lots');
+            // No specific lot selected - get aggregated QA data for all lots
+            $.ajax({
+              type: "GET",
+              url: `/api/peeling/product/qa-metrics-all`,
+              success: function (resp) {
+                const d = resp?.data || {};
+                // Calculate percentage: (QA Passed Quantity) / (Total Yield Quantity) * 100
+                const qaPassedQuantity = parseFloat(d.total_quantity_passed) || 0;
+                const totalYieldQuantity = parseFloat(d.total_yield_quantity) || 0;
+                let passPercentage = totalYieldQuantity > 0
+                  ? Math.round((qaPassedQuantity / totalYieldQuantity) * 100)
+                  : 0;
+                const displayQuantity = qaPassedQuantity > 0 ? `${qaPassedQuantity.toFixed(2)} kg` : "0 kg";
+
+                console.log('QA All Lots API Success:', { qaPassedQuantity, totalYieldQuantity, passPercentage, fullData: d });
+
+                changePercentage(
+                  "qaMenu",
+                  "qaCircle",
+                  "qaPercentage",
+                  "qaHR",
+                  "qaPassCount",
+                  passPercentage,
+                  displayQuantity,
+                  true
+                );
+              },
+              error: function (err) {
+                console.error('QA All Lots API Error:', err);
+                changePercentage(
+                  "qaMenu",
+                  "qaCircle",
+                  "qaPercentage",
+                  "qaHR",
+                  "qaPassCount",
+                  0,
+                  "0 kg",
+                  true
+                );
+              }
+            });
+          }
+        }        // Open Location on load (default)
         $(".menu-container").addClass("d-none");
 
         $(".dispatchContainer").removeClass("d-none");
@@ -3160,6 +3222,9 @@
           $("#view_total_dispatches").text(view_total_dispatches);
 
           $("#view_total_dispatch_weight").text(view_total_dispatch_weight);
+
+          // Load QA metrics for the selected lot
+          loadQAMetrics();
 
           // Opening Slied Panel
           $("#dispatchModal").modal("show");
@@ -4234,6 +4299,9 @@
           $("#view_total_peelinges").text(view_total_peeling);
 
           $("#view_total_peeling_weight").text(view_total_peeling_weight);
+
+          // Load QA metrics for the selected lot
+          loadQAMetrics();
 
           // Opening Slied Panel
           $("#peelingModal").modal("show");
@@ -6352,6 +6420,9 @@
             view_total_packing_weight
           );
 
+          // Load QA metrics for the selected lot
+          loadQAMetrics();
+
           // Opening Slied Panel
           $("#packingModal").modal("show");
 
@@ -7404,14 +7475,26 @@
                 targets: [4],
                 className: "text-center",
                 render: function (data, type, row) {
-                  // Display peeled/yield quantity from PeelingProducts or fallback to quantity field
-                  let totalQuantity = 0;
+                  // Display dispatched quantity from PeeledDispatches
+                  // If no dispatches, show the peeled yield quantity
+                  let dispatchedQuantity = 0;
                   if (row?.peeling?.PeelingProducts && Array.isArray(row.peeling.PeelingProducts)) {
-                    totalQuantity = row.peeling.PeelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0);
+                    // Sum up all peeled dispatch quantities for this peeling's products
+                    row.peeling.PeelingProducts.forEach(pp => {
+                      if (pp.PeeledDispatches && Array.isArray(pp.PeeledDispatches)) {
+                        pp.PeeledDispatches.forEach(pd => {
+                          dispatchedQuantity += parseFloat(pd.peeled_dispatch_quantity) || 0;
+                        });
+                      }
+                    });
+                    // If no dispatches, show the yield quantity
+                    if (dispatchedQuantity === 0) {
+                      dispatchedQuantity = row.peeling.PeelingProducts.reduce((sum, pp) => sum + (parseFloat(pp.yield_quantity) || 0), 0);
+                    }
                   } else {
-                    totalQuantity = row?.quantity || 0;
+                    dispatchedQuantity = row?.quantity || 0;
                   }
-                  return parseFloat(totalQuantity).toFixed(2);
+                  return parseFloat(dispatchedQuantity).toFixed(2);
                 },
               },
               {
@@ -8716,20 +8799,31 @@
           hr_id,
           weight_id,
           percent,
-          weight
+          weight,
+          isPercentage = true
         ) {
+          // Ensure percent is a valid number
+          percent = isNaN(percent) ? 0 : Number(percent);
+          // Extract numeric value from weight (handles "5200.00 kg", "1 Records", etc.)
+          const weightNumeric = parseFloat(weight);
+          const weightValue = isNaN(weightNumeric) ? 0 : weightNumeric;
+
+          // Determine display suffix - use '%' if it's a percentage
+          const suffix = isPercentage ? '%' : '';
+
           $(`#${circle_id}`).attr("data-percentage", percent);
 
-          $(`#${percentage_id}`).text(`${percent}%`);
+          $(`#${percentage_id}`).text(`${percent}${suffix}`);
 
           $(`.${weight_id}`).text(weight);
 
           // Get radius of the svg's circle.complete
-          radius = $(`#${circle_id}`).find($("circle.complete")).attr("r");
+          const radius = $(`#${circle_id}`).find($("circle.complete")).attr("r");
           // Get circumference (2πr)
-          circumference = 2 * Math.PI * radius;
-          // Get stroke-dashoffset value based on the percentage of the circumference
-          strokeDashOffset = circumference - (percent * circumference) / 100;
+          const circumference = 2 * Math.PI * radius;
+          // Get stroke-dashoffset value for radial circle fill
+          // Use the percent value directly for filling the circle (0-100)
+          const strokeDashOffset = circumference - (percent * circumference) / 100;
           // Transition progress for 1.25 seconds
           $(`#${circle_id}`)
             .find($("circle.complete"))
@@ -8739,14 +8833,14 @@
             .prop("Counter", 0)
             .animate(
               {
-                Counter: $(`#${percentage_id}`).text(),
+                Counter: percent,
               },
               {
                 duration: 2000,
                 easing: "swing",
                 step: function (now) {
-                  now = Number(Math.ceil(parseFloat(now))).toLocaleString("en");
-                  $(`#${percentage_id}`).text(`${now}%`);
+                  const displayValue = Number(Math.ceil(parseFloat(now))).toLocaleString("en");
+                  $(`#${percentage_id}`).text(`${displayValue}${suffix}`);
                 },
               }
             );
@@ -8755,7 +8849,7 @@
             .prop("Counter", 0)
             .animate(
               {
-                Counter: $(`.${weight_id}`).text(),
+                Counter: weightValue,
               },
               {
                 duration: 2000,
@@ -8770,7 +8864,10 @@
           if (percent > 0) {
             $(`#${hr_id}`).css({ opacity: "0.8" });
 
-            if (percent == 100) {
+            // For percentages: color green at 100%. For counts: color green if any records passed
+            const shouldBeGreen = isPercentage ? (percent == 100) : (percent > 0);
+
+            if (shouldBeGreen) {
               $(`.${main_id}`)
                 .find($("circle.complete"))
                 .css({ stroke: "green" });
@@ -8783,15 +8880,11 @@
                   .find($("circle.complete"))
                   .css({ stroke: "#1f2d3e" });
                 $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
-                // $(`.${main_id}`).find(".heading").css({ color: "#ea5455" });
-                // $(`.${main_id}`).find(".weight").css({ color: "#ea5455" });
               } else {
                 $(`.${main_id}`)
                   .find($("circle.complete"))
                   .css({ stroke: "#1f2d3e" });
                 $(`.${main_id}`).find("text").css({ fill: "#1f2d3e" });
-                // $(`.${main_id}`).find(".heading").css({ color: "#1f2d3e" });
-                // $(`.${main_id}`).find(".weight").css({ color: "#1f2d3e" });
               }
             }
           } else {
