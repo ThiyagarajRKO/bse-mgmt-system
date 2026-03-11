@@ -295,7 +295,7 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   // Peeled Dispatch Routes
   fastify.register(peeledDispatchRoute, {
-    prefix: "/peeled/dispatch",
+    prefix: "/peeled_dispatches",
   });
 
   // Packing Routes
