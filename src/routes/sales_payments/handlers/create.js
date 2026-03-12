@@ -1,4 +1,5 @@
 import { SalesPayments } from "../../../controllers";
+import { ApplyJournalTemplateInternal } from "../../../controllers/accounting/template";
 
 export const Create = (
   {
@@ -17,7 +18,7 @@ export const Create = (
     due_amount,
   },
   session,
-  fastify
+  fastify,
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -36,6 +37,25 @@ export const Create = (
         due_amount,
         is_active: true,
       });
+
+      // Trigger automatic journal entry for CUSTOMER_PAYMENT
+      try {
+        const paymentAmount = total_paid || net_amount;
+        await ApplyJournalTemplateInternal({
+          event_type: "CUSTOMER_PAYMENT",
+          reference_type: "SALES_ORDER",
+          reference_id: order_id,
+          amount: paymentAmount,
+          description: `Customer payment received for order ${order_id}`,
+          created_by: profile_id,
+        });
+      } catch (journalError) {
+        console.warn(
+          "Journal entry creation failed for CUSTOMER_PAYMENT (non-blocking):",
+          journalError.message,
+        );
+        // Don't fail the payment creation if journal entry fails
+      }
 
       resolve({
         message: "Sales Payment has been inserted successfully",

@@ -3,6 +3,7 @@ import {
   ProcurementProducts,
   ProductMaster,
 } from "../../../controllers";
+import { ApplyJournalTemplateInternal } from "../../../controllers/accounting/template";
 
 export const Create = (
   {
@@ -113,6 +114,25 @@ export const Create = (
         order_id,
         is_active: true,
       });
+
+      // Trigger automatic journal entry for PURCHASE_GRN
+      try {
+        const totalAmount = procurement_quantity * procurement_price;
+        await ApplyJournalTemplateInternal({
+          event_type: "PURCHASE_GRN",
+          reference_type: "PROCUREMENT",
+          reference_id: procurement_lot_id,
+          amount: totalAmount,
+          description: `GRN received for procurement lot ${procurement_lot_id}`,
+          created_by: profile_id,
+        });
+      } catch (journalError) {
+        console.warn(
+          "Journal entry creation failed for PURCHASE_GRN (non-blocking):",
+          journalError.message,
+        );
+        // Don't fail the procurement creation if journal entry fails
+      }
 
       resolve({
         message: "Procurement has been inserted successfully",

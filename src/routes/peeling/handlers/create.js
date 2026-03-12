@@ -1,4 +1,5 @@
 import { Dispatches, Peeling } from "../../../controllers";
+import { ApplyJournalTemplateInternal } from "../../../controllers/accounting/template";
 
 export const Create = (
   {
@@ -69,6 +70,27 @@ export const Create = (
       await Dispatches.Update(profile_id, dispatch_id, {
         delivery_status: "Delivered",
       });
+
+      // Trigger automatic journal entry for PRODUCTION_COMPLETION (peeling/processing)
+      try {
+        // Calculate total output cost (peeling_quantity is in KG)
+        // For now, we use quantity as a proxy; ideally fetch cost from dispatch/order
+        const outputAmount = parseFloat(peeling_quantity) * 100; // Assume 100 per KG for now
+        await ApplyJournalTemplateInternal({
+          event_type: "PRODUCTION_COMPLETION",
+          reference_type: "PEELING",
+          reference_id: peeling?.id,
+          amount: outputAmount,
+          description: `Production completion (peeling) - ${peeling_quantity}kg from dispatch ${dispatch_id}`,
+          created_by: profile_id,
+        });
+      } catch (journalError) {
+        console.warn(
+          "Journal entry creation failed for PRODUCTION_COMPLETION (non-blocking):",
+          journalError.message,
+        );
+        // Don't fail the peeling creation if journal entry fails
+      }
 
       resolve({
         message: "Peeling data has been inserted successfully",

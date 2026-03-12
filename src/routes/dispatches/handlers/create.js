@@ -4,6 +4,7 @@ import {
   ProcurementProducts,
 } from "../../../controllers";
 import OrderTrackingService from "../../../services/OrderTrackingService.js";
+import { ApplyJournalTemplateInternal } from "../../../controllers/accounting/template";
 
 export const Create = (
   {
@@ -73,6 +74,26 @@ export const Create = (
           );
           // Don't fail dispatch creation if tracking fails
         }
+      }
+
+      // Trigger automatic journal entry for DISPATCH
+      try {
+        // Calculate dispatch cost (quantity * estimated unit cost = quantity * 100 for now)
+        const dispatchAmount = dispatch_quantity * 100;
+        await ApplyJournalTemplateInternal({
+          event_type: "DISPATCH",
+          reference_type: "DISPATCH",
+          reference_id: dispatch?.id,
+          amount: dispatchAmount,
+          description: `Dispatch created - ${dispatch_quantity}kg to transit`,
+          created_by: profile_id,
+        });
+      } catch (journalError) {
+        console.warn(
+          "Journal entry creation failed for DISPATCH (non-blocking):",
+          journalError.message,
+        );
+        // Don't fail the dispatch creation if journal entry fails
       }
 
       resolve({

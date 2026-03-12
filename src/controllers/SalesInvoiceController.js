@@ -12,11 +12,14 @@ class SalesInvoiceController {
       const { order_id, customer_master_id, invoice_date } = request.body;
       const created_by = request.user?.username || "system";
 
+      const { auto_generate_lines = false } = request.body;
+
       const invoice = await SalesInvoiceService.createInvoice({
         order_id,
         customer_master_id,
         invoice_date,
         created_by,
+        auto_generate_lines: !!auto_generate_lines,
       });
 
       return reply.code(201).send({
@@ -46,7 +49,7 @@ class SalesInvoiceController {
       const lines = await SalesInvoiceService.addLineItems(
         id,
         line_items,
-        added_by
+        added_by,
       );
 
       return reply.code(201).send({
@@ -77,7 +80,7 @@ class SalesInvoiceController {
         id,
         shipping_amount,
         discount_amount,
-        updated_by
+        updated_by,
       );
 
       return reply.send({
@@ -147,7 +150,7 @@ class SalesInvoiceController {
       const invoices = await SalesInvoiceService.listInvoices(
         filters,
         parseInt(limit),
-        parseInt(offset)
+        parseInt(offset),
       );
 
       return reply.send({
@@ -203,7 +206,7 @@ class SalesInvoiceController {
       const invoice = await SalesInvoiceService.cancelInvoice(
         id,
         cancelled_by,
-        reason
+        reason,
       );
 
       return reply.send({

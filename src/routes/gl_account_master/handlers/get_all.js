@@ -7,7 +7,7 @@ export const GetAll = (params, session, fastify) => {
 
       resolve({
         message: "GL accounts retrieved successfully",
-        data: result.rows,
+        data: result.data,
         recordsTotal: result.recordsTotal,
         recordsFiltered: result.recordsFiltered,
       });

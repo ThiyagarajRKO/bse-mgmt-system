@@ -161,3 +161,12 @@ fastify.get("/bom-explosion", function (req, res) {
 fastify.get("/AuditLogs", function (req, res) {
   res.view("AuditLogs.ejs");
 });
+
+fastify.get("/accounting", function (req, res) {
+  res.view("Accounting.ejs", {
+    title: "Accounting Dashboard",
+    user: req?.session?.user,
+    user_id: req?.session?.user_id,
+    role: req?.session?.role,
+  });
+});

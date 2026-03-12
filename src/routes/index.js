@@ -48,6 +48,9 @@ import { TaxCodeMasterRoute } from "./tax_code_master";
 import { ProductGstMappingRoute } from "./product_gst_mapping";
 import { authRoutes } from "./auth";
 import { documentFlowRoutes } from "./document-flow";
+
+// Accounting Routes
+import { AccountingRoute } from "./accounting";
 import { yieldTrackingRoutes } from "./yield-tracking";
 import { marginVarianceRoutes } from "./margin-variance";
 import pricingRoutes from "./pricing";
@@ -246,12 +249,24 @@ export const PrivateRouters = (fastify, opts, done) => {
     prefix: "/master/chart-of-accounts",
   });
 
+  fastify.register(AccountingRoute, {
+    prefix: "/api/accounting",
+  });
+
+  // Note: accounting dashboard route is handled in src/index.js via fastify.get("/accounting")
+  // fastify.register(accountingDashboardRoutes);
+
   fastify.register(LedgerMasterRoute, {
     prefix: "/master/ledger",
   });
 
   fastify.register(TaxCodeMasterRoute, {
     prefix: "/master/tax-code",
+  });
+
+  // Alias for backward compatibility
+  fastify.register(TaxCodeMasterRoute, {
+    prefix: "/master/tax-code-master",
   });
 
   fastify.register(ProductGstMappingRoute, {

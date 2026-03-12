@@ -7,7 +7,7 @@ export const GetAll = (params, session, fastify) => {
 
       resolve({
         message: "Tax codes retrieved successfully",
-        data: result.rows,
+        data: result.data,
         recordsTotal: result.recordsTotal,
         recordsFiltered: result.recordsFiltered,
       });

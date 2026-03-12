@@ -2,6 +2,7 @@
 
 const { v4: uuidv4 } = require("uuid");
 const db = require("../models");
+const GSTCalculator = require("../src/services/gst_calculator").default;
 
 class SalesInvoiceService {
   /**
@@ -18,7 +19,7 @@ class SalesInvoiceService {
     const seconds = String(now.getSeconds()).padStart(2, "0");
     const randomSuffix = String(Math.floor(Math.random() * 10000)).padStart(
       4,
-      "0"
+      "0",
     );
 
     return `INV-${year}${month}${day}-${hours}${minutes}${seconds}-${randomSuffix}`;
@@ -32,11 +33,12 @@ class SalesInvoiceService {
   async createInvoice(invoiceData) {
     const { order_id, customer_master_id, invoice_date, created_by } =
       invoiceData;
+    const autoGenerate = invoiceData.auto_generate_lines || false;
 
     // Validate input
     if (!order_id || !customer_master_id || !created_by) {
       throw new Error(
-        "Missing required fields: order_id, customer_master_id, created_by"
+        "Missing required fields: order_id, customer_master_id, created_by",
       );
     }
 
@@ -62,7 +64,7 @@ class SalesInvoiceService {
 
     if (existingInvoice) {
       throw new Error(
-        `Invoice already exists for this order: ${existingInvoice.invoice_number}`
+        `Invoice already exists for this order: ${existingInvoice.invoice_number}`,
       );
     }
 
@@ -81,6 +83,52 @@ class SalesInvoiceService {
       net_total_amount: 0,
       created_by,
     });
+
+    // Optionally auto-generate invoice lines from order products
+    if (autoGenerate) {
+      // Fetch order products
+      const orderProducts = await db.OrderProducts.findAll({
+        where: { order_id, is_active: true },
+      });
+
+      for (const op of orderProducts) {
+        try {
+          // Fetch product master for HSN and GST
+          const product = await db.ProductMaster.findByPk(op.product_master_id);
+          const taxRate = parseFloat(product?.gst_rate || 18);
+
+          const quantity = parseFloat(op.quantity || 0);
+          const costPerUnit = parseFloat(op.price || 0);
+          const lineTotal = quantity * costPerUnit;
+          const taxAmount = Math.round(lineTotal * (taxRate / 100) * 100) / 100;
+          const lineNetTotal = Math.round((lineTotal + taxAmount) * 100) / 100;
+
+          await db.SalesInvoiceLine.create({
+            id: uuidv4(),
+            invoice_id: invoice.id,
+            production_output_id: null,
+            product_master_id: op.product_master_id,
+            sku_code: product?.sku_code || null,
+            quantity,
+            cost_per_unit: costPerUnit,
+            line_total: Math.round(lineTotal * 100) / 100,
+            hsn_code: product?.hsn_code || null,
+            tax_rate: taxRate,
+            tax_amount: taxAmount,
+            line_net_total: lineNetTotal,
+          });
+        } catch (err) {
+          // Log and continue with other lines (non-blocking for invoice creation)
+          console.error(
+            "Error auto-generating invoice line:",
+            err?.message || err,
+          );
+        }
+      }
+
+      // Recalculate totals after adding lines
+      await this.recalculateInvoiceTotals(invoice.id);
+    }
 
     return invoice;
   }
@@ -101,7 +149,7 @@ class SalesInvoiceService {
 
     if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
-        `Cannot add line items to invoice in ${invoice.invoice_status} status`
+        `Cannot add line items to invoice in ${invoice.invoice_status} status`,
       );
     }
 
@@ -116,14 +164,13 @@ class SalesInvoiceService {
 
       if (!production_output_id || !quantity || quantity <= 0) {
         throw new Error(
-          "Each line item must have production_output_id and quantity > 0"
+          "Each line item must have production_output_id and quantity > 0",
         );
       }
 
       // Verify production output exists and is inventory_posted
-      const productionOutput = await db.ProductionOutput.findByPk(
-        production_output_id
-      );
+      const productionOutput =
+        await db.ProductionOutput.findByPk(production_output_id);
 
       if (!productionOutput) {
         throw new Error(`ProductionOutput not found: ${production_output_id}`);
@@ -132,37 +179,44 @@ class SalesInvoiceService {
       // HARD BLOCK: Cannot invoice without inventory being posted
       if (!productionOutput.inventory_posted) {
         throw new Error(
-          `HARD BLOCK: Production output ${productionOutput.sku_code} has not been posted to inventory yet`
+          `HARD BLOCK: Production output ${productionOutput.sku_code} has not been posted to inventory yet`,
         );
       }
 
       // Verify quantity doesn't exceed available finished goods
       if (quantity > productionOutput.final_output_quantity) {
         throw new Error(
-          `Quantity (${quantity}) exceeds available finished goods (${productionOutput.final_output_quantity})`
+          `Quantity (${quantity}) exceeds available finished goods (${productionOutput.final_output_quantity})`,
         );
       }
 
       // Get product details for HSN and tax
       const product = await db.ProductMaster.findByPk(
-        productionOutput.product_master_id
+        productionOutput.product_master_id,
       );
       if (!product) {
         throw new Error(
-          `ProductMaster not found: ${productionOutput.product_master_id}`
+          `ProductMaster not found: ${productionOutput.product_master_id}`,
         );
       }
 
-      // Calculate line costs and tax
+      // Calculate line costs using GST calculator
       const costPerUnit =
         parseFloat(productionOutput.cost_allocated || 0) /
         parseFloat(productionOutput.final_output_quantity || 1);
       const lineTotal = parseFloat(quantity) * costPerUnit;
 
-      // Get tax rate from product (default 18% GST)
-      const taxRate = parseFloat(product.gst_rate || 18);
-      const taxAmount = lineTotal * (taxRate / 100);
-      const lineNetTotal = lineTotal + taxAmount;
+      // Get tax rate from product (default 5% for seafood)
+      const taxRate = parseFloat(product.gst_rate || 5);
+
+      // Use GST calculator for proper CGST/SGST/IGST breakup
+      const gstBreakup = GSTCalculator.calculateGST({
+        amount: lineTotal,
+        gst_rate: taxRate,
+        supply_type: "INTRA", // Default to intra-state; can be made configurable
+      });
+
+      const lineNetTotal = gstBreakup.invoice_amount;
 
       // Create invoice line
       const line = await db.SalesInvoiceLine.create({
@@ -173,11 +227,12 @@ class SalesInvoiceService {
         sku_code: productionOutput.sku_code,
         quantity,
         cost_per_unit: costPerUnit,
-        line_total: lineTotal,
+        line_total: Math.round(lineTotal * 100) / 100,
         hsn_code: product.hsn_code,
         tax_rate: taxRate,
-        tax_amount: taxAmount,
+        tax_amount: gstBreakup.total_gst,
         line_net_total: lineNetTotal,
+        remarks: `CGST: ${gstBreakup.cgst_amount}, SGST: ${gstBreakup.sgst_amount}, IGST: ${gstBreakup.igst_amount}`,
       });
 
       createdLines.push(line);
@@ -242,7 +297,7 @@ class SalesInvoiceService {
     invoiceId,
     shippingAmount,
     discountAmount,
-    updated_by
+    updated_by,
   ) {
     const invoice = await db.SalesInvoice.findByPk(invoiceId);
 
@@ -252,7 +307,7 @@ class SalesInvoiceService {
 
     if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
-        `Cannot update charges on invoice in ${invoice.invoice_status} status`
+        `Cannot update charges on invoice in ${invoice.invoice_status} status`,
       );
     }
 
@@ -298,7 +353,7 @@ class SalesInvoiceService {
 
     if (invoice.invoice_status !== "DRAFT") {
       throw new Error(
-        `Cannot post invoice in ${invoice.invoice_status} status`
+        `Cannot post invoice in ${invoice.invoice_status} status`,
       );
     }
 
@@ -316,7 +371,7 @@ class SalesInvoiceService {
 
     if (!payment) {
       throw new Error(
-        "HARD BLOCK: Cannot post invoice without payment received"
+        "HARD BLOCK: Cannot post invoice without payment received",
       );
     }
 
@@ -498,7 +553,7 @@ class SalesInvoiceService {
       }
       summary.by_status[inv.invoice_status].count++;
       summary.by_status[inv.invoice_status].amount += parseFloat(
-        inv.net_total_amount || 0
+        inv.net_total_amount || 0,
       );
     });
 

@@ -1,0 +1,1078 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BSE - Accounting</title>
+
+    <!-- title logo -->
+    <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Bootstrap  -->
+    <link
+      href="/public/plugins/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- MDB5  -->
+    <link href="/public/plugins/MDB5-7.2.0/css/mdb.min.css" rel="stylesheet" />
+    <script src="/public/plugins/MDB5-7.2.0/js/mdb.umd.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="/public/plugins/jquery/jquery.min.js"></script>
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/public/plugins/select2/css/select2.min.css" />
+    <script src="/public/plugins/select2/js/select2.min.js"></script>
+
+    <!-- DataTable -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.min.css"
+    />
+    <script src="/public/plugins/dataTables/datatables.min.js"></script>
+    <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
+    <!-- Responsive Datatable -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.responsive.min.css"
+    />
+    <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
+
+    <!-- Toast -->
+    <link rel="stylesheet" href="/public/plugins/Toastr/toastr.min.css" />
+    <script src="/public/plugins/Toastr/toastr.min.js"></script>
+
+    <!-- perfect-scrollbar plugin -->
+    <script src="/public/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/font-awesome/css/all.min.css"
+    />
+
+    <!-- jQuery Confirm -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
+    />
+    <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
+
+    <!-- Slide-in Panel -->
+    <link
+      rel="stylesheet"
+      href="/public/plugins/slide-in-panel/css/slidePanel.min.css"
+    />
+    <script src="/public/plugins/slide-in-panel/js/slidePanel.min.js"></script>
+
+    <!-- Tippy -->
+    <link rel="stylesheet" href="/public/plugins/tippy/scale.css" />
+    <script src="/public/plugins/tippy/popper.min.js"></script>
+    <script src="/public/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
+    <!-- jQuery custom scrollbar -->
+    <link
+      href="/public/plugins/jquery-custom-scrollbar/jquery.custom-scrollbar.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script
+      type="text/javascript"
+      src="/public/plugins/jquery-custom-scrollbar/jquery.custom-scrollbar.min.js"
+    ></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/public/css/style.css" />
+
+    <!-- Custom Script -->
+    <script src="/public/custom/App.js"></script>
+
+    <style type="text/css">
+      body {
+        background-color: #f7f9fd;
+        font-family: "Lato-Regular", sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333;
+      }
+
+      * {
+        font-family: "Lato-Regular", sans-serif;
+        font-size: inherit;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Lato-Bold", sans-serif;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+      }
+
+      label {
+        font-family: "Lato-Regular", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control,
+      .form-select,
+      textarea,
+      select,
+      input {
+        font-family: "Lato-Regular", sans-serif;
+        font-size: 14px;
+      }
+
+      .btn {
+        font-family: "Lato-Bold", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .toast {
+        opacity: 1 !important;
+        font-family: "Lato-Regular", sans-serif;
+        font-size: 14px;
+      }
+
+      a,
+      .edit,
+      .view,
+      .close,
+      .del {
+        cursor: pointer;
+      }
+
+      .panelClose {
+        cursor: pointer;
+      }
+
+      .select2-dropdown {
+        z-index: 10000 !important;
+      }
+
+      /* Table Pagination */
+      .page-item.active .page-link {
+        color: #fff !important;
+        background-color: #ea5455 !important;
+        border-color: #ea5455 !important;
+      }
+
+      .page-link {
+        color: #000 !important;
+        background-color: #fff !important;
+        border: 1px solid #dee2e6 !important;
+      }
+
+      .page-link:hover {
+        color: #fff !important;
+        background-color: #f17979 !important;
+        border-color: #ea5455 !important;
+      }
+
+      /* Top Menu */
+      .topMenu-container {
+        background: transparent;
+        padding: 10px 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .topMenu-item {
+        cursor: pointer;
+        color: #627293;
+        transition: all 0.3s ease;
+      }
+
+      .topMenu-item:hover {
+        color: #ea5455;
+      }
+
+      .topMenu-item-active {
+        color: #0d47a1;
+      }
+
+      .topMenu-item-active .icon-button {
+        background-color: #ea5455 !important;
+        color: white;
+      }
+
+      .icon-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        transition: all 0.3s ease;
+        color: #333333;
+      }
+
+      .icon-button:hover {
+        background-color: #ea5455;
+        color: white;
+      }
+
+      .icon-label {
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        margin-top: 5px;
+      }
+
+      /* Content Card */
+      .content-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 15px;
+      }
+
+      .content-header h3 {
+        color: #1f2d3e;
+        margin: 0;
+      }
+
+      .content-header .btn-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* KPI Cards */
+      .kpi-card {
+        background-color: #1f2d3e;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .kpi-card.revenue {
+        background-color: #1f2d3e;
+      }
+
+      .kpi-card.expense {
+        background-color: #1f2d3e;
+      }
+
+      .kpi-card.profit {
+        background-color: #1f2d3e;
+      }
+
+      .kpi-card.balance {
+        background-color: #1f2d3e;
+      }
+
+      .kpi-value {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+
+      .kpi-label {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      /* Table Styling */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .data-table thead {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .data-table thead th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #1f2d3e;
+      }
+
+      .data-table tbody td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .data-table tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      /* Slide-in Panel Styling */
+      .slideInPanel {
+        background: linear-gradient(135deg, #1f2d3e 0%, #2d3e52 100%);
+        color: #e3e3e3;
+      }
+
+      .slideInPanel .panelHeaderClose {
+        color: #e3e3e3;
+      }
+
+      .slideInPanel .form-group label {
+        color: #e3e3e3;
+        font-weight: 600;
+      }
+
+      .slideInPanel .form-control,
+      .slideInPanel .form-select {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #e3e3e3;
+      }
+
+      .slideInPanel .form-control:focus,
+      .slideInPanel .form-select:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #ea5455;
+        color: #e3e3e3;
+      }
+
+      .slideInPanel .btn-primary {
+        background-color: #ea5455;
+        border-color: #ea5455;
+      }
+
+      .slideInPanel .btn-primary:hover {
+        background-color: #ff6b6b;
+        border-color: #ff6b6b;
+      }
+
+      /* Action Buttons */
+      .btn-action {
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: 4px;
+        margin: 2px;
+      }
+
+      .btn-create {
+        background-color: #ea5455;
+        color: white;
+        border: none;
+      }
+
+      .btn-create:hover {
+        background-color: #ff6b6b;
+        color: white;
+      }
+
+      .btn-edit {
+        background-color: #0d47a1;
+        color: white;
+        border: none;
+      }
+
+      .btn-edit:hover {
+        background-color: #1565c0;
+        color: white;
+      }
+
+      .btn-delete {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+      }
+
+      .btn-delete:hover {
+        background-color: #ff8787;
+        color: white;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .status-active {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status-posted {
+        background-color: #cfe2ff;
+        color: #084298;
+      }
+
+      .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status-cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row d-flex justify-content-center">
+        <!-- Top Menu Container -->
+        <div
+          class="topMenu-container d-flex justify-content-center overflow-auto mt-0 mb-4"
+        >
+          <div
+            class="topMenu-item topMenu-item-active d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="dashboardMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="icon-label pt-2">Dashboard</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="journalMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-book"></i>
+            </div>
+            <div class="icon-label pt-2">Journal</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="chartMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-sitemap"></i>
+            </div>
+            <div class="icon-label pt-2">CoA</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="arMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div class="icon-label pt-2">AR</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="apMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div class="icon-label pt-2">AP</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="reportsMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div class="icon-label pt-2">Reports</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="costingMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+            <div class="icon-label pt-2">Costing</div>
+          </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="col-12">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Accounting Dashboard</h3>
+              <button class="btn btn-create btn-action" id="createJournalBtn">
+                <i class="fa-solid fa-plus"></i> New Entry
+              </button>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <div class="kpi-card revenue">
+                  <div class="kpi-label">Total Revenue</div>
+                  <div class="kpi-value" id="totalRevenue">₹0.00</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="kpi-card expense">
+                  <div class="kpi-label">Total Expenses</div>
+                  <div class="kpi-value" id="totalExpense">₹0.00</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="kpi-card profit">
+                  <div class="kpi-label">Gross Profit</div>
+                  <div class="kpi-value" id="grossProfit">₹0.00</div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="kpi-card balance">
+                  <div class="kpi-label">Outstanding AR</div>
+                  <div class="kpi-value" id="outstandingAR">₹0.00</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <h5>Recent Journal Entries</h5>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Entry No</th>
+                      <th>Date</th>
+                      <th>Reference</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentEntriesBody">
+                    <tr>
+                      <td colspan="5" class="text-center text-muted">
+                        No entries found
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h5>Account Summary</h5>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Account</th>
+                      <th>Type</th>
+                      <th>Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody id="accountSummaryBody">
+                    <tr>
+                      <td colspan="3" class="text-center text-muted">
+                        No accounts found
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Journal Entries View -->
+        <div id="journalView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Journal Entries</h3>
+              <button class="btn btn-create btn-action" id="createJournalBtn2">
+                <i class="fa-solid fa-plus"></i> Create Entry
+              </button>
+            </div>
+
+            <table class="data-table" id="journalTable">
+              <thead>
+                <tr>
+                  <th>Entry No</th>
+                  <th>Date</th>
+                  <th>Reference Type</th>
+                  <th>Description</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="journalTableBody">
+                <tr>
+                  <td colspan="8" class="text-center text-muted">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Chart of Accounts View -->
+        <div id="chartView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Chart of Accounts</h3>
+            </div>
+
+            <table class="data-table" id="chartTable">
+              <thead>
+                <tr>
+                  <th>Account Code</th>
+                  <th>Account Name</th>
+                  <th>Type</th>
+                  <th>Balance</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="chartTableBody">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AR View -->
+        <div id="arView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Accounts Receivable</h3>
+            </div>
+
+            <table class="data-table" id="arTable">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Invoice #</th>
+                  <th>Amount</th>
+                  <th>Balance</th>
+                  <th>Due Date</th>
+                  <th>Days Overdue</th>
+                </tr>
+              </thead>
+              <tbody id="arTableBody">
+                <tr>
+                  <td colspan="6" class="text-center text-muted">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AP View -->
+        <div id="apView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Accounts Payable</h3>
+            </div>
+
+            <table class="data-table" id="apTable">
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Invoice #</th>
+                  <th>Amount</th>
+                  <th>Balance</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="apTableBody">
+                <tr>
+                  <td colspan="6" class="text-center text-muted">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Reports View -->
+        <div id="reportsView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Financial Reports</h3>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <div class="content-card text-center">
+                  <i
+                    class="fa-solid fa-chart-pie"
+                    style="font-size: 32px; color: #ea5455; margin-bottom: 10px"
+                  ></i>
+                  <h5>Profit & Loss</h5>
+                  <button class="btn btn-create btn-action">Generate</button>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="content-card text-center">
+                  <i
+                    class="fa-solid fa-scale-balanced"
+                    style="font-size: 32px; color: #667eea; margin-bottom: 10px"
+                  ></i>
+                  <h5>Balance Sheet</h5>
+                  <button class="btn btn-create btn-action">Generate</button>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="content-card text-center">
+                  <i
+                    class="fa-solid fa-cubes"
+                    style="font-size: 32px; color: #43e97b; margin-bottom: 10px"
+                  ></i>
+                  <h5>Inventory Valuation</h5>
+                  <button class="btn btn-create btn-action">Generate</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Costing View -->
+        <div id="costingView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Production Costing</h3>
+              <button
+                class="btn btn-create btn-action"
+                id="calculateCostingBtn"
+              >
+                <i class="fa-solid fa-calculator"></i> Calculate
+              </button>
+            </div>
+
+            <table class="data-table" id="costingTable">
+              <thead>
+                <tr>
+                  <th>Lot No</th>
+                  <th>Input Qty</th>
+                  <th>Output Qty</th>
+                  <th>Input Cost</th>
+                  <th>Cost/kg</th>
+                  <th>Total Cost</th>
+                </tr>
+              </thead>
+              <tbody id="costingTableBody">
+                <tr>
+                  <td colspan="6" class="text-center text-muted">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Journal Entry Modal -->
+    <div class="modal fade" id="createJournalModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create Journal Entry</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="journalForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Entry Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="entryDate"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Reference Type</label>
+                  <select class="form-select" id="refType" required>
+                    <option value="">Select...</option>
+                    <option value="PROCUREMENT">Procurement</option>
+                    <option value="PRODUCTION">Production</option>
+                    <option value="SALES">Sales</option>
+                    <option value="PAYMENT">Payment</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Journal Lines</label>
+                <div id="journalLinesContainer">
+                  <div class="journal-line mb-3 p-3 border rounded">
+                    <div class="row">
+                      <div class="col-md-4 mb-2">
+                        <label class="form-label">Account</label>
+                        <select class="form-select account-select" required>
+                          <option value="">Select Account</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-2">
+                        <label class="form-label">Debit</label>
+                        <input
+                          type="number"
+                          class="form-control debit-input"
+                          step="0.01"
+                        />
+                      </div>
+                      <div class="col-md-4 mb-2">
+                        <label class="form-label">Credit</label>
+                        <input
+                          type="number"
+                          class="form-control credit-input"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger remove-line"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary"
+                  id="addLineBtn"
+                >
+                  Add Line
+                </button>
+              </div>
+
+              <div class="mb-3 p-3 bg-light rounded">
+                <div class="row">
+                  <div class="col-md-6">
+                    <strong>Total Debit:</strong>
+                    <span id="totalDebitDisplay">0.00</span>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Total Credit:</strong>
+                    <span id="totalCreditDisplay">0.00</span>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="submitJournalBtn">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize
+      $(document).ready(function () {
+        toastr.options = {
+          closeButton: true,
+          progressBar: true,
+          positionClass: "toast-top-right",
+          timeOut: "4000",
+        };
+
+        // Top menu switching
+        $(".topMenu-item").click(function () {
+          $(".topMenu-item").removeClass("topMenu-item-active");
+          $(this).addClass("topMenu-item-active");
+
+          // Hide all views
+          $("[id$='View']").hide();
+
+          // Show selected view
+          const viewId = $(this).attr("id").replace("Menu", "View");
+          $("#" + viewId).show();
+
+          // Load data if needed
+          if ($(this).attr("id") === "journalMenu") {
+            loadJournalEntries();
+          } else if ($(this).attr("id") === "chartMenu") {
+            loadChartOfAccounts();
+          } else if ($(this).attr("id") === "arMenu") {
+            loadAR();
+          } else if ($(this).attr("id") === "apMenu") {
+            loadAP();
+          } else if ($(this).attr("id") === "costingMenu") {
+            loadCosting();
+          }
+        });
+
+        // Create journal entry buttons
+        $("#createJournalBtn, #createJournalBtn2").click(function () {
+          $("#journalForm")[0].reset();
+          $("#journalLinesContainer").html(`
+            <div class="journal-line mb-3 p-3 border rounded">
+              <div class="row">
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Account</label>
+                  <select class="form-select account-select" required>
+                    <option value="">Select Account</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Debit</label>
+                  <input type="number" class="form-control debit-input" step="0.01" />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Credit</label>
+                  <input type="number" class="form-control credit-input" step="0.01" />
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+            </div>
+          `);
+          new bootstrap.Modal(
+            document.getElementById("createJournalModal"),
+          ).show();
+        });
+
+        // Add line button
+        $(document).on("click", "#addLineBtn", function () {
+          const newLine = `
+            <div class="journal-line mb-3 p-3 border rounded">
+              <div class="row">
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Account</label>
+                  <select class="form-select account-select" required>
+                    <option value="">Select Account</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Debit</label>
+                  <input type="number" class="form-control debit-input" step="0.01" />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="form-label">Credit</label>
+                  <input type="number" class="form-control credit-input" step="0.01" />
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+            </div>
+          `;
+          $("#journalLinesContainer").append(newLine);
+        });
+
+        // Remove line button
+        $(document).on("click", ".remove-line", function () {
+          $(this).closest(".journal-line").remove();
+        });
+
+        // Calculate totals
+        $(document).on(
+          "change input",
+          ".debit-input, .credit-input",
+          function () {
+            let totalDebit = 0;
+            let totalCredit = 0;
+            $(".journal-line").each(function () {
+              totalDebit += parseFloat($(this).find(".debit-input").val()) || 0;
+              totalCredit +=
+                parseFloat($(this).find(".credit-input").val()) || 0;
+            });
+            $("#totalDebitDisplay").text(totalDebit.toFixed(2));
+            $("#totalCreditDisplay").text(totalCredit.toFixed(2));
+          },
+        );
+
+        // Submit journal entry
+        $("#submitJournalBtn").click(function () {
+          const totalDebit = parseFloat($("#totalDebitDisplay").text());
+          const totalCredit = parseFloat($("#totalCreditDisplay").text());
+
+          if (Math.abs(totalDebit - totalCredit) > 0.01) {
+            toastr.error("Total Debit must equal Total Credit");
+            return;
+          }
+
+          toastr.success("Journal entry created successfully");
+          bootstrap.Modal.getInstance(
+            document.getElementById("createJournalModal"),
+          ).hide();
+        });
+
+        // Load dashboard data
+        loadDashboardData();
+      });
+
+      function loadDashboardData() {
+        // Populate dashboard metrics
+        $("#totalRevenue").text("₹0.00");
+        $("#totalExpense").text("₹0.00");
+        $("#grossProfit").text("₹0.00");
+        $("#outstandingAR").text("₹0.00");
+      }
+
+      function loadJournalEntries() {
+        // Load journal entries from API
+        console.log("Loading journal entries...");
+      }
+
+      function loadChartOfAccounts() {
+        // Load chart of accounts from API
+        console.log("Loading chart of accounts...");
+      }
+
+      function loadAR() {
+        // Load AR data from API
+        console.log("Loading AR...");
+      }
+
+      function loadAP() {
+        // Load AP data from API
+        console.log("Loading AP...");
+      }
+
+      function loadCosting() {
+        // Load costing data from API
+        console.log("Loading costing...");
+      }
+    </script>
+  </body>
+</html>

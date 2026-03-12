@@ -32,7 +32,7 @@ module.exports = {
     const systemUserId = "00000000-0000-0000-0000-000000000000";
 
     console.log(
-      "Starting consolidated accounting & financial master seeding..."
+      "Starting consolidated accounting & financial master seeding...",
     );
 
     // ============================================================================
@@ -64,10 +64,10 @@ module.exports = {
     // Check if GL accounts already exist
     const existingGLCount = await queryInterface.sequelize.query(
       "SELECT COUNT(*) as count FROM gl_account_master",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
-    if (existingGLCount[0].count === 0) {
+    if (parseInt(existingGLCount[0].count) === 0) {
       const glAccounts = [
         // Current Assets
         createGLAccount("1100", "Cash on Hand", "Asset", "Current Assets"),
@@ -77,13 +77,13 @@ module.exports = {
           "1200",
           "Accounts Receivable",
           "Asset",
-          "Current Assets"
+          "Current Assets",
         ),
         createGLAccount(
           "1300",
           "Advances to Suppliers",
           "Asset",
-          "Current Assets"
+          "Current Assets",
         ),
         createGLAccount("1400", "Prepaid Expenses", "Asset", "Current Assets"),
 
@@ -109,7 +109,7 @@ module.exports = {
           "1630",
           "Finished Goods Inventory",
           "Asset",
-          "Inventory"
+          "Inventory",
         ),
 
         // Fixed Assets
@@ -117,14 +117,14 @@ module.exports = {
           "1700",
           "Machinery & Equipment",
           "Asset",
-          "Fixed Assets"
+          "Fixed Assets",
         ),
         createGLAccount("1710", "Vehicles", "Asset", "Fixed Assets"),
         createGLAccount(
           "1720",
           "Accumulated Depreciation",
           "Asset",
-          "Fixed Assets"
+          "Fixed Assets",
         ),
 
         // Current Liabilities
@@ -132,25 +132,25 @@ module.exports = {
           "3100",
           "Accounts Payable",
           "Liability",
-          "Current Liabilities"
+          "Current Liabilities",
         ),
         createGLAccount(
           "3110",
           "Wages Payable",
           "Liability",
-          "Current Liabilities"
+          "Current Liabilities",
         ),
         createGLAccount(
           "3120",
           "TDS Payable",
           "Liability",
-          "Current Liabilities"
+          "Current Liabilities",
         ),
         createGLAccount(
           "3130",
           "Vendor Advances",
           "Liability",
-          "Current Liabilities"
+          "Current Liabilities",
         ),
 
         // GST Output Accounts
@@ -172,13 +172,13 @@ module.exports = {
           "3600",
           "Bank Loans",
           "Liability",
-          "Long-term Liabilities"
+          "Long-term Liabilities",
         ),
         createGLAccount(
           "3610",
           "Working Capital Loan",
           "Liability",
-          "Long-term Liabilities"
+          "Long-term Liabilities",
         ),
 
         // Equity
@@ -197,13 +197,13 @@ module.exports = {
           "6100",
           "Raw Material Cost",
           "Expense",
-          "Direct Expenses"
+          "Direct Expenses",
         ),
         createGLAccount(
           "6110",
           "Processing Cost",
           "Expense",
-          "Direct Expenses"
+          "Direct Expenses",
         ),
         createGLAccount("6120", "Labor Cost", "Expense", "Direct Expenses"),
         createGLAccount("6130", "Packaging Cost", "Expense", "Direct Expenses"),
@@ -216,13 +216,13 @@ module.exports = {
           "6230",
           "Administrative Expenses",
           "Expense",
-          "Indirect Expenses"
+          "Indirect Expenses",
         ),
         createGLAccount(
           "6240",
           "Marketing Expenses",
           "Expense",
-          "Indirect Expenses"
+          "Indirect Expenses",
         ),
 
         // Finance Costs
@@ -235,7 +235,7 @@ module.exports = {
       console.log(`Inserted ${glAccounts.length} GL account records`);
     } else {
       console.log(
-        `GL accounts already exist (${existingGLCount[0].count} records), skipping...`
+        `GL accounts already exist (${existingGLCount[0].count} records), skipping...`,
       );
     }
 
@@ -248,16 +248,16 @@ module.exports = {
     // Check if GST data already exists
     const existingGSTCount = await queryInterface.sequelize.query(
       "SELECT COUNT(*) as count FROM gst_master",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
-    if (existingGSTCount[0].count === 0) {
+    if (parseInt(existingGSTCount[0].count) === 0) {
       const gstData = [
         // Seafood GST rates
         {
           id: uuidv4(),
           hsn_code: "0302",
-          description:
+          hsn_description:
             "Fish and crustaceans, molluscs and other aquatic invertebrates",
           gst_rate: 5.0,
           cgst_rate: 2.5,
@@ -273,7 +273,7 @@ module.exports = {
         {
           id: uuidv4(),
           hsn_code: "0303",
-          description:
+          hsn_description:
             "Fish, frozen, excluding fish fillets and other fish meat",
           gst_rate: 5.0,
           cgst_rate: 2.5,
@@ -289,7 +289,7 @@ module.exports = {
         {
           id: uuidv4(),
           hsn_code: "0304",
-          description:
+          hsn_description:
             "Fish fillets and other fish meat (whether or not minced)",
           gst_rate: 5.0,
           cgst_rate: 2.5,
@@ -305,7 +305,7 @@ module.exports = {
         {
           id: uuidv4(),
           hsn_code: "0306",
-          description:
+          hsn_description:
             "Crustaceans, whether in shell or not, live, fresh, chilled, frozen, dried, salted or in brine",
           gst_rate: 5.0,
           cgst_rate: 2.5,
@@ -321,7 +321,7 @@ module.exports = {
         {
           id: uuidv4(),
           hsn_code: "0307",
-          description:
+          hsn_description:
             "Molluscs, whether in shell or not, live, fresh, chilled, frozen, dried, salted or in brine",
           gst_rate: 5.0,
           cgst_rate: 2.5,
@@ -338,7 +338,7 @@ module.exports = {
         {
           id: uuidv4(),
           hsn_code: "3923",
-          description: "Packaging materials - Plastic bags and pouches",
+          hsn_description: "Packaging materials - Plastic bags and pouches",
           gst_rate: 18.0,
           cgst_rate: 9.0,
           sgst_rate: 9.0,
@@ -356,7 +356,7 @@ module.exports = {
       console.log(`Inserted ${gstData.length} GST master records`);
     } else {
       console.log(
-        `GST master data already exists (${existingGSTCount[0].count} records), skipping...`
+        `GST master data already exists (${existingGSTCount[0].count} records), skipping...`,
       );
     }
 
@@ -369,7 +369,7 @@ module.exports = {
     // Get packaging records for cost mapping
     const packagingRecords = await queryInterface.sequelize.query(
       "SELECT id, packaging_code, packaging_type FROM packaging_master WHERE is_active = true",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
     if (packagingRecords.length > 0) {
@@ -419,10 +419,10 @@ module.exports = {
       // Check for existing cost data
       const existingCostCount = await queryInterface.sequelize.query(
         "SELECT COUNT(*) as count FROM packaging_cost_master",
-        { type: Sequelize.QueryTypes.SELECT }
+        { type: Sequelize.QueryTypes.SELECT },
       );
 
-      if (existingCostCount[0].count === 0) {
+      if (parseInt(existingCostCount[0].count) === 0) {
         await queryInterface.bulkInsert("packaging_cost_master", costData, {});
         console.log(`Inserted ${costData.length} packaging cost records`);
       } else {
@@ -477,17 +477,17 @@ module.exports = {
 
     const existingProcessingCostCount = await queryInterface.sequelize.query(
       "SELECT COUNT(*) as count FROM processing_cost_master",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
-    if (existingProcessingCostCount[0].count === 0) {
+    if (parseInt(existingProcessingCostCount[0].count) === 0) {
       await queryInterface.bulkInsert(
         "processing_cost_master",
         processingCostData,
-        {}
+        {},
       );
       console.log(
-        `Inserted ${processingCostData.length} processing cost records`
+        `Inserted ${processingCostData.length} processing cost records`,
       );
     } else {
       console.log(`Processing cost data already exists, skipping...`);
@@ -537,10 +537,10 @@ module.exports = {
 
     const existingMarginCount = await queryInterface.sequelize.query(
       "SELECT COUNT(*) as count FROM margin_master",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
-    if (existingMarginCount[0].count === 0) {
+    if (parseInt(existingMarginCount[0].count) === 0) {
       await queryInterface.bulkInsert("margin_master", marginData, {});
       console.log(`Inserted ${marginData.length} margin master records`);
     } else {
@@ -591,14 +591,14 @@ module.exports = {
 
     const existingYieldReasonCount = await queryInterface.sequelize.query(
       "SELECT COUNT(*) as count FROM yield_reason_master",
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
 
-    if (existingYieldReasonCount[0].count === 0) {
+    if (parseInt(existingYieldReasonCount[0].count) === 0) {
       await queryInterface.bulkInsert(
         "yield_reason_master",
         yieldReasonData,
-        {}
+        {},
       );
       console.log(`Inserted ${yieldReasonData.length} yield reason records`);
     } else {
@@ -650,39 +650,51 @@ module.exports = {
       },
     ];
 
-    const existingPostingRulesCount = await queryInterface.sequelize.query(
-      "SELECT COUNT(*) as count FROM posting_rules",
-      { type: Sequelize.QueryTypes.SELECT }
-    );
+    // Posting Rules seeding - Skip if posting_rules table doesn't exist yet
+    try {
+      const existingPostingRulesCount = await queryInterface.sequelize.query(
+        "SELECT COUNT(*) as count FROM posting_rules",
+        { type: Sequelize.QueryTypes.SELECT },
+      );
 
-    if (existingPostingRulesCount[0].count === 0) {
-      await queryInterface.bulkInsert("posting_rules", postingRulesData, {});
-      console.log(`Inserted ${postingRulesData.length} posting rules`);
-    } else {
-      console.log(`Posting rules already exist, skipping...`);
+      if (parseInt(existingPostingRulesCount[0].count) === 0) {
+        await queryInterface.bulkInsert("posting_rules", postingRulesData, {});
+        console.log(`Inserted ${postingRulesData.length} posting rules`);
+      } else {
+        console.log(`Posting rules already exist, skipping...`);
+      }
+    } catch (error) {
+      console.log(`Seeding Posting Rules...`);
+      console.log(
+        `Note: posting_rules table not yet created, skipping (will be created by future migration)`,
+      );
     }
 
     console.log(
-      "Consolidated accounting & financial master seeding completed successfully"
+      "Consolidated accounting & financial master seeding completed successfully",
     );
   },
 
   async down(queryInterface, Sequelize) {
     // Remove in reverse order
-    await queryInterface.bulkDelete(
-      "posting_rules",
-      {
-        created_by: "00000000-0000-0000-0000-000000000000",
-      },
-      {}
-    );
+    try {
+      await queryInterface.bulkDelete(
+        "posting_rules",
+        {
+          created_by: "00000000-0000-0000-0000-000000000000",
+        },
+        {},
+      );
+    } catch (error) {
+      // posting_rules table may not exist
+    }
 
     await queryInterface.bulkDelete(
       "yield_reason_master",
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
 
     await queryInterface.bulkDelete(
@@ -690,7 +702,7 @@ module.exports = {
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
 
     await queryInterface.bulkDelete(
@@ -698,7 +710,7 @@ module.exports = {
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
 
     await queryInterface.bulkDelete(
@@ -706,7 +718,7 @@ module.exports = {
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
 
     await queryInterface.bulkDelete(
@@ -714,7 +726,7 @@ module.exports = {
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
 
     await queryInterface.bulkDelete(
@@ -722,7 +734,7 @@ module.exports = {
       {
         created_by: "00000000-0000-0000-0000-000000000000",
       },
-      {}
+      {},
     );
   },
 };
