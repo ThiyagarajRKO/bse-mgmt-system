@@ -170,3 +170,12 @@ fastify.get("/accounting", function (req, res) {
     role: req?.session?.role,
   });
 });
+
+fastify.get("/invoices", function (req, res) {
+  res.view("Invoice.ejs", {
+    title: "Sales Invoices",
+    user: req?.session?.user,
+    user_id: req?.session?.user_id,
+    role: req?.session?.role,
+  });
+});
