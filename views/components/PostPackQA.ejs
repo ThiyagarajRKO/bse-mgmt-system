@@ -1,0 +1,1296 @@
+<!-- Final QA (Final Product QA) Inspection Tab -->
+<!-- Placed after Packing tab in Production workflow -->
+
+<style>
+  /* PostPackQA Panel Styling - matches other slide-in panels */
+  #postpackqaSlideInPanel .form-control,
+  #postpackqaSlideInPanel select,
+  #postpackqaSlideInPanel textarea {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: #627293 !important;
+    color: #f7f9fc !important;
+    font-size: 14px !important;
+  }
+
+  #postpackqaSlideInPanel .form-control::placeholder {
+    color: #627293;
+  }
+
+  #postpackqaSlideInPanel .form-control:focus,
+  #postpackqaSlideInPanel select:focus {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f7f9fc !important;
+    border-color: #627293 !important;
+    box-shadow: none !important;
+  }
+
+  #postpackqaSlideInPanel .form-check-label,
+  #postpackqaSlideInPanel .select2-selection__rendered {
+    font-size: 14px !important;
+    color: #f7f9fc;
+  }
+
+  #postpackqaSlideInPanel .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .postpack-qa-container {
+    padding: 20px;
+    background-color: transparent;
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+  }
+
+  .qa-checklist-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-left: 4px solid #007bff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+  }
+
+  .qa-checklist-item.passed {
+    border-left-color: #28a745;
+    background-color: #f0fff4;
+  }
+
+  .qa-checklist-item.failed {
+    border-left-color: #dc3545;
+    background-color: #fff5f5;
+  }
+
+  .qa-checklist-item.pending {
+    border-left-color: #ffc107;
+    background-color: #fffbf0;
+  }
+
+  .qa-item-title {
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+    color: #e3e3e3;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .qa-item-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+  }
+
+  .qa-item-status.pass {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .qa-item-status.fail {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .qa-item-status.hold {
+    background-color: #ffc107;
+    color: #333;
+  }
+
+  .qa-item-description {
+    font-size: 13px;
+    font-family: "Lato-Regular", sans-serif;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+  }
+
+  .qa-decision-tooltip-btn {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    cursor: help;
+    font-size: 12px;
+    margin-left: 8px;
+    font-weight: bold;
+  }
+
+  .qa-decision-tooltip-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .qa-button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .compliance-score {
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: "Lato-Bold", sans-serif;
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 2px solid #007bff;
+  }
+
+  .compliance-score.high {
+    color: #28a745;
+    border-color: #28a745;
+  }
+
+  .compliance-score.medium {
+    color: #ffc107;
+    border-color: #ffc107;
+  }
+
+  .compliance-score.low {
+    color: #dc3545;
+    border-color: #dc3545;
+  }
+
+  .batch-info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .batch-info-item {
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+    font-family: "Lato-Regular", sans-serif;
+  }
+
+  .batch-info-label {
+    font-size: 12px;
+    color: #b0b0b0;
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+    text-transform: uppercase;
+  }
+
+  .batch-info-value {
+    font-size: 14px;
+    font-family: "Lato-Regular", sans-serif;
+    color: #e3e3e3;
+    margin-top: 5px;
+  }
+
+  .qa-measurements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .measurement-card {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #3a4d63;
+    font-family: "Lato-Regular", sans-serif;
+  }
+
+  .measurement-label {
+    font-size: 12px;
+    color: #b0b0b0;
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+  }
+
+  .measurement-value {
+    font-size: 14px;
+    font-family: "Lato-Regular", sans-serif;
+    color: #e3e3e3;
+    font-weight: normal;
+    margin-top: 8px;
+  }
+
+  .measurement-unit {
+    font-size: 12px;
+    font-family: "Lato-Regular", sans-serif;
+    color: #999;
+  }
+
+  .remarks-box {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .audit-trail {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+    font-family: "Lato-Regular", sans-serif;
+  }
+
+  .audit-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    font-family: "Lato-Regular", sans-serif;
+  }
+
+  .audit-row:last-child {
+    border-bottom: none;
+  }
+
+  .audit-label {
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .audit-value {
+    color: #666;
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+  }
+
+  .inspection-status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+  }
+
+  .inspection-status-badge.pass {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .inspection-status-badge.fail {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .inspection-status-badge.hold {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .tab-content-section {
+    padding: 0;
+  }
+
+  /* Ensure all form controls and text use Lato font */
+  #postPackQAContainer,
+  #postPackQAContainer .form-control,
+  #postPackQAContainer .form-check-input,
+  #postPackQAContainer label,
+  #postPackQAContainer input,
+  #postPackQAContainer select,
+  #postPackQAContainer textarea,
+  #postPackQAContainer button,
+  #postPackQAContainer h6,
+  #postPackQAContainer div,
+  #postPackQAContainer span {
+    font-family: "Lato-Regular", sans-serif;
+    font-size: 14px;
+  }
+
+  #postPackQAContainer .fw-bold,
+  #postPackQAContainer label.fw-bold,
+  #postPackQAContainer strong {
+    font-family: "Lato-Bold", sans-serif;
+    font-size: 14px;
+  }
+
+  #postPackQAContainer h6 {
+    font-family: "Lato-Bold", sans-serif;
+    font-size: 14px;
+  }
+
+  #postPackQAContainer .btn {
+    font-family: "Lato-Bold", sans-serif;
+    font-size: 14px;
+  }
+
+  /* Sub-tabs styling */
+  .qa-sub-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    margin: 15px 0 15px 0;
+    font-family: "Lato-Regular", sans-serif;
+  }
+
+  .qa-sub-tab-btn {
+    padding: 10px 15px;
+    border: none;
+    background-color: transparent;
+    color: #666;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: "Lato-Bold", sans-serif;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .qa-sub-tab-btn:hover {
+    color: #333;
+    border-bottom-color: #dc3545;
+  }
+
+  .qa-sub-tab-btn.active {
+    color: #dc3545;
+    border-bottom-color: #dc3545;
+  }
+
+  .qa-sub-tab-content {
+    display: none;
+  }
+
+  .qa-sub-tab-content.active {
+    display: block;
+  }
+</style>
+
+<div id="postPackQAContainer" style="display: none">
+  <!-- Batch Information Section - Auto-populated fields -->
+  <div class="row mt-0">
+    <div class="col-md-6">
+      <div class="form-group mt-4">
+        <label class="fw-bold">Order No.</label>
+        <select
+          class="form-control input-dropdown w-100"
+          id="orderNo"
+          onchange="window.onOrderNoChange()"
+        >
+          <option value="">-- Select Order --</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group mt-4">
+        <label class="fw-bold">Lot No.</label>
+        <select
+          class="form-control input-dropdown w-100"
+          id="lotNo"
+          onchange="window.onLotNoChange()"
+        >
+          <option value="">-- Select Lot --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group mt-4">
+        <label class="fw-bold">Product Name</label>
+        <select class="form-control input-dropdown w-100" id="productName">
+          <option value="">-- Select Product --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Score -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div id="complianceScore" class="compliance-score high">
+        <span id="compliancePercentage">0%</span>
+        <div
+          style="
+            font-size: 12px;
+            font-family: &quot;Lato-Regular&quot;, sans-serif;
+            margin-top: 5px;
+            color: #666;
+          "
+        >
+          Compliance
+        </div>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div
+        id="complianceSummary"
+        style="
+          padding: 10px;
+          font-size: 13px;
+          font-family: &quot;Lato-Regular&quot;, sans-serif;
+        "
+      >
+        <div>
+          <strong>Checks Passed:</strong>
+          <span id="checksPassedCount">0</span> of
+          <span id="checksTotalCount">0</span>
+        </div>
+        <div>
+          <strong>Status:</strong> <span id="complianceStatus">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-Tabs Navigation -->
+  <div class="qa-sub-tabs">
+    <button class="qa-sub-tab-btn active" data-tab="verification">
+      <i class="fas fa-check-square"></i> Verification
+    </button>
+    <button class="qa-sub-tab-btn" data-tab="checklist">
+      <i class="fas fa-list-check"></i> Checklist
+    </button>
+  </div>
+
+  <!-- Verification Tab -->
+  <div id="verification" class="qa-sub-tab-content active">
+    <!-- QA Measurements -->
+    <h6 class="mt-2 mb-2"><i class="fas fa-ruler"></i> Measurements</h6>
+    <div class="qa-measurements">
+      <div class="measurement-card">
+        <div class="measurement-label">Net Weight (Avg)</div>
+        <input
+          type="number"
+          step="0.01"
+          placeholder="kg"
+          class="form-control form-control-sm mt-2"
+          id="netWeightAvg"
+        />
+        <div class="measurement-unit">kg (±2% tolerance)</div>
+      </div>
+      <div class="measurement-card">
+        <div class="measurement-label">Glazing %</div>
+        <input
+          type="number"
+          step="0.1"
+          placeholder="%"
+          class="form-control form-control-sm mt-2"
+          id="glazingPct"
+        />
+        <div class="measurement-unit">5-10% (Dom), 5-8% (Exp)</div>
+      </div>
+      <div class="measurement-card">
+        <div class="measurement-label">Core Temp</div>
+        <input
+          type="number"
+          step="0.1"
+          placeholder="°C"
+          class="form-control form-control-sm mt-2"
+          id="temperatureCore"
+        />
+        <div class="measurement-unit">≤ -18°C</div>
+      </div>
+      <div class="measurement-card">
+        <div class="measurement-label">Carton Wt</div>
+        <input
+          type="number"
+          step="0.01"
+          placeholder="kg"
+          class="form-control form-control-sm mt-2"
+          id="cartonWeightActual"
+        />
+        <div class="measurement-unit">kg</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist Tab -->
+  <div id="checklist" class="qa-sub-tab-content">
+    <h6 class="mt-2 mb-2"><i class="fas fa-list-check"></i> QA Checklist</h6>
+
+    <!-- Package Integrity Check -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>1. Package Integrity</span>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="sealIntegrity"
+            />
+            Seal complete
+          </label>
+        </div>
+        <div class="col-md-6">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" id="vacuumProper" />
+            Proper vacuum
+          </label>
+        </div>
+        <div class="col-md-6">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="trayDamage"
+              onclick="this.checked = !this.checked"
+            />
+            No tray damage
+          </label>
+        </div>
+        <div class="col-md-6">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="cartonCondition"
+            />
+            Good carton
+          </label>
+        </div>
+        <div class="col-md-6">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" id="iceBuildup" />
+            Ice buildup acceptable
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Label Verification -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>2. Labels</span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input type="checkbox" class="form-check-input" id="labelCorrect" />
+            Correct
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Net Weight Verification -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>3. Net Weight</span>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <label>Sample Size</label>
+          <input
+            type="number"
+            placeholder="Qty"
+            class="form-control form-control-sm"
+            id="sampleSize"
+          />
+        </div>
+        <div class="col-md-6">
+          <label class="form-check mt-4">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="netWeightCompliant"
+            />
+            Compliant
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glazing Verification -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>4. Glazing</span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="glazingCompliant"
+            />
+            Glazing acceptable
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Appearance -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>5. Appearance</span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="productAppearance"
+            />
+            Good color, no freezer burn
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Foreign Matter Check -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>6. Foreign Matter</span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="foreignMatter"
+              onclick="this.checked = !this.checked"
+            />
+            None found
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Temperature Verification -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>7. Temperature Verification</span>
+      </div>
+      <div class="qa-item-description">
+        Frozen seafood requirement - core temperature ≤ -18°C
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="temperatureCompliant"
+            />
+            Temp ≤ -18°C
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carton Weight Check -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>8. Carton Weight</span>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <label>Expected Wt (kg)</label>
+          <input
+            type="number"
+            step="0.01"
+            placeholder="kg"
+            class="form-control form-control-sm"
+            id="cartonWeightExpected"
+          />
+        </div>
+        <div class="col-md-6">
+          <label class="form-check mt-4">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="cartonWeightCompliant"
+            />
+            Compliant
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Traceability Verification -->
+    <div class="qa-checklist-item">
+      <div class="qa-item-title">
+        <span>9. Traceability</span>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="traceabilityVerified"
+            />
+            Verified
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA Decision Section -->
+  <h6 class="mt-4 mb-3">
+    <i class="fas fa-gavel"></i> Decision
+    <span
+      class="qa-decision-tooltip-btn"
+      id="decisionTooltipBtn"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      title="Select QA Status: PASS (Saleable), HOLD (Blocked), or FAIL (Rework)"
+    >
+      ?
+    </span>
+  </h6>
+
+  <!-- QA Status Buttons -->
+  <div class="qa-button-group mb-3">
+    <button
+      type="button"
+      class="btn btn-sm btn-success"
+      onclick="window.setQAStatus('PASS')"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      title="Product passed all QA checks - Mark as SALEABLE"
+    >
+      <i class="fas fa-check-circle"></i> PASS
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm btn-warning"
+      onclick="window.setQAStatus('HOLD')"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      title="Product needs review - Mark as BLOCKED pending resolution"
+    >
+      <i class="fas fa-pause-circle"></i> HOLD
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm btn-danger"
+      onclick="window.setQAStatus('FAIL')"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      title="Product failed QA checks - Mark for REWORK"
+    >
+      <i class="fas fa-times-circle"></i> FAIL
+    </button>
+  </div>
+
+  <!-- Current Status Display -->
+  <div class="row">
+    <div class="col-md-6">
+      <div style="padding: 8px 0">
+        <small class="text-muted">QA Status:</small>
+        <span id="postPackQAStatus" class="inspection-status-badge pass ms-2"
+          >PENDING</span
+        >
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div style="padding: 8px 0">
+        <small class="text-muted">Inventory:</small>
+        <span
+          id="inventoryStatusBadge"
+          class="inspection-status-badge pass ms-2"
+          >PENDING</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden input for QA Status -->
+  <input type="hidden" id="qaStatus" value="" />
+
+  <!-- QA Remarks -->
+  <div class="form-group mt-4">
+    <label class="fw-bold">QA Remarks/Notes</label>
+    <textarea
+      class="remarks-box form-control"
+      id="qaRemarks"
+      placeholder="Any issues found, corrective actions, or additional notes..."
+    ></textarea>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="row mt-4 mb-4">
+    <div class="col-md-6">
+      <button
+        type="button"
+        class="btn btn-danger w-100"
+        onclick="submitPostPackQA()"
+      >
+        <i class="fas fa-save"></i> Save
+      </button>
+    </div>
+    <div class="col-md-6">
+      <button
+        type="button"
+        class="btn btn-outline-danger w-100"
+        onclick="cancelPostPackQA()"
+      >
+        <i class="fas fa-times"></i> Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentPackingData = null;
+  let postPackQAData = {
+    packing_id: null,
+    order_id: null,
+    qa_status: "",
+    seal_integrity: false,
+    vacuum_proper: false,
+    tray_damage: true, // Default true means no damage
+    carton_condition: false,
+    ice_buildup_acceptable: false,
+    label_correct: false,
+    sample_size: null,
+    net_weight_avg: null,
+    net_weight_compliant: false,
+    glazing_pct: null,
+    glazing_compliant: false,
+    product_appearance_pass: false,
+    foreign_matter_found: false, // Default false means no foreign matter
+    temperature_core: null,
+    temperature_compliant: false,
+    carton_weight_expected: null,
+    carton_weight_actual: null,
+    carton_weight_compliant: false,
+    traceability_verified: false,
+    inspected_by: null,
+    inspected_at: null,
+  };
+
+  window.loadPackingRecords = function () {
+    console.log("Loading packing records...");
+    fetch("/api/packing?limit=100&offset=0&sort=created_at,DESC")
+      .then((res) => {
+        console.log("Packing API response status:", res.status);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Packing API data:", data);
+        const records =
+          data && data.data && data.data.rows ? data.data.rows : [];
+        if (Array.isArray(records) && records.length > 0) {
+          console.log("Records found:", records.length);
+          const orderNoSelect = document.getElementById("orderNo");
+          orderNoSelect.innerHTML =
+            '<option value="">-- Select Order --</option>';
+
+          records.forEach((record, index) => {
+            // Get order_no from packing record directly
+            const orderNo = record.order_no || "N/A";
+
+            // Get order_id (UUID) from packing record
+            const orderId = record.order_id || "N/A";
+
+            // Get lot_no from packing record directly
+            const lotNo = record.lot_no || "N/A";
+
+            // Get product name from nested relationship - pp is an object, not array
+            let productName = "N/A";
+            if (
+              record.pd &&
+              record.pd.pp &&
+              record.pd.pp.ProductMaster &&
+              record.pd.pp.ProductMaster.product_name
+            ) {
+              productName = record.pd.pp.ProductMaster.product_name;
+            }
+
+            console.log(
+              `Record ${index} - OrderNo: "${orderNo}", OrderId: "${orderId}", Lot: "${lotNo}", Product: "${productName}"`,
+            );
+
+            const option = document.createElement("option");
+            option.value = record.id;
+            option.textContent = orderNo;
+            option.dataset.orderNo = orderNo;
+            option.dataset.orderId = orderId;
+            option.dataset.lotNo = lotNo;
+            option.dataset.productName = productName;
+            option.dataset.recordId = record.id;
+            orderNoSelect.appendChild(option);
+          });
+          console.log(
+            "✅ Dropdown populated with",
+            orderNoSelect.options.length - 1,
+            "records",
+          );
+        } else {
+          console.warn("No records found in response:", data);
+        }
+      })
+      .catch((err) => console.error("Error loading packing records:", err));
+  };
+
+  window.onOrderNoChange = function () {
+    const orderNoSelect = document.getElementById("orderNo");
+    const selectedOption = orderNoSelect.options[orderNoSelect.selectedIndex];
+
+    if (selectedOption.value) {
+      const orderNo =
+        selectedOption.dataset.orderNo || selectedOption.textContent || "N/A";
+      const orderId = selectedOption.dataset.orderId || "N/A";
+      const lotNo = selectedOption.dataset.lotNo || "N/A";
+      const productName = selectedOption.dataset.productName || "N/A";
+      const recordId = selectedOption.dataset.recordId || selectedOption.value;
+
+      console.log(
+        "Selected Order:",
+        orderNo,
+        "OrderId:",
+        orderId,
+        "Lot No:",
+        lotNo,
+        "Product:",
+        productName,
+      );
+
+      // Update Lot No dropdown with lot number
+      const lotNoSelect = document.getElementById("lotNo");
+      lotNoSelect.innerHTML = `<option value="${lotNo}">${lotNo}</option>`;
+
+      // Update Product Name dropdown
+      const productSelect = document.getElementById("productName");
+      productSelect.innerHTML = `<option value="${productName}">${productName}</option>`;
+
+      // Update postPackQAData with correct UUID for order_id
+      postPackQAData.packing_id = recordId;
+      postPackQAData.order_id = orderId;
+      currentPackingData = {
+        id: recordId,
+        order_id: orderId,
+        order_no: orderNo,
+        lot_no: lotNo,
+        product_name: productName,
+      };
+
+      console.log("Updated currentPackingData:", currentPackingData);
+      console.log("🎯 Order No from Procurement:", orderNo);
+      console.log("🎯 Order ID (UUID):", orderId);
+      console.log("🎯 Lot No from Procurement:", lotNo);
+
+      // Load existing QA if available
+      window.fetchPostPackQA(recordId);
+    } else {
+      document.getElementById("lotNo").innerHTML =
+        '<option value="">-- Select Lot --</option>';
+      document.getElementById("productName").innerHTML =
+        '<option value="">-- Select Product --</option>';
+    }
+  };
+
+  window.onLotNoChange = function () {
+    // Lot No is auto-populated, no change needed
+  };
+
+  window.loadPostPackQATab = function (packingData) {
+    currentPackingData = packingData;
+    postPackQAData.packing_id = packingData.id;
+    postPackQAData.order_id = packingData.order_id;
+
+    // Load packing records into dropdown
+    window.loadPackingRecords();
+
+    // Select the current packing record in the dropdown
+    setTimeout(function () {
+      const orderNoSelect = document.getElementById("orderNo");
+      for (let i = 0; i < orderNoSelect.options.length; i++) {
+        if (orderNoSelect.options[i].value === packingData.id.toString()) {
+          orderNoSelect.selectedIndex = i;
+          window.onOrderNoChange();
+          break;
+        }
+      }
+    }, 100);
+
+    // Load existing QA if available
+    window.fetchPostPackQA(packingData.id);
+
+    document.getElementById("postPackQAContainer").style.display = "block";
+
+    // Initialize Bootstrap tooltips
+    setTimeout(function () {
+      var tooltipElements = document.querySelectorAll(
+        '[data-bs-toggle="tooltip"]',
+      );
+      tooltipElements.forEach(function (el) {
+        new bootstrap.Tooltip(el);
+      });
+    }, 100);
+  };
+
+  window.fetchPostPackQA = function (packingId) {
+    fetch(`/api/postpack-qa/by-packing/${packingId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status && data.data) {
+          window.populatePostPackQAForm(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching Final QA:", err));
+  };
+
+  window.populatePostPackQAForm = function (qa) {
+    // Populate checkboxes
+    if (qa.seal_integrity !== null)
+      document.getElementById("sealIntegrity").checked = qa.seal_integrity;
+    if (qa.vacuum_proper !== null)
+      document.getElementById("vacuumProper").checked = qa.vacuum_proper;
+    if (qa.tray_damage !== null)
+      document.getElementById("trayDamage").checked = !qa.tray_damage;
+    if (qa.carton_condition !== null)
+      document.getElementById("cartonCondition").checked = qa.carton_condition;
+    if (qa.ice_buildup_acceptable !== null)
+      document.getElementById("iceBuildup").checked = qa.ice_buildup_acceptable;
+    if (qa.label_correct !== null)
+      document.getElementById("labelCorrect").checked = qa.label_correct;
+    if (qa.net_weight_compliant !== null)
+      document.getElementById("netWeightCompliant").checked =
+        qa.net_weight_compliant;
+    if (qa.glazing_compliant !== null)
+      document.getElementById("glazingCompliant").checked =
+        qa.glazing_compliant;
+    if (qa.product_appearance_pass !== null)
+      document.getElementById("productAppearance").checked =
+        qa.product_appearance_pass;
+    if (qa.foreign_matter_found !== null)
+      document.getElementById("foreignMatter").checked =
+        !qa.foreign_matter_found;
+    if (qa.temperature_compliant !== null)
+      document.getElementById("temperatureCompliant").checked =
+        qa.temperature_compliant;
+    if (qa.carton_weight_compliant !== null)
+      document.getElementById("cartonWeightCompliant").checked =
+        qa.carton_weight_compliant;
+    if (qa.traceability_verified !== null)
+      document.getElementById("traceabilityVerified").checked =
+        qa.traceability_verified;
+
+    // Populate measurements
+    if (qa.sample_size)
+      document.getElementById("sampleSize").value = qa.sample_size;
+    if (qa.net_weight_avg)
+      document.getElementById("netWeightAvg").value = qa.net_weight_avg;
+    if (qa.glazing_pct)
+      document.getElementById("glazingPct").value = qa.glazing_pct;
+    if (qa.temperature_core)
+      document.getElementById("temperatureCore").value = qa.temperature_core;
+    if (qa.carton_weight_expected)
+      document.getElementById("cartonWeightExpected").value =
+        qa.carton_weight_expected;
+    if (qa.carton_weight_actual)
+      document.getElementById("cartonWeightActual").value =
+        qa.carton_weight_actual;
+
+    // Set QA status
+    if (qa.qa_status) {
+      window.setQAStatus(qa.qa_status);
+    }
+
+    // Set remarks
+    if (qa.qa_decision_remarks)
+      document.getElementById("qaRemarks").value = qa.qa_decision_remarks;
+
+    window.updateComplianceScore();
+  };
+
+  window.setQAStatus = function (status) {
+    postPackQAData.qa_status = status;
+    document.getElementById("qaStatus").value = status;
+
+    const statusBadge = document.getElementById("postPackQAStatus");
+    const inventoryBadge = document.getElementById("inventoryStatusBadge");
+
+    // Update UI - with null checks
+    if (statusBadge)
+      statusBadge.className = "inspection-status-badge " + status.toLowerCase();
+
+    let inventoryStatus = "PENDING";
+    if (status === "PASS") inventoryStatus = "SALEABLE";
+    else if (status === "HOLD") inventoryStatus = "BLOCKED";
+    else if (status === "FAIL") inventoryStatus = "REWORK";
+
+    postPackQAData.inventory_status = inventoryStatus;
+    if (inventoryBadge) {
+      inventoryBadge.textContent = inventoryStatus;
+      inventoryBadge.className =
+        "inspection-status-badge " + status.toLowerCase();
+    }
+
+    window.updateComplianceScore();
+  };
+
+  window.updateComplianceScore = function () {
+    const checks = {
+      seal_integrity: document.getElementById("sealIntegrity").checked,
+      vacuum_proper: document.getElementById("vacuumProper").checked,
+      tray_damage: !document.getElementById("trayDamage").checked,
+      carton_condition: document.getElementById("cartonCondition").checked,
+      ice_buildup: document.getElementById("iceBuildup").checked,
+      label_correct: document.getElementById("labelCorrect").checked,
+      net_weight_compliant:
+        document.getElementById("netWeightCompliant").checked,
+      glazing_compliant: document.getElementById("glazingCompliant").checked,
+      product_appearance: document.getElementById("productAppearance").checked,
+      foreign_matter: !document.getElementById("foreignMatter").checked,
+      temperature_compliant: document.getElementById("temperatureCompliant")
+        .checked,
+      carton_weight_compliant: document.getElementById("cartonWeightCompliant")
+        .checked,
+      traceability_verified: document.getElementById("traceabilityVerified")
+        .checked,
+    };
+
+    const totalChecks = Object.keys(checks).length;
+    const passedChecks = Object.values(checks).filter((v) => v === true).length;
+    const compliancePercentage = Math.round((passedChecks / totalChecks) * 100);
+
+    document.getElementById("compliancePercentage").textContent =
+      compliancePercentage + "%";
+    document.getElementById("checksPassedCount").textContent = passedChecks;
+    document.getElementById("checksTotalCount").textContent = totalChecks;
+
+    const complianceScore = document.getElementById("complianceScore");
+    if (compliancePercentage >= 80) {
+      complianceScore.className = "compliance-score high";
+      document.getElementById("complianceStatus").textContent =
+        "High Compliance";
+    } else if (compliancePercentage >= 60) {
+      complianceScore.className = "compliance-score medium";
+      document.getElementById("complianceStatus").textContent =
+        "Medium Compliance";
+    } else {
+      complianceScore.className = "compliance-score low";
+      document.getElementById("complianceStatus").textContent =
+        "Low Compliance";
+    }
+  };
+
+  window.submitPostPackQA = function () {
+    // Update data from form
+    postPackQAData.seal_integrity =
+      document.getElementById("sealIntegrity").checked;
+    postPackQAData.vacuum_proper =
+      document.getElementById("vacuumProper").checked;
+    postPackQAData.tray_damage = !document.getElementById("trayDamage").checked;
+    postPackQAData.carton_condition =
+      document.getElementById("cartonCondition").checked;
+    postPackQAData.ice_buildup_acceptable =
+      document.getElementById("iceBuildup").checked;
+    postPackQAData.label_correct =
+      document.getElementById("labelCorrect").checked;
+    postPackQAData.sample_size =
+      parseInt(document.getElementById("sampleSize").value) || null;
+    postPackQAData.net_weight_avg =
+      parseFloat(document.getElementById("netWeightAvg").value) || null;
+    postPackQAData.net_weight_compliant =
+      document.getElementById("netWeightCompliant").checked;
+    postPackQAData.glazing_pct =
+      parseFloat(document.getElementById("glazingPct").value) || null;
+    postPackQAData.glazing_compliant =
+      document.getElementById("glazingCompliant").checked;
+    postPackQAData.product_appearance_pass =
+      document.getElementById("productAppearance").checked;
+    postPackQAData.foreign_matter_found =
+      !document.getElementById("foreignMatter").checked;
+    postPackQAData.temperature_core =
+      parseFloat(document.getElementById("temperatureCore").value) || null;
+    postPackQAData.temperature_compliant = document.getElementById(
+      "temperatureCompliant",
+    ).checked;
+    postPackQAData.carton_weight_expected =
+      parseFloat(document.getElementById("cartonWeightExpected").value) || null;
+    postPackQAData.carton_weight_actual =
+      parseFloat(document.getElementById("cartonWeightActual").value) || null;
+    postPackQAData.carton_weight_compliant = document.getElementById(
+      "cartonWeightCompliant",
+    ).checked;
+    postPackQAData.traceability_verified = document.getElementById(
+      "traceabilityVerified",
+    ).checked;
+    postPackQAData.qa_decision_remarks =
+      document.getElementById("qaRemarks").value;
+
+    if (!postPackQAData.qa_status) {
+      alert("Please select a QA decision (PASS, HOLD, or FAIL)");
+      return;
+    }
+
+    console.log("Submitting Final QA:", postPackQAData);
+
+    fetch("/api/postpack-qa/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(postPackQAData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          toastr.success("Final QA inspection submitted successfully");
+          window.fetchPostPackQA(postPackQAData.packing_id);
+        } else {
+          toastr.error("Error submitting QA: " + data.message);
+        }
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        toastr.error("Error submitting Final QA");
+      });
+  };
+
+  window.cancelPostPackQA = function () {
+    if (confirm("Cancel Final QA inspection?")) {
+      document.getElementById("postPackQAContainer").style.display = "none";
+    }
+  };
+
+  // Add event listeners to update compliance on checkbox changes
+  document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("form-check-input")) {
+      window.updateComplianceScore();
+    }
+  });
+
+  // Sub-tabs switching functionality
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("qa-sub-tab-btn")) {
+      const tabName = e.target.getAttribute("data-tab");
+
+      // Hide all tab contents
+      document.querySelectorAll(".qa-sub-tab-content").forEach((tab) => {
+        tab.classList.remove("active");
+      });
+
+      // Remove active class from all buttons
+      document.querySelectorAll(".qa-sub-tab-btn").forEach((btn) => {
+        btn.classList.remove("active");
+      });
+
+      // Show selected tab and mark button as active
+      document.getElementById(tabName).classList.add("active");
+      e.target.classList.add("active");
+    }
+  });
+</script>

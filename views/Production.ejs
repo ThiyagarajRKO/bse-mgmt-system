@@ -698,6 +698,17 @@
               <span>Packing</span>
             </div>
           </div>
+
+          <div
+            class="topMenu-item postpackqaMenu d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="icon-label pt-2">
+              <span>Final QA</span>
+            </div>
+          </div>
         </div>
         <!-- Top Menu Container Ends -->
 
@@ -869,7 +880,7 @@
                       <td>
                         <div class="d-flex flex-column">
                           <span class="progressBar-label heading"
-                            >QA Quantity Passed</span
+                            >QA</span
                           >
                           <div class="weightContainer">
                             <span
@@ -986,6 +997,63 @@
                           <div class="weightContainer">
                             <span
                               class="progressBar-weight weight packingWeight"
+                              style="font-weight: RedditMono-Regular"
+                              >0</span
+                            >
+                            <span class="progressBar-weight-unit">kg</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="stepper-menu border rounded">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="p-3">
+                        <svg
+                          class="radial-progress"
+                          id="postpackqaCircle"
+                          data-percentage="0"
+                          viewBox="0 0 80 80"
+                        >
+                          <circle
+                            class="incomplete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                          ></circle>
+                          <circle
+                            class="complete"
+                            cx="40"
+                            cy="40"
+                            r="35"
+                            style="stroke-dashoffset: 0"
+                          ></circle>
+                          <text
+                            id="postpackqaPercentage"
+                            class="percentage"
+                            x="50%"
+                            y="57%"
+                            transform="matrix(0, 1, -1, 0, 80, 0)"
+                          >
+                            0%
+                          </text>
+                        </svg>
+                      </td>
+                      <td>
+                        <div class="d-flex flex-column">
+                          <span class="progressBar-label heading"
+                            >Final QA</span
+                          >
+                          <div class="weightContainer">
+                            <span
+                              class="progressBar-weight weight postpackqaWeight"
                               style="font-weight: RedditMono-Regular"
                               >0</span
                             >
@@ -2614,6 +2682,75 @@
           </div>
         </div>
         <!-- QA Container Ends -->
+
+        <!-- Final QA Container -->
+        <div class="menu-container postpackqaContainer d-none">
+          <!-- Slide-in Panel -->
+          <div
+            id="postpackqaSlideInPanel"
+            class="slideInPanel px-4 overflow-auto"
+          >
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-12 col-md-12 col-md-12">
+                <div class="text-center mt-4 d-flex justify-content-between">
+                  <span id="postpackqaPanelHeading" class="fw-bold fs-5"
+                    >Add Final QA Inspection</span
+                  >
+                  <div class="col my-auto d-flex justify-content-end">
+                    <i
+                      class="fa-solid fa-circle-xmark my-auto panelClose"
+                      id="closePostPackQAPanelBtn"
+                    ></i>
+                  </div>
+                </div>
+
+                <hr />
+
+                <%- include('./components/PostPackQA.ejs') %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Content -->
+          <div class="rounded-2 d-flex justify-content-center py-4">
+            <div class="border p-4 w-100">
+              <!-- Add Button -->
+              <div class="d-flex rounded-2 justify-content-end pb-4">
+                <div
+                  id="openPostPackQAPanelBtn"
+                  class="btn btn-outline-danger d-flex justify-content-around"
+                  style="width: 180px"
+                >
+                  <i class="fa-solid fa-circle-plus my-auto"></i>
+                  <span style="margin-top: 4px" class="fw-bold my-auto"
+                    >QA Inspection</span
+                  >
+                </div>
+              </div>
+
+              <table
+                id="postpackqaTable"
+                class="rounded table table-hover nowrap w-100"
+              >
+                <thead>
+                  <tr>
+                    <th style="border-radius: 4px 0 0 0"></th>
+                    <th class="fw-bold"><span>Inspection Date</span></th>
+                    <th class="fw-bold"><span>Order No</span></th>
+                    <th class="fw-bold"><span>Lot Number</span></th>
+                    <th class="fw-bold"><span>Product Name</span></th>
+                    <th class="fw-bold"><span>Inspector</span></th>
+                    <th class="fw-bold"><span>QA Decision</span></th>
+                    <th class="fw-bold"><span>Status</span></th>
+                    <th class="fw-bold"><span>Temperature (°C)</span></th>
+                    <th class="fw-bold"><span>Actions</span></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Final QA Container Ends -->
       </div>
     </div>
   </body>
@@ -6251,6 +6388,243 @@
           // Auto-populate QA records from peeling data, then load table
           await autoPopulateQARecords();
           loadQATableData();
+        });
+
+        // Final QA Menu Handler
+        $(".postpackqaMenu").click(async function () {
+          $(".menu-container").addClass("d-none");
+          $(".postpackqaContainer").removeClass("d-none");
+          $(".postpackqaContainer").addClass("d-block");
+
+          // Update menu styling
+          $(".topMenu-item").removeClass("topMenu-item-active");
+          $(".postpackqaMenu").addClass("topMenu-item-active");
+
+          // Load Final QA data if available
+          loadPostPackQATableData();
+          console.log("Final QA tab clicked");
+        });
+
+        // Open Final QA Panel - Load latest packing first
+        $("#openPostPackQAPanelBtn").click(function () {
+          console.log("📦 Loading latest packing record for QA...");
+
+          // Fetch latest packing record
+          $.ajax({
+            type: "GET",
+            url: "/api/packing?limit=1&offset=0&sort=created_at,DESC",
+            success: function(response) {
+              console.log("✅ Packing data loaded:", response);
+
+              // Check if we got data
+              if (response && response.data && response.data.rows && response.data.rows.length > 0) {
+                const packingData = response.data.rows[0];
+                console.log("📦 Using packing record:", packingData.id, packingData.batch_id);
+
+                // Load the QA tab with packing data
+                if (typeof loadPostPackQATab === 'function') {
+                  loadPostPackQATab(packingData);
+
+                  // Open the panel
+                  openSlidePanel(
+                    "postpackqaSlideInPanel",
+                    "postpackqaPanelHeading",
+                    "Final QA Inspection",
+                    "closePostPackQAPanelBtn",
+                    "postpackqa_id"
+                  );
+                } else {
+                  toastr["error"]("QA form not loaded. Please refresh the page.");
+                }
+              } else {
+                toastr["warning"]("No packing records found. Please create packing records first.");
+              }
+            },
+            error: function(xhr) {
+              console.error("❌ Error loading packing data:", xhr);
+              toastr["error"]("Failed to load packing data: " + (xhr.responseJSON?.message || xhr.statusText));
+            }
+          });
+        });
+
+        // Close Final QA Panel
+        $("#closePostPackQAPanelBtn").click(function () {
+          closeSlidePanel("postpackqaSlideInPanel");
+          view_postpackqa_id = "";
+        });
+
+        // Final QA click handlers removed
+
+        function savePostPackQAInspection() {
+          // Get form data
+          const lot_number = $("#postpackqa_lot_no").val();
+          const product_name = $("#postpackqa_product").val();
+          const seal_integrity = $("input[name='ppqa_seal_integrity']:checked").val();
+          const vacuum_proper = $("input[name='ppqa_vacuum']:checked").val();
+          const tray_damage = $("input[name='ppqa_tray_damage']:checked").val();
+          const carton_condition = $("input[name='ppqa_carton']:checked").val();
+          const ice_buildup = $("input[name='ppqa_ice']:checked").val();
+          const label_correct = $("input[name='ppqa_label']:checked").val();
+          const net_weight = $("input[name='ppqa_weight']:checked").val();
+          const glazing_percent = $("input[name='ppqa_glazing']:checked").val();
+          const appearance = $("input[name='ppqa_appearance']:checked").val();
+          const foreign_matter = $("input[name='ppqa_foreign']:checked").val();
+          const temperature = $("#postpackqa_temperature").val();
+          const carton_weight = $("input[name='ppqa_carton_weight']:checked").val();
+          const traceability = $("input[name='ppqa_traceability']:checked").val();
+          const qa_decision = $("input[name='ppqa_decision']:checked").val();
+          const remarks = $("#postpackqa_remarks").val();
+          const inspector_name = $("#postpackqa_inspector").val();
+
+          // Validation
+          if (!lot_number || !product_name || !qa_decision) {
+            toastr["error"]("Please fill all required fields");
+            return;
+          }
+
+          const data = {
+            lot_number: lot_number,
+            product_name: product_name,
+            seal_integrity: seal_integrity === "true",
+            vacuum_proper: vacuum_proper === "true",
+            tray_damage: tray_damage === "true",
+            carton_condition: carton_condition === "true",
+            ice_buildup: ice_buildup === "true",
+            label_correct: label_correct === "true",
+            net_weight: net_weight === "true",
+            glazing_percent: glazing_percent === "true",
+            appearance: appearance === "true",
+            foreign_matter: foreign_matter === "true",
+            temperature: parseFloat(temperature),
+            carton_weight: carton_weight === "true",
+            traceability: traceability === "true",
+            qa_decision: qa_decision,
+            remarks: remarks,
+            inspector_name: inspector_name
+          };
+
+          $.ajax({
+            url: "/api/postpack-qa/create",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (response) {
+              toastr["success"]("✅ QA Inspection saved successfully!");
+              closeSlidePanel("postpackqaSlideInPanel");
+              loadPostPackQATableData();
+            },
+            error: function (xhr, status, error) {
+              console.error("Error:", error);
+              toastr["error"]("❌ Failed to save QA inspection: " + (xhr.responseJSON?.message || error));
+            }
+          });
+        }
+
+        function loadPostPackQATableData() {
+          $("#postpackqaTable").DataTable({
+            destroy: true,
+            responsive: false,
+            processing: true,
+            serverSide: true,
+            scrollX: true,
+            scrollCollapse: true,
+            scrollY: "40vh",
+            ordering: false,
+            ajax: {
+              type: "GET",
+              url: "/api/postpack-qa/list",
+              error: function (xhr, error, code) {
+                console.error("Error loading Final QA data:", error);
+                $("#postpackqaTable").DataTable().destroy();
+                toastr["error"]("Failed to load QA inspections");
+              },
+              dataSrc: function(json) {
+                console.log("🔍 API Response:", json);
+                if (json.data && json.data.length > 0) {
+                  console.log("📦 First record:", json.data[0]);
+                  console.log("📦 Packing data:", json.data[0].Packing);
+                }
+                return json.data;
+              }
+            },
+            columns: [
+              { data: null, orderable: false, searchable: false, defaultContent: "" },
+              { data: "created_at", render: (data) => new Date(data).toLocaleDateString() },
+              { 
+                data: "Packing.order_no", 
+                defaultContent: "-",
+                render: (data, type, row) => {
+                  console.log("📋 Row data:", row);
+                  console.log("📋 order_no:", data, "Packing:", row.Packing);
+                  // Use order_no from Packing, fall back to Orders.order_no
+                  const orderNo = data || (row.Packing && row.Packing.order_no) || (row.Packing && row.Packing.Order && row.Packing.Order.order_no) || "-";
+                  console.log("📋 Final order_no:", orderNo);
+                  return orderNo;
+                }
+              },
+              { data: "Packing.lot_no", defaultContent: "-" },
+              { data: null, defaultContent: "-" },
+              { data: "inspector.full_name", defaultContent: "-" },
+              {
+                data: "qa_status",
+                render: (data) => {
+                  if (data === "PASS") return '<span class="badge bg-success">PASS</span>';
+                  if (data === "HOLD") return '<span class="badge bg-warning">HOLD</span>';
+                  if (data === "FAIL") return '<span class="badge bg-danger">FAIL</span>';
+                  return data;
+                }
+              },
+              { data: "qa_status", render: (data) => `<span class="badge bg-info">${data}</span>` },
+              { data: "temperature_core", render: (data) => data ? data + "°C" : "-" },
+              {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                  return `<button class="btn btn-sm btn-info editPostPackQA" data-id="${row.id}">View</button>`;
+                }
+              }
+            ]
+          });
+        }
+
+        $(document).on("click", ".editPostPackQA", function () {
+          const id = $(this).data("id");
+          $.ajax({
+            url: `/api/postpack-qa/${id}`,
+            method: "GET",
+            success: function (data) {
+              // Populate form with data
+              $("#postpackqa_lot_no").val(data.lot_number).trigger("change");
+              $("#postpackqa_product").val(data.product_name).trigger("change");
+
+              // Set checkboxes based on data
+              $("input[name='ppqa_seal_integrity'][value='" + data.seal_integrity + "']").prop("checked", true);
+              $("input[name='ppqa_vacuum'][value='" + data.vacuum_proper + "']").prop("checked", true);
+              $("input[name='ppqa_tray_damage'][value='" + data.tray_damage + "']").prop("checked", true);
+              $("input[name='ppqa_carton'][value='" + data.carton_condition + "']").prop("checked", true);
+              $("input[name='ppqa_ice'][value='" + data.ice_buildup + "']").prop("checked", true);
+              $("input[name='ppqa_label'][value='" + data.label_correct + "']").prop("checked", true);
+              $("input[name='ppqa_weight'][value='" + data.net_weight + "']").prop("checked", true);
+              $("input[name='ppqa_glazing'][value='" + data.glazing_percent + "']").prop("checked", true);
+              $("input[name='ppqa_appearance'][value='" + data.appearance + "']").prop("checked", true);
+              $("input[name='ppqa_foreign'][value='" + data.foreign_matter + "']").prop("checked", true);
+              $("input[name='ppqa_carton_weight'][value='" + data.carton_weight + "']").prop("checked", true);
+              $("input[name='ppqa_traceability'][value='" + data.traceability + "']").prop("checked", true);
+
+              $("#postpackqa_temperature").val(data.temperature);
+              $("input[name='ppqa_decision'][value='" + data.qa_decision + "']").prop("checked", true);
+              $("#postpackqa_remarks").val(data.remarks);
+              $("#postpackqa_inspector").val(data.inspector_name);
+
+              view_postpackqa_id = id;
+              openSlidePanel("postpackqaSlideInPanel", "postpackqaPanelHeading", "Final QA Inspection", "submitPostPackQA", "postpackqa_id");
+            },
+            error: function () {
+              toastr["error"]("Failed to load QA inspection details");
+            }
+          });
         });
 
         $(document).on(

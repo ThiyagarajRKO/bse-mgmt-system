@@ -81,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: true,
       },
+      order_no: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      lot_no: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
       packing_quantity: {
         type: DataTypes.FLOAT,
       },
