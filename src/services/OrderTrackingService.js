@@ -310,17 +310,137 @@ class OrderTrackingService {
             // Check if peeling is completed
             const peelingStatus = peelingRecords[0]?.peeling_status;
             if (peelingStatus === "Completed") {
-              return {
-                current_stage: "PRODUCTION_COMPLETE",
-                order_status: "PRODUCTION_COMPLETE",
-                progress_percentage: 50,
-                details: {
-                  message: "Production and peeling complete, awaiting packing",
-                  delivery_status: order.delivery_status,
-                  peeling_records: peelingRecords.length,
-                },
-                next_stage: "QA_APPROVED",
-              };
+              // Peeling is complete - now check if QA is also approved
+              let qaApproved = false;
+              if (models.QAChecklist) {
+                try {
+                  const qaRecords = await models.QAChecklist.findAll({
+                    where: {
+                      peeling_id: peelingRecords[0]?.id,
+                      qa_status: "Approved",
+                    },
+                    attributes: ["id"],
+                    limit: 1,
+                    raw: true,
+                  });
+                  qaApproved = qaRecords.length > 0;
+                  console.log(
+                    `[OrderTracking] QA Status for peeling: ${qaApproved ? "APPROVED" : "PENDING"}`,
+                  );
+                } catch (err) {
+                  console.warn(
+                    `[OrderTracking] Could not check QA status: ${err.message}`,
+                  );
+                }
+              }
+
+              // If QA is approved, check packing status
+              if (qaApproved) {
+                // QA is approved - check if packing is done
+                let packingRecords = [];
+                if (models.Packing) {
+                  try {
+                    // Get packing records for peeled dispatches of this order
+                    packingRecords = await models.Packing.findAll({
+                      include: [
+                        {
+                          model: models.PeeledDispatches,
+                          as: "peeled_dispatch",
+                          where: { order_id: orderId },
+                          attributes: ["id"],
+                        },
+                      ],
+                      attributes: ["id", "packing_status"],
+                      raw: true,
+                    });
+                    console.log(
+                      `[OrderTracking] Found ${packingRecords.length} packing records (QA approved)`,
+                    );
+                  } catch (err) {
+                    console.warn(
+                      `[OrderTracking] Could not check packing after QA approval: ${err.message}`,
+                    );
+                  }
+                }
+
+                // If packing records exist and are completed, order is ready for dispatch
+                const allPackingCompleted =
+                  packingRecords.length > 0 &&
+                  packingRecords.every((p) => p.packing_status === "Completed");
+
+                if (allPackingCompleted) {
+                  console.log(
+                    `[OrderTracking] ✅ Peeling complete, QA approved, Packing complete - Ready for dispatch`,
+                  );
+                  return {
+                    current_stage: "READY_FOR_DISPATCH",
+                    order_status: "READY_FOR_DISPATCH",
+                    progress_percentage: 80,
+                    details: {
+                      message:
+                        "Peeling complete, QA approved, packing done - ready for dispatch",
+                      delivery_status: order.delivery_status,
+                      peeling_status: "Completed",
+                      qa_status: "Approved",
+                      packing_records: packingRecords.length,
+                    },
+                    next_stage: "SHIPPED",
+                  };
+                } else if (packingRecords.length > 0) {
+                  // Packing in progress
+                  console.log(
+                    `[OrderTracking] ✅ Peeling complete, QA approved - Packing in progress`,
+                  );
+                  return {
+                    current_stage: "PACKING_IN_PROGRESS",
+                    order_status: "PACKING_IN_PROGRESS",
+                    progress_percentage: 70,
+                    details: {
+                      message:
+                        "Peeling complete, QA approved - packing in progress",
+                      delivery_status: order.delivery_status,
+                      peeling_status: "Completed",
+                      qa_status: "Approved",
+                      packing_records: packingRecords.length,
+                    },
+                    next_stage: "READY_FOR_DISPATCH",
+                  };
+                } else {
+                  // QA approved but no packing yet
+                  console.log(
+                    `[OrderTracking] ✅ Peeling complete, QA approved - awaiting packing`,
+                  );
+                  return {
+                    current_stage: "QA_APPROVED",
+                    order_status: "QA_APPROVED",
+                    progress_percentage: 60,
+                    details: {
+                      message:
+                        "Peeling complete and QA approved - awaiting packing",
+                      delivery_status: order.delivery_status,
+                      peeling_status: "Completed",
+                      qa_status: "Approved",
+                    },
+                    next_stage: "PACKING_IN_PROGRESS",
+                  };
+                }
+              } else {
+                // Peeling complete but QA pending
+                console.log(
+                  `[OrderTracking] ✅ Peeling complete - awaiting QA approval`,
+                );
+                return {
+                  current_stage: "QA_PENDING",
+                  order_status: "QA_PENDING",
+                  progress_percentage: 55,
+                  details: {
+                    message: "Peeling complete - awaiting QA approval",
+                    delivery_status: order.delivery_status,
+                    peeling_records: peelingRecords.length,
+                  },
+                  next_stage: "QA_APPROVED",
+                };
+              }
             }
 
             // Peeling is in progress
@@ -452,16 +572,15 @@ class OrderTrackingService {
             order.delivery_status.includes("Transit")
           ) {
             // Determine stage based on delivery status specificity
-            // If it's just "In Transit", assume it's in final stages (60-80%)
             // This indicates: production done → dispatch done → processing done → shipping
 
-            let stage = "PEELING_IN_PROGRESS";
-            let progress = 60;
-            let message = "Product in transit for final processing/delivery";
+            let stage = "READY_FOR_DISPATCH";
+            let progress = 80;
+            let message = "Product dispatched and in transit";
 
             if (order.delivery_status.includes("Shipped")) {
               stage = "SHIPPED";
-              progress = 85;
+              progress = 90;
               message = "Order shipped";
             } else if (order.delivery_status.includes("Delivered")) {
               stage = "DELIVERED";
@@ -469,7 +588,7 @@ class OrderTrackingService {
               message = "Order delivered";
             } else if (order.delivery_status.includes("Ready")) {
               stage = "READY_FOR_SHIPMENT";
-              progress = 75;
+              progress = 85;
               message = "Order ready for final shipment";
             }
 

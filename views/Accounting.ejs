@@ -431,6 +431,95 @@
         color: #856404;
       }
 
+      /* Invoice Form Styling */
+      .form-section {
+        padding: 15px;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+        border-left: 3px solid #ea5455;
+      }
+
+      .form-section h5 {
+        color: #1f2d3e;
+        font-weight: 600;
+      }
+
+      /* Tab Navigation */
+      .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      .nav-tabs .nav-link {
+        color: #627293;
+        border: none;
+        font-weight: 500;
+        padding: 10px 15px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .nav-tabs .nav-link:hover {
+        color: #ea5455;
+        border-bottom-color: #ea5455;
+      }
+
+      .nav-tabs .nav-link.active {
+        color: #ea5455;
+        border-bottom-color: #ea5455;
+        background-color: transparent;
+      }
+
+      .nav-tabs .nav-link i {
+        margin-right: 5px;
+      }
+
+      /* Invoice Line Items Table */
+      #invoiceLineTable thead {
+        background-color: #f0f0f0;
+      }
+
+      #invoiceLineTable tbody tr {
+        transition: background-color 0.2s ease;
+      }
+
+      #invoiceLineTable tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .invoice-line {
+        border-top: 1px solid #dee2e6;
+      }
+
+      .invoice-line input,
+      .invoice-line select {
+        font-size: 13px;
+        padding: 6px 8px;
+      }
+
+      /* Totals Summary Box */
+      .bg-light {
+        background-color: #f8f9fa !important;
+        padding: 15px !important;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+      }
+
+      /* Status Badges */
+      .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+
+      .badge.bg-success {
+        background-color: #d4edda !important;
+        color: #155724 !important;
+      }
+
+      .badge.bg-warning {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+      }
+
       .status-cancelled {
         background-color: #f8d7da;
         color: #721c24;
@@ -492,6 +581,16 @@
               <i class="fa-solid fa-credit-card"></i>
             </div>
             <div class="icon-label pt-2">AP</div>
+          </div>
+
+          <div
+            class="topMenu-item d-flex flex-column justify-content-center align-items-center mx-5 p-2"
+            id="invoicesMenu"
+          >
+            <div class="icon-button shadow">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="icon-label pt-2">Invoices</div>
           </div>
 
           <div
@@ -745,6 +844,335 @@
                   ></i>
                   <h5>Inventory Valuation</h5>
                   <button class="btn btn-create btn-action">Generate</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Invoices View -->
+        <div id="invoicesView" class="col-12" style="display: none">
+          <div class="content-card">
+            <div class="content-header">
+              <h3>Sales Invoices</h3>
+              <button class="btn btn-create btn-action" id="createInvoiceBtn">
+                <i class="fa-solid fa-plus"></i> New Invoice
+              </button>
+            </div>
+
+            <!-- Invoices Tabs -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <ul class="nav nav-tabs" role="tablist" id="invoiceTabs">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      id="invoiceList-tab"
+                      data-bs-toggle="tab"
+                      href="#invoiceListView"
+                      role="tab"
+                    >
+                      <i class="fa-solid fa-list"></i> Invoice List
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      id="invoiceCreate-tab"
+                      data-bs-toggle="tab"
+                      href="#invoiceCreateView"
+                      role="tab"
+                    >
+                      <i class="fa-solid fa-plus-circle"></i> Create Invoice
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      id="invoiceSummary-tab"
+                      data-bs-toggle="tab"
+                      href="#invoiceSummaryView"
+                      role="tab"
+                    >
+                      <i class="fa-solid fa-chart-bar"></i> Summary
+                    </a>
+                  </li>
+                </ul>
+
+                <div class="tab-content mt-3">
+                  <!-- Invoice List Tab -->
+                  <div
+                    class="tab-pane fade show active"
+                    id="invoiceListView"
+                    role="tabpanel"
+                  >
+                    <div class="table-responsive">
+                      <table class="data-table" id="invoiceListTable">
+                        <thead>
+                          <tr>
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="invoiceListBody">
+                          <tr>
+                            <td colspan="6" class="text-center text-muted">
+                              No invoices found
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- Invoice Create Tab -->
+                  <div
+                    class="tab-pane fade"
+                    id="invoiceCreateView"
+                    role="tabpanel"
+                  >
+                    <form id="invoiceForm">
+                      <!-- Invoice Header Section -->
+                      <div class="form-section">
+                        <h5 class="mb-3">Invoice Information</h5>
+                        <div class="row">
+                          <div class="col-md-4 mb-3">
+                            <label for="invNumber" class="form-label"
+                              >Invoice Number</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="invNumber"
+                              readonly
+                            />
+                          </div>
+                          <div class="col-md-4 mb-3">
+                            <label for="invDate" class="form-label">Date</label>
+                            <input
+                              type="date"
+                              class="form-control"
+                              id="invDate"
+                              required
+                            />
+                          </div>
+                          <div class="col-md-4 mb-3">
+                            <label for="dueDate" class="form-label"
+                              >Due Date</label
+                            >
+                            <input
+                              type="date"
+                              class="form-control"
+                              id="dueDate"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="customerSelect" class="form-label"
+                              >Customer *</label
+                            >
+                            <select
+                              class="form-select"
+                              id="customerSelect"
+                              required
+                            >
+                              <option value="">-- Select Customer --</option>
+                            </select>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="orderRef" class="form-label"
+                              >Order Reference</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="orderRef"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Line Items Section -->
+                      <div class="form-section mt-4">
+                        <div
+                          class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                          <h5>Line Items</h5>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-success"
+                            id="addLineItemBtn"
+                          >
+                            <i class="fa-solid fa-plus"></i> Add Item
+                          </button>
+                        </div>
+                        <div class="table-responsive">
+                          <table class="data-table" id="invoiceLineTable">
+                            <thead>
+                              <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                                <th>Tax %</th>
+                                <th>Tax Amt</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody id="invoiceLineBody"></tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      <!-- Charges Section -->
+                      <div class="form-section mt-4">
+                        <h5 class="mb-3">Charges & Adjustments</h5>
+                        <div class="row">
+                          <div class="col-md-3 mb-3">
+                            <label for="shippingCharge" class="form-label"
+                              >Shipping</label
+                            >
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="shippingCharge"
+                              value="0"
+                              step="0.01"
+                            />
+                          </div>
+                          <div class="col-md-3 mb-3">
+                            <label for="packingCharge" class="form-label"
+                              >Packing</label
+                            >
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="packingCharge"
+                              value="0"
+                              step="0.01"
+                            />
+                          </div>
+                          <div class="col-md-3 mb-3">
+                            <label for="otherCharge" class="form-label"
+                              >Other</label
+                            >
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="otherCharge"
+                              value="0"
+                              step="0.01"
+                            />
+                          </div>
+                          <div class="col-md-3 mb-3">
+                            <label for="totalDiscount" class="form-label"
+                              >Discount</label
+                            >
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="totalDiscount"
+                              value="0"
+                              step="0.01"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Totals Section -->
+                      <div class="form-section mt-4 bg-light">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-2">
+                              <span>Subtotal:</span>
+                              <span id="subtotalDisplay">₹0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                              <span>Total Tax:</span>
+                              <span id="totalTaxDisplay">₹0.00</span>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div
+                              class="d-flex justify-content-between mb-2 fw-bold"
+                            >
+                              <span>Grand Total:</span>
+                              <span
+                                id="grandTotalDisplay"
+                                class="text-success fs-5"
+                                >₹0.00</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Action Buttons -->
+                      <div class="mt-4">
+                        <button
+                          type="button"
+                          class="btn btn-create btn-action"
+                          id="saveInvoiceBtn"
+                        >
+                          <i class="fa-solid fa-save"></i> Save Invoice
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-success btn-action ms-2"
+                          id="savePostInvoiceBtn"
+                        >
+                          <i class="fa-solid fa-check"></i> Save & Post
+                        </button>
+                        <button type="reset" class="btn btn-secondary ms-2">
+                          <i class="fa-solid fa-redo"></i> Clear
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- Invoice Summary Tab -->
+                  <div
+                    class="tab-pane fade"
+                    id="invoiceSummaryView"
+                    role="tabpanel"
+                  >
+                    <div class="row">
+                      <div class="col-md-3 mb-3">
+                        <div class="kpi-card revenue">
+                          <div class="kpi-label">Total Invoices</div>
+                          <div class="kpi-value" id="totalInvoices">0</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 mb-3">
+                        <div class="kpi-card profit">
+                          <div class="kpi-label">Total Revenue</div>
+                          <div class="kpi-value" id="summaryTotalRevenue">
+                            ₹0.00
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 mb-3">
+                        <div class="kpi-card balance">
+                          <div class="kpi-label">Posted</div>
+                          <div class="kpi-value" id="postedInvoices">0</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 mb-3">
+                        <div class="kpi-card expense">
+                          <div class="kpi-label">Avg Invoice</div>
+                          <div class="kpi-value" id="avgInvoice">₹0.00</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1073,6 +1501,349 @@
         // Load costing data from API
         console.log("Loading costing...");
       }
+
+      // ===== INVOICES FUNCTIONALITY =====
+
+      // Load invoices on view toggle
+      $("#invoicesMenu").click(function () {
+        showView("invoices");
+        loadInvoices();
+      });
+
+      // New Invoice button - switch to create tab
+      $("#createInvoiceBtn").click(function () {
+        $("#invoiceTabs").find('a[href="#invoiceCreateView"]').tab("show");
+        resetInvoiceForm();
+        loadInvoiceCustomers();
+      });
+
+      // Add Line Item button
+      $("#addLineItemBtn").click(function () {
+        const lineRow = `
+          <tr class="invoice-line">
+            <td>
+              <select class="form-select product-select" required>
+                <option value="">Select Product</option>
+              </select>
+            </td>
+            <td>
+              <input type="number" class="form-control qty-input" value="1" min="1" required />
+            </td>
+            <td>
+              <input type="number" class="form-control rate-input" value="0" step="0.01" required />
+            </td>
+            <td>
+              <input type="number" class="form-control amount-input" value="0" step="0.01" readonly />
+            </td>
+            <td>
+              <input type="number" class="form-control tax-input" value="0" step="0.01" min="0" max="100" />
+            </td>
+            <td>
+              <input type="number" class="form-control tax-amt-input" value="0" step="0.01" readonly />
+            </td>
+            <td>
+              <input type="number" class="form-control total-input" value="0" step="0.01" readonly />
+            </td>
+            <td>
+              <button type="button" class="btn btn-sm btn-danger remove-line-btn">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+        $("#invoiceLineBody").append(lineRow);
+        loadInvoiceProducts();
+      });
+
+      // Calculate line amounts
+      $(document).on(
+        "change keyup",
+        ".qty-input, .rate-input, .tax-input",
+        function () {
+          const row = $(this).closest("tr");
+          const qty = parseFloat(row.find(".qty-input").val()) || 0;
+          const rate = parseFloat(row.find(".rate-input").val()) || 0;
+          const tax = parseFloat(row.find(".tax-input").val()) || 0;
+
+          const amount = qty * rate;
+          const taxAmt = (amount * tax) / 100;
+          const total = amount + taxAmt;
+
+          row.find(".amount-input").val(amount.toFixed(2));
+          row.find(".tax-amt-input").val(taxAmt.toFixed(2));
+          row.find(".total-input").val(total.toFixed(2));
+
+          updateInvoiceTotals();
+        },
+      );
+
+      // Remove line item
+      $(document).on("click", ".remove-line-btn", function () {
+        $(this).closest("tr").remove();
+        updateInvoiceTotals();
+      });
+
+      // Calculate invoice totals
+      function updateInvoiceTotals() {
+        let subtotal = 0;
+        let totalTax = 0;
+
+        $("#invoiceLineBody tr.invoice-line").each(function () {
+          subtotal += parseFloat($(this).find(".amount-input").val()) || 0;
+          totalTax += parseFloat($(this).find(".tax-amt-input").val()) || 0;
+        });
+
+        const shipping = parseFloat($("#shippingCharge").val()) || 0;
+        const packing = parseFloat($("#packingCharge").val()) || 0;
+        const other = parseFloat($("#otherCharge").val()) || 0;
+        const discount = parseFloat($("#totalDiscount").val()) || 0;
+
+        const grandTotal =
+          subtotal + totalTax + shipping + packing + other - discount;
+
+        $("#subtotalDisplay").text("₹" + subtotal.toFixed(2));
+        $("#totalTaxDisplay").text("₹" + totalTax.toFixed(2));
+        $("#grandTotalDisplay").text("₹" + grandTotal.toFixed(2));
+      }
+
+      // Charges & adjustments change handler
+      $(document).on(
+        "change keyup",
+        "#shippingCharge, #packingCharge, #otherCharge, #totalDiscount",
+        function () {
+          updateInvoiceTotals();
+        },
+      );
+
+      // Save Invoice
+      $("#saveInvoiceBtn").click(function () {
+        if (!validateInvoiceForm()) return;
+
+        const invoiceData = getInvoiceFormData();
+        saveInvoice(invoiceData, false);
+      });
+
+      // Save & Post Invoice
+      $("#savePostInvoiceBtn").click(function () {
+        if (!validateInvoiceForm()) return;
+
+        const invoiceData = getInvoiceFormData();
+        saveInvoice(invoiceData, true);
+      });
+
+      function validateInvoiceForm() {
+        const customer = $("#customerSelect").val();
+        const lineItems = $("#invoiceLineBody tr.invoice-line").length;
+
+        if (!customer) {
+          toastr.error("Please select a customer");
+          return false;
+        }
+
+        if (lineItems === 0) {
+          toastr.error("Please add at least one line item");
+          return false;
+        }
+
+        return true;
+      }
+
+      function getInvoiceFormData() {
+        const lineItems = [];
+        $("#invoiceLineBody tr.invoice-line").each(function () {
+          lineItems.push({
+            product_id: $(this).find(".product-select").val(),
+            quantity: parseFloat($(this).find(".qty-input").val()),
+            rate: parseFloat($(this).find(".rate-input").val()),
+            tax_percent: parseFloat($(this).find(".tax-input").val()),
+            amount: parseFloat($(this).find(".amount-input").val()),
+            tax_amount: parseFloat($(this).find(".tax-amt-input").val()),
+            total: parseFloat($(this).find(".total-input").val()),
+          });
+        });
+
+        return {
+          invoice_date: $("#invDate").val(),
+          due_date: $("#dueDate").val(),
+          customer_id: $("#customerSelect").val(),
+          order_ref: $("#orderRef").val(),
+          line_items: lineItems,
+          shipping_charge: parseFloat($("#shippingCharge").val()) || 0,
+          packing_charge: parseFloat($("#packingCharge").val()) || 0,
+          other_charge: parseFloat($("#otherCharge").val()) || 0,
+          discount: parseFloat($("#totalDiscount").val()) || 0,
+        };
+      }
+
+      function saveInvoice(data, shouldPost) {
+        $.ajax({
+          url: "/api/sales/invoices",
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          success: function (response) {
+            toastr.success("Invoice saved successfully");
+            if (shouldPost) {
+              // Post the invoice (update status)
+              $.ajax({
+                url: `/api/sales/invoices/${response.id}`,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({ status: "posted" }),
+                success: function () {
+                  toastr.success("Invoice posted successfully");
+                  resetInvoiceForm();
+                  loadInvoices();
+                  $("#invoiceTabs")
+                    .find('a[href="#invoiceListView"]')
+                    .tab("show");
+                },
+                error: function () {
+                  toastr.error("Error posting invoice");
+                },
+              });
+            } else {
+              resetInvoiceForm();
+              loadInvoices();
+              $("#invoiceTabs").find('a[href="#invoiceListView"]').tab("show");
+            }
+          },
+          error: function () {
+            toastr.error("Error saving invoice");
+          },
+        });
+      }
+
+      function resetInvoiceForm() {
+        $("#invoiceForm")[0].reset();
+        $("#invoiceLineBody").empty();
+        updateInvoiceTotals();
+        const today = new Date().toISOString().split("T")[0];
+        $("#invDate").val(today);
+      }
+
+      function loadInvoices() {
+        $.ajax({
+          url: "/api/sales/invoices",
+          type: "GET",
+          success: function (response) {
+            populateInvoiceList(response);
+            updateInvoiceSummary(response);
+          },
+          error: function () {
+            toastr.error("Error loading invoices");
+          },
+        });
+      }
+
+      function populateInvoiceList(invoices) {
+        const tbody = $("#invoiceListBody");
+        tbody.empty();
+
+        if (invoices.length === 0) {
+          tbody.html(
+            '<tr><td colspan="6" class="text-center text-muted">No invoices found</td></tr>',
+          );
+          return;
+        }
+
+        invoices.forEach(function (inv) {
+          const statusBadge =
+            inv.status === "posted"
+              ? '<span class="badge bg-success">Posted</span>'
+              : '<span class="badge bg-warning">Draft</span>';
+
+          const row = `
+            <tr>
+              <td>${inv.invoice_number}</td>
+              <td>${new Date(inv.invoice_date).toLocaleDateString()}</td>
+              <td>${inv.customer_name}</td>
+              <td>₹${parseFloat(inv.grand_total).toFixed(2)}</td>
+              <td>${statusBadge}</td>
+              <td>
+                <button class="btn btn-sm btn-info edit-invoice" data-id="${inv.id}">
+                  <i class="fa-solid fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger delete-invoice" data-id="${inv.id}">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+          tbody.append(row);
+        });
+      }
+
+      function updateInvoiceSummary(invoices) {
+        const totalInvoices = invoices.length;
+        const totalRevenue = invoices.reduce(
+          (sum, inv) => sum + parseFloat(inv.grand_total),
+          0,
+        );
+        const postedCount = invoices.filter(
+          (inv) => inv.status === "posted",
+        ).length;
+        const avgInvoice = totalInvoices > 0 ? totalRevenue / totalInvoices : 0;
+
+        $("#totalInvoices").text(totalInvoices);
+        $("#summaryTotalRevenue").text("₹" + totalRevenue.toFixed(2));
+        $("#postedInvoices").text(postedCount);
+        $("#avgInvoice").text("₹" + avgInvoice.toFixed(2));
+      }
+
+      function loadInvoiceCustomers() {
+        $.ajax({
+          url: "/api/customers",
+          type: "GET",
+          success: function (response) {
+            const select = $("#customerSelect");
+            select.find("option:not(:first)").remove();
+            response.forEach(function (customer) {
+              select.append(
+                `<option value="${customer.id}">${customer.name}</option>`,
+              );
+            });
+          },
+        });
+      }
+
+      function loadInvoiceProducts() {
+        $.ajax({
+          url: "/api/products",
+          type: "GET",
+          success: function (response) {
+            $(".product-select").find("option:not(:first)").remove();
+            response.forEach(function (product) {
+              $(".product-select").append(
+                `<option value="${product.id}" data-price="${product.price}">${product.name}</option>`,
+              );
+            });
+          },
+        });
+      }
+
+      // Edit invoice (placeholder)
+      $(document).on("click", ".edit-invoice", function () {
+        toastr.info("Edit functionality coming soon");
+      });
+
+      // Delete invoice
+      $(document).on("click", ".delete-invoice", function () {
+        const id = $(this).data("id");
+        if (confirm("Are you sure you want to delete this invoice?")) {
+          $.ajax({
+            url: `/api/sales/invoices/${id}`,
+            type: "DELETE",
+            success: function () {
+              toastr.success("Invoice deleted successfully");
+              loadInvoices();
+            },
+            error: function () {
+              toastr.error("Error deleting invoice");
+            },
+          });
+        }
+      });
     </script>
   </body>
 </html>
