@@ -400,6 +400,9 @@ export const GetAll = ({ start, length }) => {
           "packing_status",
           "packing_quantity",
           "expiry_date",
+          "order_no",
+          "lot_no",
+          "order_id",
         ],
         include: [
           {
