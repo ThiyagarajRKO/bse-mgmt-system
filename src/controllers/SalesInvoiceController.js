@@ -250,6 +250,113 @@ class SalesInvoiceController {
       });
     }
   }
+
+  /**
+   * GET /sales/invoices/pending-orders
+   * Get orders ready for invoicing (dispatched/partially-dispatched)
+   */
+  async getPendingOrders(request, reply) {
+    try {
+      const { limit = 20, offset = 0 } = request.query;
+
+      const orders = await SalesInvoiceService.getPendingOrdersForInvoicing(
+        parseInt(limit),
+        parseInt(offset),
+      );
+
+      return reply.send({
+        success: true,
+        data: orders.rows,
+        pagination: {
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          total: orders.count,
+        },
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * POST /sales/invoices/bulk-generate
+   * Generate invoices from multiple orders
+   */
+  async bulkGenerateInvoices(request, reply) {
+    try {
+      const {
+        order_ids,
+        auto_generate_lines = true,
+        post_to_gl = false,
+      } = request.body;
+      const created_by = request.user?.username || "system";
+
+      if (!Array.isArray(order_ids) || order_ids.length === 0) {
+        return reply.code(400).send({
+          success: false,
+          message: "order_ids must be a non-empty array",
+        });
+      }
+
+      const invoices = await SalesInvoiceService.bulkGenerateInvoices(
+        order_ids,
+        {
+          auto_generate_lines,
+          post_to_gl,
+          created_by,
+        },
+      );
+
+      return reply.code(201).send({
+        success: true,
+        message: `Generated ${invoices.length} invoice(s)`,
+        data: invoices,
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * POST /sales/invoices/generate-all-pending
+   * Generate invoices for all pending orders
+   */
+  async generateAllPendingInvoices(request, reply) {
+    try {
+      const { auto_generate_lines = true, post_to_gl = false } = request.body;
+      const created_by = request.user?.username || "system";
+
+      const result = await SalesInvoiceService.generateInvoicesForReadyOrders({
+        auto_generate_lines,
+        post_to_gl,
+        created_by,
+      });
+
+      return reply.code(201).send({
+        success: true,
+        message: `Generated ${result.generated} invoice(s), ${result.skipped} skipped`,
+        data: {
+          generated: result.generated,
+          skipped: result.skipped,
+          invoices: result.invoices,
+        },
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new SalesInvoiceController();

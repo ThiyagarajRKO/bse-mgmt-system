@@ -10,10 +10,16 @@
     <!-- title logo -->
     <link rel="icon" href="/public/images/bse.png" type="image/icon type" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
     <!-- Bootstrap -->
-    <link href="/public/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="/public/plugins/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <script src="/public/plugins/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- MDB5 -->
@@ -28,10 +34,16 @@
     <script src="/public/plugins/select2/js/select2.min.js"></script>
 
     <!-- DataTable -->
-    <link rel="stylesheet" href="/public/plugins/dataTables/datatables.min.css" />
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.min.css"
+    />
     <script src="/public/plugins/dataTables/datatables.min.js"></script>
     <script src="/public/plugins/dataTables/dataTables.bootstrap5.min.js"></script>
-    <link rel="stylesheet" href="/public/plugins/dataTables/datatables.responsive.min.css" />
+    <link
+      rel="stylesheet"
+      href="/public/plugins/dataTables/datatables.responsive.min.css"
+    />
     <script src="/public/plugins/dataTables/datatables.responsive.min.js"></script>
 
     <!-- Toast -->
@@ -39,7 +51,10 @@
     <script src="/public/plugins/Toastr/toastr.min.js"></script>
 
     <!-- jQuery Confirm -->
-    <link rel="stylesheet" href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css" />
+    <link
+      rel="stylesheet"
+      href="/public/plugins/jquery-confirm/css/jquery-confirm.min.css"
+    />
     <script src="/public/plugins/jquery-confirm/js/jquery-confirm.min.js"></script>
 
     <!-- Custom CSS -->
@@ -191,17 +206,35 @@
         <div class="card-header">
           <ul class="nav nav-tabs card-header-tabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="list-tab" data-bs-toggle="tab" href="#list-panel" role="tab">
+              <a
+                class="nav-link active"
+                id="list-tab"
+                data-bs-toggle="tab"
+                href="#list-panel"
+                role="tab"
+              >
                 <i class="fas fa-list"></i> Invoice List
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="create-tab" data-bs-toggle="tab" href="#create-panel" role="tab">
+              <a
+                class="nav-link"
+                id="create-tab"
+                data-bs-toggle="tab"
+                href="#create-panel"
+                role="tab"
+              >
                 <i class="fas fa-plus-circle"></i> Create Invoice
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="summary-tab" data-bs-toggle="tab" href="#summary-panel" role="tab">
+              <a
+                class="nav-link"
+                id="summary-tab"
+                data-bs-toggle="tab"
+                href="#summary-panel"
+                role="tab"
+              >
                 <i class="fas fa-chart-bar"></i> Revenue Summary
               </a>
             </li>
@@ -210,7 +243,11 @@
 
         <div class="tab-content card-body">
           <!-- Invoice List Tab -->
-          <div class="tab-pane fade show active" id="list-panel" role="tabpanel">
+          <div
+            class="tab-pane fade show active"
+            id="list-panel"
+            role="tabpanel"
+          >
             <div class="table-responsive">
               <table id="invoiceTable" class="table table-hover">
                 <thead>
@@ -230,146 +267,92 @@
             </div>
           </div>
 
-          <!-- Create Invoice Tab -->
+          <!-- Generate Invoices Tab -->
           <div class="tab-pane fade" id="create-panel" role="tabpanel">
             <div class="invoice-container">
-              <h4 class="mb-4">Create New Sales Invoice</h4>
+              <h4 class="mb-4">Generate Invoices from Orders</h4>
 
-              <!-- Invoice Header Form -->
+              <!-- Pending Orders Section -->
               <div class="form-section">
-                <h5 class="mb-3">Invoice Information</h5>
-                <div class="row">
-                  <div class="col-md-4 mb-3">
-                    <label for="invoiceNumber" class="form-label">Invoice Number</label>
-                    <input type="text" class="form-control" id="invoiceNumber" readonly />
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="invoiceDate" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="invoiceDate" required />
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="dueDate" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" id="dueDate" required />
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="customerSelect" class="form-label">Customer</label>
-                    <select class="form-select" id="customerSelect" required>
-                      <option value="">-- Select Customer --</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="orderReference" class="form-label">Order Reference</label>
-                    <input type="text" class="form-control" id="orderReference" />
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="shippingLocation" class="form-label">Shipping Location</label>
-                    <select class="form-select" id="shippingLocation">
-                      <option value="">-- Select Location --</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="invoiceNotes" class="form-label">Notes</label>
-                    <textarea class="form-control" id="invoiceNotes" rows="2"></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Line Items Section -->
-              <div class="line-items-section">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5>Line Items</h5>
-                  <button class="btn btn-sm btn-success add-item-btn" id="btnAddItem">
-                    <i class="fas fa-plus"></i> Add Item
-                  </button>
-                </div>
+                <h5 class="mb-3">📋 Pending Orders Ready for Invoicing</h5>
+                <p class="text-muted mb-3">
+                  Select orders to automatically generate invoices with line
+                  items populated from order details.
+                </p>
 
                 <div class="table-responsive">
-                  <table class="invoice-table" id="lineItemsTable">
+                  <table id="pendingOrdersTable" class="table table-hover">
                     <thead>
                       <tr>
-                        <th>Product</th>
-                        <th>HSN Code</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Rate</th>
-                        <th>Discount %</th>
-                        <th>Amount</th>
-                        <th>Tax Rate %</th>
-                        <th>Tax Amount</th>
-                        <th>Total</th>
-                        <th>Action</th>
+                        <th><input type="checkbox" id="selectAllOrders" /></th>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Total Items</th>
+                        <th>Total Value</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody id="lineItemsBody"></tbody>
+                    <tbody></tbody>
                   </table>
                 </div>
               </div>
 
-              <!-- Charges Section -->
-              <div class="charges-section">
-                <h5 class="mb-3">Additional Charges & Adjustments</h5>
+              <!-- Generation Options -->
+              <div class="form-section">
+                <h5 class="mb-3">⚙️ Generation Options</h5>
                 <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <label for="shippingCharge" class="form-label">Shipping Charge</label>
-                    <input type="number" class="form-control" id="shippingCharge" value="0" step="0.01" />
+                  <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="autoGenerateLines"
+                        checked
+                      />
+                      <label class="form-check-label" for="autoGenerateLines">
+                        Auto-populate line items from orders
+                      </label>
+                    </div>
                   </div>
-                  <div class="col-md-3 mb-3">
-                    <label for="packingCharge" class="form-label">Packing Charge</label>
-                    <input type="number" class="form-control" id="packingCharge" value="0" step="0.01" />
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <label for="otherCharge" class="form-label">Other Charges</label>
-                    <input type="number" class="form-control" id="otherCharge" value="0" step="0.01" />
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <label for="discountAmount" class="form-label">Total Discount</label>
-                    <input type="number" class="form-control" id="discountAmount" value="0" step="0.01" />
+                  <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="autoPostToGL"
+                      />
+                      <label class="form-check-label" for="autoPostToGL">
+                        Automatically post to GL after generation
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Total Section -->
-              <div class="total-section">
-                <div class="total-row">
-                  <span>Subtotal:</span>
-                  <span id="subtotal">₹ 0.00</span>
-                </div>
-                <div class="total-row">
-                  <span>Total Tax:</span>
-                  <span id="totalTax">₹ 0.00</span>
-                </div>
-                <div class="total-row">
-                  <span>Shipping:</span>
-                  <span id="shipping">₹ 0.00</span>
-                </div>
-                <div class="total-row">
-                  <span>Total Discount:</span>
-                  <span id="discount">₹ 0.00</span>
-                </div>
-                <hr />
-                <div class="total-row">
-                  <span class="total-amount">Grand Total:</span>
-                  <span class="total-amount" id="grandTotal">₹ 0.00</span>
-                </div>
-              </div>
-
-              <!-- Action Buttons -->
+              <!-- Bulk Actions -->
               <div class="mt-4">
-                <button class="btn btn-primary btn-lg" id="btnSaveInvoice">
-                  <i class="fas fa-save"></i> Save Invoice
+                <button class="btn btn-success btn-lg" id="btnGenerateSelected">
+                  <i class="fas fa-magic"></i> Generate Selected Invoices
                 </button>
-                <button class="btn btn-success btn-lg ms-2" id="btnSaveAndPost">
-                  <i class="fas fa-check"></i> Save & Post to GL
+                <button class="btn btn-info btn-lg ms-2" id="btnGenerateAll">
+                  <i class="fas fa-star"></i> Generate All Pending
                 </button>
-                <button class="btn btn-secondary btn-lg ms-2" id="btnClearForm">
-                  <i class="fas fa-redo"></i> Clear
+                <button
+                  class="btn btn-secondary btn-lg ms-2"
+                  id="btnRefreshOrders"
+                >
+                  <i class="fas fa-sync"></i> Refresh Orders
                 </button>
+              </div>
+
+              <!-- Generation Status -->
+              <div id="generationStatus" class="mt-4" style="display: none">
+                <div class="alert alert-info">
+                  <i class="fas fa-hourglass-start"></i> Generating invoices...
+                  <span id="generationProgress"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -419,11 +402,21 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="invoiceDetailTitle">Invoice Details</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body" id="invoiceDetailContent"></div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
             <button type="button" class="btn btn-primary" id="btnPostInvoice">
               <i class="fas fa-paper-plane"></i> Post to GL
             </button>
@@ -434,20 +427,13 @@
 
     <script>
       $(document).ready(function () {
-        // Initialize DataTable
+        // Initialize invoice list DataTable
         let invoiceTable = $("#invoiceTable").DataTable({
           processing: true,
           serverSide: true,
           ajax: {
             url: "/api/sales/invoices",
             type: "GET",
-            data: function (d) {
-              return $.extend({}, d, {
-                draw: d.draw,
-                start: d.start,
-                length: d.length,
-              });
-            },
           },
           columns: [
             { data: "invoice_number" },
@@ -467,7 +453,9 @@
             {
               data: "is_posted",
               render: function (data) {
-                return data ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>';
+                return data
+                  ? '<i class="fas fa-check text-success"></i>'
+                  : '<i class="fas fa-times text-danger"></i>';
               },
             },
             {
@@ -486,70 +474,160 @@
             },
           ],
           pageLength: 10,
-          language: {
-            emptyTable: "No invoices found",
-            loadingRecords: "Loading invoices...",
+        });
+
+        // Initialize pending orders DataTable
+        let pendingOrdersTable = $("#pendingOrdersTable").DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url: "/api/sales/invoices/pending-orders",
+            type: "GET",
           },
-        });
-
-        // Set today's date as default
-        document.getElementById("invoiceDate").valueAsDate = new Date();
-        document.getElementById("dueDate").valueAsDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-        // Create New Invoice Button
-        $("#btnCreateInvoice").on("click", function () {
-          $("a[href='#create-panel']").tab("show");
-        });
-
-        // Add Line Item
-        let itemCount = 0;
-        $("#btnAddItem").on("click", function () {
-          itemCount++;
-          let html = `
-            <tr class="line-item" data-item-id="${itemCount}">
-              <td><input type="text" class="form-control form-control-sm product-name" placeholder="Product" /></td>
-              <td><input type="text" class="form-control form-control-sm hsn-code" placeholder="HSN" readonly /></td>
-              <td><input type="number" class="form-control form-control-sm quantity" value="1" step="0.01" /></td>
-              <td><input type="text" class="form-control form-control-sm unit" placeholder="Unit" readonly /></td>
-              <td><input type="number" class="form-control form-control-sm rate" value="0" step="0.01" /></td>
-              <td><input type="number" class="form-control form-control-sm discount-pct" value="0" step="0.01" /></td>
-              <td><input type="number" class="form-control form-control-sm amount" readonly /></td>
-              <td><input type="number" class="form-control form-control-sm tax-rate" value="0" step="0.01" /></td>
-              <td><input type="number" class="form-control form-control-sm tax-amount" readonly /></td>
-              <td><input type="number" class="form-control form-control-sm total" readonly /></td>
-              <td><button type="button" class="btn btn-sm btn-danger" onclick="removeLineItem(${itemCount})"><i class="fas fa-trash"></i></button></td>
-            </tr>
-          `;
-          $("#lineItemsBody").append(html);
-        });
-
-        // Save Invoice
-        $("#btnSaveInvoice").on("click", function () {
-          let invoiceData = {
-            invoice_date: $("#invoiceDate").val(),
-            due_date: $("#dueDate").val(),
-            customer_id: $("#customerSelect").val(),
-            order_reference: $("#orderReference").val(),
-            shipping_location_id: $("#shippingLocation").val(),
-            notes: $("#invoiceNotes").val(),
-          };
-
-          $.ajax({
-            url: "/api/sales/invoices",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(invoiceData),
-            success: function (response) {
-              toastr.success("Invoice saved successfully!");
-              invoiceTable.ajax.reload();
-              $("a[href='#list-panel']").tab("show");
+          columns: [
+            {
+              data: null,
+              render: function (data) {
+                return `<input type="checkbox" class="order-select" value="${data.id}" />`;
+              },
+              orderable: false,
+              searchable: false,
             },
-            error: function (err) {
-              toastr.error("Error saving invoice: " + err.responseJSON.message);
+            { data: "order_no" },
+            { data: "order_date" },
+            { data: "customer_master.customer_name" },
+            { data: "order_status" },
+            { data: "total_items" },
+            { data: "total_value" },
+            {
+              data: null,
+              render: function (data) {
+                return `<button class="btn btn-sm btn-primary" onclick="generateSingleInvoice('${data.id}')">
+                  <i class="fas fa-file-invoice"></i> Generate
+                </button>`;
+              },
+              orderable: false,
+            },
+          ],
+          pageLength: 10,
+        });
+
+        // Select all orders checkbox
+        $("#selectAllOrders").on("change", function () {
+          const isChecked = $(this).is(":checked");
+          $(".order-select").prop("checked", isChecked);
+        });
+
+        // Generate selected invoices
+        $("#btnGenerateSelected").on("click", function () {
+          const selectedOrders = $(".order-select:checked")
+            .map(function () {
+              return $(this).val();
+            })
+            .get();
+
+          if (selectedOrders.length === 0) {
+            toastr.warning("Please select at least one order");
+            return;
+          }
+
+          generateInvoices(selectedOrders);
+        });
+
+        // Generate all pending invoices
+        $("#btnGenerateAll").on("click", function () {
+          $.confirm({
+            title: "Generate All Pending Invoices?",
+            content:
+              "This will generate invoices for all pending orders. Continue?",
+            buttons: {
+              confirm: function () {
+                generateAllPending();
+              },
+              cancel: function () {},
             },
           });
         });
+
+        // Refresh orders list
+        $("#btnRefreshOrders").on("click", function () {
+          pendingOrdersTable.ajax.reload();
+          toastr.info("Orders list refreshed");
+        });
       });
+
+      function generateInvoices(orderIds) {
+        $("#generationStatus").show();
+        $("#generationProgress").text(
+          `Processing ${orderIds.length} orders...`,
+        );
+
+        $.ajax({
+          url: "/api/sales/invoices/bulk-generate",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({
+            order_ids: orderIds,
+            auto_generate_lines: $("#autoGenerateLines").is(":checked"),
+            post_to_gl: $("#autoPostToGL").is(":checked"),
+          }),
+          success: function (response) {
+            $("#generationStatus").hide();
+            toastr.success(
+              `Successfully generated ${response.data.length} invoices!`,
+            );
+
+            // Reload both tables
+            $("#invoiceTable").DataTable().ajax.reload();
+            $("#pendingOrdersTable").DataTable().ajax.reload();
+
+            // Clear selections
+            $("#selectAllOrders").prop("checked", false);
+            $(".order-select").prop("checked", false);
+          },
+          error: function (err) {
+            $("#generationStatus").hide();
+            toastr.error(
+              "Error generating invoices: " + err.responseJSON.message,
+            );
+          },
+        });
+      }
+
+      function generateAllPending() {
+        $("#generationStatus").show();
+        $("#generationProgress").text("Processing all pending orders...");
+
+        $.ajax({
+          url: "/api/sales/invoices/generate-all-pending",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({
+            auto_generate_lines: $("#autoGenerateLines").is(":checked"),
+            post_to_gl: $("#autoPostToGL").is(":checked"),
+          }),
+          success: function (response) {
+            $("#generationStatus").hide();
+            toastr.success(
+              `Successfully generated ${response.data.generated} invoices!`,
+            );
+
+            // Reload tables
+            $("#invoiceTable").DataTable().ajax.reload();
+            $("#pendingOrdersTable").DataTable().ajax.reload();
+          },
+          error: function (err) {
+            $("#generationStatus").hide();
+            toastr.error(
+              "Error generating invoices: " + err.responseJSON.message,
+            );
+          },
+        });
+      }
+
+      function generateSingleInvoice(orderId) {
+        generateInvoices([orderId]);
+      }
 
       function viewInvoice(id) {
         $.ajax({
@@ -561,7 +639,8 @@
                 <p><strong>Invoice #:</strong> ${response.data.invoice_number}</p>
                 <p><strong>Date:</strong> ${new Date(response.data.invoice_date).toLocaleDateString()}</p>
                 <p><strong>Customer:</strong> ${response.data.customer.customer_name}</p>
-                <p><strong>Amount:</strong> ₹ ${response.data.total_amount}</p>
+                <p><strong>Amount:</strong> ₹ ${parseFloat(response.data.total_amount).toFixed(2)}</p>
+                <p><strong>Status:</strong> <span class="status-badge status-${response.data.status}">${response.data.status.toUpperCase()}</span></p>
               </div>
             `;
             $("#invoiceDetailContent").html(content);
@@ -570,8 +649,33 @@
         });
       }
 
-      function removeLineItem(itemId) {
-        $(`tr[data-item-id="${itemId}"]`).remove();
+      function editInvoice(id) {
+        toastr.info("Edit functionality coming soon");
+      }
+
+      function cancelInvoice(id) {
+        $.confirm({
+          title: "Cancel Invoice?",
+          content: "This will mark the invoice as cancelled. Continue?",
+          buttons: {
+            confirm: function () {
+              $.ajax({
+                url: `/api/sales/invoices/${id}/cancel`,
+                method: "PUT",
+                success: function () {
+                  toastr.success("Invoice cancelled successfully");
+                  $("#invoiceTable").DataTable().ajax.reload();
+                },
+                error: function (err) {
+                  toastr.error(
+                    "Error cancelling invoice: " + err.responseJSON.message,
+                  );
+                },
+              });
+            },
+            cancel: function () {},
+          },
+        });
       }
     </script>
   </body>

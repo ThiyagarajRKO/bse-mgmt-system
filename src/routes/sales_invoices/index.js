@@ -42,6 +42,24 @@ async function salesInvoiceRoutes(fastify) {
   fastify.get("/sales/invoices/summary/revenue", async (request, reply) => {
     return SalesInvoiceController.getRevenueSummary(request, reply);
   });
+
+  // Get pending orders for invoicing
+  fastify.get("/sales/invoices/pending-orders", async (request, reply) => {
+    return SalesInvoiceController.getPendingOrders(request, reply);
+  });
+
+  // Bulk generate invoices from multiple orders
+  fastify.post("/sales/invoices/bulk-generate", async (request, reply) => {
+    return SalesInvoiceController.bulkGenerateInvoices(request, reply);
+  });
+
+  // Generate invoices for all pending orders
+  fastify.post(
+    "/sales/invoices/generate-all-pending",
+    async (request, reply) => {
+      return SalesInvoiceController.generateAllPendingInvoices(request, reply);
+    },
+  );
 }
 
 module.exports = salesInvoiceRoutes;
