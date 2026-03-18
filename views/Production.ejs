@@ -879,9 +879,7 @@
                       </td>
                       <td>
                         <div class="d-flex flex-column">
-                          <span class="progressBar-label heading"
-                            >QA</span
-                          >
+                          <span class="progressBar-label heading">QA</span>
                           <div class="weightContainer">
                             <span
                               class="progressBar-weight weight qaPassCount"
@@ -2735,6 +2733,7 @@
                 <thead>
                   <tr>
                     <th style="border-radius: 4px 0 0 0"></th>
+                    <th></th>
                     <th class="fw-bold"><span>Inspection Date</span></th>
                     <th class="fw-bold"><span>Order No</span></th>
                     <th class="fw-bold"><span>Lot Number</span></th>
@@ -2743,7 +2742,6 @@
                     <th class="fw-bold"><span>QA Decision</span></th>
                     <th class="fw-bold"><span>Status</span></th>
                     <th class="fw-bold"><span>Temperature (°C)</span></th>
-                    <th class="fw-bold"><span>Actions</span></th>
                   </tr>
                 </thead>
               </table>
@@ -6549,22 +6547,58 @@
               }
             },
             columns: [
+              {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                  return `<i class="fa-solid fa-eye view editPostPackQA" data-id="${row.id}" aria-hidden="true" style="font-size:15px;color:#f07b3f" data-toggle="tooltip" data-placement="top" title="Click to view QA inspection details"></i>`;
+                }
+              },
               { data: null, orderable: false, searchable: false, defaultContent: "" },
               { data: "created_at", render: (data) => new Date(data).toLocaleDateString() },
-              { 
-                data: "Packing.order_no", 
-                defaultContent: "-",
+              {
+                data: null,
                 render: (data, type, row) => {
-                  console.log("📋 Row data:", row);
-                  console.log("📋 order_no:", data, "Packing:", row.Packing);
-                  // Use order_no from Packing, fall back to Orders.order_no
-                  const orderNo = data || (row.Packing && row.Packing.order_no) || (row.Packing && row.Packing.Order && row.Packing.Order.order_no) || "-";
+                  console.log("📋 Order_no Row:", JSON.stringify(row));
+                  let orderNo = "ERROR";
+                  if (row && row.packing && row.packing.order_no) {
+                    orderNo = row.packing.order_no;
+                  } else if (row && row.Order && row.Order.order_no) {
+                    orderNo = row.Order.order_no;
+                  } else {
+                    orderNo = row ? "NO_PACKING" : "NO_ROW";
+                  }
                   console.log("📋 Final order_no:", orderNo);
                   return orderNo;
                 }
               },
-              { data: "Packing.lot_no", defaultContent: "-" },
-              { data: null, defaultContent: "-" },
+              {
+                data: null,
+                render: (data, type, row) => {
+                  console.log("📦 Lot_no Row:", JSON.stringify(row));
+                  let lotNo = "ERROR";
+                  if (row && row.packing && row.packing.lot_no) {
+                    lotNo = row.packing.lot_no;
+                  } else {
+                    lotNo = row ? "NO_PACKING" : "NO_ROW";
+                  }
+                  console.log("📦 Final lot_no:", lotNo);
+                  return lotNo;
+                }
+              },
+              {
+                data: null,
+                render: (data, type, row) => {
+                  console.log("📦 Product Name Row:", JSON.stringify(row));
+                  let productName = "N/A";
+                  if (row && row.packing && row.packing.pd && row.packing.pd.pp && row.packing.pd.pp.ProductMaster) {
+                    productName = row.packing.pd.pp.ProductMaster.product_name;
+                  }
+                  console.log("📦 Final productName:", productName);
+                  return productName;
+                }
+              },
               { data: "inspector.full_name", defaultContent: "-" },
               {
                 data: "qa_status",
@@ -6576,15 +6610,7 @@
                 }
               },
               { data: "qa_status", render: (data) => `<span class="badge bg-info">${data}</span>` },
-              { data: "temperature_core", render: (data) => data ? data + "°C" : "-" },
-              {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row) {
-                  return `<button class="btn btn-sm btn-info editPostPackQA" data-id="${row.id}">View</button>`;
-                }
-              }
+              { data: "temperature_core", render: (data) => data ? data + "°C" : "-" }
             ]
           });
         }
