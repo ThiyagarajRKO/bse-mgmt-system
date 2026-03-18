@@ -62,6 +62,7 @@ import salesOrderWorkflowRoute from "./sales-order-workflow";
 import allocationRoute from "./allocation";
 import productionRoute from "./production";
 import qaRoute from "./qa";
+import postpackQARoute from "./postpack-qa";
 import traceabilityRoute from "./traceability";
 import taxEngineRoute from "./tax-engine";
 import postingRoute from "./posting";
@@ -359,6 +360,10 @@ export const PrivateRouters = (fastify, opts, done) => {
 
   fastify.register(qaRoute, {
     prefix: "/qa",
+  });
+
+  fastify.register(postpackQARoute, {
+    prefix: "/postpack-qa",
   });
 
   fastify.register(traceabilityRoute, {
