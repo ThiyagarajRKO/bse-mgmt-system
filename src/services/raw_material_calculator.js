@@ -686,10 +686,10 @@ class RawMaterialCalculator {
         console.warn(
           `[RAW MATERIALS] ⚠️  No BOM entries found for product ${productId}. This product has no defined bill of materials.`,
         );
-        console.warn(
-          `[RAW MATERIALS] User should configure BOM entries in the system before ordering this product.`,
+        console.log(
+          `[RAW MATERIALS] ℹ️  This is typical for UNPROCESSED products. Will proceed to species-based fallback to find compatible raw materials.`,
         );
-        return [];
+        // Don't return empty - let the fallback logic below find raw materials based on species
       }
 
       if (!effectiveSpeciesId) {
