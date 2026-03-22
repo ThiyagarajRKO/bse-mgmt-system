@@ -3884,6 +3884,16 @@
               let salesInventory = 0;
               let netInventory = 0;
 
+              // Validate that productMasterId is not undefined or the string "undefined"
+              if (!productMasterId || productMasterId === "undefined") {
+                toastr.error(
+                  "Product ID is missing. Cannot proceed with allocation.",
+                  "Error",
+                );
+                console.error("Invalid product ID:", productMasterId);
+                return;
+              }
+
               if (order.OrderProducts && order.OrderProducts.length > 0) {
                 console.log(
                   `[Order View] Order has ${order.OrderProducts.length} products:`,
@@ -4819,6 +4829,31 @@
             // Extract raw materials from response - API returns them in response.data.raw_materials
             const rawMaterialsList = response?.data?.raw_materials || [];
 
+            // DEBUG: Log the structure of each material
+            if (rawMaterialsList && rawMaterialsList.length > 0) {
+              console.log("[DEBUG] First raw material object structure:", {
+                keys: Object.keys(rawMaterialsList[0]),
+                firstItem: rawMaterialsList[0],
+              });
+              console.log(
+                "[DEBUG] COMPLETE rawMaterialsList:",
+                JSON.stringify(rawMaterialsList, null, 2),
+              );
+              rawMaterialsList.forEach((m, idx) => {
+                if (!m.product_master_id) {
+                  console.warn(
+                    `[DEBUG] Material at index ${idx} missing product_master_id:`,
+                    m,
+                  );
+                }
+              });
+            } else {
+              console.warn(
+                "[DEBUG] rawMaterialsList is empty or not found in response",
+              );
+              console.log("[DEBUG] response.data:", response?.data);
+            }
+
             if (rawMaterialsList && rawMaterialsList.length > 0) {
               console.log(
                 "✓ Found raw materials from AI recommendations endpoint:",
@@ -4950,6 +4985,28 @@
         }
 
         itemsNeedingOrder.forEach((material) => {
+          // Extract product_master_id from nested objects if not directly present
+          // This handles both BOM-based (has direct field) and species-filtered (nested in ProcurementProduct)
+          if (!material.product_master_id) {
+            if (
+              material.ProcurementProduct &&
+              material.ProcurementProduct.product_master_id
+            ) {
+              material.product_master_id =
+                material.ProcurementProduct.product_master_id;
+            } else if (material.ProductMaster && material.ProductMaster.id) {
+              material.product_master_id = material.ProductMaster.id;
+            }
+          }
+
+          // DEBUG: Log what we're rendering
+          console.log("[RENDER] Material object being rendered:", {
+            keys: Object.keys(material),
+            product_master_id: material.product_master_id,
+            product_name: material.product_name,
+            has_product_master_id: !!material.product_master_id,
+          });
+
           const materialName = material.product_name || "Unknown";
           const procurementProductId = material.procurement_product_id;
 
@@ -5216,13 +5273,23 @@
           let producedInventory = 0; // Sales inventory (finished goods)
           let netInventory = 0;
 
-          const productMasterId = material.product_master_id;
+          // Extract product_master_id from multiple possible locations
+          let productMasterId = material.product_master_id;
+          if (!productMasterId && material.ProcurementProduct) {
+            productMasterId = material.ProcurementProduct.product_master_id;
+          }
+          if (!productMasterId && material.ProductMaster) {
+            productMasterId = material.ProductMaster.id;
+          }
 
           // Debug: Log what we're searching for
           console.log(
             `[DEBUG] Fetching inventory for procurement_product_id: ${material.procurement_product_id}`,
           );
           console.log(`[DEBUG] Material data:`, material);
+          console.log(
+            `[DEBUG] Extracted product_master_id: ${productMasterId}`,
+          );
 
           // Fetch raw material inventory (purchase inventory) for this specific material
           $.ajax({
@@ -5751,7 +5818,15 @@
           let producedInventory = 0; // Sales inventory (finished goods)
           let netInventory = 0;
 
-          const productMasterId = material.product_master_id;
+          // Extract product_master_id from multiple possible locations
+          // This handles both BOM-based (has direct field) and species-filtered (nested in ProcurementProduct)
+          let productMasterId = material.product_master_id;
+          if (!productMasterId && material.ProcurementProduct) {
+            productMasterId = material.ProcurementProduct.product_master_id;
+          }
+          if (!productMasterId && material.ProductMaster) {
+            productMasterId = material.ProductMaster.id;
+          }
 
           // Debug: Log what we're searching for
           console.log(
@@ -5855,7 +5930,7 @@
                           name="rawMaterial"
                           value="${material.id}"
                           data-material-name="${materialName}"
-                          data-product-master-id="${material.product_master_id}"
+                          data-product-master-id="${productMasterId}"
                           style="cursor: pointer; width: 18px; height: 18px; accent-color: #627293;"
                         >
                         <strong style="color: #e3e3e3; font-size: 14px;">${materialName}${supplierName}</strong>
@@ -6906,11 +6981,23 @@
             // Use the quantity as-is (no additional buffer since user has already specified the final quantity)
             const materialRounded = Math.ceil(materialQuantity);
 
+            // Validate that we have a product_master_id before creating procurement data
+            const finalProductId = material.product_master_id || productId;
+            if (!finalProductId || finalProductId === "undefined") {
+              console.error(
+                "Cannot create procurement request: product_master_id is missing",
+                { material, productId },
+              );
+              toastr.error(
+                `Cannot create procurement for material: product ID is missing`,
+                "Error",
+              );
+              return;
+            }
+
             const procurementData = {
               procurement_date: procurementDate,
-              product_master_id: String(
-                material.product_master_id || productId,
-              ),
+              product_master_id: String(finalProductId),
               supplier_master_id: String(supplierId),
               unit_master_id: String(unitId),
               procurement_product_type: "UNPROCESSED",
