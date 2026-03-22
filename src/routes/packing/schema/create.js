@@ -3,7 +3,6 @@ export const createSchema = {
     body: {
       type: "object",
       required: [
-        "peeled_dispatch_id",
         "unit_master_id",
         "packing_quantity",
         "packaging_master_id",
@@ -11,10 +10,10 @@ export const createSchema = {
         "packing_notes",
       ],
       properties: {
-        peeled_dispatch_id: { type: "string" },
+        peeled_dispatch_id: { type: "string" }, // Optional - for processed products
+        dispatch_id: { type: "string" }, // Optional - for unprocessed products (Dispatch → Packing directly)
         unit_master_id: { type: "string" },
         packing_quantity: { type: "string" },
-        unit_master_id: { type: "string" },
         grade_master_id: { type: "string" }, // Made optional - will be derived from product
         size_master_id: { type: "string" }, // Made optional - will be derived from product
         packaging_master_id: { type: "string" },
