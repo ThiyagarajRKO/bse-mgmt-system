@@ -11,14 +11,20 @@ export const Insert = async (profile_id, procurement_data) => {
         });
       }
 
-      if (!procurement_data?.supplier_master_id) {
+      if (
+        !procurement_data?.supplier_master_id ||
+        procurement_data?.supplier_master_id === "undefined"
+      ) {
         return reject({
           statusCode: 420,
           message: "Supplier master id must not be empty!",
         });
       }
 
-      if (!procurement_data?.product_master_id) {
+      if (
+        !procurement_data?.product_master_id ||
+        procurement_data?.product_master_id === "undefined"
+      ) {
         return reject({
           statusCode: 420,
           message: "Product master id must not be empty!",
@@ -279,6 +285,7 @@ export const GetAll = ({
   supplier_master_id,
   purchase_payment_id,
   species_master_id,
+  order_id, // ✅ Added: Was missing but referenced below
   start,
   length,
   search,
@@ -385,6 +392,9 @@ export const GetAll = ({
             {
               model: models.ProductCategoryMaster,
               attributes: ["id", "product_category", "species_master_id"],
+              ...(Object.keys(productCategoryWhere).length > 0 && {
+                where: productCategoryWhere,
+              }), // ✅ Only add where if filter exists
               required: false,
               include: [
                 {
@@ -540,7 +550,7 @@ export const GetPaymentItems = ({
       }
 
       if (search) {
-        where[Op.or] = [
+        paymentWhere[Op.or] = [
           sequelize.where(
             sequelize.cast(sequelize.col("pl.procurement_lot"), "varchar"),
             {
@@ -603,7 +613,7 @@ export const GetPaymentItems = ({
         ],
         where: {
           is_active: true,
-          supplier_master_id,
+          ...(supplier_master_id && { supplier_master_id }), // ✅ Only add if defined
         },
         offset: start,
         limit: length,
