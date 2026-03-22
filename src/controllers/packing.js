@@ -11,10 +11,15 @@ export const Insert = async (profile_id, packing_data) => {
         });
       }
 
-      if (!packing_data?.peeled_dispatch_id) {
+      // ✅ For unprocessed products (dispatch → packing), dispatch_id is used
+      // For processed products (peeling → packing), peeled_dispatch_id is used
+      const hasDispatchSource =
+        packing_data?.peeled_dispatch_id || packing_data?.dispatch_id;
+      if (!hasDispatchSource) {
         return reject({
           statusCode: 420,
-          message: "Dispatched product data must not be empty!",
+          message:
+            "Either peeled_dispatch_id (processed) or dispatch_id (unprocessed) must be provided!",
         });
       }
 
@@ -27,6 +32,18 @@ export const Insert = async (profile_id, packing_data) => {
         });
         if (pd && pd.order_id) {
           packing_data.order_id = pd.order_id;
+        }
+      }
+
+      // ✅ NEW: Copy order_id from dispatch for unprocessed products
+      if (!packing_data.order_id && packing_data.dispatch_id) {
+        const dispatch = await models.Dispatches.findOne({
+          attributes: ["order_id"],
+          where: { id: packing_data.dispatch_id, is_active: true },
+          raw: true,
+        });
+        if (dispatch && dispatch.order_id) {
+          packing_data.order_id = dispatch.order_id;
         }
       }
 

@@ -32,6 +32,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
       });
 
+      // ✅ NEW: Associate with Dispatches for unprocessed products (Dispatch → Packing)
+      Packing.belongsTo(models.Dispatches, {
+        as: "dispatch",
+        foreignKey: "dispatch_id",
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      });
+
       Packing.belongsTo(models.UnitMaster, {
         foreignKey: "unit_master_id",
         onUpdate: "CASCADE",
@@ -76,6 +84,14 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      },
+      peeled_dispatch_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // Nullable for unprocessed products
+      },
+      dispatch_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // For unprocessed products (Dispatch → Packing directly)
       },
       order_id: {
         type: DataTypes.UUID,
@@ -140,6 +156,19 @@ module.exports = (sequelize, DataTypes) => {
           data.order_id = pd.order_id;
         }
       }
+
+      // ✅ NEW: Set order_id from dispatch for unprocessed products
+      if (!data.order_id && data.dispatch_id) {
+        const dispatch = await Packing.sequelize.models.Dispatches.findOne({
+          attributes: ["order_id"],
+          where: { id: data.dispatch_id, is_active: true },
+          raw: true,
+        });
+        if (dispatch && dispatch.order_id) {
+          data.order_id = dispatch.order_id;
+        }
+      }
+
       data.created_by = options.profile_id;
     } catch (err) {
       console.log("Error while appending a packing data", err?.message || err);
