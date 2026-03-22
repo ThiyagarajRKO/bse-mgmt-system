@@ -2765,6 +2765,8 @@
           // which is what produced the “[object HTMLSpanElement]” symptom.
           let balance_dispatched_quantity = 0;
           let existingPeelingProducts = null;
+          // Track if current order contains only unprocessed products (skip peeling/QA)
+          let isUnprocessedProductsOnly = false;
 
         toastr.options = {
           closeButton: false,
@@ -2938,6 +2940,27 @@
           $(`.vl-top:not(".vl-top-1")`).remove();
 
           is_updated_data = false;
+        }
+
+        // Check if all products in dispatch are unprocessed and update menu visibility
+        function updateMenuVisibilityForProductType() {
+          if (isUnprocessedProductsOnly) {
+            // Hide peeling and QA menus for unprocessed products
+            $(".peelingMenu").hide();
+            $(".qaMenu").hide();
+
+            // Disable peeling and QA containers from being accessible
+            $(".peelingContainer").addClass("d-none");
+            $(".qaContainer").addClass("d-none");
+
+            // Add visual indicator for unprocessed workflow
+            console.log('Unprocessed products detected - Peeling and QA steps skipped');
+            toastr.info('Unprocessed products detected. Skipping Peeling and QA steps.');
+          } else {
+            // Show all menus for processed products
+            $(".peelingMenu").show();
+            $(".qaMenu").show();
+          }
         }
 
         function openSlidePanel(
@@ -3196,6 +3219,9 @@
           // loadPercentages();
           loadDropdowns();
           loadDispatchTableData();
+
+          // Reset menu visibility when switching menus - will be updated based on product data
+          updateMenuVisibilityForProductType();
         });
 
         $(document).on(
@@ -3404,6 +3430,20 @@
 
                 json.iTotalRecords = count;
                 json.iTotalDisplayRecords = count;
+
+                // Check if all products are unprocessed
+                // If all items have procurement_product_type === 'UNPROCESSED', skip peeling/QA
+                if (data && data.length > 0) {
+                  const allUnprocessed = data.every(item =>
+                    item?.pp?.procurement_product_type === 'UNPROCESSED'
+                  );
+                  isUnprocessedProductsOnly = allUnprocessed;
+                  updateMenuVisibilityForProductType();
+
+                  if (allUnprocessed) {
+                    console.log('All products in this lot are UNPROCESSED - Workflow: Dispatch → Packing');
+                  }
+                }
 
                 // Return the data to be displayed in the DataTable
                 return data;
@@ -4100,6 +4140,14 @@
         });
 
         $(".peelingMenu").click(async function () {
+          // Skip peeling for unprocessed products
+          if (isUnprocessedProductsOnly) {
+            toastr.warning('Cannot access Peeling step - Order contains only UNPROCESSED products. Proceed directly to Packing.');
+            // Auto-navigate to packing instead
+            $(".packingMenu").click();
+            return;
+          }
+
           $(".menu-container").addClass("d-none");
 
           $(".peelingContainer").removeClass("d-none");
@@ -6379,6 +6427,14 @@
 
         // QA Menu Handler
         $(".qaMenu").click(async function () {
+          // Skip QA for unprocessed products
+          if (isUnprocessedProductsOnly) {
+            toastr.warning('Cannot access QA step - Order contains only UNPROCESSED products. Proceed directly to Packing.');
+            // Auto-navigate to packing instead
+            $(".packingMenu").click();
+            return;
+          }
+
           $(".menu-container").addClass("d-none");
           $(".qaContainer").removeClass("d-none");
           $(".qaContainer").addClass("d-block");
@@ -7260,29 +7316,26 @@
                   quantity: (item?.peeled_dispatch_quantity || 0) - (item?.packed_quantity || 0),
                   text: item?.pp?.ProductMaster?.product_name + "-" + ((item?.peeled_dispatch_quantity || 0) - (item?.packed_quantity || 0)),
                   qa_status: "PASS",
+                  source: "peeled_dispatch"
                 });
               });
 
               console.log("📦 Mapped packing product names:", packingProductNamesArray);
 
               if (packingProductNamesArray.length === 0) {
-                console.warn("⚠️ No peeled dispatches available for this lot");
-                toastr["info"]("No peeled dispatches available for this lot");
-                $("#packingProductNames").select2({
-                  placeholder: "No products available",
-                  allowClear: true,
-                  data: [],
-                  disabled: true,
-                });
-              } else {
-                console.log("✅ Initializing packingProductNames select2 with", packingProductNamesArray.length, "products");
-                $("#packingProductNames").select2({
-                  placeholder: "Choose a product",
-                  allowClear: true,
-                  data: packingProductNamesArray,
-                  disabled: false,
-                });
+                console.warn("⚠️ No peeled dispatches available - checking for unprocessed dispatches");
+                // If no peeled dispatches, try loading unprocessed (raw) dispatches
+                loadUnprocessedDispatchesForPacking(packing_lot_no);
+                return;
               }
+
+              console.log("✅ Initializing packingProductNames select2 with", packingProductNamesArray.length, "products");
+              $("#packingProductNames").select2({
+                placeholder: "Choose a product",
+                allowClear: true,
+                data: packingProductNamesArray,
+                disabled: false,
+              });
 
               if (view_packing_product_id) {
                 console.log("🎯 Setting view packing product ID:", view_packing_product_id);
@@ -7310,6 +7363,98 @@
               } else {
                 toastr["error"](jqXhr["responseJSON"]["message"] || "Failed to load products");
               }
+            },
+          });
+        }
+
+        // Load unprocessed (raw) dispatches for packing when peeled dispatches are not available
+        function loadUnprocessedDispatchesForPacking(packing_lot_no) {
+          console.log("🔄 Trying to load unprocessed dispatches for packing - lot:", packing_lot_no);
+
+          $.ajax({
+            url: `/api/dispatch/names?procurement_lot_id=${packing_lot_no}`,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            processData: false,
+            success: (data) => {
+              console.log("✅ Dispatch products API response:", data);
+              packingProductNamesArray = [];
+
+              // Check if all dispatches are unprocessed
+              const hasUnprocessed = data?.data?.some(item =>
+                item?.pp?.procurement_product_type === 'UNPROCESSED'
+              );
+
+              if (!hasUnprocessed) {
+                console.warn("⚠️ No unprocessed dispatches available for this lot");
+                toastr["info"]("No products available for packing in this lot");
+                $("#packingProductNames").select2({
+                  placeholder: "No products available",
+                  allowClear: true,
+                  data: [],
+                  disabled: true,
+                });
+                return;
+              }
+
+              data?.data?.forEach((item) => {
+                // Only include unprocessed products
+                if (item?.pp?.procurement_product_type === 'UNPROCESSED') {
+                  packingProductNamesArray.push({
+                    id: item.id,
+                    product_master_id: item?.pp?.ProductMaster?.id,
+                    quantity: (item?.dispatch_quantity || 0) - (item?.packed_quantity || 0),
+                    text: item?.pp?.ProductMaster?.product_name + "-" + ((item?.dispatch_quantity || 0) - (item?.packed_quantity || 0)),
+                    qa_status: "PASS",
+                    source: "dispatch",  // Mark as raw dispatch, not peeled
+                    dispatch_id: item.id,
+                    procurement_product_id: item?.procurement_product_id
+                  });
+                }
+              });
+
+              console.log("📦 Mapped unprocessed dispatch products for packing:", packingProductNamesArray);
+
+              if (packingProductNamesArray.length === 0) {
+                console.warn("⚠️ No unprocessed products available for packing");
+                toastr["info"]("No unprocessed products available for packing in this lot");
+                $("#packingProductNames").select2({
+                  placeholder: "No products available",
+                  allowClear: true,
+                  data: [],
+                  disabled: true,
+                });
+              } else {
+                console.log("✅ Initializing packingProductNames select2 with", packingProductNamesArray.length, "unprocessed products");
+                toastr.info('Unprocessed products detected - Skipping QA. Proceeding directly to Packing');
+                $("#packingProductNames").select2({
+                  placeholder: "Choose a product",
+                  allowClear: true,
+                  data: packingProductNamesArray,
+                  disabled: false,
+                });
+
+                // Auto-select the first product if only one exists
+                if (packingProductNamesArray.length === 1) {
+                  const firstProduct = packingProductNamesArray[0];
+                  console.log("🎯 Auto-selecting first unprocessed product:", firstProduct);
+                  $("#packingProductNames")
+                    .val(firstProduct.id)
+                    .trigger("change");
+                }
+              }
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+              console.error("❌ Error loading unprocessed dispatch products:", jqXhr);
+              toastr["error"](jqXhr["responseJSON"]?.message || "Failed to load unprocessed products");
+              $("#packingProductNames").select2({
+                placeholder: "Error loading products",
+                allowClear: true,
+                data: [],
+                disabled: true,
+              });
             },
           });
         }
@@ -7659,10 +7804,13 @@
             return;
           }
 
+          // Detect if this is an unprocessed product (from dispatch) or processed (from peeled_dispatch)
+          const selectedProduct = $("#packingProductNames").select2("data")[0];
+          const isUnprocessedSource = selectedProduct?.source === 'dispatch';
+
           let url = "/api/packing";
           let method = "POST"
           let input_params = {
-            peeled_dispatch_id: $("#packingProductNames").val(),
             packing_quantity: $("#packing_quantity").val(),
             unit_master_id: $("#packingDistributionLocation").val(),
             packaging_master_id: $("#packingPackage").val(),
@@ -7670,8 +7818,18 @@
             packing_notes: $("#packing_notes").val(),
           };
 
+          // Add the appropriate dispatch ID based on product source
+          if (isUnprocessedSource) {
+            // For unprocessed products from dispatch table
+            input_params.dispatch_id = $("#packingProductNames").val();
+            console.log("✅ Packing UNPROCESSED product - using dispatch_id:", input_params.dispatch_id);
+          } else {
+            // For processed products from peeled_dispatch table
+            input_params.peeled_dispatch_id = $("#packingProductNames").val();
+            console.log("✅ Packing PEELED product - using peeled_dispatch_id:", input_params.peeled_dispatch_id);
+          }
+
           if (packing_id && packing_id != "null") {
-            //if (peeled_product_id && peeled_product_id != "null") {
             url = "/api/packing";
             method = "PUT"
 
