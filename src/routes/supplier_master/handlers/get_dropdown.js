@@ -10,11 +10,7 @@ import { Op } from "sequelize";
 export const GetDropdown = async (params, session, fastify) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const {
-        search = "",
-        start = 0,
-        length = 5000,
-      } = params;
+      const { search = "", start = 0, length = 5000 } = params;
 
       // Build the where clause for SupplierMaster
       let where = {
@@ -24,7 +20,7 @@ export const GetDropdown = async (params, session, fastify) => {
       if (search) {
         where[Op.or] = [
           { supplier_name: { [Op.iLike]: `%${search}%` } },
-          { supplier_code: { [Op.iLike]: `%${search}%` } }
+          { supplier_code: { [Op.iLike]: `%${search}%` } },
         ];
       }
 

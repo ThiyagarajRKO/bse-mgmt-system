@@ -2,14 +2,20 @@
 <!-- Placed after Packing tab in Production workflow -->
 
 <style>
-  /* PostPackQA Panel Styling - matches other slide-in panels */
+  /* ===== PostPackQA Panel Styling ===== */
+  #postpackqaSlideInPanel {
+    font-size: 14px !important;
+  }
+
   #postpackqaSlideInPanel .form-control,
   #postpackqaSlideInPanel select,
   #postpackqaSlideInPanel textarea {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    border-color: #627293 !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(98, 114, 147, 0.6) !important;
     color: #f7f9fc !important;
     font-size: 14px !important;
+    border-radius: 4px;
+    transition: all 0.3s ease;
   }
 
   #postpackqaSlideInPanel .form-control::placeholder {
@@ -17,11 +23,12 @@
   }
 
   #postpackqaSlideInPanel .form-control:focus,
-  #postpackqaSlideInPanel select:focus {
-    background-color: rgba(255, 255, 255, 0.12) !important;
+  #postpackqaSlideInPanel select:focus,
+  #postpackqaSlideInPanel textarea:focus {
+    background-color: rgba(98, 114, 147, 0.1) !important;
     color: #f7f9fc !important;
-    border-color: #627293 !important;
-    box-shadow: none !important;
+    border-color: #8191b3 !important;
+    box-shadow: 0 0 8px rgba(98, 114, 147, 0.2) !important;
   }
 
   #postpackqaSlideInPanel .form-check-label,
@@ -32,6 +39,220 @@
 
   #postpackqaSlideInPanel .form-group {
     margin-bottom: 1.25rem;
+  }
+
+  /* ===== Section Headers ===== */
+  .postpack-section-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #8191b3;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(98, 114, 147, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .postpack-section-header i {
+    font-size: 14px;
+    color: #ea5455;
+  }
+
+  /* ===== Grid Layouts ===== */
+  .postpack-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .postpack-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  /* ===== Info Boxes ===== */
+  .postpack-info-box {
+    padding: 10px 12px;
+    background-color: rgba(98, 114, 147, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #ea5455;
+    font-size: 13px;
+    color: #e3e3e3;
+  }
+
+  .postpack-info-box .info-label {
+    font-size: 11px;
+    color: #8191b3;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .postpack-info-box .info-value {
+    font-size: 14px;
+    color: #f7f9fc;
+    font-weight: 500;
+  }
+
+  /* ===== Measurement Cards ===== */
+  .postpack-measurement-card {
+    padding: 12px;
+    background-color: rgba(98, 114, 147, 0.08);
+    border: 1px solid rgba(98, 114, 147, 0.3);
+    border-radius: 6px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .postpack-measurement-card:hover {
+    background-color: rgba(98, 114, 147, 0.12);
+    border-color: rgba(98, 114, 147, 0.5);
+  }
+
+  .postpack-measurement-card .card-label {
+    font-size: 12px;
+    color: #8191b3;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .postpack-measurement-card .card-unit {
+    font-size: 11px;
+    color: #627293;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ===== Status Badge ===== */
+  .postpack-status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .postpack-status-badge.pass {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #5dd65d;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+  }
+
+  .postpack-status-badge.fail {
+    background-color: rgba(240, 123, 63, 0.2);
+    color: #ff9966;
+    border: 1px solid rgba(240, 123, 63, 0.3);
+  }
+
+  .postpack-status-badge.hold {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffd93d;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+
+  /* ===== Checklist Items ===== */
+  .postpack-checklist-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 1rem 0;
+  }
+
+  .postpack-checklist-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background-color: rgba(98, 114, 147, 0.08);
+    border-radius: 4px;
+    border-left: 3px solid #627293;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .postpack-checklist-item:hover {
+    background-color: rgba(98, 114, 147, 0.12);
+    border-left-color: #ea5455;
+  }
+
+  .postpack-checklist-item input[type="checkbox"] {
+    margin-right: 12px;
+    cursor: pointer;
+    accent-color: #ea5455;
+  }
+
+  .postpack-checklist-item label {
+    margin: 0;
+    cursor: pointer;
+    flex: 1;
+    color: #e3e3e3;
+    font-size: 14px;
+  }
+
+  /* ===== Button Group ===== */
+  .postpack-button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(98, 114, 147, 0.3);
+  }
+
+  .postpack-button-group .btn {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  #postpackqaSlideInPanel .btn-danger {
+    background-color: #ea5455 !important;
+    border-color: #ea5455 !important;
+    color: white;
+  }
+
+  #postpackqaSlideInPanel .btn-danger:hover {
+    background-color: #e86a2a !important;
+    border-color: #e86a2a !important;
+  }
+
+  #postpackqaSlideInPanel .btn-danger:focus {
+    background-color: #e86a2a !important;
+    border-color: #e86a2a !important;
+  }
+
+  /* ===== Select2 Override ===== */
+  #postpackqaSlideInPanel .select2-container--default .select2-selection--single {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(98, 114, 147, 0.6) !important;
+    border-radius: 4px;
+    height: 38px;
+  }
+
+  #postpackqaSlideInPanel .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #8191b3 !important;
+  }
+
+  #postpackqaSlideInPanel .select2-dropdown {
+    background-color: #2a3f52 !important;
+    border-color: #8191b3 !important;
+  }
+
+  #postpackqaSlideInPanel .select2-results__option {
+    color: #f7f9fc !important;
+  }
+
+  #postpackqaSlideInPanel .select2-results__option--highlighted[aria-selected] {
+    background-color: #ea5455 !important;
   }
 
   .postpack-qa-container {
@@ -58,8 +279,8 @@
   }
 
   .qa-checklist-item.failed {
-    border-left-color: #dc3545;
-    background-color: #fff5f5;
+    border-left-color: #ea5455;
+    background-color: #fff5f0;
   }
 
   .qa-checklist-item.pending {
@@ -93,7 +314,7 @@
   }
 
   .qa-item-status.fail {
-    background-color: #dc3545;
+    background-color: #ea5455;
     color: white;
   }
 
@@ -156,8 +377,8 @@
   }
 
   .compliance-score.low {
-    color: #dc3545;
-    border-color: #dc3545;
+    color: #ea5455;
+    border-color: #ea5455;
   }
 
   .batch-info-section {
@@ -358,12 +579,12 @@
 
   .qa-sub-tab-btn:hover {
     color: #333;
-    border-bottom-color: #dc3545;
+    border-bottom-color: #ea5455;
   }
 
   .qa-sub-tab-btn.active {
-    color: #dc3545;
-    border-bottom-color: #dc3545;
+    color: #ea5455;
+    border-bottom-color: #ea5455;
   }
 
   .qa-sub-tab-content {
@@ -376,439 +597,247 @@
 </style>
 
 <div id="postPackQAContainer" style="display: none">
-  <!-- Batch Information Section - Auto-populated fields -->
-  <div class="row mt-0">
-    <div class="col-md-6">
-      <div class="form-group mt-4">
-        <label class="fw-bold">Order No.</label>
-        <select
-          class="form-control input-dropdown w-100"
-          id="orderNo"
-          onchange="window.onOrderNoChange()"
-        >
-          <option value="">-- Select Order --</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="form-group mt-4">
-        <label class="fw-bold">Lot No.</label>
-        <select
-          class="form-control input-dropdown w-100"
-          id="lotNo"
-          onchange="window.onLotNoChange()"
-        >
-          <option value="">-- Select Lot --</option>
-        </select>
-      </div>
-    </div>
+  <!-- ===== BATCH INFORMATION SECTION ===== -->
+  <div class="postpack-section-header">
+    <i class="fas fa-box"></i> Batch Information
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="form-group mt-4">
-        <label class="fw-bold">Product Name</label>
-        <select class="form-control input-dropdown w-100" id="productName">
-          <option value="">-- Select Product --</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- Compliance Score -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div id="complianceScore" class="compliance-score high">
-        <span id="compliancePercentage">0%</span>
-        <div
-          style="
-            font-size: 12px;
-            font-family: &quot;Lato-Regular&quot;, sans-serif;
-            margin-top: 5px;
-            color: #666;
-          "
-        >
-          Compliance
-        </div>
-      </div>
-    </div>
-    <div class="col-md-9">
-      <div
-        id="complianceSummary"
-        style="
-          padding: 10px;
-          font-size: 13px;
-          font-family: &quot;Lato-Regular&quot;, sans-serif;
-        "
+  <div class="postpack-grid-2">
+    <div class="form-group mb-0">
+      <label class="fw-bold">Order No.</label>
+      <select
+        class="form-control input-dropdown w-100"
+        id="orderNo"
+        onchange="window.onOrderNoChange()"
       >
-        <div>
-          <strong>Checks Passed:</strong>
-          <span id="checksPassedCount">0</span> of
-          <span id="checksTotalCount">0</span>
+        <option value="">-- Select Order --</option>
+      </select>
+    </div>
+    <div class="form-group mb-0">
+      <label class="fw-bold">Lot No.</label>
+      <select
+        class="form-control input-dropdown w-100"
+        id="lotNo"
+        onchange="window.onLotNoChange()"
+      >
+        <option value="">-- Select Lot --</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group mt-3 mb-0">
+    <label class="fw-bold">Product Name</label>
+    <select class="form-control input-dropdown w-100" id="productName">
+      <option value="">-- Select Product --</option>
+    </select>
+  </div>
+
+  <!-- ===== COMPLIANCE SUMMARY ===== -->
+  <div style="margin-top: 1.5rem; padding: 12px; background-color: rgba(98, 114, 147, 0.1); border-radius: 6px; border-left: 3px solid #ea5455;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 12px; color: #8191b3; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">
+          Compliance Status
         </div>
-        <div>
-          <strong>Status:</strong> <span id="complianceStatus">Pending</span>
+        <div style="font-size: 18px; font-weight: 700; color: #5dd65d;">
+          <span id="compliancePercentage">0%</span>
         </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 13px; color: #e3e3e3; margin-bottom: 4px;">
+          <strong><span id="checksPassedCount">0</span>/<span id="checksTotalCount">0</span></strong> checks passed
+        </div>
+        <span id="complianceBadge" class="postpack-status-badge hold">Pending</span>
       </div>
     </div>
   </div>
 
-  <!-- Sub-Tabs Navigation -->
-  <div class="qa-sub-tabs">
-    <button class="qa-sub-tab-btn active" data-tab="verification">
-      <i class="fas fa-check-square"></i> Verification
-    </button>
-    <button class="qa-sub-tab-btn" data-tab="checklist">
-      <i class="fas fa-list-check"></i> Checklist
-    </button>
+  <!-- ===== MEASUREMENTS SECTION ===== -->
+  <div class="postpack-section-header" style="margin-top: 1.5rem;">
+    <i class="fas fa-ruler-combined"></i> Measurements & Specs
   </div>
 
-  <!-- Verification Tab -->
-  <div id="verification" class="qa-sub-tab-content active">
-    <!-- QA Measurements -->
-    <h6 class="mt-2 mb-2"><i class="fas fa-ruler"></i> Measurements</h6>
-    <div class="qa-measurements">
-      <div class="measurement-card">
-        <div class="measurement-label">Net Weight (Avg)</div>
-        <input
-          type="number"
-          step="0.01"
-          placeholder="kg"
-          class="form-control form-control-sm mt-2"
-          id="netWeightAvg"
-        />
-        <div class="measurement-unit">kg (±2% tolerance)</div>
-      </div>
-      <div class="measurement-card">
-        <div class="measurement-label">Glazing %</div>
-        <input
-          type="number"
-          step="0.1"
-          placeholder="%"
-          class="form-control form-control-sm mt-2"
-          id="glazingPct"
-        />
-        <div class="measurement-unit">5-10% (Dom), 5-8% (Exp)</div>
-      </div>
-      <div class="measurement-card">
-        <div class="measurement-label">Core Temp</div>
-        <input
-          type="number"
-          step="0.1"
-          placeholder="°C"
-          class="form-control form-control-sm mt-2"
-          id="temperatureCore"
-        />
-        <div class="measurement-unit">≤ -18°C</div>
-      </div>
-      <div class="measurement-card">
-        <div class="measurement-label">Carton Wt</div>
-        <input
-          type="number"
-          step="0.01"
-          placeholder="kg"
-          class="form-control form-control-sm mt-2"
-          id="cartonWeightActual"
-        />
-        <div class="measurement-unit">kg</div>
-      </div>
+  <div class="postpack-grid-3">
+    <div class="postpack-measurement-card">
+      <div class="card-label">Net Weight (Avg)</div>
+      <input
+        type="number"
+        step="0.01"
+        placeholder="0.00"
+        class="form-control form-control-sm"
+        id="netWeightAvg"
+        style="margin-top: 8px;"
+      />
+      <div class="card-unit">kg ±2%</div>
+    </div>
+    <div class="postpack-measurement-card">
+      <div class="card-label">Glazing %</div>
+      <input
+        type="number"
+        step="0.1"
+        placeholder="0.0"
+        class="form-control form-control-sm"
+        id="glazingPct"
+        style="margin-top: 8px;"
+      />
+      <div class="card-unit">5-10% Dom / 5-8% Exp</div>
+    </div>
+    <div class="postpack-measurement-card">
+      <div class="card-label">Core Temperature</div>
+      <input
+        type="number"
+        step="0.1"
+        placeholder="-18"
+        class="form-control form-control-sm"
+        id="temperatureCore"
+        style="margin-top: 8px;"
+      />
+      <div class="card-unit">°C ≤ -18°C</div>
     </div>
   </div>
 
-  <!-- Checklist Tab -->
-  <div id="checklist" class="qa-sub-tab-content">
-    <h6 class="mt-2 mb-2"><i class="fas fa-list-check"></i> QA Checklist</h6>
+  <div class="postpack-grid-2">
+    <div class="postpack-measurement-card">
+      <div class="card-label">Carton Weight</div>
+      <input
+        type="number"
+        step="0.01"
+        placeholder="0.00"
+        class="form-control form-control-sm"
+        id="cartonWeightActual"
+        style="margin-top: 8px;"
+      />
+      <div class="card-unit">kg</div>
+    </div>
+    <div class="postpack-measurement-card">
+      <div class="card-label">Inspection Date</div>
+      <input
+        type="date"
+        class="form-control form-control-sm"
+        id="inspectionDate"
+        style="margin-top: 8px;"
+      />
+    </div>
+  </div>
 
-    <!-- Package Integrity Check -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>1. Package Integrity</span>
+  <!-- ===== QA CHECKLIST SECTION ===== -->
+  <div class="postpack-section-header" style="margin-top: 1.5rem;">
+    <i class="fas fa-clipboard-check"></i> Quality Checklist
+  </div>
+
+  <!-- Package Integrity -->
+  <div style="margin-bottom: 1.5rem;">
+    <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+      <i class="fas fa-cube" style="color: #ea5455; font-size: 12px;"></i>
+      Package Integrity
+    </div>
+    <div class="postpack-checklist-wrapper">
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="sealIntegrity" />
+        <label for="sealIntegrity">Seal integrity intact & complete</label>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="sealIntegrity"
-            />
-            Seal complete
-          </label>
-        </div>
-        <div class="col-md-6">
-          <label class="form-check">
-            <input type="checkbox" class="form-check-input" id="vacuumProper" />
-            Proper vacuum
-          </label>
-        </div>
-        <div class="col-md-6">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="trayDamage"
-              onclick="this.checked = !this.checked"
-            />
-            No tray damage
-          </label>
-        </div>
-        <div class="col-md-6">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="cartonCondition"
-            />
-            Good carton
-          </label>
-        </div>
-        <div class="col-md-6">
-          <label class="form-check">
-            <input type="checkbox" class="form-check-input" id="iceBuildup" />
-            Ice buildup acceptable
-          </label>
-        </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="vacuumProper" />
+        <label for="vacuumProper">Proper vacuum seal maintained</label>
+      </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="trayDamage" />
+        <label for="trayDamage">No tray damage</label>
+      </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="cartonCondition" />
+        <label for="cartonCondition">Good carton</label>
+      </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="iceBuildup" />
+        <label for="iceBuildup">Ice buildup acceptable</label>
       </div>
     </div>
+  </div>
 
-    <!-- Label Verification -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>2. Labels</span>
+  <!-- Product Quality -->
+  <div style="margin-bottom: 1.5rem;">
+    <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+      <i class="fas fa-star" style="color: #ea5455; font-size: 12px;"></i>
+      Product Quality
+    </div>
+    <div class="postpack-checklist-wrapper">
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="colorAppearance" />
+        <label for="colorAppearance">Color & appearance meets standards</label>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input type="checkbox" class="form-check-input" id="labelCorrect" />
-            Correct
-          </label>
-        </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="odorFreshness" />
+        <label for="odorFreshness">Odor & freshness acceptable</label>
+      </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="textureConsistency" />
+        <label for="textureConsistency">Texture & consistency uniform</label>
       </div>
     </div>
+  </div>
 
-    <!-- Net Weight Verification -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>3. Net Weight</span>
+  <!-- Labeling & Documentation -->
+  <div style="margin-bottom: 1.5rem;">
+    <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+      <i class="fas fa-tag" style="color: #ea5455; font-size: 12px;"></i>
+      Labeling & Documentation
+    </div>
+    <div class="postpack-checklist-wrapper">
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="labelComplete" />
+        <label for="labelComplete">Labels complete & legible</label>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <label>Sample Size</label>
-          <input
-            type="number"
-            placeholder="Qty"
-            class="form-control form-control-sm"
-            id="sampleSize"
-          />
-        </div>
-        <div class="col-md-6">
-          <label class="form-check mt-4">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="netWeightCompliant"
-            />
-            Compliant
-          </label>
-        </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="expiryDate" />
+        <label for="expiryDate">Expiry date correct & visible</label>
+      </div>
+      <div class="postpack-checklist-item">
+        <input type="checkbox" class="form-check-input" id="lotnumMatch" />
+        <label for="lotnumMatch">Lot number matches documentation</label>
       </div>
     </div>
-
-    <!-- Glazing Verification -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>4. Glazing</span>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="glazingCompliant"
-            />
-            Glazing acceptable
-          </label>
-        </div>
-      </div>
-    </div>
+  </div>
 
     <!-- Product Appearance -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>5. Appearance</span>
+    <div style="margin-bottom: 1.5rem;">
+      <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+        <i class="fas fa-image" style="color: #fd3939; font-size: 12px;"></i>
+        Appearance
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="productAppearance"
-            />
-            Good color, no freezer burn
-          </label>
+      <div class="postpack-checklist-wrapper">
+        <div class="postpack-checklist-item">
+          <input type="checkbox" class="form-check-input" id="productAppearance" />
+          <label for="productAppearance">Good color, no freezer burn</label>
         </div>
       </div>
     </div>
 
     <!-- Foreign Matter Check -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>6. Foreign Matter</span>
+    <div style="margin-bottom: 1.5rem;">
+      <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+        <i class="fas fa-ban" style="color: #fd3939; font-size: 12px;"></i>
+        Foreign Matter
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="foreignMatter"
-              onclick="this.checked = !this.checked"
-            />
-            None found
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Temperature Verification -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>7. Temperature Verification</span>
-      </div>
-      <div class="qa-item-description">
-        Frozen seafood requirement - core temperature ≤ -18°C
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="temperatureCompliant"
-            />
-            Temp ≤ -18°C
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carton Weight Check -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>8. Carton Weight</span>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <label>Expected Wt (kg)</label>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="kg"
-            class="form-control form-control-sm"
-            id="cartonWeightExpected"
-          />
-        </div>
-        <div class="col-md-6">
-          <label class="form-check mt-4">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="cartonWeightCompliant"
-            />
-            Compliant
-          </label>
+      <div class="postpack-checklist-wrapper">
+        <div class="postpack-checklist-item">
+          <input type="checkbox" class="form-check-input" id="foreignMatter" />
+          <label for="foreignMatter">None found</label>
         </div>
       </div>
     </div>
 
     <!-- Traceability Verification -->
-    <div class="qa-checklist-item">
-      <div class="qa-item-title">
-        <span>9. Traceability</span>
+    <div style="margin-bottom: 1.5rem;">
+      <div style="font-size: 13px; font-weight: 600; color: #e3e3e3; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+        <i class="fas fa-barcode" style="color: #fd3939; font-size: 12px;"></i>
+        Traceability
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label class="form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="traceabilityVerified"
-            />
-            Verified
-          </label>
+      <div class="postpack-checklist-wrapper">
+        <div class="postpack-checklist-item">
+          <input type="checkbox" class="form-check-input" id="traceabilityVerified" />
+          <label for="traceabilityVerified">Verified</label>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QA Decision Section -->
-  <h6 class="mt-4 mb-3">
-    <i class="fas fa-gavel"></i> Decision
-    <span
-      class="qa-decision-tooltip-btn"
-      id="decisionTooltipBtn"
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-      title="Select QA Status: PASS (Saleable), HOLD (Blocked), or FAIL (Rework)"
-    >
-      ?
-    </span>
-  </h6>
-
-  <!-- QA Status Buttons -->
-  <div class="qa-button-group mb-3">
-    <button
-      type="button"
-      class="btn btn-sm btn-success"
-      onclick="window.setQAStatus('PASS')"
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-      title="Product passed all QA checks - Mark as SALEABLE"
-    >
-      <i class="fas fa-check-circle"></i> PASS
-    </button>
-    <button
-      type="button"
-      class="btn btn-sm btn-warning"
-      onclick="window.setQAStatus('HOLD')"
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-      title="Product needs review - Mark as BLOCKED pending resolution"
-    >
-      <i class="fas fa-pause-circle"></i> HOLD
-    </button>
-    <button
-      type="button"
-      class="btn btn-sm btn-danger"
-      onclick="window.setQAStatus('FAIL')"
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-      title="Product failed QA checks - Mark for REWORK"
-    >
-      <i class="fas fa-times-circle"></i> FAIL
-    </button>
-  </div>
-
-  <!-- Current Status Display -->
-  <div class="row">
-    <div class="col-md-6">
-      <div style="padding: 8px 0">
-        <small class="text-muted">QA Status:</small>
-        <span id="postPackQAStatus" class="inspection-status-badge pass ms-2"
-          >PENDING</span
-        >
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div style="padding: 8px 0">
-        <small class="text-muted">Inventory:</small>
-        <span
-          id="inventoryStatusBadge"
-          class="inspection-status-badge pass ms-2"
-          >PENDING</span
-        >
       </div>
     </div>
   </div>
@@ -816,36 +845,24 @@
   <!-- Hidden input for QA Status -->
   <input type="hidden" id="qaStatus" value="" />
 
-  <!-- QA Remarks -->
-  <div class="form-group mt-4">
-    <label class="fw-bold">QA Remarks/Notes</label>
-    <textarea
-      class="remarks-box form-control"
-      id="qaRemarks"
-      placeholder="Any issues found, corrective actions, or additional notes..."
-    ></textarea>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="row mt-4 mb-4">
-    <div class="col-md-6">
-      <button
-        type="button"
-        class="btn btn-danger w-100"
-        onclick="submitPostPackQA()"
-      >
-        <i class="fas fa-save"></i> Save
-      </button>
-    </div>
-    <div class="col-md-6">
-      <button
-        type="button"
-        class="btn btn-outline-danger w-100"
-        onclick="cancelPostPackQA()"
-      >
-        <i class="fas fa-times"></i> Cancel
-      </button>
-    </div>
+  <!-- ===== ACTION BUTTONS ===== -->
+  <div class="postpack-button-group" style="margin-bottom: 0;">
+    <button
+      type="button"
+      class="btn btn-danger"
+      onclick="submitPostPackQA()"
+      style="flex: 1;"
+    >
+      <i class="fas fa-save"></i> Save
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      onclick="cancelPostPackQA()"
+      style="flex: 1;"
+    >
+      <i class="fas fa-times"></i> Cancel
+    </button>
   </div>
 </div>
 

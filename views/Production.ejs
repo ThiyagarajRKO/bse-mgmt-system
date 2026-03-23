@@ -786,7 +786,7 @@
               </div>
             </div>
 
-            <div class="col">
+            <div class="col peelingMetric">
               <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
@@ -841,7 +841,7 @@
               </div>
             </div>
 
-            <div class="col">
+            <div class="col qaMetric">
               <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
@@ -896,7 +896,7 @@
               </div>
             </div>
 
-            <div class="col">
+            <div class="col peelingMetric">
               <div class="stepper-menu border rounded">
                 <table>
                   <tbody>
@@ -2944,8 +2944,11 @@
 
         // Check if all products in dispatch are unprocessed and update menu visibility
         function updateMenuVisibilityForProductType() {
+          console.log('[MENU VISIBILITY] isUnprocessedProductsOnly:', isUnprocessedProductsOnly);
+ 
           if (isUnprocessedProductsOnly) {
             // Hide peeling and QA menus for unprocessed products
+            console.log('[MENU VISIBILITY] ✓ Hiding Peeling, QA menus and metrics');
             $(".peelingMenu").hide();
             $(".qaMenu").hide();
 
@@ -2953,13 +2956,29 @@
             $(".peelingContainer").addClass("d-none");
             $(".qaContainer").addClass("d-none");
 
+            // Hide peeling and QA metrics from progress bars and top-tabs
+            $(".peelingMetric").hide();
+            $(".qaMetric").hide();
+            $("#preprocessingCircle").hide();
+            $("#qaCircle").hide();
+            $("#peeledDispatchCircle").hide();
+
             // Add visual indicator for unprocessed workflow
-            console.log('Unprocessed products detected - Peeling and QA steps skipped');
-            toastr.info('Unprocessed products detected. Skipping Peeling and QA steps.');
+            toastr.info('Unprocessed products workflow - Peeling and QA steps skipped');
           } else {
             // Show all menus for processed products
+            console.log('[MENU VISIBILITY] ✗ Showing Peeling, QA menus and metrics (processed products)');
             $(".peelingMenu").show();
             $(".qaMenu").show();
+            $(".peelingContainer").removeClass("d-none");
+            $(".qaContainer").removeClass("d-none");
+
+            // Show peeling and QA metrics
+            $(".peelingMetric").show();
+            $(".qaMetric").show();
+            $("#preprocessingCircle").show();
+            $("#qaCircle").show();
+            $("#peeledDispatchCircle").show();
           }
         }
 
@@ -3425,24 +3444,34 @@
               },
               dataSrc: function (json) {
                 // Handle both array and object responses
-                const data = Array.isArray(json.data) ? json.data : (json.data?.rows || []);
-                const count = Array.isArray(json.data) ? json.data.length : (json.data?.count || 0);
+                // Dispatch API returns { count, rows } at top level
+                const data = Array.isArray(json.data) ? json.data : (json.data?.rows || json.rows || []);
+                const count = Array.isArray(json.data) ? json.data.length : (json.data?.count || json.count || 0);
 
                 json.iTotalRecords = count;
                 json.iTotalDisplayRecords = count;
 
+                console.log('[DEBUG] Dispatch dataSrc - data length:', data.length, 'data:', data);
+
                 // Check if all products are unprocessed
                 // If all items have procurement_product_type === 'UNPROCESSED', skip peeling/QA
                 if (data && data.length > 0) {
-                  const allUnprocessed = data.every(item =>
-                    item?.pp?.procurement_product_type === 'UNPROCESSED'
-                  );
+                  const allUnprocessed = data.every(item => {
+                    const type = item?.pp?.procurement_product_type;
+                    console.log('[DEBUG] Item:', item?.id, 'pp:', item?.pp?.id, 'type:', type);
+                    return type === 'UNPROCESSED';
+                  });
+                  console.log('[DEBUG] allUnprocessed:', allUnprocessed);
                   isUnprocessedProductsOnly = allUnprocessed;
                   updateMenuVisibilityForProductType();
 
                   if (allUnprocessed) {
-                    console.log('All products in this lot are UNPROCESSED - Workflow: Dispatch → Packing');
+                    console.log('✓ All products in this lot are UNPROCESSED - Workflow: Dispatch → Packing');
+                  } else {
+                    console.log('✗ Mixed or processed products detected - Standard workflow with Peeling/QA');
                   }
+                } else {
+                  console.log('[DEBUG] No dispatch data found');
                 }
 
                 // Return the data to be displayed in the DataTable
@@ -4095,6 +4124,35 @@
               loadPercentages();
 
               loadDispatchTableData();
+
+              // Auto-open the Dispatch menu/view so user sees the newly created dispatch immediately
+              try {
+                const lot_id = $("#lotNumbers").val(); // Get the lot ID from the selected lot
+                console.log('[AUTO-LOAD] Dispatch created. Lot ID:', lot_id);
+                
+                if (lot_id) {
+                  // Set the lot info in the modal
+                  $("#view_lot_no").attr("procurement_lot_id", lot_id);
+                  
+                  // Trigger dispatch menu click
+                  $(".dispatchMenu").click();
+                  
+                  // After a brief delay, load the dispatch products for this lot
+                  setTimeout(() => {
+                    try {
+                      console.log('[AUTO-LOAD] Loading dispatch products for lot:', lot_id);
+                      loadDispatchProductTableData(lot_id);
+                    } catch (e) {
+                      console.log('[AUTO-LOAD] Failed to load dispatch products:', e);
+                    }
+                  }, 300);
+                } else {
+                  console.log('[AUTO-LOAD] No lot ID found, just opening dispatch menu');
+                  $(".dispatchMenu").click();
+                }
+              } catch (e) {
+                console.log('[AUTO-LOAD] failed to trigger dispatch menu click', e);
+              }
 
               resetAllInputs();
             },

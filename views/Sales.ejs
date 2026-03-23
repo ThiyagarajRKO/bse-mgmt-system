@@ -2357,55 +2357,85 @@
       });
 
       // Function to handle raw material card selection
-      function selectRawMaterial(cardElement) {
-        // Find the radio button inside this card and select it
-        const radioButton = cardElement.querySelector(
-          'input[type="radio"][name="rawMaterial"]',
-        );
-        if (radioButton) {
-          radioButton.checked = true;
-
-          // Get the recommended quantity from the data attribute
-          const recommendedQuantity = cardElement.getAttribute(
-            "data-recommended-quantity",
+      // Supports two calling patterns:
+      // 1. selectRawMaterial(cardElement) - when card element is clicked
+      // 2. selectRawMaterial(materialId, materialName, netInventory) - when button is clicked
+      window.selectRawMaterial = function (arg1, materialName, netInventory) {
+        // Check if this is being called with a DOM element (arg1) or string parameters
+        if (arg1 && arg1.nodeType === Node.ELEMENT_NODE) {
+          // Pattern 1: Called with cardElement
+          const cardElement = arg1;
+          const radioButton = cardElement.querySelector(
+            'input[type="radio"][name="rawMaterial"]',
           );
+          if (radioButton) {
+            radioButton.checked = true;
 
-          // Auto-populate the quantity input field with the recommended quantity
-          if (recommendedQuantity && recommendedQuantity > 0) {
-            $("#purchaseRequestQuantity").val(recommendedQuantity);
-            // Update the hint text
+            // Get the recommended quantity from the data attribute
+            const recommendedQuantity = cardElement.getAttribute(
+              "data-recommended-quantity",
+            );
+
+            // Auto-populate the quantity input field with the recommended quantity
+            if (recommendedQuantity && recommendedQuantity > 0) {
+              $("#purchaseRequestQuantity").val(recommendedQuantity);
+              // Update the hint text
+              $("#purchaseRequestQuantityHint").html(
+                `<small class="text-success">Auto-filled with recommended quantity: ${recommendedQuantity} kg</small>`,
+              );
+            }
+
+            // Remove selection styling from all cards
+            document.querySelectorAll(".raw-material-card").forEach((card) => {
+              card.style.borderLeftColor = "#627293";
+              card.style.background =
+                "linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%)";
+            });
+
+            // Add selection styling to clicked card
+            cardElement.style.borderLeftColor = "#28a745";
+            cardElement.style.background =
+              "linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.08) 100%)";
+
+            // Update quantity field with recommended value and show tooltip
+            if (recommendedQuantity && recommendedQuantity > 0) {
+              $("#purchaseRequestQuantity").val(recommendedQuantity);
+              $("#purchaseRequestQuantityHint").html(
+                `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQuantity} kg</small>`,
+              );
+
+              // Show tooltip briefly to highlight the recommendation
+              setTimeout(() => {
+                showQuantityTooltip($("#purchaseRequestQuantity")[0]);
+                setTimeout(() => hideQuantityTooltip(), 3000); // Hide after 3 seconds
+              }, 500);
+            }
+          }
+        } else {
+          // Pattern 2: Called with (materialId, materialName, netInventory) from button onclick
+          const materialId = arg1; // procurement_product_id
+
+          // Store the selected material info in hidden inputs for later use
+          $("#selectedMaterialId").val(materialId);
+          $("#selectedMaterialName").text(materialName);
+
+          // Set quantity to available inventory
+          if (netInventory !== undefined && netInventory > 0) {
+            $("#purchaseRequestQuantity").val(netInventory);
             $("#purchaseRequestQuantityHint").html(
-              `<small class="text-success">Auto-filled with recommended quantity: ${recommendedQuantity} kg</small>`,
+              `<small class="text-success">Available inventory: ${netInventory} units</small>`,
+            );
+          } else {
+            $("#purchaseRequestQuantityHint").html(
+              `<small class="text-warning">No inventory available</small>`,
             );
           }
 
-          // Remove selection styling from all cards
-          document.querySelectorAll(".raw-material-card").forEach((card) => {
-            card.style.borderLeftColor = "#627293";
-            card.style.background =
-              "linear-gradient(135deg, rgba(98, 114, 147, 0.15) 0%, rgba(98, 114, 147, 0.08) 100%)";
-          });
-
-          // Add selection styling to clicked card
-          cardElement.style.borderLeftColor = "#28a745";
-          cardElement.style.background =
-            "linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(40, 167, 69, 0.08) 100%)";
-
-          // Update quantity field with recommended value and show tooltip
-          if (recommendedQuantity && recommendedQuantity > 0) {
-            $("#purchaseRequestQuantity").val(recommendedQuantity);
-            $("#purchaseRequestQuantityHint").html(
-              `<small class="text-success">Auto-filled with BOM recommended quantity: ${recommendedQuantity} kg</small>`,
-            );
-
-            // Show tooltip briefly to highlight the recommendation
-            setTimeout(() => {
-              showQuantityTooltip($("#purchaseRequestQuantity")[0]);
-              setTimeout(() => hideQuantityTooltip(), 3000); // Hide after 3 seconds
-            }, 500);
-          }
+          console.log(
+            `[selectRawMaterial] Selected material: ${materialName} (ID: ${materialId}), Available: ${netInventory}`,
+          );
         }
-      }
+      };
 
       // Clear quantity hint when user manually changes the quantity
       $("#purchaseRequestQuantity").on("input", function () {
