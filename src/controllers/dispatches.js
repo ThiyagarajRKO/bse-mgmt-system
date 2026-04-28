@@ -4,6 +4,11 @@ import models, { sequelize } from "../../models";
 export const Insert = async (profile_id, dispatch_data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log(
+        "🚀 INSERT DISPATCH - Starting with data:",
+        JSON.stringify(dispatch_data, null, 2),
+      );
+
       if (!profile_id) {
         return reject({
           statusCode: 420,
@@ -12,6 +17,7 @@ export const Insert = async (profile_id, dispatch_data) => {
       }
 
       if (!dispatch_data?.procurement_product_id) {
+        console.error("❌ INSERT DISPATCH - Missing procurement_product_id");
         return reject({
           statusCode: 420,
           message: "Procurement data must not be empty!",
@@ -19,6 +25,7 @@ export const Insert = async (profile_id, dispatch_data) => {
       }
 
       if (!dispatch_data?.unit_master_id) {
+        console.error("❌ INSERT DISPATCH - Missing unit_master_id");
         return reject({
           statusCode: 420,
           message: "Unit data must not be empty!",
@@ -26,6 +33,7 @@ export const Insert = async (profile_id, dispatch_data) => {
       }
 
       if (!dispatch_data?.vehicle_master_id) {
+        console.error("❌ INSERT DISPATCH - Missing vehicle_master_id");
         return reject({
           statusCode: 420,
           message: "Vehicle details must not be empty!",
@@ -33,6 +41,7 @@ export const Insert = async (profile_id, dispatch_data) => {
       }
 
       if (!dispatch_data?.driver_master_id) {
+        console.error("❌ INSERT DISPATCH - Missing driver_master_id");
         return reject({
           statusCode: 420,
           message: "Driver details must not be empty!",
@@ -48,14 +57,27 @@ export const Insert = async (profile_id, dispatch_data) => {
         });
         if (pp && pp.order_id) {
           dispatch_data.order_id = pp.order_id;
+          console.log(
+            "✅ INSERT DISPATCH - Set order_id from procurement product:",
+            pp.order_id,
+          );
         }
       }
 
+      console.log(
+        "🔄 INSERT DISPATCH - Creating with final data:",
+        JSON.stringify(dispatch_data, null, 2),
+      );
       const result = await models.Dispatches.create(dispatch_data, {
         profile_id,
       });
+      console.log(
+        "✅ INSERT DISPATCH - Successfully created dispatch ID:",
+        result.id,
+      );
       resolve(result);
     } catch (err) {
+      console.error("❌ INSERT DISPATCH - Error:", err.message || err);
       if (err?.name == "SequelizeUniqueConstraintError") {
         return reject({ statusCode: 420, message: "Dispatch already exists!" });
       }
@@ -529,6 +551,7 @@ export const GetProductNames = ({
         subQuery: false,
         attributes: [
           "id",
+          "order_id",
           "dispatch_quantity",
           [
             sequelize.literal(
@@ -540,6 +563,7 @@ export const GetProductNames = ({
             ),
             "peeling_quantity",
           ],
+          [sequelize.literal(`0`), "packed_quantity"],
         ],
         include: [
           {
@@ -557,7 +581,12 @@ export const GetProductNames = ({
               },
               {
                 required: true,
-                attributes: ["id", "product_name"],
+                attributes: [
+                  "id",
+                  "product_name",
+                  "grade_master_id",
+                  "size_master_id",
+                ],
                 as: "ProductMaster",
                 model: models.ProductMaster,
                 where: {

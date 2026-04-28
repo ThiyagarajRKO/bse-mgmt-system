@@ -136,11 +136,10 @@ export const getProductNamesQuery = async (models, modelType, options = {}) => {
     },
     dispatches: {
       model: models.Dispatches,
-      attributes: ["id", "created_at", "dispatch_quantity"],
+      attributes: ["id", "created_at", "dispatch_quantity", "order_id"],
       quantityField: "dispatch_quantity",
       packingQuantitySQL: `
-        (SELECT CASE WHEN SUM(peeling_quantity) IS NULL THEN 0 ELSE SUM(peeling_quantity) END
-         FROM peeling WHERE dispatch_id = "Dispatches".id AND is_active = true)
+        0
       `,
     },
   };
@@ -209,7 +208,12 @@ export const getProductNamesQuery = async (models, modelType, options = {}) => {
               },
               {
                 model: models.ProductMaster,
-                attributes: ["id", "product_name"],
+                attributes: [
+                  "id",
+                  "product_name",
+                  "grade_master_id",
+                  "size_master_id",
+                ],
                 where: { is_active: true },
               },
             ],
@@ -255,7 +259,12 @@ export const getProductNamesQuery = async (models, modelType, options = {}) => {
           },
           {
             model: models.ProductMaster,
-            attributes: ["id", "product_name"],
+            attributes: [
+              "id",
+              "product_name",
+              "grade_master_id",
+              "size_master_id",
+            ],
             where: { is_active: true },
           },
         ];
@@ -275,7 +284,11 @@ export const getProductNamesQuery = async (models, modelType, options = {}) => {
                 where: procurementLotsWhere,
               },
               {
-                attributes: ["product_name"],
+                attributes: [
+                  "product_name",
+                  "grade_master_id",
+                  "size_master_id",
+                ],
                 model: models.ProductMaster,
                 where: { is_active: true },
               },

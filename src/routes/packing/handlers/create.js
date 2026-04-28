@@ -54,18 +54,24 @@ export const Create = async (
           });
         }
 
+        // ✅ For UNPROCESSED products: Use UNSIZED size automatically
+        // UNSIZED size_master_id: 20db7898-128e-4dbc-8185-5fbe3a49e5a8
+        const UNSIZED_SIZE_ID = "20db7898-128e-4dbc-8185-5fbe3a49e5a8";
+
         // Derive grade and size from product if not provided
         const derivedGradeId =
           grade_master_id || dispatch.pp?.ProductMaster?.grade_master_id;
         const derivedSizeId =
-          size_master_id || dispatch.pp?.ProductMaster?.size_master_id;
+          size_master_id ||
+          dispatch.pp?.ProductMaster?.size_master_id ||
+          UNSIZED_SIZE_ID;
 
-        if (!derivedGradeId || !derivedSizeId) {
-          return reject({
-            statusCode: 400,
-            message: "Could not determine grade and size from product",
-          });
-        }
+        console.log(
+          `📦 [UNPROCESSED] Packing with grade=${derivedGradeId}, size=${derivedSizeId}`,
+        );
+
+        // For unprocessed products, size is always available (UNSIZED as fallback)
+        // Grade is optional
 
         // ✅ Validate dispatch quantity for unprocessed products
         const dispatchQuantity = dispatch.dispatch_quantity || 0;
@@ -181,10 +187,11 @@ export const Create = async (
       const derivedSizeId =
         size_master_id || peeledDispatch.pp?.ProductMaster?.size_master_id;
 
-      if (!derivedGradeId || !derivedSizeId) {
+      // Size is required; grade is optional (can be null for some products)
+      if (!derivedSizeId) {
         return reject({
           statusCode: 400,
-          message: "Could not determine grade and size from product",
+          message: "Could not determine size from product",
         });
       }
 

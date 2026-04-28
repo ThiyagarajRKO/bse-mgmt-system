@@ -39,7 +39,7 @@ export const Update = async (profile_id, id, data) => {
       where: { id, is_active: true },
       individualHooks: true,
       profile_id,
-    }
+    },
   );
 };
 
@@ -150,11 +150,14 @@ export const GetDispatches = async ({
       throw { statusCode: 420, message: "Procurement lot ID required!" };
     }
 
-    // Get all active peeling centers (unit_type = 'Peeling Center')
+    // Get all active dispatch destinations
+    // For processed products: Peeling Center
+    // For unprocessed products: Cold Storage
+    // Include both so dispatch can go to either based on product type
     const result = await UnitMaster.findAndCountAll({
       where: {
         is_active: true,
-        unit_type: "Peeling Center",
+        unit_type: { [Op.in]: ["Peeling Center", "Cold Storage"] },
       },
       attributes: ["id", "unit_name", "unit_code", "unit_type"],
       include: [

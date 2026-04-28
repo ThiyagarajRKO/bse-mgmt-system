@@ -567,13 +567,13 @@ export const GetDispatchStats = ({
           "procurement_lot",
           [
             sequelize.literal(
-              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`,
+              `(SELECT COUNT(dispatches.id) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id AND dispatches.is_active = true AND pp.is_active = true)`,
             ),
             "total_dispatched_count",
           ],
           [
             sequelize.literal(
-              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id)`,
+              `(SELECT SUM(dispatches.dispatch_quantity) FROM dispatches JOIN procurement_products pp ON pp.id = dispatches.procurement_product_id WHERE pp.procurement_lot_id = "ProcurementLots".id AND dispatches.is_active = true AND pp.is_active = true)`,
             ),
             "total_dispatched_quantity",
           ],
@@ -619,7 +619,11 @@ export const GetDispatchStats = ({
       // Filter out rows where there are no dispatches
       const filteredRows = procurementRows.filter((row) => {
         const dispatchCount = row.total_dispatched_count || 0;
-        return parseInt(dispatchCount) > 0;
+        const hasDispatches = parseInt(dispatchCount) > 0;
+        console.log(
+          `📊 GetDispatchStats filtering - Lot: ${row.procurement_lot}, dispatch count: ${dispatchCount}, included: ${hasDispatches}`,
+        );
+        return hasDispatches;
       });
 
       console.log(
@@ -1063,50 +1067,20 @@ export const GetPeeledDispatchStats = ({
 export const GetPackingLots = ({ start = 0, length = 10 }) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // Get lots with their products and dispatches, including product type info
       const procurements = await models.ProcurementLots.findAll({
         subQuery: false,
         attributes: ["id", "procurement_lot"],
         include: [
           {
             required: true,
-            attributes: [],
+            attributes: ["procurement_product_type"],
             model: models.ProcurementProducts,
             include: [
               {
-                required: true,
+                required: false,
                 attributes: [],
                 model: models.Dispatches,
-                include: [
-                  {
-                    required: true,
-                    attributes: [],
-                    model: models.Peeling,
-                    include: [
-                      {
-                        required: true,
-                        attributes: [],
-                        model: models.PeelingProducts,
-                        include: [
-                          {
-                            required: true,
-                            attributes: [],
-                            model: models.PeeledDispatches,
-
-                            where: {
-                              is_active: true,
-                            },
-                          },
-                        ],
-                        where: {
-                          is_active: true,
-                        },
-                      },
-                    ],
-                    where: {
-                      is_active: true,
-                    },
-                  },
-                ],
                 where: {
                   is_active: true,
                 },
@@ -1120,9 +1094,29 @@ export const GetPackingLots = ({ start = 0, length = 10 }) => {
         offset: start,
         limit: length,
         order: [["created_at", "desc"]],
+        raw: true,
       });
 
-      resolve(procurements);
+      // Map results to include procurement_product_type with each lot
+      // Group by lot ID and get the first product type (all should be the same in a lot)
+      const resultMap = new Map();
+      procurements.forEach((row) => {
+        if (!resultMap.has(row.id)) {
+          // The product type comes from ProcurementProduct (singular) association
+          const productType =
+            row["ProcurementProduct.procurement_product_type"];
+
+          resultMap.set(row.id, {
+            id: row.id,
+            procurement_lot: row.procurement_lot,
+            procurement_product_type: productType,
+          });
+        }
+      });
+
+      const filteredProcurements = Array.from(resultMap.values());
+
+      resolve(filteredProcurements);
     } catch (err) {
       reject(err);
     }
@@ -1146,15 +1140,15 @@ export const GetPackingStats = ({
                   COUNT(pk.id) 
                 FROM 
                   packing pk
-                JOIN 
+                LEFT JOIN 
                   peeled_dispatches pd on pk.peeled_dispatch_id = pd.id and pd.is_active = true
-                JOIN
+                LEFT JOIN
                   peeling_products pp ON pp.id = pd.peeled_product_id and pp.is_active = true
-	              JOIN 
+	              LEFT JOIN 
                   peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
+	              LEFT JOIN 
+                  dispatches d on d.id = COALESCE(p.dispatch_id, pk.dispatch_id) and d.is_active = true
+	              LEFT JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
@@ -1227,16 +1221,16 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT
-                  COUNT(pd.id) 
+                  COUNT(pk.id) 
                 FROM
-                  peeled_dispatches pd
-                JOIN
-                  peeling_products pp ON pp.id = pd.peeled_product_id
-	              JOIN 
-                  peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
+                  packing pk
+                LEFT JOIN
+                  peeling_products pp ON pp.id = (SELECT peeled_product_id FROM peeled_dispatches WHERE id = pk.peeled_dispatch_id)
+	              LEFT JOIN 
+                  peeling p on p.id = pp.peeling_id
+	              LEFT JOIN 
+                  dispatches d on d.id = COALESCE(p.dispatch_id, pk.dispatch_id) and d.is_active = true
+	              LEFT JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,
@@ -1246,16 +1240,16 @@ export const GetPackingStats = ({
           [
             sequelize.literal(
               `(SELECT 
-                  sum(pd.peeled_dispatch_quantity) 
+                  sum(COALESCE(pk.packing_quantity, 0))
                 FROM 
-                  peeled_dispatches pd
-                JOIN
-                  peeling_products pp ON pp.id = pd.peeled_product_id
-	              JOIN 
-                  peeling p on p.id = pp.peeling_id and p.is_active = true
-	              JOIN 
-                  dispatches d on d.id = p.dispatch_id and d.is_active = true
-	              JOIN 
+                  packing pk
+                LEFT JOIN
+                  peeling_products pp ON pp.id = (SELECT peeled_product_id FROM peeled_dispatches WHERE id = pk.peeled_dispatch_id)
+	              LEFT JOIN 
+                  peeling p on p.id = pp.peeling_id
+	              LEFT JOIN 
+                  dispatches d on d.id = COALESCE(p.dispatch_id, pk.dispatch_id) and d.is_active = true
+	              LEFT JOIN 
                   procurement_products prp on prp.id = d.procurement_product_id and prp.is_active = true
 	              WHERE 
                   prp.procurement_lot_id = "ProcurementLots".id and prp.is_active = true)`,

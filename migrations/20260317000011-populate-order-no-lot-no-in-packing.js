@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
-      console.log("📝 Populating order_no and lot_no in packing table...");
+      console.log("📝 Populating order_no in packing table...");
 
       // Populate order_no from orders table via order_id
       const updateOrderNo = `
@@ -18,24 +18,10 @@ module.exports = {
       await queryInterface.sequelize.query(updateOrderNo);
       console.log("✅ order_no populated from orders table");
 
-      // Populate lot_no from procurement_lots via procurement_lot_id
-      const updateLotNo = `
-        UPDATE packing p
-        SET lot_no = pl.procurement_lot
-        FROM procurement_lots pl
-        WHERE p.procurement_lot_id = pl.id
-        AND p.lot_no IS NULL
-        AND p.is_active = true;
-      `;
-
-      await queryInterface.sequelize.query(updateLotNo);
-      console.log("✅ lot_no populated from procurement_lots table");
-
       // Verify the data
       const checkData = `
         SELECT COUNT(*) as total, 
-               SUM(CASE WHEN order_no IS NOT NULL THEN 1 ELSE 0 END) as with_order_no,
-               SUM(CASE WHEN lot_no IS NOT NULL THEN 1 ELSE 0 END) as with_lot_no
+               SUM(CASE WHEN order_no IS NOT NULL THEN 1 ELSE 0 END) as with_order_no
         FROM packing WHERE is_active = true;
       `;
 

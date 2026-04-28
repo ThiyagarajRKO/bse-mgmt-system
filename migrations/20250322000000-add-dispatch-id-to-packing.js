@@ -17,120 +17,45 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const transaction = await queryInterface.sequelize.transaction();
-
     try {
-      // Make peeled_dispatched_product_id nullable (was previously required)
-      await queryInterface.changeColumn(
-        "packing",
-        "peeled_dispatched_product_id",
-        {
-          type: Sequelize.UUID,
-          allowNull: true, // Changed from false to true
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "peeled_dispatches" },
-            key: "id",
-          },
-        },
-        { transaction },
-      );
-
       // Add new dispatch_id column (nullable - for unprocessed products)
-      await queryInterface.addColumn(
-        "packing",
-        "dispatch_id",
-        {
+      // Check if column already exists first
+      const table = await queryInterface.describeTable("packing");
+      if (!table.dispatch_id) {
+        await queryInterface.addColumn("packing", "dispatch_id", {
           type: Sequelize.UUID,
           allowNull: true,
           onDelete: "RESTRICT",
           onUpdate: "CASCADE",
           references: {
-            model: { tableName: "dispatches" },
+            model: "dispatches",
             key: "id",
           },
-        },
-        { transaction },
-      );
+        });
+      }
 
-      // Make peeled_product_id nullable (was previously required)
-      // This is the peeling_product association - may not exist for unprocessed
-      await queryInterface.changeColumn(
-        "packing",
-        "peeled_product_id",
-        {
-          type: Sequelize.UUID,
-          allowNull: true, // Changed from false to true
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "peeling_products" },
-            key: "id",
-          },
-        },
-        { transaction },
-      );
-
-      await transaction.commit();
       console.log(
-        "✅ Migration completed: Added dispatch_id to packing table and made peeled references nullable",
+        "✅ Migration completed: Added dispatch_id to packing table for unprocessed product support",
       );
     } catch (error) {
-      await transaction.rollback();
+      console.error("Migration error:", error?.message || error);
       throw error;
     }
   },
 
   down: async (queryInterface, Sequelize) => {
-    const transaction = await queryInterface.sequelize.transaction();
-
     try {
-      // Remove dispatch_id column
-      await queryInterface.removeColumn("packing", "dispatch_id", {
-        transaction,
-      });
+      // Remove dispatch_id column if rolling back
+      const table = await queryInterface.describeTable("packing");
+      if (table.dispatch_id) {
+        await queryInterface.removeColumn("packing", "dispatch_id");
+      }
 
-      // Revert peeled_dispatched_product_id to NOT NULL
-      await queryInterface.changeColumn(
-        "packing",
-        "peeled_dispatched_product_id",
-        {
-          type: Sequelize.UUID,
-          allowNull: false, // Revert to original
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "peeled_dispatches" },
-            key: "id",
-          },
-        },
-        { transaction },
-      );
-
-      // Revert peeled_product_id to NOT NULL
-      await queryInterface.changeColumn(
-        "packing",
-        "peeled_product_id",
-        {
-          type: Sequelize.UUID,
-          allowNull: false, // Revert to original
-          onDelete: "RESTRICT",
-          onUpdate: "CASCADE",
-          references: {
-            model: { tableName: "peeling_products" },
-            key: "id",
-          },
-        },
-        { transaction },
-      );
-
-      await transaction.commit();
       console.log(
-        "✅ Migration reverted: Removed dispatch_id and reverted nullable columns",
+        "✅ Migration reverted: Removed dispatch_id from packing table",
       );
     } catch (error) {
-      await transaction.rollback();
+      console.error("Migration rollback error:", error?.message || error);
       throw error;
     }
   },

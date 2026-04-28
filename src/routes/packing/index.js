@@ -3,6 +3,7 @@ import { Update } from "./handlers/update";
 import { Get } from "./handlers/get";
 import { GetAll } from "./handlers/get_all";
 import { GetPackingNames } from "./handlers/get_packing_names";
+import { GetStats } from "./handlers/get_stats";
 import { Delete } from "./handlers/delete";
 import { Calculate } from "./handlers/calculate";
 import { ResolveCartonHandler } from "./handlers/resolve_carton";
@@ -19,6 +20,7 @@ import { updateSchema } from "./schema/update";
 import { getSchema } from "./schema/get";
 import { getAllSchema } from "./schema/get_all";
 import { getPackingNamesSchema } from "./schema/get_packing_names";
+import { getStatsSchema } from "./schema/get_stats";
 import { deleteSchema } from "./schema/delete";
 import { calculateSchema } from "./schema/calculate";
 import { resolveCartonSchema } from "./schema/resolve_carton";
@@ -124,6 +126,25 @@ export const packingRoute = (fastify, opts, done) => {
     }
   });
 
+  fastify.get("/stats", getStatsSchema, async (req, reply) => {
+    try {
+      const params = { profile_id: req?.token_profile_id, ...req.query };
+
+      const result = await GetStats(params, req?.session, fastify);
+
+      return reply.code(200).send({
+        success: true,
+        message: "Packing statistics retrieved successfully",
+        data: result,
+      });
+    } catch (err) {
+      return reply.code(err?.statusCode || 400).send({
+        success: false,
+        message: err?.message || err,
+      });
+    }
+  });
+
   fastify.delete("/", deleteSchema, async (req, reply) => {
     try {
       const params = { profile_id: req?.token_profile_id, ...req.query };
@@ -201,7 +222,7 @@ export const packingRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.post(
@@ -224,7 +245,7 @@ export const packingRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.post(
@@ -237,7 +258,7 @@ export const packingRoute = (fastify, opts, done) => {
         const result = await CalculateCartonCostHandler(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -251,7 +272,7 @@ export const packingRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.post(
@@ -264,7 +285,7 @@ export const packingRoute = (fastify, opts, done) => {
         const result = await CalculatePalletCostHandler(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -278,7 +299,7 @@ export const packingRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   fastify.post(
@@ -291,7 +312,7 @@ export const packingRoute = (fastify, opts, done) => {
         const result = await CalculateCompletePackagingCostHandler(
           params,
           req?.session,
-          fastify
+          fastify,
         );
 
         return reply.code(result.statusCode || 200).send({
@@ -305,7 +326,7 @@ export const packingRoute = (fastify, opts, done) => {
           message: err?.message || err,
         });
       }
-    }
+    },
   );
 
   // Register AI containers handler

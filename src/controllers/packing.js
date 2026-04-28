@@ -123,6 +123,7 @@ export const Update = async (profile_id, id, packing_data) => {
                               attributes: ["id"],
                               include: [
                                 {
+                                  as: "ProductMaster",
                                   model: models.ProductMaster,
                                   attributes: ["id"],
                                 },
@@ -363,6 +364,7 @@ export const GetAll = ({ start, length }) => {
                     ],
                   },
                   {
+                    as: "ProductMaster",
                     model: models.ProductMaster,
                     attributes: ["id", "product_name"],
                     where: {
@@ -477,6 +479,7 @@ export const GetAll = ({ start, length }) => {
                     ],
                   },
                   {
+                    as: "ProductMaster",
                     model: models.ProductMaster,
                     attributes: ["id", "product_name"],
                     where: {
@@ -589,6 +592,7 @@ export const GetNames = ({ start, length }) => {
                         required: false,
                         include: [
                           {
+                            as: "ProductMaster",
                             model: models.ProductMaster,
                             attributes: ["id", "product_name"],
                             required: false,
@@ -991,6 +995,74 @@ export const RecommendPackingContainers = ({
       });
     } catch (err) {
       console.error("Error in RecommendPackingContainers:", err);
+      reject(err);
+    }
+  });
+};
+
+export const GetStats = ({ procurement_lot_id, search }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { Op, Sequelize, sequelize } = require("sequelize");
+
+      // Build WHERE clause
+      let where = {};
+      if (procurement_lot_id) {
+        where.id = procurement_lot_id;
+      }
+
+      // Query packing statistics with lot information
+      const result = await models.sequelize.query(
+        `
+        SELECT
+          pl.id as procurement_lot_id,
+          pl.procurement_lot as procurement_lot,
+          COUNT(DISTINCT pk.id) as total_packing_count,
+          SUM(pk.packing_quantity) as total_packing_quantity,
+          (
+            SELECT SUM(p.peeling_quantity)
+            FROM peeling p
+            JOIN dispatches d ON d.id = p.dispatch_id AND d.is_active = true
+            JOIN procurement_products prp ON prp.id = d.procurement_product_id AND prp.is_active = true
+            WHERE prp.procurement_lot_id = pl.id AND p.is_active = true
+          ) as total_yield_quantity,
+          (
+            SELECT SUM(pp.yield_quantity)
+            FROM peeling_products pp
+            JOIN peeling p ON p.id = pp.peeling_id AND p.is_active = true
+            JOIN dispatches d ON d.id = p.dispatch_id AND d.is_active = true
+            JOIN procurement_products prp ON prp.id = d.procurement_product_id AND prp.is_active = true
+            WHERE prp.procurement_lot_id = pl.id AND pp.is_active = true
+          ) as total_peeled_dispatched_quantity
+        FROM
+          procurement_lots pl
+        LEFT JOIN
+          procurement_products prp ON prp.procurement_lot_id = pl.id AND prp.is_active = true
+        LEFT JOIN
+          dispatches d ON d.procurement_product_id = prp.id AND d.is_active = true
+        LEFT JOIN
+          packing pk ON (pk.peeled_dispatch_id IS NOT NULL OR pk.dispatch_id = d.id) AND pk.is_active = true
+        WHERE
+          pl.is_active = true
+          ${procurement_lot_id ? "AND pl.id = :procurement_lot_id" : ""}
+          ${search ? "AND (pl.procurement_lot ILIKE :search)" : ""}
+        GROUP BY
+          pl.id, pl.procurement_lot
+        ORDER BY
+          pl.created_at DESC
+        `,
+        {
+          replacements: {
+            procurement_lot_id,
+            search: search ? `%${search}%` : "%",
+          },
+          type: models.sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      resolve(result || []);
+    } catch (err) {
+      console.error("Error in GetStats:", err);
       reject(err);
     }
   });
